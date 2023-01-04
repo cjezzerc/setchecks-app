@@ -1,0 +1,18 @@
+
+
+
+(<64572001 | Disease (disorder) |:
+363698007 | Finding site (attribute) | = <<56459004 | Foot structure (body structure) |
+AND
+116676008 | Associated morphology (attribute) | = 44132006 | Abscess (morphologic abnormality) | )
+MINUS
+(<<203019005 | Muscle abscess (disorder) |)
+
+
+# ? akin to the := in DMWB? 
+(<64572001 | Disease (disorder) |:
+<< 762705008 | Concept model object attribute (attribute) | = <<56459004 | Foot structure (body structure) |
+AND
+116676008 | Associated morphology (attribute) | = 44132006 | Abscess (morphologic abnormality) | )
+MINUS
+(<<203019005 | Muscle abscess (disorder) |)
