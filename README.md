@@ -1,2 +1,3 @@
-# refset_viewer2
-major refactoring refset_viewer to work with in memory dictionary of concepts
+# Value-Set
+
+This is a very early micro-prototyping codebase for the Value Set Management Tool project during the discovery phase. 
