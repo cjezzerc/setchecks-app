@@ -8,7 +8,7 @@ from fhir.resources.parameters import Parameters
 from fhir.resources.valueset import ValueSet
 import fhir_utils
 import fhir_snomed_utils
-import terminology_server
+import terminology_server_module
 
 class Concept():
     def __init__(self,concept_fhir_parameters=None, concepts=None):
@@ -21,7 +21,7 @@ class Concept():
             self.concepts=concepts
             self.system=ca['system']
             self.version=ca['version']
-            self.module_name=ca['name']
+            self.module_name=ca['name']   # need to check this?
             self.module_id=ca['moduleId']
             self.active=not(ca['inactive'])
             self.effective_time=ca['effectiveTime']
@@ -61,10 +61,10 @@ class Concept():
         else:
             print("Fetching on demand")
             if name=="ancestors":
-                self.ancestors=set(terminology_server.expand_ecl(ecl=">"+str(self.concept_id), version=self.version))
+                self.ancestors=set(terminology_server.expand_ecl(ecl=">"+str(self.concept_id), sct_version=self.version))
                 return self.ancestors
             elif name=="descendants":
-                self.descendants=set(terminology_server.expand_ecl(ecl="<"+str(self.concept_id), version=self.version))
+                self.descendants=set(terminology_server.expand_ecl(ecl="<"+str(self.concept_id), sct_version=self.version))
                 return self.descendants
             else:
                 print("Unexpected name to fetch")
@@ -82,22 +82,29 @@ class Concept():
         return "\n".join(repr_strings)
 
 class ConceptsDict(UserDict):
-    def __init__(self):
-        self.url_format="https://r4.ontoserver.csiro.au/fhir/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=http://snomed.info/sct/83821000000107/version/20190807&property=*"
+    
+    def __init__(self, terminology_server=None, sct_version=None):
+        self.terminology_server=terminology_server
+        self.sct_version=sct_version  # really should protet against changing this and not clearing out all old data
+        # self.url_format="https://r4.ontoserver.csiro.au/fhir/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=http://snomed.info/sct/83821000000107/version/20190807&property=*"
         super().__init__()
+
     def __getitem__(self, key):
         # print("Handling", key)
         if key in self.data: # if have already fetched this concept
             return self.data[key]
         else: # otherwise need to fetch it
-            r=terminology_server.do_get(url=self.url_format % key)
+            concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
+            r=self.terminology_server.do_get(relative_url=concept_lookup_url)
             concept_fhir_parameters=Parameters.parse_obj(r.json())
             concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self)
             self.data[key]=concept
             return self.data[key]
 
 if __name__=="__main__":
-    concepts=ConceptsDict()
+
+    terminology_server=terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    concepts=ConceptsDict(terminology_server=terminology_server, sct_version="http://snomed.info/sct/83821000000107/version/20190807")
    
     print(concepts[91487003])
     print(concepts[91487003].ancestors)

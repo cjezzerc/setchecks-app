@@ -9,6 +9,8 @@ import time
 from fhir.resources.valueset import ValueSet
 import vsmt_uprot_app.fhir_utils
 
+import vsmt_uprot_app.terminology_server_module
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
 )
@@ -23,6 +25,9 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 # quick and dirty storage for the ecl expansions between endpoint calls
 expansion_store={}
 ecl_store=[]
+terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+sct_version="http://snomed.info/sct/83821000000107/version/20190807"
+
 
 ################################
 ################################
@@ -46,17 +51,10 @@ def ecl_explorer():
 
     if 'ecl' in request.form:
         ecl=request.form['ecl']
-        url='https://r4.ontoserver.csiro.au/fhir/ValueSet/$expand?url=http://snomed.info/sct?fhir_vs=ecl/(%s)' % ecl
-        print(url)
-        response=requests.get(url=url)
-        if response.json()["resourceType"]=="ValueSet": # if get a valid response store ecl for later reuse
+        ecl_response=terminology_server.expand_ecl(ecl=ecl, sct_version=sct_version, add_display_names=True)
+        if ecl_response is not None: 
             ecl_store = [ecl] + ecl_store
-            extensional_valueset=ValueSet.parse_obj(response.json())
-            ecl_response=[]
-            ecl_response.append("%s concept(s):" % (extensional_valueset.expansion.total))
-            if extensional_valueset.expansion.contains:
-                for contained_item in extensional_valueset.expansion.contains:
-                    ecl_response.append("%20s | %s |" % (contained_item.code, contained_item.display))
+            ecl_response=["%s concept(s):" % (len(ecl_response))] + ecl_response
         else:
             ecl_store = ["ERROR:  "+ecl] + ecl_store
             ecl_response=["There was an error in the ECL:", response.json()]
