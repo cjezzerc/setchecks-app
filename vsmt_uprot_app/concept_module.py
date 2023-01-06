@@ -15,7 +15,6 @@ class Concept():
         if concept_fhir_parameters:
 
             ca=fhir_snomed_utils.parse_parameters_resource_from_snomed_concept_lookup(parameters=concept_fhir_parameters)
-            # print("\n".join(list(ca.keys())))
             
             self.concept_id=ca['code'] # try to avoid using bare "id" as is a built in function
             self.concepts=concepts
@@ -85,12 +84,10 @@ class ConceptsDict(UserDict):
     
     def __init__(self, terminology_server=None, sct_version=None):
         self.terminology_server=terminology_server
-        self.sct_version=sct_version  # really should protet against changing this and not clearing out all old data
-        # self.url_format="https://r4.ontoserver.csiro.au/fhir/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=http://snomed.info/sct/83821000000107/version/20190807&property=*"
+        self.sct_version=sct_version  # really should protect against changing this and not clearing out all old data
         super().__init__()
 
     def __getitem__(self, key):
-        # print("Handling", key)
         if key in self.data: # if have already fetched this concept
             return self.data[key]
         else: # otherwise need to fetch it

@@ -16,6 +16,28 @@ class TerminologyServer():
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r
+
+    def do_put(self, relative_url=None, json=None, verbose=False, timing=False):
+        url=self.base_url + "/" + relative_url
+        if timing:
+            start_time=time.time()
+        if verbose:
+            print("PUT: %s" % url)
+        r=requests.put(url, json=json)
+        if timing:
+            print("That took (in seconds)", time.time()-start_time)
+        return r    
+    
+    def do_post(self, relative_url=None, json=None, verbose=False, timing=False):
+        url=self.base_url + "/" + relative_url
+        if timing:
+            start_time=time.time()
+        if verbose:
+            print("POST: %s" % url)
+        r=requests.post(url, json=json)
+        if timing:
+            print("That took (in seconds)", time.time()-start_time)
+        return r    
     
     def expand_ecl(self, ecl=None, sct_version=None, add_display_names=False):
         relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
