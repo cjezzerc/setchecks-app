@@ -23,15 +23,16 @@ def repr_resource(resource=None, repr_strings=None, indent=0, object_representat
     if repr_strings==None:
         repr_strings=[]
     indent_string=" "*indent
-    padding_string=" "*(20)
-    # padding_string=" "*(20-indent)   # this form keeps colons aligned - not sure which prefer
+    # padding_string=" "*(20)
+    padding_string=" "*(20-indent)   # this form keeps colons aligned - not sure which prefer
     if type(resource)==list:
         for i_thing, thing in enumerate(resource):
             repr_resource(thing, repr_strings=repr_strings, indent=indent+3, object_representation=object_representation+"["+str(i_thing)+"]")
             if i_thing!=len(resource)-1:
                 repr_strings.append('    %s---' % (indent_string))
             else:
-                repr_strings.append('\n\n')
+                pass
+                # repr_strings.append('\n\n')
 
     else:
         for thing_name, thing_value in resource:
