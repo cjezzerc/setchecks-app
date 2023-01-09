@@ -30,17 +30,16 @@ class VSMT_ValueSetManager():
         for entry in vsmt_index_dict['entry']:
             resource_dict=entry['resource']
             index_item=VSMT_IndexItem(vsmt_version=resource_dict["version"], 
-                                    vsmt_identifier=resource_dict["identifier"][0]["value"], 
+                                    vsmt_identifier=resource_dict["identifier"][0]["value"],
                                     vsmt_human_name=resource_dict["title"],
                                     server_id=resource_dict["id"],
                                     server_vsn=resource_dict["meta"]['versionId'],
                                     )
-            k=index_item.vsmt_identifier+":"+index_item.vsmt_version
-            if k in vsmt_index:
-                print("FATAL ERROR: The key %s has already been seen in the index" % k)
+            if index_item.identifier_and_version in vsmt_index:
+                print("FATAL ERROR: The key %s has already been seen in the index" % index_item.identifier_and_version)
                 sys.exit()
             else:
-                vsmt_index[k]=index_item
+                vsmt_index[index_item.identifier_and_version]=index_item
         return vsmt_index
 
 class VSMT_IndexItem():
@@ -51,6 +50,7 @@ class VSMT_IndexItem():
         self.vsmt_human_name=vsmt_human_name
         self.server_id=server_id
         self.server_vsn=server_vsn
+        self.identifier_and_version=self.vsmt_identifier+":"+self.vsmt_version
 
     def __repr__(self):
         return "VSMT_identifier: %5s | vsn: %3s | server_id: %32s | server_vsn: %3s | name: %s" % (self.vsmt_identifier, 
@@ -64,14 +64,22 @@ class VSMT_IndexItem():
 ##########################
 
 class VSMT_VersionedValueSet():
-    def __init__(self, terminology_server=None, server_id=None, title=None, save_to_server=True):
-        if (server_id and title) or (not (server_id or title)): # must specify ONLY ONE of server_id or title
-                                                                # if title specified then will create new value set on server??
-            self=None
+    def __init__(self, terminology_server=None, vsmt_identifier_and_version=None, server_id=None, title=None, save_to_server=True):
+        # if (server_id and title) or (not (server_id or title)): # must specify ONLY ONE of server_id or title
+        #                                                         # if title specified then will create new value set on server??
+        #     self=None
+        one_and_only_one_defined=sum([int(bool(x not in ["", None])) for x in [vsmt_identifier_and_version, server_id, title]])==1
+        if not one_and_only_one_defined:
+            print("FATAL ERROR: Require one and only one of vsmt_identifier, server_id or title to be defined in VSMT_VersionedValueSet __init__")
+            sys.exit()
 
-        if server_id: # retrieve fhir_valueset from server and initialise a VSMT_VersionValueSet to hold it
+        if server_id or vsmt_identifier_and_version: # retrieve fhir_valueset from server and initialise a VSMT_VersionValueSet to hold it
             self.terminology_server=terminology_server
-            relative_url='/ValueSet/%s' % server_id
+            
+            if vsmt_identifier_and_version:
+                relative_url='/ValueSet/%s' % VSMT_ValueSetManager(terminology_server=terminology_server).get_vsmt_index_data()[vsmt_identifier_and_version].server_id
+            else:
+                relative_url='/ValueSet/%s' % server_id
             response=terminology_server.do_get(relative_url=relative_url)
             valueset_json_as_dict=response.json()
             self.fhir_valueset=ValueSet.parse_obj(valueset_json_as_dict)
@@ -135,8 +143,9 @@ class VSMT_VersionedValueSet():
         self.fhir_valueset.compose.exclude.append(ValueSetComposeInclude(system='http://snomed.info/sct',
                                                                          filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
         
-    def expand_version_on_server(self):
-        return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
+    def expand_version_on_server(self, add_display_names=False):
+        # return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
+        return self.terminology_server.expand_ecl(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names)
 
     def __str__(self):
         return "\n".join(fhir_utils.repr_resource(self.fhir_valueset))
@@ -179,13 +188,15 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
 
-    server_id=vsmt_index['VSMT_1004:0'].server_id
-    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
+    # server_id=vsmt_index['VSMT_1004:0'].server_id
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
 
-    rj=vs.expand_version_on_server()
-    expanded_value_set=ValueSet.parse_obj(rj)
-    print("\n".join(fhir_utils.repr_resource(expanded_value_set)))
-    
+    # server_id=vsmt_index['VSMT_1004:0'].server_id
+    vsmt_identifier_and_version='VSMT_1004:0'
+    print("VSMT identifier and version -", vsmt_identifier_and_version)
+    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    for concept in vs.expand_version_on_server(add_display_names=True):
+        print(concept)
 
     # action = "Added code " + str(random.randint(1000000000000, 3000000000000))
     # datestamp=str(datetime.datetime.now())
