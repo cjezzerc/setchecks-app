@@ -60,10 +60,10 @@ class Concept():
         else:
             print("Fetching on demand")
             if name=="ancestors":
-                self.ancestors=set(terminology_server.expand_ecl(ecl=">"+str(self.concept_id), sct_version=self.version))
+                self.ancestors=set(terminology_server.do_expand(ecl=">"+str(self.concept_id), sct_version=self.version))
                 return self.ancestors
             elif name=="descendants":
-                self.descendants=set(terminology_server.expand_ecl(ecl="<"+str(self.concept_id), sct_version=self.version))
+                self.descendants=set(terminology_server.do_expand(ecl="<"+str(self.concept_id), sct_version=self.version))
                 return self.descendants
             else:
                 print("Unexpected name to fetch")

@@ -142,10 +142,28 @@ class VSMT_VersionedValueSet():
             self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
         self.fhir_valueset.compose.exclude.append(ValueSetComposeInclude(system='http://snomed.info/sct',
                                                                          filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
-        
-    def expand_version_on_server(self, add_display_names=False):
+
+    def get_includes(self):
+        return self.get_includes_or_excludes(clude_type="include")
+
+    def get_excludes(self):
+        return self.get_includes_or_excludes(clude_type="exclude")
+
+    def get_includes_or_excludes(self, *, clude_type):
+        if self.fhir_valueset.compose==None:
+            self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
+        cludes=[]
+        for clude in self.fhir_valueset.compose.__dict__[clude_type]: # clude_type is either include or exclude
+            filters=[]
+            for filter in clude.filter:
+                # print(filter)
+                filters.append(filter.value)
+            cludes.append(filters)
+        return cludes
+
+    def expand_version_on_server(self, add_display_names=False, sct_version=None):
         # return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
-        return self.terminology_server.do_expand(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names)
+        return self.terminology_server.do_expand(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names, sct_version=sct_version)
 
     def __str__(self):
         return "\n".join(fhir_utils.repr_resource(self.fhir_valueset))
@@ -173,8 +191,11 @@ if __name__=="__main__":
     # print("VSMT_identifier: %s VSMT_version: %s" % (vs.get_vsmt_identifier(), vs.get_vsmt_version()))
 
     ## Make a new value set and store
-    # vs=VSMT_VersionedValueSet(title='cjc_trial_set_1', terminology_server=terminology_server) # , save_to_server=False)
-    
+    # vs=VSMT_VersionedValueSet(title='cjc_test123', terminology_server=terminology_server, save_to_server=False)
+    # vs.add_include(ecl_filter='<<123456')
+    # print(vs)
+    # print(vs.fhir_valueset.compose.include[0].valueSet)
+    # print(vs.fhir_valueset.compose.include[0])
     # server_id=vsmt_index['VSMT_1003:0'].server_id
     # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
 
@@ -188,15 +209,22 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
 
-    # server_id=vsmt_index['VSMT_1004:0'].server_id
-    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
-
-    # server_id=vsmt_index['VSMT_1004:0'].server_id
     vsmt_identifier_and_version='VSMT_1004:0'
     print("VSMT identifier and version -", vsmt_identifier_and_version)
     vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    print(vs.get_includes())
+    print(vs.get_excludes())
+    # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):
     for concept in vs.expand_version_on_server(add_display_names=True):
         print(concept)
+
+    # from concept_module import ConceptsDict
+    # concepts=ConceptsDict(terminology_server=terminology_server, sct_version="http://snomed.info/sct/83821000000107/version/20190807")
+    # print(concepts[91487003])
+    # for concept in vs.expand_version_on_server():
+    #     print(concept)
+    #     print(concepts[concept])
+
 
     # action = "Added code " + str(random.randint(1000000000000, 3000000000000))
     # datestamp=str(datetime.datetime.now())

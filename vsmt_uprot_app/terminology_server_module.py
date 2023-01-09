@@ -51,9 +51,12 @@ class TerminologyServer():
         if ecl:
             relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
         else:
-            relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
+            if sct_version:
+                relative_url= "ValueSet/%s/$expand?system-version=%s" % (value_set_server_id, sct_version)
+            else:
+                relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
         print(relative_url)
-        response=self.do_get(relative_url=relative_url) 
+        response=self.do_get(relative_url=relative_url, verbose=True) 
         print(response)
         if response.json()["resourceType"]=="ValueSet": 
             ecl_response=[]
