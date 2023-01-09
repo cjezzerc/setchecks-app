@@ -56,3 +56,12 @@ class TerminologyServer():
             return ecl_response
         else:
             return None
+
+    def expand_value_set(self, *, value_set_server_id):
+        relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
+        print(relative_url)
+        response=self.do_get(relative_url=relative_url) 
+        return response.json()
+        # expanded_value_set=ValueSet.parse_obj(response.json())
+        # return expanded_value_set
+

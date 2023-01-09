@@ -5,7 +5,7 @@ import sys, json, random, datetime
 import requests
 import sys
 
-from fhir.resources.valueset import ValueSet, ValueSetCompose, ValueSetComposeInclude, ValueSetComposeIncludeFilter
+from fhir.resources.valueset import ValueSet, ValueSetCompose, ValueSetComposeInclude, ValueSetComposeIncludeFilter, ValueSetComposeIncludeConcept
 from fhir.resources.extension import Extension
 from fhir.resources.bundle import Bundle
 from fhir.resources.identifier import Identifier
@@ -59,47 +59,85 @@ class VSMT_IndexItem():
                                                                                             self.server_vsn, 
                                                                                             self.vsmt_human_name,)
 
-########################
-# VSMT_VersionValueSet #
-########################
+##########################
+# VSMT_VersionedValueSet #
+##########################
 
 class VSMT_VersionedValueSet():
-    def __init__(self, terminology_server=None, server_id=None, title=None):
+    def __init__(self, terminology_server=None, server_id=None, title=None, save_to_server=True):
         if (server_id and title) or (not (server_id or title)): # must specify ONLY ONE of server_id or title
                                                                 # if title specified then will create new value set on server??
             self=None
 
-        if server_id:
+        if server_id: # retrieve fhir_valueset from server and initialise a VSMT_VersionValueSet to hold it
             self.terminology_server=terminology_server
-            # self.valueset_url=(terminology_server.base_url + '/ValueSet/%s' % server_id)
-            # response=requests.get(url=self.valueset_url)
             relative_url='/ValueSet/%s' % server_id
             response=terminology_server.do_get(relative_url=relative_url)
             valueset_json_as_dict=response.json()
             self.fhir_valueset=ValueSet.parse_obj(valueset_json_as_dict)
 
-        if title:
-            # self.valueset_url=None  # at first creation not stored to server immediately
-            #                         # first store will require specification of terminology server or will fail
-            self.fhir_valueset=ValueSet(title=title, publisher='VSMT-prototyping', status='draft', url='http:vsmt-prototyping', identifier=[Identifier(value="VSMT_????")], version="??")
+        if title: # create a new empty ValueSet and initialise a VSMT_VersionValueSet to hold it, and store to server
             self.terminology_server=terminology_server
-
+            ###################################################################
+            # Quick and dirty method to find next VSMT_???? identifier to use #
+            #                                                                 #
+            value_set_manager=VSMT_ValueSetManager(terminology_server=terminology_server)
+            vsmt_index=value_set_manager.get_vsmt_index_data()
+            used_identifiers=[int(vii.vsmt_identifier.split("_")[1]) for vii in vsmt_index.values()]
+            print(used_identifiers)
+            vsmt_identifier="VSMT_"+str(sorted(used_identifiers)[-1]+1)
+            vsmt_version=0
+            print("New identifier:", vsmt_identifier)
+            #                                                                 #
+            ###################################################################
+            
+            self.fhir_valueset=ValueSet(title=title, 
+                                        publisher='VSMT-prototyping', status='draft', 
+                                        identifier=[Identifier(value=vsmt_identifier)], 
+                                        version=vsmt_version,
+                                        url='http:vsmt_prototyping/'+vsmt_identifier+'/'+str(vsmt_version)
+                                        )
+            if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
+                self.store_to_server()
+            
     def get_vsmt_identifier(self):
         try:
             return self.fhir_valueset.identifier[0].value
         except:
             return None
 
+    def get_vsmt_version(self):
+        try:
+            return self.fhir_valueset.version
+        except:
+            return None
+
     def store_to_server(self, verbose=False):
         if self.fhir_valueset.id==None:  
             relative_url="/ValueSet" 
-            response=self.terminology_server.do_post(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose)
+            response=self.terminology_server.do_post(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose) # POST first time
         else:
             relative_url="/ValueSet/%s" % self.fhir_valueset.id
-            response=self.terminology_server.do_put(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose)
+            response=self.terminology_server.do_put(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose) # PUT to update  
+        print(response.json())
+        self.fhir_valueset=ValueSet.parse_obj(response.json()) # reparse object to fill out id (if not already set) and update time and server version
         return(response)
+
+    def add_include(self, *, ecl_filter):
+        if self.fhir_valueset.compose==None:
+            self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[])
+        self.fhir_valueset.compose.include.append(ValueSetComposeInclude(system='http://snomed.info/sct',
+                                                                         filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
+
+    def add_exclude(self, *, ecl_filter):
+        if self.fhir_valueset.compose==None:
+            self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
+        self.fhir_valueset.compose.exclude.append(ValueSetComposeInclude(system='http://snomed.info/sct',
+                                                                         filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
         
-        
+    def expand_version_on_server(self):
+        return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
+
     def __str__(self):
         return "\n".join(fhir_utils.repr_resource(self.fhir_valueset))
 
@@ -110,24 +148,44 @@ class VSMT_VersionedValueSet():
 if __name__=="__main__":
 
     terminology_server=terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    
+    ### get basic index data on all VSMT value sets on server
     value_set_manager=VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
     
     for k, v in vsmt_index.items():
         print("%15s - %s" % (k,v))
 
-    # server_id=vsmt_index['VSMT_1645:3'].server_id
+    ### fetch an existing value set
+    # server_id=vsmt_index['VSMT_1000:3'].server_id
     # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
-    # # print(vs)
-    # print("VSMT_identifier:",vs.get_vsmt_identifier())
-
-    # vs=VSMT_VersionedValueSet(title='cjc My first value set', terminology_server=terminology_server)
     # print(vs)
-    # r=vs.store_to_server(verbose=True)
-    # print(r.json())
-    # print("VSMT_identifier:",vs.get_vsmt_identifier())
+    # ## vs.fhir_valueset.compose.include[0].concept=[ValueSetComposeIncludeConcept(code='12121212121')]  fhir.resources lets us add a concept cluase when a filter already exists
+    # print("VSMT_identifier: %s VSMT_version: %s" % (vs.get_vsmt_identifier(), vs.get_vsmt_version()))
 
-   
+    ## Make a new value set and store
+    # vs=VSMT_VersionedValueSet(title='cjc_trial_set_1', terminology_server=terminology_server) # , save_to_server=False)
+    
+    # server_id=vsmt_index['VSMT_1003:0'].server_id
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
+
+    # add a filter to a vs
+    # vs=VSMT_VersionedValueSet(title='cjc_amnio_test1', terminology_server=terminology_server)
+    # vs.add_include(ecl_filter='<366335008')
+    # vs.add_include(ecl_filter='<408780005')
+    # vs.add_exclude(ecl_filter='<<408792005')
+    # vs.add_exclude(ecl_filter='<<408793000')
+    # vs.add_exclude(ecl_filter='<<408794006')
+    # vs.store_to_server()
+    # print(vs)
+
+    server_id=vsmt_index['VSMT_1004:0'].server_id
+    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, server_id=server_id)
+
+    rj=vs.expand_version_on_server()
+    expanded_value_set=ValueSet.parse_obj(rj)
+    print("\n".join(fhir_utils.repr_resource(expanded_value_set)))
+    
 
     # action = "Added code " + str(random.randint(1000000000000, 3000000000000))
     # datestamp=str(datetime.datetime.now())
