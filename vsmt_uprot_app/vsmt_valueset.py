@@ -145,7 +145,7 @@ class VSMT_VersionedValueSet():
         
     def expand_version_on_server(self, add_display_names=False):
         # return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
-        return self.terminology_server.expand_ecl(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names)
+        return self.terminology_server.do_expand(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names)
 
     def __str__(self):
         return "\n".join(fhir_utils.repr_resource(self.fhir_valueset))

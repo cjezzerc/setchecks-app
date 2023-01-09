@@ -39,7 +39,7 @@ class TerminologyServer():
             print("That took (in seconds)", time.time()-start_time)
         return r    
     
-    def expand_ecl(self, ecl=None, value_set_server_id=None, sct_version=None, add_display_names=False):
+    def do_expand(self, ecl=None, value_set_server_id=None, sct_version=None, add_display_names=False):
         
         one_and_only_one_defined=sum([int(bool(x not in ["", None])) for x in [ecl, value_set_server_id]])==1
         if not one_and_only_one_defined:

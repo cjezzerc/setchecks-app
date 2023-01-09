@@ -51,7 +51,7 @@ def ecl_explorer():
 
     if 'ecl' in request.form:
         ecl=request.form['ecl']
-        ecl_response=terminology_server.expand_ecl(ecl=ecl, sct_version=sct_version, add_display_names=True)
+        ecl_response=terminology_server.do_expand(ecl=ecl, sct_version=sct_version, add_display_names=True)
         if ecl_response is not None: 
             ecl_store = [ecl] + ecl_store
             ecl_response=["%s concept(s):" % (len(ecl_response))] + ecl_response
