@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}VSMT_uprot_app{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-8 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong>VSMT ValueSets on server</strong>
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <ul class="list-group">
+                        {% for index_key in vsmt_index %}
+                        <li class="list-group-item">
+                            {{index_key}} : {{vsmt_index[index_key]}}
+                        </li>
+                        {% endfor %}
+                    </ul> 
+                </div>
+            </div>
+           
+        </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
+        <div class="col-4 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong>Value set info</strong> 
+                </div>  
+                <div class="panel" style="overflow:auto">
+                
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+
+  
+{% endblock %}

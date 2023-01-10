@@ -10,6 +10,7 @@ from fhir.resources.valueset import ValueSet
 import vsmt_uprot_app.fhir_utils
 
 import vsmt_uprot_app.terminology_server_module
+import vsmt_uprot_app.vsmt_valueset
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
@@ -62,10 +63,24 @@ def ecl_explorer():
         ecl='Enter your ECL here'
         ecl_response=['Response of ECL evaluation will appear here']
 
-    return render_template('simple.html',
+    return render_template('ecl_explorer.html',
                             ecl=ecl,
                             ecl_response=ecl_response,
                             ecl_store=ecl_store
+                            )
+
+@bp.route('/vsmt_index', methods=['GET'])
+def vsmt_index():
+
+    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    value_set_manager=vsmt_uprot_app.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
+    vsmt_index=value_set_manager.get_vsmt_index_data()
+    
+    for k, v in vsmt_index.items():
+        print("%15s - %s" % (k,v))
+    
+    return render_template('vsmt_index.html',
+                            vsmt_index=vsmt_index,
                             )
 
 

@@ -10,8 +10,8 @@ from fhir.resources.extension import Extension
 from fhir.resources.bundle import Bundle
 from fhir.resources.identifier import Identifier
 
-import fhir_utils
-import terminology_server_module
+import vsmt_uprot_app.fhir_utils
+import vsmt_uprot_app.terminology_server_module
 
 ####################################################################
 # Classes to get info about all available VSMT_ValueSets on server #
@@ -166,15 +166,6 @@ class VSMT_VersionedValueSet():
         if len(self.fhir_valueset.compose.__dict__[clude_type])>element_to_delete:
             del self.fhir_valueset.compose.__dict__[clude_type][element_to_delete]
 
-
-    def set_inactive_flag(self, *, inactive): # this appears only to be safe once sure have a compose statement with one include in it
-                                              # otherwise server will compain when try to store it
-                                              # Perhaps should add some tests to store_on_server 
-        if self.fhir_valueset.compose==None:
-            print("ERROR: Cannot set compose,inactive until have a compose with at least one include statement in it, or server complains")
-            sys.exit()
-        self.fhir_valueset.compose.inactive=inactive
-
     def get_includes(self):
         return self.get_includes_or_excludes(clude_type="include")
 
@@ -193,6 +184,17 @@ class VSMT_VersionedValueSet():
                     filters.append(filter.value)
                 cludes.append(filters)
         return cludes
+
+    
+    
+
+    def set_inactive_flag(self, *, inactive): # this appears only to be safe once sure have a compose statement with one include in it
+                                              # otherwise server will compain when try to store it
+                                              # Perhaps should add some tests to store_on_server 
+        if self.fhir_valueset.compose==None:
+            print("ERROR: Cannot set compose,inactive until have a compose with at least one include statement in it, or server complains")
+            sys.exit()
+        self.fhir_valueset.compose.inactive=inactive
 
     def expand_version_on_server(self, add_display_names=False, sct_version=None):
         # return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
