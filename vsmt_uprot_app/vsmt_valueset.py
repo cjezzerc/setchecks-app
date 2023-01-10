@@ -209,14 +209,67 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
 
-    vsmt_identifier_and_version='VSMT_1004:0'
+    # vsmt_identifier_and_version='VSMT_1004:0'
+    # print("VSMT identifier and version -", vsmt_identifier_and_version)
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # print(vs.get_includes())
+    # print(vs.get_excludes())
+    # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):
+    # # for concept in vs.expand_version_on_server(add_display_names=True):
+    #     print(concept)
+
+    # n_expansion1=len(vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"))
+    # n_expansion2=len(vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20200415"))
+    # n_expansion2=len(vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20201223"))
+    # n_expansion2=len(vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/32506021000036107/version/20220930")) # AU
+
+
+    # make "energy and stmina finding" value set
+    # vs=VSMT_VersionedValueSet(title='cjc_energy_and_stamina_finding', terminology_server=terminology_server)
+    # vs.add_include(ecl_filter='<359752005')
+    # vs.store_to_server()
+    # print(vs)
+
+    # expand "energy and stamina finding" value set against two releases and compare
+    from concept_module import ConceptsDict
+
+    vsmt_identifier_and_version='VSMT_1005:0'
     print("VSMT identifier and version -", vsmt_identifier_and_version)
     vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
-    print(vs.get_includes())
-    print(vs.get_excludes())
-    # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):
-    for concept in vs.expand_version_on_server(add_display_names=True):
-        print(concept)
+    sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
+    expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
+    sct_concepts1=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version1)
+    print(len(expansion1))
+    sct_version2="http://snomed.info/sct/83821000000107/version/" + "20200805"
+
+    expansion2=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version2)
+    sct_concepts2=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version2)
+    print(len(expansion2))
+
+    for stuff in expansion1:
+        concept_id=int(stuff.split("|")[0])
+        print(sct_concepts1[concept_id])
+
+    print("==========================")
+
+    for concept in expansion1:
+        if concept not in expansion2:
+            print(concept)
+
+    print("==========================")
+
+    for concept in expansion2:
+        if concept not in expansion1:
+            print(concept)
+
+    print("==========================")
+
+
+
+
+
+
+    # https://r4.ontoserver.csiro.au/fhir/ValueSet/451fd69c-8726-46c5-bb82-4c620eff4920/$expand?system-version=http://snomed.info/sct%7Chttp://snomed.info/sct/83821000000107/version/20190807
 
     # from concept_module import ConceptsDict
     # concepts=ConceptsDict(terminology_server=terminology_server, sct_version="http://snomed.info/sct/83821000000107/version/20190807")

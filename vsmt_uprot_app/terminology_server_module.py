@@ -52,7 +52,7 @@ class TerminologyServer():
             relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
         else:
             if sct_version:
-                relative_url= "ValueSet/%s/$expand?system-version=%s" % (value_set_server_id, sct_version)
+                relative_url= "ValueSet/%s/$expand?system-version=http://snomed.info/sct|%s" % (value_set_server_id, sct_version)
             else:
                 relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
         print(relative_url)
