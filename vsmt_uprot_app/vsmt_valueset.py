@@ -99,7 +99,7 @@ class VSMT_VersionedValueSet():
             #                                                                 #
             ###################################################################
             
-            self.fhir_valueset=ValueSet(title=title, 
+            self.fhir_valueset=ValueSet(title=title,                                        
                                         publisher='VSMT-prototyping', status='draft', 
                                         identifier=[Identifier(value=vsmt_identifier)], 
                                         version=vsmt_version,
@@ -127,21 +127,53 @@ class VSMT_VersionedValueSet():
         else:
             relative_url="/ValueSet/%s" % self.fhir_valueset.id
             response=self.terminology_server.do_put(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose) # PUT to update  
-        print(response.json())
+        # print(response.json())
         self.fhir_valueset=ValueSet.parse_obj(response.json()) # reparse object to fill out id (if not already set) and update time and server version
         return(response)
 
     def add_include(self, *, ecl_filter):
-        if self.fhir_valueset.compose==None:
-            self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[])
-        self.fhir_valueset.compose.include.append(ValueSetComposeInclude(system='http://snomed.info/sct',
-                                                                         filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
+        self.add_include_or_exclude(clude_type="include", ecl_filter=ecl_filter)
 
     def add_exclude(self, *, ecl_filter):
-        if self.fhir_valueset.compose==None:
+        self.add_include_or_exclude(clude_type="exclude", ecl_filter=ecl_filter)
+     
+    def add_include_or_exclude(self, *, clude_type, ecl_filter):
+        if self.fhir_valueset.compose==None: 
             self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
-        self.fhir_valueset.compose.exclude.append(ValueSetComposeInclude(system='http://snomed.info/sct',
-                                                                         filter=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]))
+        # clude=self.fhir_valueset.compose.__dict__[clude_type]  ## WARNING !! This does not work; seems to point to different object
+        if self.fhir_valueset.compose.__dict__[clude_type] is None: # ?? sending vs to server with exlude=[] sends it back as exclude=None ??
+            self.fhir_valueset.compose.__dict__[clude_type]=[]
+        if type(ecl_filter) == list:
+            filter_list=[]
+            for sub_filter in ecl_filter:
+                filter_list.append(ValueSetComposeIncludeFilter(property='constraint', op='=', value=sub_filter))
+        else: 
+            filter_list=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]
+        self.fhir_valueset.compose.__dict__[clude_type].append(ValueSetComposeInclude(system='http://snomed.info/sct',
+                                                    filter=filter_list))
+
+    def delete_include(self, *, element_to_delete):
+        self.delete_include_or_exclude(clude_type="include", element_to_delete=element_to_delete)
+
+    def delete_exclude(self, *, element_to_delete):
+        self.delete_include_or_exclude(clude_type="exclude", element_to_delete=element_to_delete)
+
+    def delete_include_or_exclude(self, *, clude_type, element_to_delete):
+        if self.fhir_valueset.compose==None: 
+            self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
+        if self.fhir_valueset.compose.__dict__[clude_type] is None: # ?? sending vs to server with exlude=[] sends it back as exclude=None ??
+            self.fhir_valueset.compose.__dict__[clude_type]=[]
+        if len(self.fhir_valueset.compose.__dict__[clude_type])>element_to_delete:
+            del self.fhir_valueset.compose.__dict__[clude_type][element_to_delete]
+
+
+    def set_inactive_flag(self, *, inactive): # this appears only to be safe once sure have a compose statement with one include in it
+                                              # otherwise server will compain when try to store it
+                                              # Perhaps should add some tests to store_on_server 
+        if self.fhir_valueset.compose==None:
+            print("ERROR: Cannot set compose,inactive until have a compose with at least one include statement in it, or server complains")
+            sys.exit()
+        self.fhir_valueset.compose.inactive=inactive
 
     def get_includes(self):
         return self.get_includes_or_excludes(clude_type="include")
@@ -153,12 +185,13 @@ class VSMT_VersionedValueSet():
         if self.fhir_valueset.compose==None:
             self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
         cludes=[]
-        for clude in self.fhir_valueset.compose.__dict__[clude_type]: # clude_type is either include or exclude
-            filters=[]
-            for filter in clude.filter:
-                # print(filter)
-                filters.append(filter.value)
-            cludes.append(filters)
+        if self.fhir_valueset.compose.__dict__[clude_type] is not None: #fhir.resource stores empty exclude list as None 
+            for clude in self.fhir_valueset.compose.__dict__[clude_type]: # clude_type is either include or exclude
+                filters=[]
+                for filter in clude.filter:
+                    # print(filter)
+                    filters.append(filter.value)
+                cludes.append(filters)
         return cludes
 
     def expand_version_on_server(self, add_display_names=False, sct_version=None):
@@ -209,11 +242,21 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
 
-    # vsmt_identifier_and_version='VSMT_1004:0'
-    # print("VSMT identifier and version -", vsmt_identifier_and_version)
-    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    vsmt_identifier_and_version='VSMT_1005:0'
+    print("VSMT identifier and version -", vsmt_identifier_and_version)
+    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    vs.add_include(ecl_filter=['HELLO IN','ALSO IN'])
+    vs.add_exclude(ecl_filter='HELLO OUT')
     # print(vs.get_includes())
     # print(vs.get_excludes())
+    # vs.delete_include(element_to_delete=3)
+    # vs.delete_exclude(element_to_delete=0)
+    # print(vs.get_includes())
+    # print(vs.get_excludes())
+    # vs.store_to_server()
+    print(vs)
+
+    # print(vs)
     # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):
     # # for concept in vs.expand_version_on_server(add_display_names=True):
     #     print(concept)
@@ -224,49 +267,62 @@ if __name__=="__main__":
     # n_expansion2=len(vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/32506021000036107/version/20220930")) # AU
 
 
-    # make "energy and stmina finding" value set
-    # vs=VSMT_VersionedValueSet(title='cjc_energy_and_stamina_finding', terminology_server=terminology_server)
+    # make "energy and stmina finding including inactives" value set
+    # vs=VSMT_VersionedValueSet(title='cjc_energy_and_stamina_finding_including_inactives', terminology_server=terminology_server)
     # vs.add_include(ecl_filter='<359752005')
+    # vs.set_inactive_flag(inactive=True)
     # vs.store_to_server()
     # print(vs)
+    # sys.exit()
 
-    # expand "energy and stamina finding" value set against two releases and compare
-    from concept_module import ConceptsDict
+    # ###################################################################################
+    # # expand "energy and stamina finding" value set against two releases and compare
+    # ###################################################################################
+    # from concept_module import ConceptsDict
+    # vsmt_identifier_and_version='VSMT_1005:0'
+    # print("VSMT identifier and version -", vsmt_identifier_and_version)
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # print(vs)
+    # # vs.set_inactive_flag(inactive=False)
+    # # vs.add_include(ecl_filter="272062008")
+    # # vs.add_include(ecl_filter="<123456789")
+    # # vs.store_to_server()
 
-    vsmt_identifier_and_version='VSMT_1005:0'
-    print("VSMT identifier and version -", vsmt_identifier_and_version)
-    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
-    sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
-    expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
-    sct_concepts1=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version1)
-    print(len(expansion1))
-    sct_version2="http://snomed.info/sct/83821000000107/version/" + "20200805"
+    # sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
+    # expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
+    # sct_concepts1=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version1)
+    # print(len(expansion1))
+    # sct_version2="http://snomed.info/sct/83821000000107/version/" + "20200805"
 
-    expansion2=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version2)
-    sct_concepts2=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version2)
-    print(len(expansion2))
+    # expansion2=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version2)
+    # sct_concepts2=ConceptsDict(terminology_server=terminology_server, sct_version=sct_version2)
+    # print(len(expansion2))
+    # print("==========================")
 
-    for stuff in expansion1:
-        concept_id=int(stuff.split("|")[0])
-        print(sct_concepts1[concept_id])
+    # print(sct_concepts1[272060000])
+    # print("==========================")
 
-    print("==========================")
+    # print(sct_concepts2[272060000])
+    # # for stuff in expansion1:
+    # #     concept_id=int(stuff.split("|")[0])
+    # #     print(sct_concepts1[concept_id])
 
-    for concept in expansion1:
-        if concept not in expansion2:
-            print(concept)
+    # print("==========================")
 
-    print("==========================")
+    # for concept in expansion1:
+    #     if concept not in expansion2:
+    #         concept_id=int(concept.split("|")[0])
+    #         print(concept, sct_concepts1[concept_id].active, sct_concepts2[concept_id].active)
 
-    for concept in expansion2:
-        if concept not in expansion1:
-            print(concept)
+    # print("==========================")
 
-    print("==========================")
+    # for concept in expansion2:
+    #     if concept not in expansion1:
+    #         print(concept)
 
+    # print("==========================")
 
-
-
+    ##################################################################################
 
 
     # https://r4.ontoserver.csiro.au/fhir/ValueSet/451fd69c-8726-46c5-bb82-4c620eff4920/$expand?system-version=http://snomed.info/sct%7Chttp://snomed.info/sct/83821000000107/version/20190807

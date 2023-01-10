@@ -15,7 +15,6 @@ class Concept():
         if concept_fhir_parameters:
 
             ca=fhir_snomed_utils.parse_parameters_resource_from_snomed_concept_lookup(parameters=concept_fhir_parameters)
-            
             self.concept_id=ca['code'] # try to avoid using bare "id" as is a built in function
             self.concepts=concepts
             self.system=ca['system']
@@ -36,8 +35,9 @@ class Concept():
                 self.role_groups=ca['609096000']
             else:
                 self.role_groups=[]
-            self.normal_form=ca['normalForm']
-            self.normal_form_terse=ca['normalFormTerse']
+            
+            self.normal_form=ca.get('normalForm','N/A') # ? not available if inactive?
+            self.normal_form_terse=ca.get('normalFormTerse','N/A')
             self.ancestors="fetched_on_demand" 
             self.descendants="fetched on demand" 
             # still need to decide best way to handle the non is-a relationships; two lines below refer back to how did it with the "all in memory" solution
