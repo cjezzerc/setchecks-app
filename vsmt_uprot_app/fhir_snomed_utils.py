@@ -22,7 +22,10 @@ def parse_parameters_resource_from_snomed_concept_lookup(parameters=None):
                 if k not in concept_attributes:
                     concept_attributes[k]=[] # as do not know a priori how many entries may be seen for a particular 'property'
                                             # then initialise all as lists
-                concept_attributes[k].append(v)
+                if type(v) is not list:
+                    concept_attributes[k].append(int(v))
+                else:
+                    concept_attributes[k].append(v) # still need to deal with fact that these sublists contain strings
             else:
                 assert k not in concept_attributes # these keys should only occur once
                 concept_attributes[k]=v

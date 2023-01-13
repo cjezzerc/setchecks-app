@@ -13,7 +13,7 @@
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-8 ">
+        <div class="col-4 ">
             <div class="card" style="height: 80vh" >
                 <div class="card-header">
                     <strong>VSMT ValueSets on server</strong>
@@ -22,8 +22,20 @@
                     <ul class="list-group">
                         {% for index_key in vsmt_index %}
                         <li class="list-group-item">
-                            {{index_key}} : {{vsmt_index[index_key]}}
+                            {% set i_vs=loop.index0 %}
+                            {% set button_state="btn-outline-secondary" %}
+                            {% set formatted_name=index_key + ":" + vsmt_index[index_key].vsmt_human_name %}
+                            
+                            {% if index_key==current_index_key %}
+                                {% set button_state="btn-primary" %}
+                                {% set formatted_name="<b>" + formatted_name + "</b>" %}
+                            {% endif %}
+
+                        <a href={{ url_for("vsmt_uprot_app.vsmt_index") + "?vs_enum=" + (i_vs|string) }} class="btn btn-sm {{ button_state }}"> 
+                        {{ formatted_name|safe }} 
+                        </a>
                         </li>
+                      
                         {% endfor %}
                     </ul> 
                 </div>
@@ -34,13 +46,13 @@
         {#                  #}
         {# RIGHT HAND PANEL #}
         {#                  #}
-        <div class="col-4 ">
+        <div class="col-8 ">
             <div class="card" style="height: 80vh" >
                 <div class="card-header">
                     <strong>Value set info</strong> 
                 </div>  
                 <div class="panel" style="overflow:auto">
-                
+                "CURRENT:" {{vsmt_index[current_index_key]}} 
                 </div>
             </div>
         </div>        

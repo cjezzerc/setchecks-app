@@ -72,15 +72,46 @@ def ecl_explorer():
 @bp.route('/vsmt_index', methods=['GET'])
 def vsmt_index():
 
+    print(request.args)
+
+    ######################################
+    # Determine current_vs_enum either   #
+    # i) as in URL                       # 
+    # ii) as currently set in cookie     #
+    # iii) otherwise default to 0        # 
+    ######################################
+    
+    print("REQUEST:",request.args)
+
+    if "vs_enum" in request.args:
+        requested_vs_enum=int(request.args["vs_enum"])
+    else:
+        requested_vs_enum=None
+
+    if requested_vs_enum is not None: # use requested id if it specified in URL
+        current_vs_enum=requested_vs_enum
+    else:
+        if 'current_vs_enum' in session.keys(): # otherwise if current id already stored in session cookie use that 
+            current_vs_enum=session['current_vs_enum']
+        else:
+            current_vs_enum=0 # otherwise default to 0
+    
+    session['current_vs_enum']=current_vs_enum
+    session.modified=True
+
     terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
     value_set_manager=vsmt_uprot_app.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
+
+    current_index_key=list(vsmt_index.keys())[current_vs_enum]
+    print(current_vs_enum, current_index_key)
     
-    for k, v in vsmt_index.items():
-        print("%15s - %s" % (k,v))
+    # for k, v in vsmt_index.items():
+    #     print("%15s - %s" % (k,v))
     
     return render_template('vsmt_index.html',
                             vsmt_index=vsmt_index,
+                            current_index_key=current_index_key,
                             )
 
 

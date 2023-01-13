@@ -66,7 +66,7 @@ class TerminologyServer():
                     if add_display_names:
                         ecl_response.append("%20s | %s |" % (contained_item.code, contained_item.display))
                     else:
-                        ecl_response.append(contained_item.code) 
+                        ecl_response.append(int(contained_item.code)) # trial addition12 jan22 
             return ecl_response
         else:
             return None
