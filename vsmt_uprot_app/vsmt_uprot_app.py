@@ -106,12 +106,15 @@ def vsmt_index():
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
     
-    # for k, v in vsmt_index.items():
-    #     print("%15s - %s" % (k,v))
+    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+    includes=vs.get_includes()
+    excludes=vs.get_excludes()
     
     return render_template('vsmt_index.html',
                             vsmt_index=vsmt_index,
                             current_index_key=current_index_key,
+                            includes=includes,
+                            excludes=excludes,
                             )
 
 

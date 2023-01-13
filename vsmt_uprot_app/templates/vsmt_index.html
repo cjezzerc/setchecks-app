@@ -49,10 +49,34 @@
         <div class="col-8 ">
             <div class="card" style="height: 80vh" >
                 <div class="card-header">
-                    <strong>Value set info</strong> 
+                    <strong> {{current_index_key}} : {{vsmt_index[current_index_key].vsmt_human_name}}</strong> 
                 </div>  
                 <div class="panel" style="overflow:auto">
-                "CURRENT:" {{vsmt_index[current_index_key]}} 
+                <p> (server_id: {{vsmt_index[current_index_key].server_id}} server_vsn: {{vsmt_index[current_index_key].server_vsn}} ) </p>
+
+
+                <div> 
+                    <p>INCLUDE CLAUSES:</p>               
+                    <ul>
+                        {% for include in includes %}
+                        <li>
+                            {{ include }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div> 
+                    <p>EXCLUDE CLAUSES:</p>               
+                    <ul>
+                        {% for exclude in excludes %}
+                        <li>
+                            {{ exclude }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
                 </div>
             </div>
         </div>        
