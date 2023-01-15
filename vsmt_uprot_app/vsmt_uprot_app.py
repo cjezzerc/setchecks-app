@@ -150,3 +150,47 @@ def expansion():
                             vs=vs,
                             expansion=expansion,
                             )
+
+#####################################
+#####################################
+##     diff endpoint               ##
+#####################################
+#####################################
+
+
+@bp.route('/diff', methods=['GET'])
+def diff():
+
+    current_index_key=session['current_index_key']
+    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+
+    sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
+    expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
+    
+    sct_version2="http://snomed.info/sct/83821000000107/version/" + "20200805"
+    expansion2=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version2)
+
+    only_in_1=[]
+    in_both=[]
+    for concept in expansion1:
+        if concept not in expansion2:
+            only_in_1.append(concept)
+        else:
+            in_both.append(concept)
+    
+    only_in_2=[]
+    for concept in expansion2:
+        if concept not in expansion1:
+            only_in_2.append(concept)
+
+    print("==>", len(only_in_1), len(only_in_2))
+
+    return render_template('vsmt_diff.html',
+                            vs=vs,
+                            sct_version1=sct_version1,
+                            sct_version2=sct_version2,
+                            in_both=in_both,
+                            only_in_1=only_in_1,
+                            only_in_2=only_in_2
+,                            )

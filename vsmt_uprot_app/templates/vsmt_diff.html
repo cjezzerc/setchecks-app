@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}VSMT_uprot_app{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+        {#                  #}
+        {# TOP BLOCK #}
+        {#                  #}
+        <div class="col-12 ">
+            <div class="card" style="height: 20vh" >
+                <div class="card-header">
+                    <strong> {{vs.get_vsmt_identifier_and_version()}} : {{vs.get_vsmt_human_name()}} </strong> 
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <p> sct_version1 {{sct_version1}} </p>
+                    <p> sct_version2 {{sct_version2}} </p>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+
+
+    <div class="row">    
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-4 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong> In both</strong> 
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <ul class="list-group">
+                        {% for concept_id_and_display in in_both %}
+                        <li class="list-group-item">
+                           {{ concept_id_and_display | safe }}
+                        </li>
+                        {% endfor %}
+                    </ul> 
+                </div>
+            </div>
+           
+        </div>
+
+        {#                  #}
+        {# MIDDLE PANEL #}
+        {#                  #}
+        <div class="col-4 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong> Only in sct_version2</strong> 
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <ul class="list-group">
+                        {% for concept_id_and_display in only_in_1 %}
+                        <li class="list-group-item">
+                           {{ concept_id_and_display | safe }}
+                        </li>
+                        {% endfor %}
+                    </ul> 
+                </div>
+            </div>
+           
+        </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
+        <div class="col-4 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong> Only in sct_version2 </strong> 
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <ul class="list-group">
+                        {% for concept_id_and_display in only_in_2 %}
+                        <li class="list-group-item">
+                           {{ concept_id_and_display | safe }}
+                        </li>
+                        {% endfor %}
+                    </ul> 
+                </div>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+  
+{% endblock %}
