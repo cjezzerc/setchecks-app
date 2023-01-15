@@ -120,6 +120,15 @@ class VSMT_VersionedValueSet():
         except:
             return None
 
+    def get_vsmt_identifier_and_version(self):
+        if self.get_vsmt_identifier() and self.get_vsmt_version():
+            return(self.get_vsmt_identifier()+":"+self.get_vsmt_version())
+        else:
+            return None
+
+    def get_vsmt_human_name(self):
+        return self.fhir_valueset.title
+
     def store_to_server(self, verbose=False):
         if self.fhir_valueset.id==None:  
             relative_url="/ValueSet" 

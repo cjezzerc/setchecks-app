@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}VSMT_uprot_app{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-8 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                    <strong> {{vs.get_vsmt_identifier_and_version()}} : {{vs.get_vsmt_human_name()}}</strong> 
+                </div>                
+                <div class="panel" style="overflow:auto">
+                    <ul class="list-group">
+                        {% for concept_id_and_display in expansion %}
+                        <li class="list-group-item">
+                           {{ concept_id_and_display | safe }}
+                        </li>
+                        {% endfor %}
+                    </ul> 
+                </div>
+            </div>
+           
+        </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
+        <div class="col-4 ">
+            <div class="card" style="height: 80vh" >
+                <div class="card-header">
+                   for other stuff
+                </div>  
+                <div class="panel" style="overflow:auto">
+              
+
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+
+  
+{% endblock %}

@@ -42,7 +42,7 @@ def health_check():
 
 #####################################
 #####################################
-##     simple endpoint             ##
+##     ecl explorer endpoint       ##
 #####################################
 #####################################
 
@@ -68,6 +68,13 @@ def ecl_explorer():
                             ecl_response=ecl_response,
                             ecl_store=ecl_store
                             )
+
+#####################################
+#####################################
+##     vsmt index endpoint         ##
+#####################################
+#####################################
+
 
 @bp.route('/vsmt_index', methods=['GET'])
 def vsmt_index():
@@ -105,7 +112,10 @@ def vsmt_index():
 
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
-    
+
+    session['current_index_key']=current_index_key
+    session.modified=True
+
     vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
     includes=vs.get_includes()
     excludes=vs.get_excludes()
@@ -118,3 +128,25 @@ def vsmt_index():
                             )
 
 
+#####################################
+#####################################
+##     expansion endpoint          ##
+#####################################
+#####################################
+
+
+@bp.route('/expansion', methods=['GET'])
+def expansion():
+
+    current_index_key=session['current_index_key']
+    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+
+    sct_version="http://snomed.info/sct/83821000000107/version/" + "20200415"
+    expansion=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version)
+
+    print("==>", vs.get_vsmt_identifier_and_version())
+    return render_template('vsmt_expansion.html',
+                            vs=vs,
+                            expansion=expansion,
+                            )
