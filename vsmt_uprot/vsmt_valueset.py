@@ -10,8 +10,20 @@ from fhir.resources.extension import Extension
 from fhir.resources.bundle import Bundle
 from fhir.resources.identifier import Identifier
 
-import vsmt_uprot_app.fhir_utils
-import vsmt_uprot_app.terminology_server_module
+
+import vsmt_uprot.fhir_utils
+import vsmt_uprot.terminology_server_module
+
+######################################################################################
+# NB to run code standalone from the __main__ part                                   #
+# seem to need to go up a folder and execute:                                        #
+#  python -m vsmt_uprot.vsmt_valueset                                                #
+#                                                                                    #
+# see e.g. https://gideonbrimleaf.github.io/2021/01/26/relative-imports-python.html  #
+#                                                                                    # 
+# otherwise fall foul of the arcane package path rules                               #
+#                                                                                    #
+######################################################################################
 
 ####################################################################
 # Classes to get info about all available VSMT_ValueSets on server #
@@ -41,6 +53,13 @@ class VSMT_ValueSetManager():
             else:
                 vsmt_index[index_item.identifier_and_version]=index_item
         return vsmt_index
+
+    def allocate_new_vsmt_identifier(self):
+        # this would be susceptible to race condition so need to revisit at some stage
+        vsmt_index=self.get_vsmt_index_data()
+        used_identifiers=[int(vii.vsmt_identifier.split("_")[1]) for vii in vsmt_index.values()]
+        vsmt_identifier="VSMT_"+str(sorted(used_identifiers)[-1]+1)
+        return vsmt_identifier
 
 class VSMT_IndexItem():
 
@@ -85,20 +104,12 @@ class VSMT_VersionedValueSet():
             self.fhir_valueset=ValueSet.parse_obj(valueset_json_as_dict)
 
         if title: # create a new empty ValueSet and initialise a VSMT_VersionValueSet to hold it, and store to server
-            self.terminology_server=terminology_server
-            ###################################################################
-            # Quick and dirty method to find next VSMT_???? identifier to use #
-            #                                                                 #
-            value_set_manager=VSMT_ValueSetManager(terminology_server=terminology_server)
-            vsmt_index=value_set_manager.get_vsmt_index_data()
-            used_identifiers=[int(vii.vsmt_identifier.split("_")[1]) for vii in vsmt_index.values()]
-            print(used_identifiers)
-            vsmt_identifier="VSMT_"+str(sorted(used_identifiers)[-1]+1)
-            vsmt_version=0
-            print("New identifier:", vsmt_identifier)
-            #                                                                 #
-            ###################################################################
             
+            self.terminology_server=terminology_server                                             #
+            value_set_manager=VSMT_ValueSetManager(terminology_server=self.terminology_server)
+            vsmt_identifier=value_set_manager.allocate_new_vsmt_identifier()
+            vsmt_version=0
+            # print("New identifier:", vsmt_identifier)
             self.fhir_valueset=ValueSet(title=title,                                        
                                         publisher='VSMT-prototyping', status='draft', 
                                         identifier=[Identifier(value=vsmt_identifier)], 
@@ -107,18 +118,33 @@ class VSMT_VersionedValueSet():
                                         )
             if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
                 self.store_to_server()
-            
+    
     def get_vsmt_identifier(self):
         try:
             return self.fhir_valueset.identifier[0].value
         except:
             return None
 
+    def set_new_vsmt_identifier(self, *, new_title, save_to_server=True): # this routine requires the caller to provide a (hopefully sensible) new title 
+        self.fhir_valueset.title=new_title
+        value_set_manager=VSMT_ValueSetManager(terminology_server=self.terminology_server)
+        self.fhir_valueset.identifier[0].value=value_set_manager.allocate_new_vsmt_identifier()
+        self.fhir_valueset.version=0
+        self.fhir_valueset.id=None # force server to store new version with new server_id
+        if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
+            self.store_to_server()
+        
     def get_vsmt_version(self):
         try:
             return self.fhir_valueset.version
         except:
             return None
+
+    def set_new_vsmt_version(self, *, new_vsmt_version, save_to_server=True): # this routine leaves it to the caller to decide a sensible new version string 
+        self.fhir_valueset.version=new_vsmt_version
+        self.fhir_valueset.id=None # force server to store new version with new server_id
+        if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
+            self.store_to_server()
 
     def get_vsmt_identifier_and_version(self):
         if self.get_vsmt_identifier() and self.get_vsmt_version():
@@ -218,7 +244,7 @@ class VSMT_VersionedValueSet():
 
 if __name__=="__main__":
 
-    terminology_server=terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
     
     ### get basic index data on all VSMT value sets on server
     value_set_manager=VSMT_ValueSetManager(terminology_server=terminology_server)
@@ -253,11 +279,11 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
 
-    vsmt_identifier_and_version='VSMT_1005:0'
-    print("VSMT identifier and version -", vsmt_identifier_and_version)
-    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
-    vs.add_include(ecl_filter=['HELLO IN','ALSO IN'])
-    vs.add_exclude(ecl_filter='HELLO OUT')
+    # vsmt_identifier_and_version='VSMT_1005:0'
+    # print("VSMT identifier and version -", vsmt_identifier_and_version)
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # vs.add_include(ecl_filter=['HELLO IN','ALSO IN'])
+    # vs.add_exclude(ecl_filter='HELLO OUT')
     # print(vs.get_includes())
     # print(vs.get_excludes())
     # vs.delete_include(element_to_delete=3)
@@ -265,7 +291,23 @@ if __name__=="__main__":
     # print(vs.get_includes())
     # print(vs.get_excludes())
     # vs.store_to_server()
-    print(vs)
+    # print(vs)
+
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, title='test identifier allocation')
+
+
+    # vsmt_identifier_and_version='VSMT_1005:0'
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # print(vs.fhir_valueset.id)
+    # vs.add_exclude(ecl_filter='<<1111111111111')
+    # vs.set_new_vsmt_version(new_vsmt_version=1)
+    # print(vs.fhir_valueset.id)
+
+    vsmt_identifier_and_version='VSMT_1005:0'
+    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    print(vs.fhir_valueset.id)
+    vs.set_new_vsmt_identifier(new_title="A copy of 1005:0")
+    print(vs.fhir_valueset.id)
 
     # print(vs)
     # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):

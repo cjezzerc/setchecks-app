@@ -7,10 +7,10 @@ import pprint
 import time
 
 from fhir.resources.valueset import ValueSet
-import vsmt_uprot_app.fhir_utils
+import vsmt_uprot.fhir_utils
 
-import vsmt_uprot_app.terminology_server_module
-import vsmt_uprot_app.vsmt_valueset
+import vsmt_uprot.terminology_server_module
+import vsmt_uprot.vsmt_valueset
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
@@ -26,7 +26,7 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 # quick and dirty storage for the ecl expansions between endpoint calls
 expansion_store={}
 ecl_store=[]
-terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
 sct_version="http://snomed.info/sct/83821000000107/version/20190807"
 
 
@@ -106,8 +106,8 @@ def vsmt_index():
     session['current_vs_enum']=current_vs_enum
     session.modified=True
 
-    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
-    value_set_manager=vsmt_uprot_app.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    value_set_manager=vsmt_uprot.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
 
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
@@ -116,7 +116,7 @@ def vsmt_index():
     session['current_index_key']=current_index_key
     session.modified=True
 
-    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+    vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
     includes=vs.get_includes()
     excludes=vs.get_excludes()
     
@@ -139,8 +139,8 @@ def vsmt_index():
 def expansion():
 
     current_index_key=session['current_index_key']
-    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
-    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
     sct_version="http://snomed.info/sct/83821000000107/version/" + "20200415"
     expansion=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version)
@@ -162,8 +162,8 @@ def expansion():
 def diff():
 
     current_index_key=session['current_index_key']
-    terminology_server=vsmt_uprot_app.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
-    vs=vsmt_uprot_app.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
     sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
     expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
