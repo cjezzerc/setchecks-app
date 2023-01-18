@@ -4,6 +4,7 @@ import sys, json, random, datetime
 
 import requests
 import sys
+import datetime
 
 from fhir.resources.valueset import ValueSet, ValueSetCompose, ValueSetComposeInclude, ValueSetComposeIncludeFilter, ValueSetComposeIncludeConcept
 from fhir.resources.extension import Extension
@@ -125,7 +126,7 @@ class VSMT_VersionedValueSet():
         except:
             return None
 
-    def set_new_vsmt_identifier(self, *, new_title, save_to_server=True): # this routine requires the caller to provide a (hopefully sensible) new title 
+    def set_and_store_with_new_vsmt_identifier(self, *, new_title, save_to_server=True): # this routine requires the caller to provide a (hopefully sensible) new title 
         self.fhir_valueset.title=new_title
         value_set_manager=VSMT_ValueSetManager(terminology_server=self.terminology_server)
         self.fhir_valueset.identifier[0].value=value_set_manager.allocate_new_vsmt_identifier()
@@ -140,7 +141,7 @@ class VSMT_VersionedValueSet():
         except:
             return None
 
-    def set_new_vsmt_version(self, *, new_vsmt_version, save_to_server=True): # this routine leaves it to the caller to decide a sensible new version string 
+    def set_and_store_with_new_vsmt_version(self, *, new_vsmt_version, save_to_server=True): # this routine leaves it to the caller to decide a sensible new version string 
         self.fhir_valueset.version=new_vsmt_version
         self.fhir_valueset.id=None # force server to store new version with new server_id
         if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
@@ -165,6 +166,32 @@ class VSMT_VersionedValueSet():
         # print(response.json())
         self.fhir_valueset=ValueSet.parse_obj(response.json()) # reparse object to fill out id (if not already set) and update time and server version
         return(response)
+
+    def delete_from_server(self, verbose=False): # NB this is irretrievable
+        relative_url="/ValueSet/%s" % self.fhir_valueset.id
+        response=self.terminology_server.do_delete(relative_url, verbose=verbose)   
+
+    def annotate_top_level(self, *, annotation_text):
+        datestamp=str(datetime.datetime.now())
+        if self.fhir_valueset.extension is None:
+            self.fhir_valueset.extension=[]
+        self.fhir_valueset.extension.append(
+                                            Extension(  url="http://cjc_vsmt/annotation_item",
+                                                        extension = [                   
+                                                            Extension(url="action", valueString = annotation_text), 
+                                                            Extension(url="date",   valueString = datestamp ),
+                                                            ]    
+                                                        )
+                                            )
+
+    def get_top_level_annotation(self):
+        if self.fhir_valueset.extension is not None:
+            annotations=[]
+            for extension in self.fhir_valueset.extension:
+                annotations.append([ext.valueString for ext in extension.extension])
+        else:
+            annotations=[]
+        return annotations
 
     def add_include(self, *, ecl_filter):
         self.add_include_or_exclude(clude_type="include", ecl_filter=ecl_filter)
@@ -198,9 +225,28 @@ class VSMT_VersionedValueSet():
             self.fhir_valueset.compose=ValueSetCompose(include=[], exclude=[]) 
         if self.fhir_valueset.compose.__dict__[clude_type] is None: # ?? sending vs to server with exlude=[] sends it back as exclude=None ??
             self.fhir_valueset.compose.__dict__[clude_type]=[]
-        if len(self.fhir_valueset.compose.__dict__[clude_type])>element_to_delete:
+        if len(self.fhir_valueset.compose.__dict__[clude_type])>element_to_delete: # error check removed as need to decide how to react
             del self.fhir_valueset.compose.__dict__[clude_type][element_to_delete]
 
+    def annotate_include(self, *, element_to_annotate, annotation_text):
+        self.annotate_include_or_exclude(clude_type="include", element_to_annotate=element_to_annotate, annotation_text=annotation_text)
+
+    def annotate_exclude(self, *, element_to_annotate, annotation_text):
+        self.annotate_include_or_exclude(clude_type="exclude", element_to_annotate=element_to_annotate, annotation_text=annotation_text)
+
+    def annotate_include_or_exclude(self, *, clude_type, element_to_annotate, annotation_text):
+        datestamp=str(datetime.datetime.now())
+        if self.fhir_valueset.compose.__dict__[clude_type][element_to_annotate].extension is None:
+            self.fhir_valueset.compose.__dict__[clude_type][element_to_annotate].extension=[]
+        self.fhir_valueset.compose.__dict__[clude_type][element_to_annotate].extension.append(
+                                            Extension(  url="http://cjc_vsmt/annotation_item",
+                                                        extension = [                   
+                                                            Extension(url="action", valueString = annotation_text), 
+                                                            Extension(url="date",   valueString = datestamp ),
+                                                            ]    
+                                                        )
+                                            )   
+                        
     def get_includes(self):
         return self.get_includes_or_excludes(clude_type="include")
 
@@ -213,11 +259,17 @@ class VSMT_VersionedValueSet():
         cludes=[]
         if self.fhir_valueset.compose.__dict__[clude_type] is not None: #fhir.resource stores empty exclude list as None 
             for clude in self.fhir_valueset.compose.__dict__[clude_type]: # clude_type is either include or exclude
+                if clude.extension is not None:
+                    annotations=[]
+                    for extension in clude.extension:
+                        annotations.append([ext.valueString for ext in extension.extension])
+                else:
+                    annotations=[]
                 filters=[]
                 for filter in clude.filter:
                     # print(filter)
                     filters.append(filter.value)
-                cludes.append(filters)
+                cludes.append((annotations, filters))
         return cludes
 
     
@@ -236,7 +288,7 @@ class VSMT_VersionedValueSet():
         return self.terminology_server.do_expand(value_set_server_id=self.fhir_valueset.id, add_display_names=add_display_names, sct_version=sct_version)
 
     def __str__(self):
-        return "\n".join(fhir_utils.repr_resource(self.fhir_valueset))
+        return "\n".join(vsmt_uprot.fhir_utils.repr_resource(self.fhir_valueset))
 
 ####################################
 # code checking during deveeloment #
@@ -303,11 +355,32 @@ if __name__=="__main__":
     # vs.set_new_vsmt_version(new_vsmt_version=1)
     # print(vs.fhir_valueset.id)
 
-    vsmt_identifier_and_version='VSMT_1005:0'
-    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
-    print(vs.fhir_valueset.id)
-    vs.set_new_vsmt_identifier(new_title="A copy of 1005:0")
-    print(vs.fhir_valueset.id)
+    # "copy" example
+    # vsmt_identifier_and_version='VSMT_1004:0'
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # print(vs.fhir_valueset.id)
+    # vs.set_and_store_with_new_vsmt_identifier(new_title="A copy of 1004:0")
+    # print(vs.fhir_valueset.id)
+
+    # "annotate include" example
+    # vsmt_identifier_and_version='VSMT_1011:0'
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # vs.annotate_include(element_to_annotate=1, annotation_text='my first annotation')
+    # print(vs.get_includes())
+    # vs.store_to_server()
+
+    # "annotate top level" example
+    # vsmt_identifier_and_version='VSMT_1011:0'
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # vs.annotate_top_level(annotation_text='This is a trial value set that has some annotations')
+    # print(vs.get_top_level_annotation())
+    # vs.store_to_server()
+
+    # "delete" example
+    # vsmt_identifier_and_version='VSMT_1009:0'
+    # vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    # print(vs.fhir_valueset.id)
+    # vs.delete_from_server(verbose=True)
 
     # print(vs)
     # for concept in vs.expand_version_on_server(add_display_names=True, sct_version="http://snomed.info/sct/83821000000107/version/20190807"):

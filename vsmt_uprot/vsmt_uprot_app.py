@@ -119,12 +119,14 @@ def vsmt_index():
     vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
     includes=vs.get_includes()
     excludes=vs.get_excludes()
+    top_level_annotation=vs.get_top_level_annotation()
     
     return render_template('vsmt_index.html',
                             vsmt_index=vsmt_index,
                             current_index_key=current_index_key,
                             includes=includes,
                             excludes=excludes,
+                            top_level_annotation=top_level_annotation,
                             )
 
 

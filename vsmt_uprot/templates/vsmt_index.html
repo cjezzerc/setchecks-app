@@ -19,6 +19,7 @@
                     <strong>VSMT ValueSets on server</strong>
                 </div>                
                 <div class="panel" style="overflow:auto">
+                   
                     <ul class="list-group">
                         {% for index_key in vsmt_index %}
                         <li class="list-group-item">
@@ -50,10 +51,14 @@
             <div class="card" style="height: 80vh" >
                 <div class="card-header">
                     <strong> {{current_index_key}} : {{vsmt_index[current_index_key].vsmt_human_name}}</strong> 
+                    <small> (server_id: {{vsmt_index[current_index_key].server_id}} server_vsn: {{vsmt_index[current_index_key].server_vsn}}) </small>
                 </div>  
                 <div class="panel" style="overflow:auto">
-                <p> (server_id: {{vsmt_index[current_index_key].server_id}} server_vsn: {{vsmt_index[current_index_key].server_vsn}} ) </p>
 
+                <p>TOP LEVEL METADATA:</p>    
+                {% for annotation, date in top_level_annotation %}
+                    <p> {{annotation}} ({{date}})</p>
+                {% endfor %} 
 
                 <div> 
                     <p>INCLUDE CLAUSES:</p>               
