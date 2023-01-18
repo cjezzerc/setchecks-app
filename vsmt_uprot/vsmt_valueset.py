@@ -103,6 +103,7 @@ class VSMT_VersionedValueSet():
             response=terminology_server.do_get(relative_url=relative_url)
             valueset_json_as_dict=response.json()
             self.fhir_valueset=ValueSet.parse_obj(valueset_json_as_dict)
+            self.changed_since_fetched_from_server=False
 
         if title: # create a new empty ValueSet and initialise a VSMT_VersionValueSet to hold it, and store to server
             
@@ -117,6 +118,7 @@ class VSMT_VersionedValueSet():
                                         version=vsmt_version,
                                         url='http:vsmt_prototyping/'+vsmt_identifier+'/'+str(vsmt_version)
                                         )
+            self.changed_since_fetched_from_server=True # in this case indicates is new and has never veen saved yet, this will be cleared if call store_to_server
             if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
                 self.store_to_server()
     
@@ -132,6 +134,7 @@ class VSMT_VersionedValueSet():
         self.fhir_valueset.identifier[0].value=value_set_manager.allocate_new_vsmt_identifier()
         self.fhir_valueset.version=0
         self.fhir_valueset.id=None # force server to store new version with new server_id
+        self.changed_since_fetched_from_server=True # this will be cleared if call store_to_server
         if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
             self.store_to_server()
         
@@ -144,6 +147,7 @@ class VSMT_VersionedValueSet():
     def set_and_store_with_new_vsmt_version(self, *, new_vsmt_version, save_to_server=True): # this routine leaves it to the caller to decide a sensible new version string 
         self.fhir_valueset.version=new_vsmt_version
         self.fhir_valueset.id=None # force server to store new version with new server_id
+        self.changed_since_fetched_from_server=True # this will be cleared if call store_to_server
         if save_to_server: # only override this to avoid proliferation of test valuesets that do not want to save to server
             self.store_to_server()
 
@@ -165,6 +169,7 @@ class VSMT_VersionedValueSet():
             response=self.terminology_server.do_put(relative_url, json=json.loads(self.fhir_valueset.json()), verbose=verbose) # PUT to update  
         # print(response.json())
         self.fhir_valueset=ValueSet.parse_obj(response.json()) # reparse object to fill out id (if not already set) and update time and server version
+        self.changed_since_fetched_from_server=False # this is the key clearance of this flag
         return(response)
 
     def delete_from_server(self, verbose=False): # NB this is irretrievable
@@ -183,6 +188,7 @@ class VSMT_VersionedValueSet():
                                                             ]    
                                                         )
                                             )
+        self.changed_since_fetched_from_server=True 
 
     def get_top_level_annotation(self):
         if self.fhir_valueset.extension is not None:
@@ -213,6 +219,7 @@ class VSMT_VersionedValueSet():
             filter_list=[ValueSetComposeIncludeFilter(property='constraint', op='=', value=ecl_filter)]
         self.fhir_valueset.compose.__dict__[clude_type].append(ValueSetComposeInclude(system='http://snomed.info/sct',
                                                     filter=filter_list))
+        self.changed_since_fetched_from_server=True 
 
     def delete_include(self, *, element_to_delete):
         self.delete_include_or_exclude(clude_type="include", element_to_delete=element_to_delete)
@@ -227,6 +234,7 @@ class VSMT_VersionedValueSet():
             self.fhir_valueset.compose.__dict__[clude_type]=[]
         if len(self.fhir_valueset.compose.__dict__[clude_type])>element_to_delete: # error check removed as need to decide how to react
             del self.fhir_valueset.compose.__dict__[clude_type][element_to_delete]
+            self.changed_since_fetched_from_server=True 
 
     def annotate_include(self, *, element_to_annotate, annotation_text):
         self.annotate_include_or_exclude(clude_type="include", element_to_annotate=element_to_annotate, annotation_text=annotation_text)
@@ -246,6 +254,7 @@ class VSMT_VersionedValueSet():
                                                             ]    
                                                         )
                                             )   
+        self.changed_since_fetched_from_server=True 
                         
     def get_includes(self):
         return self.get_includes_or_excludes(clude_type="include")
@@ -275,13 +284,14 @@ class VSMT_VersionedValueSet():
     
     
 
-    def set_inactive_flag(self, *, inactive): # this appears only to be safe once sure have a compose statement with one include in it
-                                              # otherwise server will compain when try to store it
-                                              # Perhaps should add some tests to store_on_server 
-        if self.fhir_valueset.compose==None:
-            print("ERROR: Cannot set compose,inactive until have a compose with at least one include statement in it, or server complains")
-            sys.exit()
-        self.fhir_valueset.compose.inactive=inactive
+    # THIS NEEDS RECONSIDERATION
+    # def set_inactive_flag(self, *, inactive): # this appears only to be safe once sure have a compose statement with one include in it
+    #                                           # otherwise server will compain when try to store it
+    #                                           # Perhaps should add some tests to store_on_server 
+    #     if self.fhir_valueset.compose==None:
+    #         print("ERROR: Cannot set compose,inactive until have a compose with at least one include statement in it, or server complains")
+    #         sys.exit()
+    #     self.fhir_valueset.compose.inactive=inactive
 
     def expand_version_on_server(self, add_display_names=False, sct_version=None):
         # return self.terminology_server.expand_value_set(value_set_server_id=self.fhir_valueset.id)
@@ -330,6 +340,41 @@ if __name__=="__main__":
     # vs.add_exclude(ecl_filter='<<408794006')
     # vs.store_to_server()
     # print(vs)
+
+    ################################
+    # test the "changed" mechanism
+    ################################
+    
+    # vs=VSMT_VersionedValueSet(title='generic testing', terminology_server=terminology_server)
+    # print(vs.changed_since_fetched_from_server, "(1) expect False")
+
+    # vs.add_include(ecl_filter='<366335008')
+    # print(vs.changed_since_fetched_from_server, "(2) expect True")
+    # vs.changed_since_fetched_from_server=False
+
+    # vs.annotate_include(element_to_annotate=0, annotation_text="testing text")
+    # print(vs.changed_since_fetched_from_server, "(3) expect True")
+    # vs.changed_since_fetched_from_server=False
+    
+    # vs.delete_include(element_to_delete=0)
+    # print(vs.changed_since_fetched_from_server, "(3b) expect True")
+    # vs.changed_since_fetched_from_server=False
+    
+    # vs.annotate_top_level(annotation_text="testing text")
+    # print(vs.changed_since_fetched_from_server, "(4) expect True")
+    # vs.changed_since_fetched_from_server=False
+    
+    # vs.annotate_top_level(annotation_text="testing text before store")
+    # print(vs.changed_since_fetched_from_server, "(5) expect True")
+    # vs.store_to_server()
+    # print(vs.changed_since_fetched_from_server, "(5b) expect False")
+
+    # vs.delete_from_server()
+
+    ################################
+    # (end) test the "changed" mechanism
+    ################################
+
 
     # vsmt_identifier_and_version='VSMT_1005:0'
     # print("VSMT identifier and version -", vsmt_identifier_and_version)
