@@ -1,18 +1,34 @@
 import requests
+import os
 
 from fhir.resources.valueset import ValueSet
 
 class TerminologyServer():
-    def __init__(self, base_url=None):
+    def __init__(self, base_url=None, auth_url=None):
         self.base_url=base_url
+        self.auth_url=auth_url
+        self.get_jwt_token()
+
+    def get_jwt_token(self):
+        openid_data={}
+        openid_data['client_id']=os.environ['ONTOSERVER_USERNAME']
+        openid_data['client_secret']=os.environ['ONTOSERVER_SECRET']
+        openid_data['grant_type']='client_credentials'
+        r=requests.post(url=self.auth_url, data=openid_data)
+        # print(r.json())
+        access_token=r.json()['access_token']
+        self.headers={}
+        self.headers['Authorization'] = 'Bearer %s' % access_token
 
     def do_get(self, relative_url=None, verbose=False, timing=False):
+        print(self.base_url)
+        print(relative_url)
         url=self.base_url + "/" + relative_url
         if timing:
             start_time=time.time()
         if verbose:
             print("GET: %s" % url)
-        r=requests.get(url)
+        r=requests.get(url=url, headers=self.headers)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r
@@ -23,7 +39,7 @@ class TerminologyServer():
             start_time=time.time()
         if verbose:
             print("PUT: %s" % url)
-        r=requests.put(url, json=json)
+        r=requests.put(url, json=json, headers=self.headers)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r    
@@ -33,7 +49,7 @@ class TerminologyServer():
         if timing:
             start_time=time.time()
         if verbose:
-            print("POST: %s" % url)
+            print("POST: %s" % url, headers=self.headers)
         r=requests.post(url, json=json)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
@@ -45,7 +61,7 @@ class TerminologyServer():
             start_time=time.time()
         if verbose:
             print("DELETE: %s" % url)
-        r=requests.delete(url)
+        r=requests.delete(url, headers=self.headers)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r  

@@ -26,7 +26,8 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 # quick and dirty storage for the ecl expansions between endpoint calls
 expansion_store={}
 ecl_store=[]
-terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
+                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
 sct_version="http://snomed.info/sct/83821000000107/version/20190807"
 
 
@@ -106,7 +107,8 @@ def vsmt_index():
     session['current_vs_enum']=current_vs_enum
     session.modified=True
 
-    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
+                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
     value_set_manager=vsmt_uprot.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
 
@@ -141,7 +143,8 @@ def vsmt_index():
 def expansion():
 
     current_index_key=session['current_index_key']
-    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
+                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
     vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
     sct_version="http://snomed.info/sct/83821000000107/version/" + "20200415"
@@ -164,7 +167,8 @@ def expansion():
 def diff():
 
     current_index_key=session['current_index_key']
-    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
+                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
     vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
     sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"

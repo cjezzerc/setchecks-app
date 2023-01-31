@@ -36,18 +36,30 @@ class VSMT_ValueSetManager():
         self.terminology_server=terminology_server
 
     def get_vsmt_index_data(self):
-        relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
+        # relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
+        # relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=NHS Digital"
+        relative_url="ValueSet?_elements=id,title,version,identifier&name:contains=Dictionary_of_Medicines_and_Devices"
         vsmt_index_response=self.terminology_server.do_get(relative_url=relative_url)
         vsmt_index_dict=vsmt_index_response.json()
         vsmt_index={}
-        for entry in vsmt_index_dict['entry']:
+        print(vsmt_index_response.json())
+        for i_entry, entry in enumerate(vsmt_index_dict['entry']):
             resource_dict=entry['resource']
-            index_item=VSMT_IndexItem(vsmt_version=resource_dict["version"], 
-                                    vsmt_identifier=resource_dict["identifier"][0]["value"],
+            if "identifier" in resource_dict:
+                vsmt_identifier=resource_dict["identifier"][0]["value"]
+            else:
+                vsmt_identifier="FAKE_"+str(i_entry) # stop-gap for testing
+            if "version" in resource_dict:
+                vsmt_version=resource_dict["version"]
+            else:
+                vsmt_version="FAKE_1" # stop-gap for testing
+            index_item=VSMT_IndexItem(vsmt_version=vsmt_version,
+                                    vsmt_identifier=vsmt_identifier,
                                     vsmt_human_name=resource_dict["title"],
                                     server_id=resource_dict["id"],
                                     server_vsn=resource_dict["meta"]['versionId'],
                                     )
+            print(vsmt_identifier)
             if index_item.identifier_and_version in vsmt_index:
                 print("FATAL ERROR: The key %s has already been seen in the index" % index_item.identifier_and_version)
                 sys.exit()
@@ -306,8 +318,19 @@ class VSMT_VersionedValueSet():
 
 if __name__=="__main__":
 
-    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    # terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
+    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/", 
+                                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
     
+    print(terminology_server.headers)
+    
+# url='https://dev.ontology.nhs.uk/dev1/fhir/CodeSystem?_count=10000'
+# url='https://dev.ontology.nhs.uk/dev1/fhir/CodeSystem/ICD-10-UK-4.0'
+# url='https://dev.ontology.nhs.uk/dev1/fhir/CodeSystem/ICD-10-UK-4.0'
+
+# url='https://dev.ontology.nhs.uk/dev1/fhir/ValueSet?_count=10000'
+# url='https://dev.ontology.nhs.uk/dev1/fhir/ValueSet/b8235b42-2f4f-45f3-96e6-16b05f4b1e36'
+
     ### get basic index data on all VSMT value sets on server
     value_set_manager=VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
