@@ -36,9 +36,10 @@ class VSMT_ValueSetManager():
         self.terminology_server=terminology_server
 
     def get_vsmt_index_data(self):
-        # relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
+        #relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
         # relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=NHS Digital"
-        relative_url="ValueSet?_elements=id,title,version,identifier&name:contains=Dictionary_of_Medicines_and_Devices"
+        # relative_url="ValueSet?_elements=id,title,version,identifier&name:contains=Dictionary_of_Medicines_and_Devices"
+        relative_url="ValueSet?_elements=id,title,version,identifier&name"
         vsmt_index_response=self.terminology_server.do_get(relative_url=relative_url)
         vsmt_index_dict=vsmt_index_response.json()
         vsmt_index={}
@@ -53,9 +54,13 @@ class VSMT_ValueSetManager():
                 vsmt_version=resource_dict["version"]
             else:
                 vsmt_version="FAKE_1" # stop-gap for testing
+            if "title" in resource_dict:
+                vsmt_title=resource_dict["title"]
+            else:
+                vsmt_title="FAKE_TITLE" # stop-gap for testing
             index_item=VSMT_IndexItem(vsmt_version=vsmt_version,
                                     vsmt_identifier=vsmt_identifier,
-                                    vsmt_human_name=resource_dict["title"],
+                                    vsmt_human_name=vsmt_title,
                                     server_id=resource_dict["id"],
                                     server_vsn=resource_dict["meta"]['versionId'],
                                     )
@@ -206,7 +211,8 @@ class VSMT_VersionedValueSet():
         if self.fhir_valueset.extension is not None:
             annotations=[]
             for extension in self.fhir_valueset.extension:
-                annotations.append([ext.valueString for ext in extension.extension])
+                if extension.extension is not None:
+                    annotations.append([ext.valueString for ext in extension.extension])
         else:
             annotations=[]
         return annotations
@@ -287,6 +293,8 @@ class VSMT_VersionedValueSet():
                 else:
                     annotations=[]
                 filters=[]
+                if clude.filter is None:
+                    clude.filter=[]
                 for filter in clude.filter:
                     # print(filter)
                     filters.append(filter.value)

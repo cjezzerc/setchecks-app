@@ -108,7 +108,10 @@ class ConceptsDict(UserDict):
             if verbose:
                 print("Need to fetch this key")
                 print("=======================")
-            concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
+            if self.sct_version is not None:
+                concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
+            else:
+                concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&property=*" % (key)
             r=self.terminology_server.do_get(relative_url=concept_lookup_url)
             concept_fhir_parameters=Parameters.parse_obj(r.json())
             concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)

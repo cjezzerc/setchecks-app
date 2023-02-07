@@ -29,6 +29,7 @@ class TerminologyServer():
         if verbose:
             print("GET: %s" % url)
         r=requests.get(url=url, headers=self.headers)
+        print(r)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r
@@ -66,18 +67,29 @@ class TerminologyServer():
             print("That took (in seconds)", time.time()-start_time)
         return r  
     
-    def do_expand(self, ecl=None, value_set_server_id=None, sct_version=None, add_display_names=False):
+    def do_expand(self, ecl=None, refset_id=None, value_set_server_id=None, sct_version=None, add_display_names=False):
         
-        one_and_only_one_defined=sum([int(bool(x not in ["", None])) for x in [ecl, value_set_server_id]])==1
+        one_and_only_one_defined=sum([int(bool(x not in ["", None])) for x in [ecl, refset_id, value_set_server_id]])==1
         if not one_and_only_one_defined:
             print("Require one and only one of ecl and value_set_server_id to be defined in expand_ecl")
             print("ecl", ecl)
             print("value_set_server_id", value_set_server_id)
             sys.exit()
 
-        if ecl:
-            relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
-        else:
+        
+        if ecl: # expand a piece of ecl as implicit ValueSet
+            print("=> ECL", ecl)
+            # relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
+            if sct_version:
+                relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
+            else:
+                relative_url= "ValueSet/$expand?url=http://snomed.info/sct?fhir_vs=ecl/(%s)" % (ecl)
+        elif refset_id: # expand a SNOMED refset as implicit ValueSet
+            if sct_version:
+                relative_url= "ValueSet/$expand?url=%s?fhir_vs=refset/%s" % (sct_version, refset_id)
+            else:
+                relative_url= "ValueSet/$expand?url=http://snomed.info/sct?fhir_vs=refset/%s" % (refset_id)
+        else: # expand an implicit ValueSet
             if sct_version:
                 relative_url= "ValueSet/%s/$expand?system-version=http://snomed.info/sct%%7C%s" % (value_set_server_id, sct_version)
             else:
@@ -85,6 +97,7 @@ class TerminologyServer():
         print(relative_url)
         response=self.do_get(relative_url=relative_url, verbose=True) 
         print(response)
+        print(response.json())
         if response.json()["resourceType"]=="ValueSet": 
             ecl_response=[]
             extensional_valueset=ValueSet.parse_obj(response.json())
@@ -97,6 +110,8 @@ class TerminologyServer():
             return ecl_response
         else:
             return None
+
+    
 
     # def expand_value_set(self, *, value_set_server_id):
     #     relative_url= "ValueSet/%s/$expand" % (value_set_server_id)

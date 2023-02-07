@@ -12,6 +12,7 @@ import vsmt_uprot.fhir_utils
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
 
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
 )
@@ -26,9 +27,11 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 # quick and dirty storage for the ecl expansions between endpoint calls
 expansion_store={}
 ecl_store=[]
+refset_store=[]
 terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
                     auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
-sct_version="http://snomed.info/sct/83821000000107/version/20190807"
+# sct_version="http://snomed.info/sct/83821000000107/version/20190807"
+sct_version=None
 
 
 ################################
@@ -68,6 +71,35 @@ def ecl_explorer():
                             ecl=ecl,
                             ecl_response=ecl_response,
                             ecl_store=ecl_store
+                            )
+
+#####################################
+#####################################
+##     refset_members endpoint     ##
+#####################################
+#####################################
+
+@bp.route('/refset_members', methods=['GET','POST'])
+def refset_members():
+    global refset_store # must find better way to implement this
+
+    if 'refset_id' in request.form:
+        refset_id=request.form['refset_id'].strip()
+        refset_response=terminology_server.do_expand(refset_id=refset_id, sct_version=sct_version, add_display_names=True)
+        if refset_response is not None: 
+            refset_store = [refset_id] + refset_store
+            refset_response=["%s concept(s):" % (len(refset_response))] + refset_response
+        else:
+            refset_store = ["ERROR:  "+refset_id] + refset_store
+            refset_response=["There was an error for refset:", refset_response.json()]
+    else:
+        refset_id='Enter refset_id here'
+        refset_response=['Response of refset evaluation will appear here']
+
+    return render_template('refset_members.html',
+                            refset_id=refset_id,
+                            refset_response=refset_response,
+                            refset_store=refset_store
                             )
 
 #####################################
@@ -112,6 +144,8 @@ def vsmt_index():
     value_set_manager=vsmt_uprot.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
 
+    if current_vs_enum not in list(vsmt_index.keys()): # default back to 0 if new list since last rendering (need to fi logic better here)
+        current_vs_enum=0 
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
 
@@ -148,7 +182,8 @@ def expansion():
     vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
     sct_version="http://snomed.info/sct/83821000000107/version/" + "20200415"
-    expansion=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version)
+    # expansion=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version)
+    expansion=vs.expand_version_on_server(add_display_names=True, sct_version=None)
 
     print("==>", vs.get_vsmt_identifier_and_version())
     return render_template('vsmt_expansion.html',
