@@ -143,10 +143,11 @@ def vsmt_index():
     value_set_manager=vsmt_uprot.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
 
-    if current_vs_enum not in list(vsmt_index.keys()): # default back to 0 if new list since last rendering (need to fi logic better here)
-        current_vs_enum=0 
+    # if current_vs_enum not in list(vsmt_index.keys()): # default back to 0 if new list since last rendering (need to fi logic better here)
+    #     current_vs_enum=0 
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
+
 
     session['current_index_key']=current_index_key
     session.modified=True
