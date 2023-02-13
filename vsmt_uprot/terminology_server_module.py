@@ -41,6 +41,7 @@ class TerminologyServer():
         if verbose:
             print("PUT: %s" % url)
         r=requests.put(url, json=json, headers=self.headers)
+        print(r)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r    
@@ -50,8 +51,9 @@ class TerminologyServer():
         if timing:
             start_time=time.time()
         if verbose:
-            print("POST: %s" % url, headers=self.headers)
-        r=requests.post(url, json=json)
+            print("POST: %s" % url)
+        r=requests.post(url, json=json, headers=self.headers)
+        print("POST RESPONSE:::::::::", r.text)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r    

@@ -36,10 +36,10 @@ class VSMT_ValueSetManager():
         self.terminology_server=terminology_server
 
     def get_vsmt_index_data(self):
-        #relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
+        relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=VSMT-prototyping"
         # relative_url="ValueSet?_elements=id,title,version,identifier&publisher:contains=NHS Digital"
         # relative_url="ValueSet?_elements=id,title,version,identifier&name:contains=Dictionary_of_Medicines_and_Devices"
-        relative_url="ValueSet?_elements=id,title,version,identifier&name"
+        # relative_url="ValueSet?_elements=id,title,version,identifier&name"
         vsmt_index_response=self.terminology_server.do_get(relative_url=relative_url)
         vsmt_index_dict=vsmt_index_response.json()
         vsmt_index={}
@@ -476,6 +476,24 @@ if __name__=="__main__":
     # vs.store_to_server()
     # print(vs)
     # sys.exit()
+
+    # make a new value set
+    vs=VSMT_VersionedValueSet(title='cjc_test_HISTORY-MIN', terminology_server=terminology_server)
+    # vs.add_include(ecl_filter='<< 195967001 |Asthma|') 
+    vs.add_include(ecl_filter='<< 195967001 |Asthma| {{ + HISTORY-MIN }}')
+    
+    vs.store_to_server()
+    print(vs)
+
+
+    # ###################################################################################
+    # # expand a valueset
+    # ###################################################################################
+    vsmt_identifier_and_version='VSMT_1004:0'
+    print("VSMT identifier and version -", vsmt_identifier_and_version)
+    vs=VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=vsmt_identifier_and_version)
+    expansion=vs.expand_version_on_server(add_display_names=True)
+    print(len(expansion))
 
     # ###################################################################################
     # # expand "energy and stamina finding" value set against two releases and compare

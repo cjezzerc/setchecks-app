@@ -12,7 +12,6 @@ import vsmt_uprot.fhir_utils
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
 
-
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
 )
