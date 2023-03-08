@@ -39,9 +39,21 @@ class Concept():
             self.normal_form=ca.get('normalForm','N/A') # ? not available if inactive?
             self.normal_form_terse=ca.get('normalFormTerse','N/A')
             # self.ancestors="fetched_on_demand" 
-            self.ancestors=set(terminology_server.do_expand(ecl=">"+str(self.concept_id), sct_version=self.version))
+            ecl_evaluation=terminology_server.do_expand(ecl=">"+str(self.concept_id), sct_version=self.version)
+            if ecl_evaluation is not None:
+                self.ancestors=set(ecl_evaluation)
+            else:
+                print("WARNING: ecl_evaluation yielded None for ancestors of %s  - possible too costly error" % self.concept_id)
+                self.ancestors=set()
+
             # self.descendants="fetched on demand" 
-            self.descendants=set(terminology_server.do_expand(ecl="<"+str(self.concept_id), sct_version=self.version))
+            ecl_evaluation=terminology_server.do_expand(ecl="<"+str(self.concept_id), sct_version=self.version)
+            if ecl_evaluation is not None:
+                self.descendants=set(ecl_evaluation)
+            else:
+                print("WARNING: ecl_evaluation yielded None for descendants of %s  - possible too costly error" % self.concept_id)
+                self.descendants=set()
+
             # still need to decide best way to handle the non is-a relationships; two lines below refer back to how did it with the "all in memory" solution
             # self.modelled_relns_as_source={} # key=destination_id; value=list of type_ids
             # self.modelled_relns_as_destination={} # key=source_id; value=list of type_ids
@@ -93,7 +105,7 @@ class ConceptsDict(UserDict):
         if type(key)==str:
             key=int(key)
         verbose=False
-        print("Current_keys:", self.data.keys())
+        print("Current_keys_in_ConceptsDict:", self.data.keys())
 
         if verbose:
             print("=======================")
