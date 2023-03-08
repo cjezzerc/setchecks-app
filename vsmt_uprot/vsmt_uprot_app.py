@@ -148,7 +148,6 @@ def vsmt_index():
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
 
-
     session['current_index_key']=current_index_key
     session.modified=True
 

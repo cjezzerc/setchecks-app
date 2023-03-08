@@ -56,18 +56,24 @@
                 <div class="panel" style="overflow:auto">
 
                 <p>TOP LEVEL METADATA:</p>    
-                
-                {% for subset_description in top_level_annotation %}
-                    <p> {{subset_description}}</p>
+                {# {{ top_level_annotation }} #}
+                <table class = "table">
+                {% for extension in top_level_annotation %}
+                    {% for (url, valueString) in extension %}
+                        <tr> <td> {{url}} </td><td>{{valueString | safe}}</td> </tr>
+                    {% endfor %}
                 {% endfor %}
-                     
-
+                </table>
                 <div> 
                     <p>INCLUDE CLAUSES:</p>               
                     <ul>
                         {% for include in includes %}
                         <li>
-                            {{ include }}
+                            {% for filter in include %}
+                                {% if filter %}
+                                    {{ filter[0] }}
+                                {% endif %}
+                            {% endfor %}
                         </li>
                         {% endfor %}
                     </ul>

@@ -21,15 +21,15 @@ class TerminologyServer():
         self.headers['Authorization'] = 'Bearer %s' % access_token
 
     def do_get(self, relative_url=None, verbose=False, timing=False):
-        print(self.base_url)
-        print(relative_url)
+        # print(self.base_url)
+        # print(relative_url)
         url=self.base_url + "/" + relative_url
         if timing:
             start_time=time.time()
         if verbose:
             print("GET: %s" % url)
         r=requests.get(url=url, headers=self.headers)
-        print(r)
+        # print(r)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r
@@ -41,7 +41,7 @@ class TerminologyServer():
         if verbose:
             print("PUT: %s" % url)
         r=requests.put(url, json=json, headers=self.headers)
-        print(r)
+        # print(r)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r    
@@ -53,10 +53,11 @@ class TerminologyServer():
         if verbose:
             print("POST: %s" % url)
         r=requests.post(url, json=json, headers=self.headers)
-        print("POST RESPONSE:::::::::", r.text)
+        # print("POST RESPONSE:::::::::", r.text)
         if timing:
             print("That took (in seconds)", time.time()-start_time)
         return r    
+    
 
     def do_delete(self, relative_url=None, verbose=False, timing=False):
         url=self.base_url + "/" + relative_url
@@ -80,7 +81,7 @@ class TerminologyServer():
 
         
         if ecl: # expand a piece of ecl as implicit ValueSet
-            print("=> ECL", ecl)
+            # print("=> ECL", ecl)
             # relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
             if sct_version:
                 relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
@@ -96,10 +97,10 @@ class TerminologyServer():
                 relative_url= "ValueSet/%s/$expand?system-version=http://snomed.info/sct%%7C%s" % (value_set_server_id, sct_version)
             else:
                 relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
-        print(relative_url)
-        response=self.do_get(relative_url=relative_url, verbose=True) 
+        # print(relative_url)
+        response=self.do_get(relative_url=relative_url, verbose=False) 
         print(response)
-        print(response.json())
+        # print(response.json())
         if response.json()["resourceType"]=="ValueSet": 
             ecl_response=[]
             extensional_valueset=ValueSet.parse_obj(response.json())

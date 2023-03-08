@@ -43,7 +43,7 @@ class VSMT_ValueSetManager():
         vsmt_index_response=self.terminology_server.do_get(relative_url=relative_url)
         vsmt_index_dict=vsmt_index_response.json()
         vsmt_index={}
-        print(vsmt_index_response.json())
+        # print(vsmt_index_response.json())
         for i_entry, entry in enumerate(vsmt_index_dict['entry']):
             resource_dict=entry['resource']
             if "identifier" in resource_dict:
@@ -64,7 +64,7 @@ class VSMT_ValueSetManager():
                                     server_id=resource_dict["id"],
                                     server_vsn=resource_dict["meta"]['versionId'],
                                     )
-            print(vsmt_identifier)
+            # print(vsmt_identifier)
             if index_item.identifier_and_version in vsmt_index:
                 print("FATAL ERROR: The key %s has already been seen in the index" % index_item.identifier_and_version)
                 sys.exit()
@@ -212,7 +212,7 @@ class VSMT_VersionedValueSet():
             annotations=[]
             for extension in self.fhir_valueset.extension:
                 if extension.extension is not None:
-                    annotations.append([ext.valueString for ext in extension.extension])
+                    annotations.append([(ext.url, ext.valueString) for ext in extension.extension])
         else:
             annotations=[]
         return annotations
