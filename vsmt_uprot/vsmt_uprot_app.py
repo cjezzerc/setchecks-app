@@ -55,6 +55,8 @@ def ecl_explorer():
 
     if 'ecl' in request.form:
         ecl=request.form['ecl']
+        terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
+                    auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
         ecl_response=terminology_server.do_expand(ecl=ecl, sct_version=sct_version, add_display_names=True)
         if ecl_response is not None: 
             ecl_store = [ecl] + ecl_store
