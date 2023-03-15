@@ -84,7 +84,7 @@ class TerminologyServer():
             # print("=> ECL", ecl)
             # relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
             if sct_version:
-                relative_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
+                relative_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)" % (sct_version, ecl)
             else:
                 relative_url= "ValueSet/$expand?url=http://snomed.info/sct?fhir_vs=ecl/(%s)" % (ecl)
         elif refset_id: # expand a SNOMED refset as implicit ValueSet
@@ -107,7 +107,7 @@ class TerminologyServer():
             if extensional_valueset.expansion.contains:
                 for contained_item in extensional_valueset.expansion.contains:
                     if add_display_names:
-                        ecl_response.append("%20s | %s |" % (contained_item.code, contained_item.display))
+                        ecl_response.append("%20s | %s | (inactive=%s)" % (contained_item.code, contained_item.display, contained_item.inactive))
                     else:
                         ecl_response.append(int(contained_item.code)) # trial addition12 jan22 
             return ecl_response
