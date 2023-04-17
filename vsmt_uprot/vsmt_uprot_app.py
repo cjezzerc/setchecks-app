@@ -5,6 +5,7 @@ import os.path
 import requests
 import pprint
 import time
+import bson
 
 from fhir.resources.valueset import ValueSet
 import vsmt_uprot.fhir_utils
@@ -23,13 +24,21 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 # For now have one single global persistence filename #
 #######################################################
 
-# quick and dirty storage for the ecl expansions between endpoint calls
-expansion_store={}
-ecl_store=[]
-refset_store=[]
+from pymongo import MongoClient
+
+client=MongoClient()
+db=client['VSMT_uprot_app']
+ecl_history=db['ecl_histories'].find_one()
+if ecl_history is None:
+    db['ecl_histories'].insert_one({"ecl_store":[]})
+refset_history=db['refset_histories'].find_one()
+print("REFSET_HISTORY", refset_history)
+if refset_history is None:
+    db['refset_histories'].insert_one({"refset_store":[]})
+
+
 terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
                     auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
-# sct_version="http://snomed.info/sct/83821000000107/version/20190807"
 sct_version=None
 
 
@@ -51,19 +60,23 @@ def health_check():
 
 @bp.route('/ecl_explorer', methods=['GET','POST'])
 def ecl_explorer():
-    global ecl_store # must find better way to implement this
-
+    
+    ecl_history=db.ecl_histories.find_one()  # there is only one while single user mode
     if 'ecl' in request.form:
+        
         ecl=request.form['ecl']
         terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url="https://dev.ontology.nhs.uk/dev1/fhir/",
                     auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
         ecl_response=terminology_server.do_expand(ecl=ecl, sct_version=sct_version, add_display_names=True)
         if ecl_response is not None: 
-            ecl_store = [ecl] + ecl_store
+            # ecl_store = [ecl] + ecl_store
+            ecl_history['ecl_store'] = [ecl] + ecl_history['ecl_store']
             ecl_response=["%s concept(s):" % (len(ecl_response))] + ecl_response
         else:
-            ecl_store = ["ERROR:  "+ecl] + ecl_store
+            # ecl_store = ["ERROR:  "+ecl] + ecl_store
+            ecl_history['ecl_store'] = ["ERROR:  "+ecl] + ecl_history['ecl_store']
             ecl_response=["There was an error in the ECL:", response.json()]
+        db.ecl_histories.replace_one({"_id":ecl_history['_id']}, ecl_history)
     else:
         ecl='Enter your ECL here'
         ecl_response=['Response of ECL evaluation will appear here']
@@ -71,7 +84,7 @@ def ecl_explorer():
     return render_template('ecl_explorer.html',
                             ecl=ecl,
                             ecl_response=ecl_response,
-                            ecl_store=ecl_store
+                            ecl_store=ecl_history['ecl_store']
                             )
 
 #####################################
@@ -82,25 +95,26 @@ def ecl_explorer():
 
 @bp.route('/refset_members', methods=['GET','POST'])
 def refset_members():
-    global refset_store # must find better way to implement this
 
+    refset_history=db.refset_histories.find_one()  # there is only one while single user mode
+    print(refset_history)
     if 'refset_id' in request.form:
         refset_id=request.form['refset_id'].strip()
         refset_response=terminology_server.do_expand(refset_id=refset_id, sct_version=sct_version, add_display_names=True)
         if refset_response is not None: 
-            refset_store = [refset_id] + refset_store
+            refset_history['refset_store'] = [refset_id] + refset_history['refset_store']
             refset_response=["%s concept(s):" % (len(refset_response))] + refset_response
         else:
-            refset_store = ["ERROR:  "+refset_id] + refset_store
+            refset_history['refset_store'] = ["ERROR:  "+refset_id] + refset_history['refset_store']
             refset_response=["There was an error for refset:", refset_response.json()]
     else:
         refset_id='Enter refset_id here'
         refset_response=['Response of refset evaluation will appear here']
-
+    db.refset_histories.replace_one({"_id":refset_history['_id']}, refset_history)
     return render_template('refset_members.html',
                             refset_id=refset_id,
                             refset_response=refset_response,
-                            refset_store=refset_store
+                            refset_store=refset_history['refset_store']
                             )
 
 #####################################
@@ -145,8 +159,8 @@ def vsmt_index():
     value_set_manager=vsmt_uprot.vsmt_valueset.VSMT_ValueSetManager(terminology_server=terminology_server)
     vsmt_index=value_set_manager.get_vsmt_index_data()
 
-    # if current_vs_enum not in list(vsmt_index.keys()): # default back to 0 if new list since last rendering (need to fi logic better here)
-    #     current_vs_enum=0 
+    if current_vs_enum >= len(list(vsmt_index.keys())): # default back to 0 if new list since last rendering (need to fi logic better here)
+        current_vs_enum=0 
     current_index_key=list(vsmt_index.keys())[current_vs_enum]
     print(current_vs_enum, current_index_key)
 
