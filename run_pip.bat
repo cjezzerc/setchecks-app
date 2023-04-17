@@ -1,0 +1,1 @@
+C:%HOMEPATH%\AppData\Local\Programs\Python\Python%1\scripts\pip install -r requirements.txt
