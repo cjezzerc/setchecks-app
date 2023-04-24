@@ -1,6 +1,6 @@
 @echo off
 
-REM Usage: e.g.      run_app.bat 311 john-smith-author 89abcdef-9876-0123-4567-89abcdef
+REM Usage: e.g.      .\run_app.bat 311 john-smith-author 89abcdef-9876-0123-4567-89abcdef
 
 REM Run pip install every time as quicker than trying to document why run it once
 REM The python version is entered as first argument (e.g. 310 if installed verion to use is v3.10)

@@ -1,5 +1,8 @@
 @echo off
 
+REM This is a convenience script while checking installations running under pure Windows
+REM For regular usage use the other script run_app.bat
+
 REM This version assumes running in a venv (for testing)
 
 REM Usage: e.g.      run_app.bat john-smith-author 89abcdef-9876-0123-4567-89abcdef
