@@ -221,10 +221,12 @@ def diff():
                     auth_url="https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token")
     vs=vsmt_uprot.vsmt_valueset.VSMT_VersionedValueSet(terminology_server=terminology_server, vsmt_identifier_and_version=current_index_key)
 
-    sct_version1="http://snomed.info/sct/83821000000107/version/" + "20200415"
+    # sct_version1="http://snomed.info/sct/83821000000107/version/" + "20220511"
+    sct_version1="http://snomed.info/sct/83821000000107/version/" + "20230315"
     expansion1=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version1)
     
-    sct_version2="http://snomed.info/sct/83821000000107/version/" + "20200805"
+    sct_version2="http://snomed.info/sct/83821000000107/version/" + "20230412"
+    # sct_version2="http://snomed.info/sct/83821000000107/version/" + "20230315"
     expansion2=vs.expand_version_on_server(add_display_names=True, sct_version=sct_version2)
 
     only_in_1=[]
