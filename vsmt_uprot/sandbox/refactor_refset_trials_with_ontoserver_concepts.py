@@ -132,12 +132,13 @@ concepts=ConceptsDict(terminology_server=terminology_server)
 refsets=refset_module_modified.RefsetCollection()
 
 # trial_SCT_RULE='<289285006|<<249125003|=12729009|=312974005|=199670005|=169734005|<<267262008|=44223004|<<237267007|'
+# trial_SCT_RULE='<<447139008'
+trial_SCT_RULE='<<25899002'
 
 # ecl_evaluation=[str(x) for x in terminology_server.do_expand(ecl="^999002121000000109")]
-ecl_evaluation=[str(x) for x in terminology_server.do_expand(ecl="^999002531000000101")]
+# ecl_evaluation=[str(x) for x in terminology_server.do_expand(ecl="^999002531000000101")]
 
-trial_SCT_RULE="="+"|=".join(ecl_evaluation)
-
+# trial_SCT_RULE="="+"|=".join(ecl_evaluation)
 
 
 metadata_column='----------- ----------'
@@ -187,7 +188,10 @@ for refset_name in refset_list_to_refactor:
     # Switch OFF filters  
     refset.apply_filters=refactor_apply_filters
 
+    print("Getting all members ..")
     refset_membership_analysis=refset_module_modified.RefsetMembershipAnalysis(refset=refset, concepts=concepts, global_exclusions=refsets.global_exclusions)
+    print(".. done getting all members")
+
     print("REFSET_INFO:",refset.refset_name, 
                         refset.refset_description, 
                         refset_membership_analysis.full_inclusion_list_n_members, 
@@ -240,6 +244,7 @@ for refset_name in refset_list_to_refactor:
     # deal with sticky inclusion clauses #
     ######################################
 
+    
     for clause in refset.clause_based_rule.clauses:
         if clause.clause_type=="include" and clause.sticky==True:
             # ? add test for duplcate here?
@@ -308,8 +313,8 @@ for refset_name in refset_list_to_refactor:
 
     start_timeb=time.time()
     all_incl_cbcs=set()
-    for concept_id in all_inclusion_candidate_base_concept_ids:
-        print(concept_id)
+    for i_cbc, concept_id in enumerate(all_inclusion_candidate_base_concept_ids):
+        print("Getting cbc %s ( %s of %s )" % ( concept_id, i_cbc, len(all_inclusion_candidate_base_concept_ids)))
         cbc=CandidateBaseConcept(concept_id=concept_id, concepts=concepts, target_members=refset_membership_analysis.final_inclusion_list)
         all_incl_cbcs.add(cbc)
     print("Step2 took (in seconds)", time.time()-start_timeb)    

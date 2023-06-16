@@ -69,7 +69,8 @@ class Concept():
     
     def __getattribute__(self, name):
         value=object.__getattribute__(self, name)
-        if value!="fetched_on_demand":
+        if value!="fetched_on_demand":  # coming back to this in June 2023 - the fetched_on_demand thing is commented out above
+                                        # so value is always just returned here
             return value
         else:
             print("Fetching on demand")
