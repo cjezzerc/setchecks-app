@@ -71,13 +71,14 @@ class ClauseMembershipAnalysis():   # one Clause could have one of these
         #for ontoserver style need to force concept to be looked for
         print("==>>>", clause)
 
-        if clause.clause_base_concept_id not in concepts:
-            dummy=concepts[clause.clause_base_concept_id]
-            print("Fetched dummy")
-            print(dummy)
+        # if clause.clause_base_concept_id not in concepts:
+        #     dummy=concepts[clause.clause_base_concept_id]
+        #     print("Fetched dummy")
+        #     print(dummy)
 
-        if clause.clause_base_concept_id in concepts:
-            concept=concepts[clause.clause_base_concept_id]
+        # if clause.clause_base_concept_id in concepts:
+        concept=concepts[clause.clause_base_concept_id]
+        if concept is not None:
             if clause.clause_operator=="=":
                 self.members=[concept.concept_id]
                 self.depth=-1 # recursive view should only ever show self
