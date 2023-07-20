@@ -272,8 +272,12 @@ def trial_upload():
         vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
         vs_check_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file')
         print(vs_check_session)
+        session['vs_check_session']=vs_check_session
     else:
-        vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
+        if 'vs_check_session' in session.keys():
+            vs_check_session=session['vs_check_session']
+        else:
+            vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
     
     return render_template('trial_upload.html',
                            file_data=vs_check_session.data_as_matrix
