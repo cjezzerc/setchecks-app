@@ -12,6 +12,8 @@ import vsmt_uprot.fhir_utils
 
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
+import vsmt_uprot.vs_check_session
+
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
@@ -267,10 +269,12 @@ def trial_upload():
     print("REQUEST:",request.args.keys())
     print(request.files)
     if 'myfile' in request.files:
-        file_data=request.files['myfile'].readlines()
+        vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
+        vs_check_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file')
+        print(vs_check_session)
     else:
-        file_data=['Nothing loaded yet']
+        vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
     
     return render_template('trial_upload.html',
-                           file_data=file_data
+                           file_data=vs_check_session.data_as_matrix
                             )
