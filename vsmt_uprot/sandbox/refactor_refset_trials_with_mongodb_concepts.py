@@ -139,7 +139,12 @@ refsets=refset_module_modified_mongodb.RefsetCollection()
 
 # trial_SCT_RULE='<289285006|<<249125003|=12729009|=312974005|=199670005|=169734005|<<267262008|=44223004|<<237267007|'
 # trial_SCT_RULE='<<447139008'
-trial_SCT_RULE='<<108367008|<<398878007|<<125605004|<<105606008|'
+# trial_SCT_RULE='<<414292006'
+# trial_SCT_RULE='<<46866001'
+trial_SCT_RULE='<<284003005'
+ 
+ 
+# trial_SCT_RULE='<<108367008|<<398878007|<<125605004|<<105606008|'
 
 # trial_SCT_RULE='<<447139008|-=428797006'
 # trial_SCT_RULE='<<25899002'
@@ -200,7 +205,7 @@ for refset_name in refset_list_to_refactor:
     refset.apply_filters=refactor_apply_filters
 
     print("Getting all members ..")
-    refset_membership_analysis=refset_module_modified_mongodb.RefsetMembershipAnalysis(refset=refset, concepts=concepts, global_exclusions=refsets.global_exclusions, verbose=True)
+    refset_membership_analysis=refset_module_modified_mongodb.RefsetMembershipAnalysis(refset=refset, concepts=concepts, global_exclusions=refsets.global_exclusions, stub_out_interaction_matrix_calc=True, verbose=True)
     print(".. done getting all members")
 
     print("REFSET_INFO:",refset.refset_name, 

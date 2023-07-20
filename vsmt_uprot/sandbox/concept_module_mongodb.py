@@ -112,35 +112,42 @@ class ConceptsDict(UserDict):
         
         # print("Current_keys_in_ConceptsDict:", self.data.keys())
 
-        # if verbose:
-        #     print("=======================")
-        #     print("Requested key: %s (%s)" % (key,type(key)))
-        #     print("Current keys:", self.data.keys())
+        if verbose:
+            print("=======================")
+            print("Requested key: %s (%s)" % (key,type(key)))
+            print("Current keys:", self.data.keys())
 
-        # if key in self.data: # if have already fetched this concept
-        #     if verbose:
-        #         print("Already have this key")
-        #     return self.data[key]
-        # else: # otherwise need to fetch it
-        #     if verbose:
-        #         print("Need to fetch this key")
-        #         print("=======================")
-        #     if self.sct_version is not None:
-        #         concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
-        #     else:
-        #         concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&property=*" % (key)
-        #     r=self.terminology_server.do_get(relative_url=concept_lookup_url)
-        #     concept_fhir_parameters=Parameters.parse_obj(r.json())
-        #     concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)
-        #     self.data[key]=concept
-        #     return self.data[key]
+        if key in self.data: # if have already fetched this concept
+            if verbose:
+                print("Already have this key")
+            return self.data[key]
+        else: # otherwise need to fetch it
+            if verbose:
+                print("Need to fetch this key")
+                print("=======================")
+            # if self.sct_version is not None:
+            #     concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
+            # else:
+            #     concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&property=*" % (key)
+            # r=self.terminology_server.do_get(relative_url=concept_lookup_url)
+            # concept_fhir_parameters=Parameters.parse_obj(r.json())
+            # concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)
+        
+            print("mongo db call for concept code = %s" % key)
+            mongo_db_concept=self.concepts_db_document.find_one({'code':key})
+            if mongo_db_concept is not None:
+                concept=Concept(mongo_db_concept=mongo_db_concept, concepts=self)
+            else:
+                concept=None
+            self.data[key]=concept
+            return self.data[key]
 
-        # no caching in first mongodb version
-        mongo_db_concept=self.concepts_db_document.find_one({'code':key})
-        if mongo_db_concept is not None:
-            concept=Concept(mongo_db_concept=mongo_db_concept, concepts=self)
-        else:
-            concept=None
+        # # no caching in first mongodb version
+        # mongo_db_concept=self.concepts_db_document.find_one({'code':key})
+        # if mongo_db_concept is not None:
+        #     concept=Concept(mongo_db_concept=mongo_db_concept, concepts=self)
+        # else:
+        #     concept=None
 
         return concept
 

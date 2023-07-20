@@ -78,17 +78,18 @@ class ClauseMembershipAnalysis():   # one Clause could have one of these
 
         # if clause.clause_base_concept_id in concepts:
         concept=concepts[clause.clause_base_concept_id]
+        print("Got the base concept")
         if concept is not None:
             if clause.clause_operator=="=":
                 self.members=[concept.concept_id]
                 self.depth=-1 # recursive view should only ever show self
             elif clause.clause_operator=="<":
-                dummy2=concept.descendants # for ontoserver vsn
-                print(dummy2)
+                #dummy2=concept.descendants # for ontoserver vsn
+                #print(dummy2)
                 self.members=list(concept.descendants)
                 self.depth=99999 # recursive view should go as deep as likes
             elif clause.clause_operator=="<<":
-                dummy2=concept.descendants # for ontoserver vsn
+                #dummy2=concept.descendants # for ontoserver vsn
                 self.members=[concept.concept_id]+list(concept.descendants)
                 self.depth=99999 # recursive view should go as deep as likes
             elif clause.clause_operator==":=":
@@ -114,11 +115,11 @@ class ClauseMembershipAnalysis():   # one Clause could have one of these
 
         # print("MEMBERS",self.members)
         self.semantic_tag_counts={}
-        for concept_id in self.members:
-            semantic_tag=concepts[concept_id].semantic_tag
-            if semantic_tag not in self.semantic_tag_counts:
-                self.semantic_tag_counts[semantic_tag]=0
-            self.semantic_tag_counts[semantic_tag]+=1
+        # for concept_id in self.members:
+        #     semantic_tag=concepts[concept_id].semantic_tag
+        #     if semantic_tag not in self.semantic_tag_counts:
+        #         self.semantic_tag_counts[semantic_tag]=0
+        #     self.semantic_tag_counts[semantic_tag]+=1
 
    
 class ClauseBasedRule():
@@ -269,12 +270,17 @@ class RefsetMembershipAnalysis():
         #   assemble full inclusion and exclusion sets for refset
         #   get final_inclusion set using difference method on the above
         for clause in refset.clause_based_rule.clauses:
+            print("cma start..")
             clause_membership_analysis=ClauseMembershipAnalysis(clause=clause, concepts=concepts)
+            print("..cma done")
+            
             self.clause_membership_analyses_list.append(clause_membership_analysis)
             if clause.clause_type=="exclude":
                 full_exclusion_set=full_exclusion_set.union(set(clause_membership_analysis.members))
             else:   
                 full_inclusion_set=full_inclusion_set.union(set(clause_membership_analysis.members))
+        print("Got the clause memberships")
+        # sys.exit()
         final_inclusion_set=full_inclusion_set.difference(full_exclusion_set)
 
         self.full_exclusion_list=list(full_exclusion_set)
@@ -329,11 +335,11 @@ class RefsetMembershipAnalysis():
         # Analyse the number of each semantic tag in the final inclusion list
         #
         self.semantic_tag_counts={}
-        for concept_id in self.final_inclusion_list:
-            semantic_tag=concepts[concept_id].semantic_tag
-            if semantic_tag not in self.semantic_tag_counts:
-                self.semantic_tag_counts[semantic_tag]=0
-            self.semantic_tag_counts[semantic_tag]+=1
+        # for concept_id in self.final_inclusion_list:    # not sure why this sections seems to take so long?
+        #     semantic_tag=concepts[concept_id].semantic_tag
+        #     if semantic_tag not in self.semantic_tag_counts:
+        #         self.semantic_tag_counts[semantic_tag]=0
+        #     self.semantic_tag_counts[semantic_tag]+=1
 
 
         

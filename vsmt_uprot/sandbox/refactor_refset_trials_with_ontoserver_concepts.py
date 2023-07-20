@@ -22,7 +22,13 @@ from concept_module import ConceptsDict
 class CandidateBaseConcept():
     def __init__(self, concept_id=None, concepts=None, target_members=None, must_avoid_set=None):
         self.concept_id=concept_id
+        ta=time.time()
         self.concept=concepts[concept_id]
+        print(len(self.concept.ancestors), len(self.concept.descendants))
+        print("Getting concept took",time.time()-ta)
+
+        tb=time.time()
+
         self.concepts=concepts
         # self.refset_membership_analysis=refset_membership_analysis
         self.target_members=target_members
@@ -60,6 +66,8 @@ class CandidateBaseConcept():
 
         self.n_children_all                     = len(self.concept.children)
         self.n_children_in_membership           = len(set(self.concept.children).intersection(self.target_members))
+
+        print("Rest took",time.time()-tb)
 
     def __str__(self):
         str_str="\nCandidateBaseConcept:\n-------------\n"

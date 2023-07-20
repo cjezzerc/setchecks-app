@@ -11,6 +11,7 @@ from fhir.resources.valueset import ValueSet
 import vsmt_uprot.fhir_utils
 
 
+
 def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None, terminology_server=None):
     
     # relative_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)" % (sct_version, "<<"+str(root_id))
@@ -23,13 +24,12 @@ def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None
     temp_valueset=ValueSet.parse_obj(response.json())
     
     total_concepts=temp_valueset.expansion.total
-    n_per_fetch=6959
+    n_per_fetch=500
     n_fetches=int(total_concepts/n_per_fetch)
     if (total_concepts % n_per_fetch)!=0:
         n_fetches+=1
 
     print("Will fetch %s concepts in %s fetches" % (total_concepts, n_fetches))
-
 
     offset=0
     while offset<total_concepts:

@@ -126,8 +126,13 @@ class ConceptsDict(UserDict):
                 concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&version=%s&property=*" % (key, self.sct_version)
             else:
                 concept_lookup_url="/CodeSystem/$lookup?code=%s&system=http://snomed.info/sct&property=*" % (key)
+            print("Fetching..")
             r=self.terminology_server.do_get(relative_url=concept_lookup_url)
+            print("..arsing..")
+            
             concept_fhir_parameters=Parameters.parse_obj(r.json())
+            print("..done")
+            
             concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)
             self.data[key]=concept
             return self.data[key]
