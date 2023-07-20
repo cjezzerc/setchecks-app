@@ -60,7 +60,7 @@ def health_check():
 
 @bp.route('/ecl_explorer', methods=['GET','POST'])
 def ecl_explorer():
-    
+   
     ecl_history=db.ecl_histories.find_one()  # there is only one while single user mode
     if 'ecl' in request.form:
         
@@ -250,5 +250,27 @@ def diff():
                             sct_version2=sct_version2,
                             in_both=in_both,
                             only_in_1=only_in_1,
-                            only_in_2=only_in_2
-,                            )
+                            only_in_2=only_in_2,
+                            )
+
+
+#####################################
+#####################################
+##     trial upload endpoint       ##
+#####################################
+#####################################
+
+
+@bp.route('/trial_upload', methods=['GET','POST'])
+def trial_upload():
+    print(request.form.keys())
+    print("REQUEST:",request.args.keys())
+    print(request.files)
+    if 'myfile' in request.files:
+        file_data=request.files['myfile'].readlines()
+    else:
+        file_data=['Nothing loaded yet']
+    
+    return render_template('trial_upload.html',
+                           file_data=file_data
+                            )

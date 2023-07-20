@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}VSMT_uprot_app{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-12 ">
+            <div class="card" style="height: 30vh" >
+                <div class="card-header">
+                    <strong>Select file</strong>
+                </div>                
+                <div class="panel" style="overflow:auto">
+                <form action="/trial_upload" enctype="multipart/form-data"  method="post">
+                    <label for="myfile">Select a file:</label>
+                    <input type="file" id="myfile" name="myfile" />
+                    <br /><br />
+                    <input type="submit" />
+                </form>
+               
+                </div>
+            </div>
+            <div class="card" style="height: 60vh" >
+                <div class="card-header">
+                    <strong>Table</strong>
+                </div>                
+                <div class="panel" style="overflow:auto">
+                {% for line in file_data %}
+                    {{ line }} <br>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+</div>
+
+  
+{% endblock %}
