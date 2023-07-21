@@ -1,5 +1,5 @@
 
-class Vs_check_session():
+class VsCheckSession():
     def __init__(self):
         self.data_as_matrix=[]
     
