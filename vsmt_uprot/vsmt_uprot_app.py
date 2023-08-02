@@ -28,7 +28,11 @@ bp = Blueprint('vsmt_uprot_app', __name__)
 
 from pymongo import MongoClient
 
-client=MongoClient()
+# client=MongoClient()
+#
+# client = MongoClient('mongodb://172.17.0.0/16:27017/')
+client = MongoClient('mongo-server',27017)
+# client = MongoClient("mongodb://172.17.0.0/16", 27017)
 db=client['VSMT_uprot_app']
 ecl_history=db['ecl_histories'].find_one()
 if ecl_history is None:

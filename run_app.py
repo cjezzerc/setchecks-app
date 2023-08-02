@@ -14,4 +14,5 @@ if len(sys.argv)>1:
 
 # vsmt_uprot.create_app().run(debug=debug, host='0.0.0.0')
 vsmt_uprot.create_app(use_flask_session_and_redis=True).run(debug=debug, host='0.0.0.0')
+# vsmt_uprot.create_app(use_flask_session_and_redis=True).run(debug=debug)
 
