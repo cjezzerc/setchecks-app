@@ -2,12 +2,15 @@
 class VsCheckSession():
     def __init__(self):
         self.data_as_matrix=[]
+        vs_checks_results={}
     
     def __repr__(self):
         repr_strings=[]
         for k,v in self.__dict__.items():
             if type(v) in (list, set) and len(v)>20:
                 repr_strings.append("%20s : %s of %s elements" % (k, type(v), len(v)))
+            elif type(v) in (dict) and len(v)>20:
+                repr_strings.append("%20s : %s with %s elements" % (k, type(v), len(v)))
             else:
                 repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
         return "\n".join(repr_strings)
@@ -19,6 +22,7 @@ class VsCheckSession():
                 f=str(line, 'utf-8').split(separator)
                 f=[x.strip() for x in f]
                 self.data_as_matrix.append(f)
+
 
         
 

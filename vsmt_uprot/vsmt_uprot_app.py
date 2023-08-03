@@ -12,7 +12,7 @@ import vsmt_uprot.fhir_utils
 
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
-import vsmt_uprot.vs_check_session
+import vsmt_uprot.vs_checks.vs_check_session
 
 
 from flask import (
@@ -285,21 +285,15 @@ def trial_upload():
     if 'vs_check_session' in session.keys(): # grab vs_check_session from session variable if it is in there
         vs_check_session=session['vs_check_session']
     else: # otherwise initialise the vs_check_session object and save to session variable
-        vs_check_session=vsmt_uprot.vs_check_session.VsCheckSession()
+        vs_check_session=vsmt_uprot.vs_checks.vs_check_session.VsCheckSession()
         session['vs_check_session']=vs_check_session 
 
     if 'myfile' in request.files:
-        # vs_check_session=vsmt_uprot.vs_check_session.Vs_check_session()
         vs_check_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file')
         print(vs_check_session)
         session['vs_check_session']=vs_check_session # save updated vs_check_session to the session variable
     else:
         pass
-        # if 'vs_check_session' in session.keys(): # grab vs_check_session from session variable if it is in there
-        #     vs_check_session=session['vs_check_session']
-        # else: # otherwise initialise the vs_check_session object and save to session variable
-        #     vs_check_session=vsmt_uprot.vs_check_session.VsCheckSession()
-        #     session['vs_check_session']=vs_check_session 
 
     return render_template('trial_upload.html',
                            file_data=vs_check_session.data_as_matrix
