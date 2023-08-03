@@ -11,6 +11,7 @@ services:
     environment:
       - ONTOSERVER_USERNAME
       - ONTOSERVER_SECRET
+      - VSMT_DOCKER_COMPOSE=YES
 
   redis-server:
     image: redis

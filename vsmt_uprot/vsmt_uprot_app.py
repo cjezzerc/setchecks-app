@@ -34,8 +34,12 @@ from pymongo import MongoClient
 # client = MongoClient("mongodb://172.17.0.0/16", 27017)
 
 # temp fix: uncomment one of these
-client=MongoClient()   # this is if running app direct
-# client = MongoClient('mongo-server',27017)   # this is if running app in docker
+if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
+    print("Configuring mongodb to connect to mongo-server docker")
+    client=MongoClient('mongo-server',27017)
+else:
+    print("Configuring mongodb to connect to localhost")
+    client=MongoClient()
 
 
 db=client['VSMT_uprot_app']
