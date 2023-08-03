@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import vsmt_uprot
+import vsmt_uprot.create_app
 import sys
 print("sys.path is", sys.path)
 
@@ -13,6 +13,6 @@ if len(sys.argv)>1:
 # BUT if do NOT use flask_session and redis then the trial uplaoad will fail because it cannot store the Vs_check_session to the regular session cookie
 
 # vsmt_uprot.create_app().run(debug=debug, host='0.0.0.0')
-vsmt_uprot.create_app(use_flask_session_and_redis=True).run(debug=debug, host='0.0.0.0')
+vsmt_uprot.create_app.create_app(use_flask_session_and_redis=True).run(debug=debug, host='0.0.0.0')
 # vsmt_uprot.create_app(use_flask_session_and_redis=True).run(debug=debug)
 
