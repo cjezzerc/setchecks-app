@@ -22,7 +22,7 @@ class SetchkResults():
         ----------
         TBC
         """
-        self.row_analysis={}
+        self.row_analysis=[]
         self.set_analysis={}
         self.concept_analysis={}
         self.setchk_name={}

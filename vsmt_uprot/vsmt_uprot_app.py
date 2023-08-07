@@ -13,6 +13,7 @@ import vsmt_uprot.fhir_utils
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
 import vsmt_uprot.setchks.setchks_session
+import vsmt_uprot.setchks.setchk_definitions 
 
 
 from flask import (
@@ -289,7 +290,7 @@ def trial_upload():
         session['setchks_session']=setchks_session 
 
     if 'myfile' in request.files:
-        setchks_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file')
+        setchks_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file', table_has_header=True)
         print(setchks_session)
         session['setchks_session']=setchks_session # save updated setchks_session to the session variable
     else:
@@ -297,4 +298,57 @@ def trial_upload():
 
     return render_template('trial_upload.html',
                            file_data=setchks_session.data_as_matrix
+                            )
+
+#####################################
+#####################################
+##     CHK06_DEF_EXCL_FILTER       ##
+#####################################
+#####################################
+
+
+@bp.route('/CHK06_DEF_EXCL_FILTER', methods=['GET','POST'])
+def do_CHK06_DEF_EXCL_FILTER():
+    
+
+    setchk=vsmt_uprot.setchks.setchk_definitions.setchks['CHK06_DEF_EXCL_FILTER']
+
+    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
+        setchks_session=session['setchks_session']
+    else: # otherwise initialise the setchks_session object and save to session variable
+        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        session['setchks_session']=setchks_session 
+
+    setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+                                        auth_url=os.environ["ONTOAUTH_INSTANCE"])
+
+    release_label="20230412"
+    setchks_session.sct_version="http://snomed.info/sct/83821000000107/version/" + release_label
+
+    setchks_session.cid_col=0
+
+    print("=====================")
+    setchk.run_check(setchks_session=setchks_session)
+    print("=====================")
+
+    print("++++++++++++++++++++++++")
+    print("After set check ran, setchks_sessions is:")
+    print(setchks_session)
+    print("++++++++++++++++++++++++")
+
+    print("++++++++++++++++++++++++")
+    for k,v in setchks_session.setchks_results.items(): 
+        print("Results for check %s :" % k)
+        print(v)
+    print("++++++++++++++++++++++++")
+
+    results=setchks_session.setchks_results["CHK06_DEF_EXCL_FILTER"]
+    n_set_members_in_refset=results.set_analysis["n_set_members_in_refset"]
+    row_results=results.row_analysis
+    row_messages=[x["Message"] for x in row_results]
+
+    return render_template('CHK06_DEF_EXCL_FILTER.html',
+                           file_data=setchks_session.data_as_matrix,
+                           row_messages=row_messages,
+                           n_set_members_in_refset=n_set_members_in_refset,
                             )

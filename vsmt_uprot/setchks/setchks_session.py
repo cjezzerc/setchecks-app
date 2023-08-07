@@ -24,14 +24,18 @@ class SetchksSession():
     every time.
     """
 
-    __slots__=("data_as_matrix", "cid_col", "did_col", "mixed_col", "setchks_results")
+    __slots__=("data_as_matrix", "table_has_header", "first_data_row", "cid_col", "did_col", "mixed_col", "setchks_results", "terminology_server", "sct_version")
 
     def __init__(self):
         self.data_as_matrix=[]
+        self.table_has_header=None
+        self.first_data_row=None
         self.cid_col=None
         self.did_col=None
         self.mixed_col=None
         self.setchks_results={}
+        self.terminology_server=None
+        self.sct_version=None
     
     def __repr__(self):
         repr_strings=[]
@@ -46,7 +50,12 @@ class SetchksSession():
                 repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
         return "\n".join(repr_strings)
     
-    def load_uploaded_data_into_matrix(self, data=None, upload_method=None, separator="\t"):
+    def load_uploaded_data_into_matrix(self, data=None, upload_method=None, table_has_header=None, separator="\t"):
+        self.table_has_header=table_has_header# True, False or None(==unknown)
+        if self.table_has_header: # ** generally need graceful ways to cope with things like a file that has no data rows etc
+            self.first_data_row=1
+        else:
+            self.first_data_row=0 
         if upload_method=="from_text_file":
             self.data_as_matrix=[]
             for line in data.readlines():
