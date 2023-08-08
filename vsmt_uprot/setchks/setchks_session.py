@@ -1,4 +1,6 @@
 
+from . import setchk_excel
+
 class SetchksSession():
     """
     A class representing the full state of a session of checking a value set.
@@ -67,6 +69,7 @@ class SetchksSession():
                 f=[x.strip() for x in f]
                 self.data_as_matrix.append(f)
 
-
+    def generate_excel_output(self, excel_filename=None, setchks_to_include="ALL"):
+        setchk_excel.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)
         
 

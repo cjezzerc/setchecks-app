@@ -346,9 +346,10 @@ def do_CHK06_DEF_EXCL_FILTER():
     n_set_members_in_refset=results.set_analysis["n_set_members_in_refset"]
     row_results=results.row_analysis
     row_messages=[x["Message"] for x in row_results]
+    set_message=results.set_analysis["Message"]
 
     return render_template('CHK06_DEF_EXCL_FILTER.html',
                            file_data=setchks_session.data_as_matrix,
                            row_messages=row_messages,
-                           n_set_members_in_refset=n_set_members_in_refset,
+                           set_message=set_message,
                             )
