@@ -58,7 +58,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         for setchk_name in setchks_list_to_report:
             setchk_results=setchks_results[setchk_name]
-            ws.append([i_data_row, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row)
+            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row)
     
     # crude cell with setting
     cell_widths=[15,30,50,25,50] + [20]*10
