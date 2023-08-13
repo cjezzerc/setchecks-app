@@ -5,7 +5,7 @@ import time
 
 from pymongo import MongoClient
 
-sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/')
+sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/')
 from vsmt_uprot.terminology_server_module import TerminologyServer
 from vsmt_uprot.vsmt_valueset import VSMT_VersionedValueSet
 

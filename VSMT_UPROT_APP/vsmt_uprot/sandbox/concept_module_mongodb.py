@@ -7,7 +7,7 @@ import requests
 from fhir.resources.parameters import Parameters
 from fhir.resources.valueset import ValueSet
 
-sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/vsmt_uprot/")
+sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/vsmt_uprot/")
 import fhir_utils
 import fhir_snomed_utils
 import terminology_server_module

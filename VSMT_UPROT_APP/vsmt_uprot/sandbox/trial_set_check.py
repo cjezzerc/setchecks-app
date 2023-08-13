@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys, os
 
-sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/')
+sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/')
 
 import vsmt_uprot.setchks.setchk_definitions 
 from vsmt_uprot.setchks.setchks_session import SetchksSession

@@ -13,7 +13,7 @@ import refset_module_modified
 
 sys.path.remove('/cygdrive/c/Users/jeremy/GIT/snomed_python')
 
-sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/vsmt_uprot/")
+sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/vsmt_uprot/")
 
 import terminology_server_module
 from concept_module import ConceptsDict
