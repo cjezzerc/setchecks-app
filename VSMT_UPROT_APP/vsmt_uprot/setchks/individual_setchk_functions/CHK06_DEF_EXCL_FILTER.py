@@ -44,8 +44,8 @@ def do_check(setchks_session=None, setchk_results=None):
     ##################################################################
     
     concept_id_col=setchks_session.cid_col
+    
     n_set_members_in_refset=0
-    print("=============>>>>>>>>>>>>>>>>>>>>>>>", setchks_session.table_has_header, setchks_session.first_data_row)
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         concept_id=row[concept_id_col] # ** Need to know from precheck if row is a valid row. For now assume all rows contain CID related data
         row_analysis={}
@@ -56,8 +56,6 @@ def do_check(setchks_session=None, setchk_results=None):
         else:
             row_analysis["Result_id"]=1
             row_analysis["Message"]="OK"
-        
-
         setchk_results.row_analysis.append(row_analysis)
 
     setchk_results.set_analysis["n_set_members_in_refset"]=n_set_members_in_refset   # ** ?This could be generalised

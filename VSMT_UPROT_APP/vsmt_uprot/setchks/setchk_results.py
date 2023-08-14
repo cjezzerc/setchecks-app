@@ -2,7 +2,7 @@ class SetchkResults():
     """
     A class used to represent the results of a particular check on a particular value set.
 
-    When the check implied by a VsCheck object is run in the context of a particular
+    When the check implied by a Setchk object is run in the context of a particular
     SetchksSession then it will generate a SetchkResults object that will be stored
     in the SetchksSession structure
 
