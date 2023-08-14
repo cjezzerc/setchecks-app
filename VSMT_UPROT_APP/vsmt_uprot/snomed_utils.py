@@ -12,6 +12,7 @@ def parse_and_validate_sctid(sctid=None, check_namespace_validity=False):
     partition_identifier=None
     namespace_identifier=None
     item_identifier=None
+    component_type=None
 
     first_time_round_while=True
 
@@ -110,6 +111,16 @@ def parse_and_validate_sctid(sctid=None, check_namespace_validity=False):
         short_form_flag= partition_identifier in ["00","01","02"]
         long_form_flag=  partition_identifier in ["10","11","12"]
 
+        if partition_identifier in ["00","10"]:
+            component_type="concept"
+
+        if partition_identifier in ["01","11"]:
+            component_type="description"
+
+        if partition_identifier in ["02","12"]:
+            component_type="relationship"
+
+
         ###########################################
         # Check length of long form sctid is > 10 #
         if long_form_flag and len_sctid<11:
@@ -136,4 +147,6 @@ def parse_and_validate_sctid(sctid=None, check_namespace_validity=False):
         else: 
             item_identifier=sctid[0:-3]
         
-    print(valid, validation_message, item_identifier, namespace_identifier, partition_identifier, check_digit)
+    print(valid, str(item_identifier)+"_"+str(namespace_identifier)+"_"+str(partition_identifier)+"_"+str(check_digit))
+    print("Message:",validation_message)
+    print("Component type:", component_type)

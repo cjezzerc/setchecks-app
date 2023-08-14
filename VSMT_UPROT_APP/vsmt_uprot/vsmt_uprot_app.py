@@ -300,6 +300,34 @@ def trial_upload():
                            file_data=setchks_session.data_as_matrix
                             )
 
+
+
+
+#####################################
+#####################################
+##       configure columns         ##
+#####################################
+#####################################
+
+
+@bp.route('/configure_columns', methods=['GET','POST'])
+def configure_columns():
+    print(request.form.keys())
+    print("REQUEST:::::",request.args.keys())
+    print(request.files)
+
+    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
+        setchks_session=session['setchks_session']
+    else: # otherwise initialise the setchks_session object and save to session variable
+        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        session['setchks_session']=setchks_session 
+
+    return render_template('configure_columns.html',
+                           file_data=setchks_session.data_as_matrix
+                            )
+
+
+
 #####################################
 #####################################
 ##     CHK06_DEF_EXCL_FILTER       ##

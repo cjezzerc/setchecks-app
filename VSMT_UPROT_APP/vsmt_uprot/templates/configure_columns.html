@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}VSMT_uprot_app{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+
+
+
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-12 ">
+            
+            
+            <!-- THE TABLE -->
+            
+            <div class="card" style="height: 60vh" >
+                <!-- <div class="card-header">
+                    <strong>Table</strong>
+                </div>                 -->
+                <div class="panel" style="overflow:auto">
+                <table class="table table-bordered" style="font-size: x-small;">
+
+                    <thead>
+                        
+                            <!-- add the row of column titles -->
+                            <tr>
+                                <th scope="col"></th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col">{{ cell }}</th>
+                                {% endfor %}
+                            </tr>
+
+                            <tr>
+                                <th scope="col">Column type</th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Other
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="#">Concept Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Description Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Mixed Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Other</a></li>
+                                        </ul>
+                                    </div>
+                                </th>
+                                {% endfor %}
+                            </tr>
+
+                            <tr>
+                                <th scope="col"></th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col"> ........</th>
+                                {% endfor %}
+                            </tr>
+
+
+                    </thead>
+                    
+                        {% for row in file_data[1:] %}
+                            <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            {%for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        <tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+</div>
+
+  
+{% endblock %}
