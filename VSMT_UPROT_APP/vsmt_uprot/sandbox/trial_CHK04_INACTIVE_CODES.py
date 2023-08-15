@@ -25,7 +25,7 @@ setchks_session.sct_version="http://snomed.info/sct/83821000000107/version/" + r
 #                                              #
 #  Load value set that checks should be run on #
 #                                              #
-fh=open('trial1.tsv')
+fh=open('trial2.tsv')
 setchks_session.load_uploaded_data_into_matrix(data=fh, upload_method="from_text_file", table_has_header=True)
 setchks_session.cid_col=0
 #                                              #
@@ -36,8 +36,8 @@ setchks_session.cid_col=0
 #                         #                    
 #  Loop over some checks  #
 #                         #
-# for setchk_name in ['CHK00_DUMMY_CHECK','CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']:
-for setchk_name in ['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']:
+
+for setchk_name in ['CHK04_INACTIVE_CODES']:
     
     setchk=vsmt_uprot.setchks.setchk_definitions.setchks[setchk_name]
 

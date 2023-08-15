@@ -1,4 +1,3 @@
-#use this with `docker-compose up` against a generic Docker end-point (e.g. standalone Docker)
 version: "0.1"
 services:
   vsmt_uprot_app:
