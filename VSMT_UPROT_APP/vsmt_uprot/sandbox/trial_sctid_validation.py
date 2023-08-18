@@ -3,7 +3,7 @@ import sys, os
 
 sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP')
 
-from vsmt_uprot.snomed_utils import parse_and_validate_sctid
+from vsmt_uprot.snomed_utils import ParsedSCTID
 
 
 for sctid in [  '819541000000103',
@@ -21,7 +21,6 @@ for sctid in [  '819541000000103',
                 '81954 1000000 10 3',
 
                 ]:
-    print(sctid)
-    parse_and_validate_sctid(sctid)
-    print("")
+    print(ParsedSCTID(sctid))
+    print("===========================")
 

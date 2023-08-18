@@ -4,3 +4,4 @@ fhir.resources
 pymongo
 flask-session
 redis
+openpyxl
