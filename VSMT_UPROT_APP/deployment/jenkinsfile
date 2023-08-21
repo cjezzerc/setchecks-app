@@ -1,0 +1,463 @@
+properties([
+  buildDiscarder(
+    logRotator(numToKeepStr: '15')
+  ),
+  disableConcurrentBuilds(),
+  gitLabConnection('Jenkins-Gitlab')
+])
+
+// AWS vars
+def awsRegion = 'eu-west-2'
+def ecrAccountName = 'live-mgmt'
+
+
+// Jenkins variables
+def jobName = "${env.JOB_NAME}"
+def branchName = "${env.BRANCH_NAME}"
+// simplifiedBranchName is used for namespaces, so removing feature prefix, converting to lower case and truncating...
+simplifiedBranchName = branchName.replace("feature/", "").toLowerCase()
+if ( simplifiedBranchName.length() > 24 ){
+  echo "truncating branch name for use in namespaces ..."
+  simplifiedBranchName = simplifiedBranchName.substring(0,23)
+}
+def jenkinsUrl = "${env.BUILD_URL}"
+def jenkinsScriptsDir = 'VSMT_UPROT_APP/deployment/scripts'
+def jobFolder = "sample-pipelines"
+// def nodeLabel = 'any'
+
+def commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
+
+// App & service Team vars
+def appName = "vsmt-uprot-app"
+def serviceTeam
+def serviceTeamEnvName = 'dev'
+def vsmt_uprot_app_version = "${commitHash}"
+def version ='latest'
+def dockerDir = 'docker'
+def dockerImage = 'vsmt-uprot-app'
+
+
+
+// k8s vars
+// def jMeterK8sDir = 'k8s/jmeter'
+def appK8sDir = 'VSMT_UPROT_APP/deployment/k8s'
+def appNamespace = "${appName}-${simplifiedBranchName}-${serviceTeamEnvName}"
+def deploymentName = "${appName}-deploy"
+def serviceName = "${appName}-svc"
+def servicePort = 5000
+def targetPort = 5000
+def securityPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
+
+def albIngressName = "lb" // used in R53 record
+def albScheme = 'internal' // 'internal' or 'internet-facing'
+
+//*******TAGS******************
+//***** BILLING TAGS ******
+def serviceTag = "vsmt"
+def serviceOwnerTag = "jecr3"
+def versionTag = "2.0"
+def projectNameTag = "vsmt"
+//******* Environment Tags *******
+def dataClassificationTag = "1"
+def environmentTag = "testing"
+def publicFacingTag = "N"
+//****** Application information Tags *******
+def appNameTag = "nhsd-texas-sample pipeline-ingress"
+def rvTag = "1"
+def buildDateTag = new Date().format("dd-MM-yyyy")
+def buildTimeTag = new Date().format("HH:mm")
+def stackTag = "demo"
+def toolTag = "k8s"
+//******************************
+
+def texasEnvName
+def envDomain
+
+// jMeter vars - NOTE JMeter is disabled by default to speed up the pipeline
+def jmeterEnabled = false
+def jmeterDir = 'jmeter'
+def jmeterScriptsDir = "${jmeterDir}/scripts"
+def jmeterTestDir = "${jmeterDir}/tests/loadtest1"
+def jmxFile = "example.jmx"
+
+def nodeLabel = 'master'
+// ************************************************************************************
+// Jenkins job folder/names must match the following convention EXACTLY:
+//
+// sample-pipeline/<service team name>/deploy to (live-lk8s-nonprod|live-lk8s-prod)
+//
+//   e.g. sample-pipelines/dspt/deploy to live-lk8s-nonprod
+//
+// ************************************************************************************
+
+echo "BUILD_URL is ${BUILD_URL}"
+
+if ( jenkinsUrl ==~ /^http:\/\/texas-jenkins-v1:8080\/.*$/ ){
+  echo "This is Texas Jenkins MoM - changing nodeLabel to jenkins-slave"
+  nodeLabel = 'jenkins-slave'
+}
+
+// Get service team and target environment from Jenkins job name
+if ( jobName ==~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
+  def envMatch = jobName =~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/
+  serviceTeam = envMatch[0][1]
+  texasEnvName = envMatch[0][2]
+}
+else if ( ( texasEnvName != 'live-lk8s-nonprod' ) && ( serviceTeam != 'texas' ) ){
+  println "Only Texas can deploy this pipeline to environments other than non-prod"
+  currentBuild.result = 'FAILURE'
+  return
+}
+else {
+  println "Invalid job name"
+  currentBuild.result = 'FAILURE'
+  return
+}
+
+// Set additional config from target environment
+if ( texasEnvName == 'live-lk8s-nonprod' ){
+  envDomain = 'k8s-nonprod.texasplatform.uk'
+} else if ( texasEnvName == 'live-lk8s-prod') {
+  envDomain = 'k8s-prod.texasplatform.uk'
+} else if ( texasEnvName == 'live-mgmt') {
+  envDomain = 'mgmt.texasplatform.uk'
+} else if ( texasEnvName == 'test-lk8s') {
+  envDomain = 'k8s.texastest.uk'
+} else if ( texasEnvName == 'test-mgmt') {
+  envDomain = 'mgmt.texastest.uk'
+} else if ( texasEnvName == 'dev-lk8s') {
+  envDomain = 'k8s.texasdev.uk'
+} else if ( texasEnvName == 'dev-mgmt') {
+  envDomain = 'mgmt.texasdev.uk'
+}
+
+// The following variables are used for health checks after the deployment
+// Note the trailing '.' !
+hostedZoneName = "${envDomain}."
+fqdn = "${appNamespace}-${albIngressName}.${envDomain}"
+r53Record = "${fqdn}."
+path = '/healthy'
+url = "https://${fqdn}${path}"
+searchText = 'Healthy'
+
+// def jmeterNamespace = "${serviceTeam}-${serviceTeamEnvName}-${simplifiedBranchName}-jmeter"
+
+def postFailure() {
+    updateGitlabCommitStatus name: 'build', state: 'failed'
+}
+
+def postSuccess() {
+    updateGitlabCommitStatus name: 'build', state: 'success'
+}
+
+node {
+  try {
+    stage('Print Config'){
+      echo "################ JOB CONFIG ########################"
+      echo "  serviceTeam is: ${serviceTeam}"
+      echo "  serviceTeamEnvName is: ${serviceTeamEnvName}"
+      echo "  texasEnvName is: ${texasEnvName}"
+      echo "  hostedZoneName is: ${hostedZoneName}"
+      echo "  FQDN is: ${fqdn}"
+      echo "  Test URL is: ${url}"
+      echo "  branchName is: ${branchName}"
+      echo "  appName is: ${appName}"
+      echo "  version is ${version}"
+      echo "  jenkinsScriptsDir is: ${jenkinsScriptsDir}"
+    //   echo "  jmeterScriptsDir is: ${jmeterScriptsDir}"
+    //   echo "  jmeterTestDir is: ${jmeterTestDir}"
+    //   echo "  jmxFile is: ${jmxFile}"
+      echo "####################################################"
+    }
+
+    stage('Checkout') {
+      echo 'Git repository checkout...'
+      checkout scm
+    }
+
+    stage('Quality Checks'){
+      echo "Placeholder for e.g. Sonarqube, git-secrets etc."
+    }
+
+    stage('Build & Push'){
+      ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
+      // This example uses a multi-stage build
+    //   sh """docker build -t ${dockerImage}-build:${version} -f VSMT_UPROT_APP/Dockerfile ."""
+    //   sh """docker build -t ${dockerImage}-build:${version} -f ${dockerDir}/pipeline-build.dockerfile ."""
+    //   sh """docker build --build-arg VERSION=${version} -t ${ecrImageName}:${version} -f ${dockerDir}/pipeline-runtime.dockerfile ."""
+      sh """docker build --build-arg VERSION=${vsmt_uprot_app_version} -t ${ecrImageName}:${vsmt_uprot_app_version} -f VSMT_UPROT_APP/Dockerfile ."""
+      // Authenticate against ECR
+      sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
+      // Create repo if it doesn't exist
+      sh """aws ecr describe-repositories --repository-names ${dockerImage} || aws ecr create-repository --repository-name ${dockerImage}"""
+      // Push image to ECR
+      sh """docker push ${ecrImageName}:${vsmt_uprot_app_version}"""
+    }
+
+    stage('Scan Image') {
+      sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${env.ecrAccountId}"
+    }
+
+    stage("Authenticate to ${texasEnvName} AWS/k8s") {
+      awsCreds = sh (
+        script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} ${serviceTeam}",
+        returnStdout: true)
+      awsAccessKeyId=awsCreds.split(',')[0].split('=')[1].trim()
+      awsSecretAccessKey=awsCreds.split(',')[1].split('=')[1].trim()
+      awsSessionToken=awsCreds.split(',')[2].split('=')[1].trim()
+      withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+        "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+        "AWS_SESSION_TOKEN=${awsSessionToken}"]) {
+        kubeconfig = sh ( script: "${jenkinsScriptsDir}/kube_config.sh ${texasEnvName}", returnStdout: true).trim()
+        sh """aws sts get-caller-identity"""
+      }
+      echo "kubeconfig is: ${kubeconfig}"
+    }
+
+    stage("Terraform (placeholder)"){
+      echo "placeholder for e.g. RDS, ECR"
+    }
+
+    stage("Update DB schema (placeholder)"){
+      echo "placeholder e.g. using Flyway"
+    }
+
+    stage("Deploy ${appName}"){
+      // Prevent concurrent deployments
+      lock ("${appNamespace}"){
+        withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+          "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+          "AWS_SESSION_TOKEN=${awsSessionToken}",
+          "KUBECONFIG=${kubeconfig}"
+          ])
+        {
+          wildcardCertDomainName = "*.${envDomain}"
+          certArn = sh( script: """aws acm list-certificates | jq -r --arg jq_domainname ${wildcardCertDomainName} '.CertificateSummaryList[] | select(.DomainName == \$jq_domainname ) | .CertificateArn' """, returnStdout: true ).trim()
+
+          echo "Texas wildcard cert ARN is: ${certArn}"
+
+          dir (appK8sDir){
+            // Create/update namespace
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' namespace.yaml""")
+            sh ("""kubectl apply -f namespace.yaml""")
+
+            // Create/update vsmt_uprot_app deployment
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_uprot_app_deployment.yaml""")
+            // Use | as a delimiter if the values contain /
+            sh ("""sed -i 's|IMAGE_NAME_TO_BE_REPLACED|${ecrImageName}:${vsmt_uprot_app_version}|g' vsmt_uprot_app_deployment.yaml""")
+            sh ("""sed -i 's/CONTAINER_NAME_TO_BE_REPLACED/${dockerImage}/g' vsmt_uprot_app_deployment.yaml""")
+            sh ("""sed -i 's/DEPLOYMENT_NAME_TO_BE_REPLACED/${deploymentName}/g' vsmt_uprot_app_deployment.yaml""")
+            sh ("""kubectl apply -f vsmt_uprot_app_deployment.yaml""")
+
+            // Create/update redis deployment
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_deployment.yaml""")
+            // Use | as a delimiter if the values contain /
+            sh ("""sed -i 's|REDIS_IMAGE_NAME_TO_BE_REPLACED|redis:${version}|g' redis_deployment.yaml""")
+            sh ("""sed -i 's/REDIS_CONTAINER_NAME_TO_BE_REPLACED/redis/g' redis_deployment.yaml""")
+            sh ("""sed -i 's/REDIS_DEPLOYMENT_NAME_TO_BE_REPLACED/redis_deployment/g' redis_deployment.yaml""")
+            sh ("""kubectl apply -f redis_deployment.yaml""")
+
+            // Create/update mongodb deployment
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' mongodb_deployment.yaml""")
+            // Use | as a delimiter if the values contain /
+            sh ("""sed -i 's|MONGODB_IMAGE_NAME_TO_BE_REPLACED|mongodb:${version}|g' mongodb_deployment.yaml""")
+            sh ("""sed -i 's/MONGODB_CONTAINER_NAME_TO_BE_REPLACED/mongodb/g' mongodb_deployment.yaml""")
+            sh ("""sed -i 's/MONGODB_DEPLOYMENT_NAME_TO_BE_REPLACED/mongodb_deployment/g' mongodb_deployment.yaml""")
+            sh ("""kubectl apply -f mongodb_deployment.yaml""")
+
+            // Create/update vsmt_uprot_app service
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' service.yaml""")
+            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' service.yaml""")
+            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' service.yaml""")
+            sh ("""sed -i 's/TARGET_PORT_TO_REPLACE/${targetPort}/g' service.yaml""")
+            sh ("""sed -i 's/SERVICE_SELECTOR_TO_BE_REPLACED/${deploymentName}/g' service.yaml""")
+            sh ("""kubectl apply -f service.yaml""")
+
+            // Create/update redis service
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_SERVICE_NAME_TO_BE_REPLACED/redis_service/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_PORT_TO_BE_REPLACED/6379/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_TARGET_PORT_TO_REPLACE/6379/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_SERVICE_SELECTOR_TO_BE_REPLACED/redis_deployment/g' redis_service.yaml""")
+            sh ("""kubectl apply -f redis_service.yaml""")
+
+            // Create/update mongodb service
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_SERVICE_NAME_TO_BE_REPLACED/mongodb_service/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_PORT_TO_BE_REPLACED/27017/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_TARGET_PORT_TO_REPLACE/27017/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_SERVICE_SELECTOR_TO_BE_REPLACED/mongodb_deployment/g' mongodb_service.yaml""")
+            sh ("""kubectl apply -f mongodb_service.yaml""")
+
+            // Create/update ingress (ALB)
+            // Epochtime is used to verify whether the ingress has been updated since the previous deployment
+            epochtime = sh( script: """ date +%s """, returnStdout: true ).trim()
+            sh ("""sed -i 's/EPOCHTIME_TO_BE_REPLACED/${epochtime}/g' ingress.yaml""")
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' ingress.yaml""")
+            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' ingress.yaml""")
+            sh ("""sed -i 's/INGRESS_NAME_TO_BE_REPLACED/${albIngressName}/g' ingress.yaml""")
+            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' ingress.yaml""")
+            sh ("""sed -i 's/ALB_INGRESS_TO_BE_REPLACED/${albIngressName}/g' ingress.yaml""")
+            sh ("""sed -i 's/ALB_SCHEME_TO_BE_REPLACED/${albScheme}/g' ingress.yaml""")
+            sh ("""sed -i 's/SECURITY_POLICY_TO_BE_REPLACED/${securityPolicy}/g' ingress.yaml""")
+            // TAGS for ALB
+            sh ("""sed -i 's/SERVICE_TAG_TO_BE_REPLACED/${serviceTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/SERVICE_OWNER_TAG_TO_BE_REPLACED/${serviceOwnerTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/VERSION_TAG_TO_BE_REPLACED/${versionTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/PROJECT_NAME_TAG_TO_BE_REPLACED/${projectNameTag}/g' ingress.yaml""")
+
+            sh ("""sed -i 's/DATA_CLASSIFICATION_TAG_TO_BE_REPLACED/${dataClassificationTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/ENVIRONMENT_TAG_TO_BE_REPLACED/${environmentTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/PUBLIC_FACING_TAG_TO_BE_REPLACED/${publicFacingTag}/g' ingress.yaml""")
+
+            sh ("""sed -i 's/APPLICATION_NAME_TAG_TO_BE_REPLACED/${appNameTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/RV_TAG_TO_BE_REPLACED/${rvTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/BUILD_DATE_TAG_TO_BE_REPLACED/${buildDateTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/BUILD_TIME_TAG_TO_BE_REPLACED/${buildTimeTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/STACK_TAG_TO_BE_REPLACED/${stackTag}/g' ingress.yaml""")
+            sh ("""sed -i 's/TOOL_TAG_TO_BE_REPLACED/${toolTag}/g' ingress.yaml""")
+
+            sh ("""sed -i 's|CERT_ARN_TO_BE_REPLACED|${certArn}|g' ingress.yaml""")
+
+            sh ("""kubectl apply -f ingress.yaml""")
+          }
+        }
+      }
+    }
+
+    stage ("Test the endpoint"){
+      withEnv([
+          "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+          "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+          "AWS_SESSION_TOKEN=${awsSessionToken}",
+          "KUBECONFIG=${kubeconfig}"
+      ])
+      {
+        // Wait for jenkins pod to be available - currently takes around 5 mins
+        sh """${jenkinsScriptsDir}/check_pods.sh ${deploymentName} ${appNamespace} 5 10"""
+
+        sleep 10 // to allow time for ingress to be created after pods ready
+
+        // Ensure ingress is ready with updated epochtime annotation before attempting to query ALB health (otherwise may return old endpoint)
+        sh """${jenkinsScriptsDir}/check_ingress.sh ${albIngressName} ${appNamespace} ${epochtime} 5 30"""
+
+        loadBalancerDNSName = sh ( script: """kubectl get ingress ${albIngressName} -n ${appNamespace} -o json | jq -r '.status.loadBalancer.ingress[].hostname' """, returnStdout: true ).trim()
+        echo "loadBalancerDNSName is ${loadBalancerDNSName}"
+
+        loadBalancerArn = sh ( script: """aws elbv2 describe-load-balancers --region=${awsRegion} | jq -r --arg jq_lbdnsname ${loadBalancerDNSName} '.LoadBalancers[] | select(.DNSName == \$jq_lbdnsname) | .LoadBalancerArn'""", returnStdout: true ).trim()
+        echo "loadBalancerArn is ${loadBalancerArn}"
+
+        targetGroupArn = sh ( script: """aws elbv2 describe-target-groups --region=${awsRegion} | jq -r --arg jq_lbarn ${loadBalancerArn} '.TargetGroups[] | select(.LoadBalancerArns == [\$jq_lbarn]) | .TargetGroupArn'""", returnStdout: true ).trim()
+        echo "targetGroupArn is ${targetGroupArn}"
+
+        sh """${jenkinsScriptsDir}/check_alb.sh ${targetGroupArn} 30 20"""
+
+        echo "HostedZoneName ${hostedZoneName}"
+        hostedZoneId = sh( script: """ aws route53 list-hosted-zones | jq -r --arg jq_hostedzonename ${hostedZoneName} '.HostedZones[] | select(.Name == \$jq_hostedzonename) | .Id' """, returnStdout: true ).trim()
+        echo "hostedZoneId is ${hostedZoneId}"
+
+        // Note the trailing . on the target FQDN to check to for
+        sh """${jenkinsScriptsDir}/check_r53.sh ${hostedZoneId} ${r53Record} ${loadBalancerDNSName}. 5 30"""
+
+        // Only run curl against endpoint if it is publicly accessible
+        if ( albScheme == 'internet-facing'){
+          // Check endpoint using curl
+          sh """${jenkinsScriptsDir}/curl_endpoint.sh ${url} \"${searchText}\" 5 30"""
+        }
+        else {
+          echo '''Skipping curl check as endpoint is internal and won't be accessible'''
+        }
+      }
+    }
+
+    // if ( jmeterEnabled ){
+    //   stage("Deploy jMeter"){
+    //     // Prevent concurrent jMeter deployments
+    //     lock ("${jmeterNamespace}"){
+    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
+    //         "KUBECONFIG=${kubeconfig}"
+    //         ])
+    //       {
+    //         jMeterNamespaceExists = sh( script: """ kubectl get ns | awk '{print \$1}' | grep '^${jmeterNamespace}\$' || true """, returnStdout: true).trim()
+    //         if ( jMeterNamespaceExists != "${jmeterNamespace}" ) {
+    //           echo "namespace ${jmeterNamespace} doesn't exist, creating it..."
+    //           sh (""" kubectl create ns ${jmeterNamespace} """)
+    //         }
+    //         else {
+    //           echo "namespace ${jmeterNamespace} already exists"
+    //         }
+    //         dir ( jMeterK8sDir ){
+    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_slaves_deploy.yaml"""
+    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_slaves_svc.yaml"""
+    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_master_deploy.yaml"""
+    //         }
+    //         // Wait for jMeter pods to be available
+    //         sh """${jenkinsScriptsDir}/check_pods.sh jmeter-master ${jmeterNamespace} 5 30"""
+    //         sh """${jenkinsScriptsDir}/check_pods.sh jmeter-slave ${jmeterNamespace} 5 30"""
+    //       }
+    //     }
+    //   }
+
+    //   stage("Run Jmeter"){
+    //     // Prevent concurrent jMeter executions in the same namespace
+    //     lock ("${jmeterNamespace}"){
+    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
+    //         "KUBECONFIG=${kubeconfig}"
+    //         ])
+    //       {
+    //         sh ("""sed -i 's|REPLACE_WITH_FQDN|${fqdn}|g' ${jmeterTestDir}/${jmxFile}""")
+    //         sh ("""sed -i 's|REPLACE_WITH_PATH|${path}|g' ${jmeterTestDir}/${jmxFile}""")
+    //         sh """kubectl config set-context --current --namespace=${jmeterNamespace}"""
+    //         sh """${jmeterScriptsDir}/jmeter_stop.sh"""
+    //         sh """${jmeterScriptsDir}/start_test.sh ${jmeterTestDir} ${jmeterTestDir}/${jmxFile}"""
+    //       }
+    //     }
+    //     // Make jMeter test report files available as build artifacts
+    //     dir('test-results') {
+    //       archiveArtifacts artifacts: '**'
+    //     }
+    //   }
+
+    //   stage("Destroy jMeter") {
+    //     // Prevent concurrent jMeter destroys
+    //     lock ("${jmeterNamespace}"){
+    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
+    //         "KUBECONFIG=${kubeconfig}"
+    //         ])
+    //       {
+    //         sh """kubectl delete ns ${jmeterNamespace}"""
+    //       }
+    //     }
+    //   }
+    // }
+
+    stage("Destroy webapp") {
+      // Prevent concurrent app ns destroys
+      lock ("${appNamespace}"){
+        withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+          "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+          "AWS_SESSION_TOKEN=${awsSessionToken}",
+          "KUBECONFIG=${kubeconfig}"
+          ])
+        {
+          sh """kubectl delete ns ${appNamespace}"""
+        }
+      }
+    }
+
+  // Post build result to GitLab
+  } finally {
+    def currentResult = currentBuild.result ?: 'SUCCESS'
+    if (currentResult == 'SUCCESS') {
+      postSuccess()
+    } else {
+      postFailure()
+    }
+  }
+}

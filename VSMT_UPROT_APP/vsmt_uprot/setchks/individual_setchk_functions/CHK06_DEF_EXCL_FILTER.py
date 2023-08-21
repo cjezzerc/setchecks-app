@@ -47,7 +47,7 @@ def do_check(setchks_session=None, setchk_results=None):
     
     n_set_members_in_refset=0
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
-        concept_id=row[concept_id_col] # ** Need to know from precheck if row is a valid row. For now assume all rows contain CID related data
+        concept_id=row[concept_id_col].string # ** Need to know from precheck if row is a valid row. For now assume all rows contain CID related data
         row_analysis={}
         if concept_id in refset_concept_ids:
             row_analysis["Result_id"]=2 # ** How generalisable is concept of a enumerated result_id across the suite of checks?

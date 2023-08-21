@@ -1,0 +1,7 @@
+flask
+requests
+fhir.resources
+pymongo
+flask-session
+redis
+openpyxl

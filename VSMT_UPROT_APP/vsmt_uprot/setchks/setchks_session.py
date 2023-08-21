@@ -1,5 +1,6 @@
 
 from . import setchk_excel
+from .data_as_matrix import load_data_into_matrix
 
 class SetchksSession():
     """
@@ -26,9 +27,19 @@ class SetchksSession():
     every time.
     """
 
-    __slots__=("data_as_matrix", "table_has_header", "first_data_row", "cid_col", "did_col", "mixed_col", "setchks_results", "terminology_server", "sct_version")
+    __slots__=("unparsed_data",
+               "data_as_matrix", 
+               "table_has_header", 
+               "first_data_row", 
+               "cid_col", 
+               "did_col", 
+               "mixed_col", 
+               "setchks_results", 
+               "terminology_server", 
+               "sct_version")
 
     def __init__(self):
+        self.unparsed_data=None
         self.data_as_matrix=[]
         self.table_has_header=None
         self.first_data_row=None
@@ -52,22 +63,17 @@ class SetchksSession():
                 repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
         return "\n".join(repr_strings)
     
-    def load_uploaded_data_into_matrix(self, data=None, upload_method=None, table_has_header=None, separator="\t"):
-        self.table_has_header=table_has_header# True, False or None(==unknown)
-        if self.table_has_header: # ** generally need graceful ways to cope with things like a file that has no data rows etc
-            self.first_data_row=1
-        else:
-            self.first_data_row=0 
-        if upload_method=="from_text_file":
-            self.data_as_matrix=[]
-            for line in data.readlines():
-                if type(line)==str:
-                    decoded_line=line
-                else: # this seems to work if file data is passed from Flask app form POST
-                    decoded_line=str(line, 'utf-8')
-                f=decoded_line.split(separator)
-                f=[x.strip() for x in f]
-                self.data_as_matrix.append(f)
+    def load_data_into_matrix(self, 
+                                       data=None, 
+                                       upload_method=None, 
+                                       table_has_header=None, 
+                                       separator="\t"):
+        
+        load_data_into_matrix.load_data_into_matrix(self, 
+                                data=data, 
+                                upload_method=upload_method, 
+                                table_has_header=table_has_header, 
+                                separator=separator)
 
     def generate_excel_output(self, excel_filename=None, setchks_to_include="ALL"):
         setchk_excel.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)

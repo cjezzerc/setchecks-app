@@ -14,7 +14,7 @@ def do_check(setchks_session=None, setchk_results=None):
     # grab a list of concept_ids #
     #                            #
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
-        concept_ids_list.append(row[concept_id_col])
+        concept_ids_list.append(row[concept_id_col].string)
     #                            #
     ##############################
 
@@ -60,7 +60,8 @@ def do_check(setchks_session=None, setchk_results=None):
         n_processed+=1
         row_analysis={}
         
-        concept_id=row[concept_id_col]
+        # concept_id=row[concept_id_col].parsed_sctid.sctid_string
+        concept_id=row[concept_id_col].string
 
         if concept_id in active_status_dict:
             active_status=active_status_dict[concept_id]

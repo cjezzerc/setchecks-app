@@ -4,7 +4,7 @@ import re
 
 class ParsedSCTID:
 
-    __slots__=("sctid",
+    __slots__=("sctid_string",
                "underscore_separated_form",
                "valid",
                "validation_message", 
@@ -18,8 +18,8 @@ class ParsedSCTID:
                "item_identifier",
                "component_type")
 
-    def __init__(self, sctid=None, check_namespace_validity=False):
-        self.sctid=sctid
+    def __init__(self, *, string=None, check_namespace_validity=False):
+        self.sctid_string=string
         self.underscore_separated_form=None
         self.valid=None
         self.validation_message=""
@@ -29,7 +29,8 @@ class ParsedSCTID:
         self.namespace_identifier=None
         self.check_namespace_validity=check_namespace_validity
         self.item_identifier=None
-        self.component_type=None
+        self.component_type="Other" # Currently everything that comes out with valid=False will be of type "Other"
+                                    # No other analysis done on them
         self.short_form_flag=None
         self.long_form_flag=None
 
@@ -66,9 +67,9 @@ class ParsedSCTID:
         
             ##################################
             #    Check input is a string     #
-            if type(self.sctid)!= str:
+            if type(self.sctid_string)!= str:
                 self.valid=False
-                self.validation_message="The supplied SCTID is of type %s but a string is required." % type(self.sctid)
+                self.validation_message="The supplied SCTID is of type %s but a string is required." % type(self.sctid_string)
                 break
             #                                 #
             ###################################
@@ -76,20 +77,20 @@ class ParsedSCTID:
                     
             ##################################
             #    Check input is not ""       #
-            if self.sctid== "":
+            if self.sctid_string== "":
                 self.valid=False
                 self.validation_message="The supplied SCTID is a null string."
                 break
             #                                 #
             ###################################
 
-            len_sctid=len(self.sctid)
+            len_sctid=len(self.sctid_string)
 
             ########################################
             #    Check sctid is decimal digits     #
-            if (re.search(r'^[0-9]+$', self.sctid )) is None:
+            if (re.search(r'^[0-9]+$', self.sctid_string )) is None:
                 self.valid=False
-                self.validation_message="A SCTID can only contain the digits 0-9 and no other characters (including spaces). The supplied SCTID was '%s'." % self.sctid
+                self.validation_message="A SCTID can only contain the digits 0-9 and no other characters (including spaces). The supplied SCTID was '%s'." % self.sctid_string
                 break
             #                                      #
             ########################################
@@ -114,14 +115,14 @@ class ParsedSCTID:
 
             ########################################
             #       Check no leading zeroes        #
-            if self.sctid[0]=="0":
+            if self.sctid_string[0]=="0":
                 self.valid=False
                 self.validation_message="The supplied SCTID has one or more leading zeroes. This is not allowed."
                 break
             #                                      #
             ########################################
 
-            self.check_digit=self.sctid[-1]
+            self.check_digit=self.sctid_string[-1]
             
             ##################################
             #     Check the check digit      #
@@ -129,7 +130,7 @@ class ParsedSCTID:
             #                                #
             ##################################
 
-            self.partition_identifier=self.sctid[-3:-1]	
+            self.partition_identifier=self.sctid_string[-3:-1]	
         
 
             #################################################
@@ -145,13 +146,13 @@ class ParsedSCTID:
             self.long_form_flag=  self.partition_identifier in ["10","11","12"]
 
             if self.partition_identifier in ["00","10"]:
-                self.component_type="concept"
+                self.component_type="Concept_Id"
 
             if self.partition_identifier in ["01","11"]:
-                self.component_type="description"
+                self.component_type="Description_Id"
 
             if self.partition_identifier in ["02","12"]:
-                self.component_type="relationship"
+                self.component_type="Relationship_Id"
 
 
             ###########################################
@@ -164,7 +165,7 @@ class ParsedSCTID:
             ###########################################
 
             if self.long_form_flag:
-                self.namespace_identifier=self.sctid[-10:-3]
+                self.namespace_identifier=self.sctid_string[-10:-3]
             else: 
                 self.namespace_identifier=0
 
@@ -176,9 +177,9 @@ class ParsedSCTID:
             ######################################################################
 
             if self.long_form_flag:
-                self.item_identifier=self.sctid[0:-10]
+                self.item_identifier=self.sctid_string[0:-10]
             else: 
-                self.item_identifier=self.sctid[0:-3]
+                self.item_identifier=self.sctid_string[0:-3]
             
         self.underscore_separated_form=str(self.item_identifier)+"_"+str(self.namespace_identifier)+"_"+str(self.partition_identifier)+"_"+str(self.check_digit)
         # print("Message:",validation_message)

@@ -1,0 +1,25 @@
+version: "0.1"
+services:
+  setchks_app:
+    image: setchks_app
+    depends_on:
+      - redis-server
+      - mongo-server
+    ports:
+      - 5000:5000
+    environment:
+      - ONTOSERVER_USERNAME
+      - ONTOSERVER_SECRET
+      - VSMT_DOCKER_COMPOSE=YES
+      - ONTOSERVER_INSTANCE=https://dev.ontology.nhs.uk/dev1/fhir/
+      - ONTOAUTH_INSTANCE=https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token
+
+  redis-server:
+    image: redis
+    ports:
+      - 6379:6379
+
+  mongo-server:
+    image: mongo
+    ports:
+      - 27017:27017

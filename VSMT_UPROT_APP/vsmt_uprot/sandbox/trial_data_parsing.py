@@ -7,6 +7,9 @@ import vsmt_uprot.setchks.setchk_definitions
 from vsmt_uprot.setchks.setchks_session import SetchksSession
 from vsmt_uprot.terminology_server_module import TerminologyServer
 
+from vsmt_uprot.setchks.data_as_matrix.data_cell_contents import DataCellContents
+
+
 setchks_session=SetchksSession()
 
 ###########################################################
@@ -31,45 +34,8 @@ setchks_session.cid_col=0
 #                                              #
 ################################################
 
+print(setchks_session)
+print("DCC:")
+dcc=DataCellContents(cell_contents='1048521000000109')
 
-###########################
-#                         #                    
-#  Loop over some checks  #
-#                         #
-# for setchk_name in ['CHK00_DUMMY_CHECK','CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']:
-for setchk_name in ['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']:
-# for setchk_name in ['CHK04_INACTIVE_CODES']:
-    
-    setchk=vsmt_uprot.setchks.setchk_definitions.setchks[setchk_name]
-
-    ###################################
-    #                                 #
-    #    Actually run the check       #
-    #                                 #
-    setchk.run_check(setchks_session=setchks_session)
-    #                                 #
-    ###################################
-
-    print("++++++++++++++++++++++++")
-    print("After set check ran, setchks_sessions is:")
-    print(setchks_session)
-    print("++++++++++++++++++++++++")
-
-    print("++++++++++++++++++++++++")
-    for k,v in setchks_session.setchks_results.items(): 
-        print("Results for check %s :" % k)
-        print(v)
-    print("++++++++++++++++++++++++")
-#                         #
-###########################
-
-
-#############################
-#                           #
-#    Create Excel output    #
-#                           #
-setchks_session.generate_excel_output(excel_filename='/tmp/setchks_output.xlsx')
-#                           #
-#############################
-
-
+print(dcc)

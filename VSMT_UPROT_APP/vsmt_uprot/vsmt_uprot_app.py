@@ -290,7 +290,7 @@ def trial_upload():
         session['setchks_session']=setchks_session 
 
     if 'myfile' in request.files:
-        setchks_session.load_uploaded_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file', table_has_header=True)
+        setchks_session.load_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file', table_has_header=True)
         print(setchks_session)
         session['setchks_session']=setchks_session # save updated setchks_session to the session variable
     else:

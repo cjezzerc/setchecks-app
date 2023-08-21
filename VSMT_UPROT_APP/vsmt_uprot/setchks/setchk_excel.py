@@ -53,12 +53,15 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
 
     # simple header row (but only if data matrix had one; need to do this better)
     if setchks_session.table_has_header:
-        ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
+        header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
+        # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
+        ws.append(["Row number", "Check", "Message"] + header_row_cell_contents) # ** need to create better header row
 
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         for setchk_name in setchks_list_to_report:
             setchk_results=setchks_results[setchk_name]
-            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row)
+            data_row_cell_contents=[x.string for x in data_row]
+            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
     
     # crude cell with setting
     cell_widths=[15,30,50,25,50] + [20]*10

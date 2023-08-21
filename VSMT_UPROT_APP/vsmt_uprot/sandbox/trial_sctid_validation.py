@@ -21,6 +21,6 @@ for sctid in [  '819541000000103',
                 '81954 1000000 10 3',
 
                 ]:
-    print(ParsedSCTID(sctid))
+    print(ParsedSCTID(string=sctid))
     print("===========================")
 
