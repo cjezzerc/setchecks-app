@@ -205,6 +205,7 @@ node {
     }
 
     stage('Scan Image') {
+      sh "chmod +x ${jenkinsScriptsDir}/ecr_scan_image.sh"
       sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${env.ecrAccountId}"
     }
 
