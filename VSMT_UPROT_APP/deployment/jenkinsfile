@@ -277,12 +277,12 @@ node {
             sh ("""kubectl apply -f mongodb_deployment.yaml""")
 
             // Create/update vsmt_uprot_app service
-            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' service.yaml""")
-            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' service.yaml""")
-            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' service.yaml""")
-            sh ("""sed -i 's/TARGET_PORT_TO_REPLACE/${targetPort}/g' service.yaml""")
-            sh ("""sed -i 's/SERVICE_SELECTOR_TO_BE_REPLACED/${deploymentName}/g' service.yaml""")
-            sh ("""kubectl apply -f service.yaml""")
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_uprot_app_service.yaml""")
+            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' vsmt_uprot_app_service.yaml""")
+            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' vsmt_uprot_app_service.yaml""")
+            sh ("""sed -i 's/TARGET_PORT_TO_REPLACE/${targetPort}/g' vsmt_uprot_app_service.yaml""")
+            sh ("""sed -i 's/SERVICE_SELECTOR_TO_BE_REPLACED/${deploymentName}/g' vsmt_uprot_app_service.yaml""")
+            sh ("""kubectl apply -f vsmt_uprot_app_service.yaml""")
 
             // Create/update redis service
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_service.yaml""")
