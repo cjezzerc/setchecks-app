@@ -264,7 +264,7 @@ node {
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_deployment.yaml""")
             // Use | as a delimiter if the values contain /
             sh ("""sed -i 's|REDIS_IMAGE_NAME_TO_BE_REPLACED|redis:${version}|g' redis_deployment.yaml""")
-            sh ("""sed -i 's/REDIS_CONTAINER_NAME_TO_BE_REPLACED/redis/g' redis-deployment.yaml""")
+            sh ("""sed -i 's/REDIS_CONTAINER_NAME_TO_BE_REPLACED/redis/g' redis_deployment.yaml""")
             sh ("""sed -i 's/REDIS_DEPLOYMENT_NAME_TO_BE_REPLACED/redis-deployment/g' redis_deployment.yaml""")
             sh ("""kubectl apply -f redis_deployment.yaml""")
 
