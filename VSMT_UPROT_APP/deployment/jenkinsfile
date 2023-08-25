@@ -150,7 +150,13 @@ def postSuccess() {
     updateGitlabCommitStatus name: 'build', state: 'success'
 }
 
-node {
+
+pipeline {
+  agent any
+  options {
+    disableConcurrentBuilds()
+    timestamps()
+  }
   try {
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
