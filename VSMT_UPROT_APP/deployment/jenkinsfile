@@ -104,11 +104,11 @@ if ( jobName ==~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|
   serviceTeam = envMatch[0][1]
   texasEnvName = envMatch[0][2]
 }
-else if ( ( texasEnvName != 'live-lk8s-nonprod' ) && ( serviceTeam != 'texas' ) ){
-  println "Only Texas can deploy this pipeline to environments other than non-prod"
-  currentBuild.result = 'FAILURE'
-  return
-}
+// else if ( ( texasEnvName != 'live-lk8s-nonprod' ) && ( serviceTeam != 'texas' ) ){
+//   println "Only Texas can deploy this pipeline to environments other than non-prod"
+//   currentBuild.result = 'FAILURE'
+//   return
+// }
 else {
   println "Invalid job name"
   currentBuild.result = 'FAILURE'
