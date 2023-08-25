@@ -155,11 +155,7 @@ def postSuccess() {
 node {
   try {
 
-    stage('Set Config') {
-        commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
-        vsmt_uprot_app_version = "${commitHash}"
 
-    }
 
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
@@ -191,6 +187,9 @@ node {
     }
 
     stage('Build & Push'){
+        commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
+        vsmt_uprot_app_version = "${commitHash}"
+
       ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
       // This example uses a multi-stage build
     //   sh """docker build -t ${dockerImage}-build:${version} -f VSMT_UPROT_APP/Dockerfile ."""
