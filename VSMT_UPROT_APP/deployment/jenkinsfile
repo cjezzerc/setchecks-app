@@ -157,7 +157,7 @@ pipeline {
     disableConcurrentBuilds()
     timestamps()
   }
-  try {
+  stages {
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
       echo "  serviceTeam is: ${serviceTeam}"
