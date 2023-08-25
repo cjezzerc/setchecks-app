@@ -458,12 +458,14 @@ pipeline {
     }
 
   // Post build result to GitLab
-  } finally {
-    def currentResult = currentBuild.result ?: 'SUCCESS'
-    if (currentResult == 'SUCCESS') {
-      postSuccess()
-    } else {
-      postFailure()
-    }
+  } post {
+        always {
+            def currentResult = currentBuild.result ?: 'SUCCESS'
+            if (currentResult == 'SUCCESS') {
+            postSuccess()
+            } else {
+            postFailure()
+            }
+        }
   }
 }
