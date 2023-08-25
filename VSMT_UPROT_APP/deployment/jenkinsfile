@@ -264,8 +264,8 @@ node {
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_deployment.yaml""")
             // Use | as a delimiter if the values contain /
             sh ("""sed -i 's|REDIS_IMAGE_NAME_TO_BE_REPLACED|redis:${version}|g' redis_deployment.yaml""")
-            sh ("""sed -i 's/REDIS_CONTAINER_NAME_TO_BE_REPLACED/redis/g' redis_deployment.yaml""")
-            sh ("""sed -i 's/REDIS_DEPLOYMENT_NAME_TO_BE_REPLACED/redis_deployment/g' redis_deployment.yaml""")
+            sh ("""sed -i 's/REDIS_CONTAINER_NAME_TO_BE_REPLACED/redis/g' redis-deployment.yaml""")
+            sh ("""sed -i 's/REDIS_DEPLOYMENT_NAME_TO_BE_REPLACED/redis-deployment/g' redis_deployment.yaml""")
             sh ("""kubectl apply -f redis_deployment.yaml""")
 
             // Create/update mongodb deployment
@@ -273,7 +273,7 @@ node {
             // Use | as a delimiter if the values contain /
             sh ("""sed -i 's|MONGODB_IMAGE_NAME_TO_BE_REPLACED|mongodb:${version}|g' mongodb_deployment.yaml""")
             sh ("""sed -i 's/MONGODB_CONTAINER_NAME_TO_BE_REPLACED/mongodb/g' mongodb_deployment.yaml""")
-            sh ("""sed -i 's/MONGODB_DEPLOYMENT_NAME_TO_BE_REPLACED/mongodb_deployment/g' mongodb_deployment.yaml""")
+            sh ("""sed -i 's/MONGODB_DEPLOYMENT_NAME_TO_BE_REPLACED/mongodb-deployment/g' mongodb_deployment.yaml""")
             sh ("""kubectl apply -f mongodb_deployment.yaml""")
 
             // Create/update vsmt_uprot_app service
@@ -286,18 +286,18 @@ node {
 
             // Create/update redis service
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_service.yaml""")
-            sh ("""sed -i 's/REDIS_SERVICE_NAME_TO_BE_REPLACED/redis_service/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_SERVICE_NAME_TO_BE_REPLACED/redis-service/g' redis_service.yaml""")
             sh ("""sed -i 's/REDIS_PORT_TO_BE_REPLACED/6379/g' redis_service.yaml""")
             sh ("""sed -i 's/REDIS_TARGET_PORT_TO_REPLACE/6379/g' redis_service.yaml""")
-            sh ("""sed -i 's/REDIS_SERVICE_SELECTOR_TO_BE_REPLACED/redis_deployment/g' redis_service.yaml""")
+            sh ("""sed -i 's/REDIS_SERVICE_SELECTOR_TO_BE_REPLACED/redis-deployment/g' redis_service.yaml""")
             sh ("""kubectl apply -f redis_service.yaml""")
 
             // Create/update mongodb service
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' mongodb_service.yaml""")
-            sh ("""sed -i 's/MONGODB_SERVICE_NAME_TO_BE_REPLACED/mongodb_service/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_SERVICE_NAME_TO_BE_REPLACED/mongodb-service/g' mongodb_service.yaml""")
             sh ("""sed -i 's/MONGODB_PORT_TO_BE_REPLACED/27017/g' mongodb_service.yaml""")
             sh ("""sed -i 's/MONGODB_TARGET_PORT_TO_REPLACE/27017/g' mongodb_service.yaml""")
-            sh ("""sed -i 's/MONGODB_SERVICE_SELECTOR_TO_BE_REPLACED/mongodb_deployment/g' mongodb_service.yaml""")
+            sh ("""sed -i 's/MONGODB_SERVICE_SELECTOR_TO_BE_REPLACED/mongodb-deployment/g' mongodb_service.yaml""")
             sh ("""kubectl apply -f mongodb_service.yaml""")
 
             // Create/update ingress (ALB)
