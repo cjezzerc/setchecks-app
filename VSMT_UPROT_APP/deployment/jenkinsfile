@@ -22,7 +22,7 @@ if ( simplifiedBranchName.length() > 24 ){
 }
 def jenkinsUrl = "${env.BUILD_URL}"
 def jenkinsScriptsDir = 'VSMT_UPROT_APP/deployment/scripts'
-def jobFolder = "sample-pipelines"
+def jobFolder = "vsmt_deployment"
 // def nodeLabel = 'any'
 
 def commitHash
@@ -93,13 +93,14 @@ def nodeLabel = 'master'
 
 echo "BUILD_URL is ${BUILD_URL}"
 
-if ( jenkinsUrl ==~ /^http:\/\/texas-jenkins-v1:8080\/.*$/ ){
-  echo "This is Texas Jenkins MoM - changing nodeLabel to jenkins-slave"
-  nodeLabel = 'jenkins-slave'
-}
+// if ( jenkinsUrl ==~ /^http:\/\/texas-jenkins-v1:8080\/.*$/ ){
+//   echo "This is Texas Jenkins MoM - changing nodeLabel to jenkins-slave"
+//   nodeLabel = 'jenkins-slave'
+// }
 
 // Get service team and target environment from Jenkins job name
-if ( jobName ==~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
+// if ( jobName ==~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
+if ( jobName ==~ /${jobFolder}\/vsmt\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
   def envMatch = jobName =~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/
   serviceTeam = envMatch[0][1]
   texasEnvName = envMatch[0][2]
