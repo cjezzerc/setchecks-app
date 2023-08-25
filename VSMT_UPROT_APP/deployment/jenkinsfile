@@ -25,13 +25,14 @@ def jenkinsScriptsDir = 'VSMT_UPROT_APP/deployment/scripts'
 def jobFolder = "sample-pipelines"
 // def nodeLabel = 'any'
 
-def commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
+def commitHash
+
 
 // App & service Team vars
 def appName = "vsmt-uprot-app"
 def serviceTeam
 def serviceTeamEnvName = 'dev'
-def vsmt_uprot_app_version = "${commitHash}"
+def vsmt_uprot_app_version
 def version ='latest'
 def dockerDir = 'docker'
 def dockerImage = 'vsmt-uprot-app'
@@ -150,14 +151,15 @@ def postSuccess() {
     updateGitlabCommitStatus name: 'build', state: 'success'
 }
 
+node {
+  try {
 
-pipeline {
-  agent any
-  options {
-    disableConcurrentBuilds()
-    timestamps()
-  }
-  stages {
+    stage('Set Config') {
+        commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
+        vsmt_uprot_app_version = "${commitHash}"
+
+    }
+
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
       echo "  serviceTeam is: ${serviceTeam}"
@@ -175,6 +177,8 @@ pipeline {
     //   echo "  jmxFile is: ${jmxFile}"
       echo "####################################################"
     }
+
+
 
     stage('Checkout') {
       echo 'Git repository checkout...'
@@ -458,14 +462,12 @@ pipeline {
     }
 
   // Post build result to GitLab
-  } post {
-        always {
-            def currentResult = currentBuild.result ?: 'SUCCESS'
-            if (currentResult == 'SUCCESS') {
-            postSuccess()
-            } else {
-            postFailure()
-            }
-        }
+  } finally {
+    def currentResult = currentBuild.result ?: 'SUCCESS'
+    if (currentResult == 'SUCCESS') {
+      postSuccess()
+    } else {
+      postFailure()
+    }
   }
 }
