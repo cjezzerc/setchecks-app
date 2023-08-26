@@ -64,14 +64,54 @@ def data_upload():
         setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
-    if 'myfile' in request.files:
-        setchks_session.load_data_into_matrix(data=request.files['myfile'], upload_method='from_text_file', table_has_header=True)
-        print(setchks_session)
+    breadcrumb_styles={"data_upload":"strong", 
+                       "upload_check":"weak", 
+                       "columns_check":"weak",
+                       "set_metadata":"weak",
+                       "run_setchecks":"weak"}
+
+    return render_template('data_upload.html',
+                           file_data=setchks_session.data_as_matrix,
+                           breadcrumb_styles=breadcrumb_styles,
+                            )
+
+#####################################
+#####################################
+##     confirm upload endpoint     ##
+#####################################
+#####################################
+
+
+@bp.route('/confirm_upload', methods=['GET','POST'])
+def confirm_upload():
+    print(request.form.keys())
+    print("REQUEST:",request.args.keys())
+    print(request.files)
+
+    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
+        setchks_session=session['setchks_session']
+    else: # otherwise initialise the setchks_session object and save to session variable
+        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        session['setchks_session']=setchks_session 
+
+    # if reach here via file upload, load the data into matrix
+    if 'uploaded_file' in request.files:
+        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_text_file', table_has_header=True)
+        # print(setchks_session)
         session['setchks_session']=setchks_session # save updated setchks_session to the session variable
     else:
         pass
 
-    return render_template('trial_upload.html',
-                           file_data=setchks_session.data_as_matrix
+    breadcrumb_styles={"data_upload":"weak", 
+                       "upload_check":"strong", 
+                       "columns_check":"weak",
+                       "set_metadata":"weak",
+                       "run_setchecks":"weak",
+                       }
+
+    return render_template('confirm_upload.html',
+                           file_data=setchks_session.data_as_matrix,
+                           filename=setchks_session.filename,
+                           breadcrumb_styles=breadcrumb_styles,
                             )
 

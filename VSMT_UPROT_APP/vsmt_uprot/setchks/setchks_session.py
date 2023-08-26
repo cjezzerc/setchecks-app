@@ -28,6 +28,7 @@ class SetchksSession():
     """
 
     __slots__=("unparsed_data",
+               "filename",
                "data_as_matrix", 
                "table_has_header", 
                "first_data_row", 
@@ -40,6 +41,7 @@ class SetchksSession():
 
     def __init__(self):
         self.unparsed_data=None
+        self.filename=None
         self.data_as_matrix=[]
         self.table_has_header=None
         self.first_data_row=None
