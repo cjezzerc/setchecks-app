@@ -24,52 +24,85 @@
                     </ul>
                 </div>
             </div>
+
             <div class="card" style="margin-top:1em;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Data was loaded from file <b>{{ filename }}</b> </li>
-                        <li> Data is assumed to have a header (other options TBI) </li>
-                        <li> Data is assumed to have tab delimiters (other options TBI) </li>
-                        
+                        <li> Overall analysis: </li>                
                     </ul>
                 </div>
             </div>
+        
         </div>
 
         {#                  #}
         {# RIGHT HAND PANEL #}
         {#                  #}
 
-        <div class="col-10">
+        <div class="col-10 ">
+            
+            
+            <!-- THE TABLE -->
+            
             <div class="card" style="height: 60vh" >
                 <!-- <div class="card-header">
                     <strong>Table</strong>
                 </div>                 -->
                 <div class="panel" style="overflow:auto">
-                    <table class="table table-bordered">
-                        <thead>
+                <table class="table table-bordered" >
+
+                    <thead>
+                        
                             <!-- add the row of column titles -->
                             <tr>
-                                <th scope="col">Row</th>
+                                <th scope="col"></th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col">{{ cell.string }}</th>
                                 {% endfor %}
                             </tr>
-                        </thead>
+
+                            <tr>
+                                <th scope="col">Column type</th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Other
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="#">Concept Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Description Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Mixed Id</a></li>
+                                        <li><a class="dropdown-item" href="#">Other</a></li>
+                                        </ul>
+                                    </div>
+                                </th>
+                                {% endfor %}
+                            </tr>
+
+                            <tr>
+                                <th scope="col"></th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col"> ........</th>
+                                {% endfor %}
+                            </tr>
+
+
+                    </thead>
+                    
                         {% for row in file_data[1:] %}
                             <tr>
-                                <th scope="row">{{ loop.index }}</th>
-                                {%for cell in row %}
-                                    <td>{{ cell.string }}</td>
-                                {% endfor %}
+                            <th scope="row">{{ loop.index }}</th>
+                            {%for cell in row %}
+                                <td>{{ cell.string }}</td>
+                            {% endfor %}
                             </tr>
                         {% endfor %}
                         <tbody>
-                    </table>
+                  </table>
                 </div>
             </div>
         </div>
-    </div>
     <div class="row" style="margin-top:1em">
         
         <div class="col-6"> 
@@ -92,8 +125,8 @@
         <div class="col-6">
             <button type="button" class="btn setchks-btn-inactive">Restart</button>
             <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
-            <a href="/data_upload"  class="btn setchks-btn">Back (Data upload)</a>
-            <a href="/column_identities"  class="btn setchks-btn">Next (Column identities)</a>
+            <a href="/confirm_upload"  class="btn setchks-btn">Back (Confirm upload)</a>
+            <a href="/metadata"  class="btn setchks-btn">Next (Metadata)</a>
         </div>
     
     </div>
