@@ -2,6 +2,9 @@
 
 from vsmt_uprot.setchks.data_as_matrix.data_cell_contents import DataCellContents
 
+import logging
+logger=logging.getLogger(__name__)
+
 def load_data_into_matrix(setchks_session, 
                                     data=None, 
                                     upload_method=None, 

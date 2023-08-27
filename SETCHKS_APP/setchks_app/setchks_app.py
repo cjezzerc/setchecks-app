@@ -2,6 +2,14 @@ import os
 import os.path
 import sys
 
+import logging
+logging.basicConfig(
+    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+    level=logging.DEBUG,
+)
+logger=logging.getLogger(__name__)
+
 location=os.path.abspath(os.getcwd())
 print(location)
 sys.path.append(location+"/../VSMT_UPROT_APP/")
@@ -14,6 +22,7 @@ import vsmt_uprot.vsmt_valueset
 import vsmt_uprot.setchks.setchks_session
 import vsmt_uprot.setchks.setchk_definitions 
 
+from setchks_app.gui.breadcrumbs import Breadcrumbs
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
@@ -44,6 +53,7 @@ from pymongo import MongoClient
 
 @bp.route("/healthy")
 def health_check():
+    logger.info("health check called")
     return "Healthy"
 
 #####################################
@@ -64,15 +74,12 @@ def data_upload():
         setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
-    breadcrumb_styles={"data_upload":"strong", 
-                       "upload_check":"weak", 
-                       "columns_check":"weak",
-                       "set_metadata":"weak",
-                       "run_setchecks":"weak"}
+    bc=Breadcrumbs()
+    bc.set_current_page("data_upload")
 
     return render_template('data_upload.html',
                            file_data=setchks_session.data_as_matrix,
-                           breadcrumb_styles=breadcrumb_styles,
+                           breadcrumbs_styles=bc.breadcrumbs_styles,
                             )
 
 #####################################
@@ -102,17 +109,14 @@ def confirm_upload():
     else:
         pass
 
-    breadcrumb_styles={"data_upload":"weak", 
-                       "upload_check":"strong", 
-                       "columns_check":"weak",
-                       "set_metadata":"weak",
-                       "run_setchecks":"weak",
-                       }
+    
+    bc=Breadcrumbs()
+    bc.set_current_page(current_page_name="confirm_upload")
 
     return render_template('confirm_upload.html',
                            file_data=setchks_session.data_as_matrix,
                            filename=setchks_session.filename,
-                           breadcrumb_styles=breadcrumb_styles,
+                           breadcrumbs_styles=bc.breadcrumbs_styles,
                             )
 
 #####################################
@@ -133,15 +137,11 @@ def column_identities():
         setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
-    breadcrumb_styles={"data_upload":"weak", 
-                       "upload_check":"weak", 
-                       "columns_check":"strong",
-                       "set_metadata":"weak",
-                       "run_setchecks":"weak",
-                       }
+    bc=Breadcrumbs()
+    bc.set_current_page("column_identities")
 
     return render_template('column_identities.html',
                            file_data=setchks_session.data_as_matrix,
                            filename=setchks_session.filename,
-                           breadcrumb_styles=breadcrumb_styles,
+                           breadcrumbs_styles=bc.breadcrumbs_styles,
                             )
