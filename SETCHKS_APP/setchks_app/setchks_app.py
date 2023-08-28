@@ -23,6 +23,7 @@ import vsmt_uprot.setchks.setchks_session
 import vsmt_uprot.setchks.setchk_definitions 
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
+from setchks_app.gui import gui_setchks_session
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
@@ -68,11 +69,7 @@ def data_upload():
     print("REQUEST:",request.args.keys())
     print(request.files)
 
-    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
-        setchks_session=session['setchks_session']
-    else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
-        session['setchks_session']=setchks_session 
+    setchks_session=gui_setchks_session.get_setchk_session(session)
 
     bc=Breadcrumbs()
     bc.set_current_page("data_upload")
@@ -95,11 +92,7 @@ def confirm_upload():
     print("REQUEST:",request.args.keys())
     print(request.files)
 
-    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
-        setchks_session=session['setchks_session']
-    else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
-        session['setchks_session']=setchks_session 
+    setchks_session=gui_setchks_session.get_setchk_session(session)
 
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
@@ -109,7 +102,6 @@ def confirm_upload():
     else:
         pass
 
-    
     bc=Breadcrumbs()
     bc.set_current_page(current_page_name="confirm_upload")
 
@@ -131,11 +123,7 @@ def column_identities():
     print("REQUEST:",request.args.keys())
     print(request.files)
 
-    if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
-        setchks_session=session['setchks_session']
-    else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
-        session['setchks_session']=setchks_session 
+    setchks_session=gui_setchks_session.get_setchk_session(session)
 
     bc=Breadcrumbs()
     bc.set_current_page("column_identities")
