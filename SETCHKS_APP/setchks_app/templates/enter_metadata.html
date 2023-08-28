@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Set Checks{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+    
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-6 ">
+            
+            <div class="card" style="height: 20vh">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> You will select snomed release here (TBI) </li>
+                    </ul>
+
+                    <div class="dropdown">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Please select a SNOMED CT release to run checks against
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            {% for sct_version in sct_versions %}
+                            <li><a class="dropdown-item" href="#">{{ sct_version }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card" style="height: 19vh; margin-top:1vh;">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> You will enter metadata here (TBI) </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="height: 19vh; margin-top:1vh;">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> You will choose "data entry" etc here (TBI) </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-6">
+
+
+            <div class="card" style="height: 40vh">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> Graphical version selection will be here (TBI) </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="height: 19vh; margin-top:1vh;">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> Version detail info will be here (TBI) </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:1em">
+    
+        <div class="col-6"> 
+        </div>
+        <style>
+            .setchks-btn {
+                background-color:white;
+                color: black;
+                border-style: solid;
+                border-color:#005eb8;
+                border-width :3px; 
+                }
+            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn-inactive {
+                background-color: lightgray;
+                color: lightslategray;
+                border-style: solid;
+                }
+        </style>
+        <div class="col-6">
+            <button type="button" class="btn setchks-btn-inactive">Restart</button>
+            <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
+            <a href="/column_identities"  class="btn setchks-btn">Back (Column identities)</a>
+            <a href="/select_and_run_checks"  class="btn setchks-btn">Next (Select and run checks)</a>
+        </div>
+    
+    </div>
+</div>
+
+  
+{% endblock %}

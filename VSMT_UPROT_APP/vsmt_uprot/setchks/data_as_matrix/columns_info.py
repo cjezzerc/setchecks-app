@@ -2,7 +2,7 @@
 
 import copy
 
-class ColumnInfo():
+class ColumnsInfo():
     __slots__=["_identified_columns",   # dict of the columns nominated as providing particular info
                "_column_types", # list of types of each column; possible values="CID","DID","MIXED","DTERM","OTHER"
                 ]
@@ -59,6 +59,10 @@ class ColumnInfo():
             return True, "SUCCESS: Changed OK" 
         else:
             return False, "FAIL: The resulting set of identified columns is illegal"
+
+    @property
+    def column_types(self):
+        return self._column_types
 
     @property
     def identification_sufficient(self):

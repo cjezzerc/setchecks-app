@@ -21,6 +21,10 @@
                     <ul>
                         <li> Instructions here </li>
                         <li> and here </li>
+                        <li> The first two columns are required to be</li>
+                        <li> (1) Concept ID</li>
+                        <li> (2) Description Term</li>
+                        <li> (more flexibility TBI) </li>
                     </ul>
                 </div>
             </div>
@@ -67,7 +71,7 @@
                                 <th scope="col">
                                     <div class="dropdown">
                                         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Other
+                                        {{ column_type_labels[loop.index-1] }}
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <li><a class="dropdown-item" href="#">Concept Id</a></li>
@@ -91,8 +95,12 @@
                     </thead>
                     
                         {% for row in file_data[1:] %}
+                            {% if rows_processable[loop.index-1] %}
                             <tr>
-                            <th scope="row">{{ loop.index }}</th>
+                            {% else %}
+                            <tr style="background-color: darkgrey;">
+                            {% endif %}
+                                    <th scope="row">{{ loop.index }}</th>
                             {%for cell in row %}
                                 <td>{{ cell.string }}</td>
                             {% endfor %}
@@ -126,7 +134,7 @@
             <button type="button" class="btn setchks-btn-inactive">Restart</button>
             <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
             <a href="/confirm_upload"  class="btn setchks-btn">Back (Confirm upload)</a>
-            <a href="/metadata"  class="btn setchks-btn">Next (Metadata)</a>
+            <a href="/enter_metadata"  class="btn setchks-btn">Next (Enter Metadata)</a>
         </div>
     
     </div>

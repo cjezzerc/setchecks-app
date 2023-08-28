@@ -17,7 +17,7 @@ def load_data_into_matrix(setchks_session,
     else:
         setchks_session.first_data_row=0 
     if upload_method=="from_text_file":
-        setchks_session.filename=data.filename
+        setchks_session.filename=getattr(data,'filename',None)
         setchks_session.data_as_matrix=[]
         setchks_session.unparsed_data=data.readlines()
         for line in setchks_session.unparsed_data:

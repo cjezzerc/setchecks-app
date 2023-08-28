@@ -16,7 +16,7 @@ class MarshalledRow():
                "row_processable_message"]
     # May want to add source of C_Id_entered and D_Id_entered ??
 
-    def __init__(self, *, row_data=None, column_info=None):
+    def __init__(self, *, row_data=None, columns_info=None):
         self.C_Id_entered=None
         self.D_Id_entered=None
         self.D_Term_entered=None
@@ -32,7 +32,7 @@ class MarshalledRow():
         ########## decide if row is processable ##########
         ########## very basic inflexxible rules for now ##
 
-        ci=column_info
+        ci=columns_info
         cid_col_cpt_type=None
         if ci.have_cid_column:
             cid_col_cpt_type=row_data[ci.cid_column].component_type

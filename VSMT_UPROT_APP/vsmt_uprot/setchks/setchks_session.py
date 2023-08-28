@@ -31,7 +31,9 @@ class SetchksSession():
                "filename",
                "data_as_matrix", 
                "table_has_header", 
-               "first_data_row", 
+               "first_data_row",
+               "columns_info",
+               "marshalled_rows", 
                "cid_col", 
                "did_col", 
                "mixed_col", 
@@ -45,6 +47,8 @@ class SetchksSession():
         self.data_as_matrix=[]
         self.table_has_header=None
         self.first_data_row=None
+        self.columns_info=None
+        self.marshalled_rows=None
         self.cid_col=None
         self.did_col=None
         self.mixed_col=None
