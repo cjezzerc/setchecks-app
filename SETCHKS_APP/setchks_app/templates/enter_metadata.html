@@ -19,28 +19,28 @@
             
             <div class="card" style="height: 20vh">
                 <div class="card-body" style="font-size: 1em;">
-                    <ul>
-                        <li> You will select snomed release here (TBI) </li>
-                    </ul>
-
-                    <div class="dropdown">
-                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Please select a SNOMED CT release to run checks against
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            {% for sct_version in sct_versions %}
-                            <li><a class="dropdown-item" href="#">{{ sct_version }}</a></li>
+                    Set checks will be run against this SCT Release:
+                    <form action="/enter_metadata" class="sct_version_selection" method="post" enctype="multipart/form-data">
+                        <select name="stuff" class="form-select" aria-label="Default select example" onchange="$('.sct_version_selection').submit();">
+                            <option selected>
+                                {% if setchks_session.sct_version == None %}
+                                    Please select a SNOMED CT release to run checks against
+                                {% else %}
+                                    {{ setchks_session.sct_version }}
+                                {% endif %}
+                            </option>
+                            {% for available_sct_version in setchks_session.available_sct_versions %}
+                               <option value="{{ loop.index }}"> {{ available_sct_version }}</option>
                             {% endfor %}
-                        </ul>
-                    </div>
-
+                        </select>
+                    </form>
                 </div>
             </div>
 
             <div class="card" style="height: 19vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> You will enter metadata here (TBI) </li>
+                        <li> You will enter name and purpose here (TBI) </li>
                     </ul>
                 </div>
             </div>
@@ -54,6 +54,10 @@
             </div>
 
         </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
 
         <div class="col-6">
 
@@ -79,7 +83,7 @@
 
     <div class="row" style="margin-top:1em">
     
-        <div class="col-6"> 
+        <div class="col-5"> 
         </div>
         <style>
             .setchks-btn {
@@ -96,11 +100,15 @@
                 border-style: solid;
                 }
         </style>
-        <div class="col-6">
+        <div class="col-7">
             <button type="button" class="btn setchks-btn-inactive">Restart</button>
             <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
             <a href="/column_identities"  class="btn setchks-btn">Back (Column identities)</a>
-            <a href="/select_and_run_checks"  class="btn setchks-btn">Next (Select and run checks)</a>
+            {% if setchks_session.sct_version == None %}
+                <a href="/select_and_run_checks"  class="btn setchks-btn-inactive">Next (Select and run checks)</a>
+            {% else %}
+                <a href="/select_and_run_checks"  class="btn setchks-btn">Next (Select and run checks)</a>
+            {% endif %}
         </div>
     
     </div>

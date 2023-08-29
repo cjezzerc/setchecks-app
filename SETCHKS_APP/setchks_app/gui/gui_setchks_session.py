@@ -1,6 +1,6 @@
 """routine to assist with setchks_session handling in webapp setting"""
 
- # propose: setchk_session=gui.gui_setchks_session.get_setchk_session(session)
+import vsmt_uprot.setchks.setchks_session
 
 def get_setchk_session(session=None):
     """grab setchks_session from flask-session(redis) or create a new one)"""

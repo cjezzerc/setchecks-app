@@ -164,7 +164,7 @@ def column_identities():
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
 def enter_metadata():
-    print(request.form.keys())
+    print("ENTER METADATA FROM KEYS", request.form.keys())
     print("REQUEST:",request.args.keys())
     print(request.files)
 
@@ -172,17 +172,25 @@ def enter_metadata():
 
     from fhir.resources.bundle import Bundle
 
-    terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                        auth_url=os.environ["ONTOAUTH_INSTANCE"])
-    relative_url= "CodeSystem?url=http://snomed.info/sct"
-    response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
-    bundle=Bundle.parse_obj(response.json())
-    sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
+    
+    if setchks_session.available_sct_versions is None:
+        terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
+        relative_url= "CodeSystem?url=http://snomed.info/sct"
+        response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
+        bundle=Bundle.parse_obj(response.json())
+        setchks_session.available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
+
+    # if reach here via click on version selector
+    if 'stuff' in request.form:
+        print("===>>>>", request.form['stuff'])
+        setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['stuff'])-1]
+    
 
     bc=Breadcrumbs()
     bc.set_current_page("enter_metadata")
 
     return render_template('enter_metadata.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,
-                           sct_versions=sct_versions,
+                           setchks_session=setchks_session,
                             )

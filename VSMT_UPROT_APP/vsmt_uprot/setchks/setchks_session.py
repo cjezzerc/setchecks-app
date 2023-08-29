@@ -38,7 +38,8 @@ class SetchksSession():
                "did_col", 
                "mixed_col", 
                "setchks_results", 
-               "terminology_server", 
+               "terminology_server",
+               "available_sct_versions", 
                "sct_version")
 
     def __init__(self):
@@ -54,6 +55,7 @@ class SetchksSession():
         self.mixed_col=None
         self.setchks_results={}
         self.terminology_server=None
+        self.available_sct_versions=None 
         self.sct_version=None
     
     def __repr__(self):
