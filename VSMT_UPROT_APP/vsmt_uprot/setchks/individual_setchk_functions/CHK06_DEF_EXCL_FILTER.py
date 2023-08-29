@@ -43,7 +43,8 @@ def do_check(setchks_session=None, setchk_results=None):
     ##################################################################
     ##################################################################
     
-    concept_id_col=setchks_session.cid_col
+    # concept_id_col=setchks_session.cid_col
+    concept_id_col=setchks_session.columns_info.cid_column
     
     n_set_members_in_refset=0
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):

@@ -40,7 +40,10 @@ class SetchksSession():
                "setchks_results", 
                "terminology_server",
                "available_sct_versions", 
-               "sct_version")
+               "sct_version",
+               "selected_setchks",
+               "setchks_jobs_list",
+               )
 
     def __init__(self):
         self.unparsed_data=None
@@ -57,6 +60,8 @@ class SetchksSession():
         self.terminology_server=None
         self.available_sct_versions=None 
         self.sct_version=None
+        self.selected_setchks=None
+        self.setchks_jobs_list=None
     
     def __repr__(self):
         repr_strings=[]

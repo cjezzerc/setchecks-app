@@ -21,6 +21,7 @@ import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
 import vsmt_uprot.setchks.setchks_session
 import vsmt_uprot.setchks.setchk_definitions 
+import vsmt_uprot.setchks.run_queued_setchks
 from vsmt_uprot.setchks.data_as_matrix.columns_info import ColumnsInfo
 from vsmt_uprot.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
 
@@ -29,12 +30,14 @@ from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
 )
 from werkzeug.exceptions import abort
 
 bp = Blueprint('setchks_app', __name__)
 
+# This list should probably come from a config file in duw course
+available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 
 from pymongo import MongoClient
 
@@ -100,8 +103,6 @@ def confirm_upload():
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_text_file', table_has_header=True)
-        
-        # print(setchks_session)
         session['setchks_session']=setchks_session # save updated setchks_session to the session variable
     else:
         pass
@@ -182,15 +183,59 @@ def enter_metadata():
         setchks_session.available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
 
     # if reach here via click on version selector
-    if 'stuff' in request.form:
-        print("===>>>>", request.form['stuff'])
-        setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['stuff'])-1]
+    if 'select_sct_version' in request.form:
+        print("===>>>>", request.form['select_sct_version'])
+        setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
     
-
     bc=Breadcrumbs()
     bc.set_current_page("enter_metadata")
 
     return render_template('enter_metadata.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,
                            setchks_session=setchks_session,
+                            )
+
+#############################################
+#############################################
+##     select and run checks  endpoint     ##
+#############################################
+#############################################
+
+@bp.route('/select_and_run_checks', methods=['GET','POST'])
+def select_and_run_checks():
+    print("ENTER METADATA FROM KEYS", request.form.keys())
+    print("REQUEST:",request.args.keys())
+    print(request.files)
+
+    setchks_session=gui_setchks_session.get_setchk_session(session)
+
+    bc=Breadcrumbs()
+    bc.set_current_page("select_and_run_checks")
+
+    if setchks_session.selected_setchks==None:
+        setchks_session.selected_setchks=available_setchks
+
+    if "run_checks" in request.args:
+        setchks_to_run=[ vsmt_uprot.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
+        logger.debug(str(setchks_to_run))
+        setchks_session.setchks_jobs_list=vsmt_uprot.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
+
+    if "download_report" in request.args:
+        logger.debug("Report requested")
+        setchks_session.generate_excel_output(excel_filename='/tmp/setchks_output.xlsx')
+        return send_file("/tmp/setchks_output.xlsx")
+
+    results_available=len(list(setchks_session.setchks_results)) > 0
+
+    # if setchks_session.setchks_jobs_list:
+    #     import pdb; pdb.set_trace()
+    #     for setchk, job_id in setchks_session.setchks_jobs_list:
+    #         job=vsmt_uprot.setchks.run_queued_setchks.get_job_by_id(job_id=job_id)
+    #         print("====JOB=============>>", setchk.setchk_name, job.return_value())
+
+
+    return render_template('select_and_run_checks.html',
+                           breadcrumbs_styles=bc.breadcrumbs_styles,
+                           setchks_session=setchks_session,
+                           results_available=results_available,
                             )

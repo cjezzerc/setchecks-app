@@ -21,7 +21,7 @@
                 <div class="card-body" style="font-size: 1em;">
                     Set checks will be run against this SCT Release:
                     <form action="/enter_metadata" class="sct_version_selection" method="post" enctype="multipart/form-data">
-                        <select name="stuff" class="form-select" aria-label="Default select example" onchange="$('.sct_version_selection').submit();">
+                        <select name="select_sct_version" class="form-select" aria-label="Default select example" onchange="$('.sct_version_selection').submit();">
                             <option selected>
                                 {% if setchks_session.sct_version == None %}
                                     Please select a SNOMED CT release to run checks against
@@ -34,6 +34,7 @@
                             {% endfor %}
                         </select>
                     </form>
+                    (better display names TBI)
                 </div>
             </div>
 

@@ -6,7 +6,12 @@
 
 def do_check(setchks_session=None, setchk_results=None):
 
-    concept_id_col=setchks_session.cid_col
+    # print("SLEEPING")
+    # import time; time.sleep(20)
+    # print("AWAKE")
+
+    # concept_id_col=setchks_session.cid_col
+    concept_id_col=setchks_session.columns_info.cid_column
     concept_ids_list=[]
 
     ##############################

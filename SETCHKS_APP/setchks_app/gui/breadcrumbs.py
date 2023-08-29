@@ -5,7 +5,7 @@ logger=logging.getLogger(__name__)
 class Breadcrumbs():
     __slots__={"breadcrumbs_styles", "page_names"}
     def __init__(self):
-        self.page_names=["data_upload", "confirm_upload", "column_identities", "enter_metadata", "run_setchecks"]
+        self.page_names=["data_upload", "confirm_upload", "column_identities", "enter_metadata", "select_and_run_checks"]
 
         self.breadcrumbs_styles={}
         for page_name in self.page_names:

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Set Checks{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+    
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-6 ">
+            
+            <div class="card" style="height: 60vh">
+                <div class="card-body" style="font-size: 1em;">
+                    The following checks will be run (selectability and nicer set-check titles etc TBI):
+                    <ul>
+                        {% for sc in setchks_session.selected_setchks %}
+                        <li> {{ sc  }} </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-6">
+
+
+            <div class="card" style="height: 30vh">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> A summary of meta data will be here (TBI) </li>
+                    </ul>
+                </div>
+            </div>
+
+            <style>
+            .setchks-btn-green {
+                background-color: green;
+                color: black;
+                border-style: solid;
+                border-width: 3px;
+                border-color: black;
+                }
+            </style>
+            
+            <div class="card" style="height: 29vh; margin-top:1vh;">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> Download report buttons will appear here when report data available (TBI) </li>
+                        {% if results_available %}
+                        <a href="/select_and_run_checks?download_report=True" class="btn setchks-btn-green">Download report</a>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:1em">
+    
+        <div class="col-4"> 
+        </div>
+        <style>
+            .setchks-btn {
+                background-color:white;
+                color: black;
+                border-style: solid;
+                border-color:#005eb8;
+                border-width :3px; 
+                }
+            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn-inactive {
+                background-color: lightgray;
+                color: lightslategray;
+                border-style: solid;
+                }
+            
+            
+        </style>
+        <div class="col-8">
+            <button type="button" class="btn setchks-btn-inactive">Restart</button>
+            <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
+            <a href="/enter_metadata"  class="btn setchks-btn">Back (Enter metadata)</a>
+            <a href="/select_and_run_checks?run_checks=True"  class="btn setchks-btn">Run checks</a>
+            <a href="/data_upload"  class="btn setchks-btn">Load a new file for checks</a>
+        </div>
+    
+    </div>
+</div>
+
+  
+{% endblock %}
