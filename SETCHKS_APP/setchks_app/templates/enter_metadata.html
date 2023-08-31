@@ -21,20 +21,25 @@
                 <div class="card-body" style="font-size: 1em;">
                     Set checks will be run against this SCT Release:
                     <form action="/enter_metadata" class="sct_version_selection" method="post" enctype="multipart/form-data">
-                        <select name="select_sct_version" class="form-select" aria-label="Default select example" onchange="$('.sct_version_selection').submit();">
-                            <option selected>
-                                {% if setchks_session.sct_version == None %}
-                                    Please select a SNOMED CT release to run checks against
+                        <select name="select_sct_version" class="form-select" 
+                            aria-label="Default select example" 
+                            onchange="$('.sct_version_selection').submit();" 
+                            style="margin-top: 0.5em;"
+                            >
+                            {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                {% if available_sct_version == setchks_session.sct_version %}
+                                <option selected
                                 {% else %}
-                                    {{ setchks_session.sct_version }}
-                                {% endif %}
-                            </option>
-                            {% for available_sct_version in setchks_session.available_sct_versions %}
-                               <option value="{{ loop.index }}"> {{ available_sct_version }}</option>
+                                <option
+                                {% endif %} 
+
+                                value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
+
+                                {% if loop.index==1 %} (current) {% endif %}
+                                </option>
                             {% endfor %}
                         </select>
                     </form>
-                    (better display names TBI)
                 </div>
             </div>
 

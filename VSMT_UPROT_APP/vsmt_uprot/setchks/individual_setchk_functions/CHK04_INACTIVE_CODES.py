@@ -42,7 +42,7 @@ def do_check(setchks_session=None, setchk_results=None):
     setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
                                             auth_url=os.environ["ONTOAUTH_INSTANCE"])
     refset_response=setchks_session.terminology_server.do_expand(ecl=ecl, 
-                                                                 sct_version=setchks_session.sct_version, 
+                                                                 sct_version=setchks_session.sct_version.formal_version_string, 
                                                                  add_display_names=True,
                                                                  )
 

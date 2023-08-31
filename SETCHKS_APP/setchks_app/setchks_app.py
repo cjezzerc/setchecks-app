@@ -23,12 +23,14 @@ import vsmt_uprot.vsmt_valueset
 import vsmt_uprot.setchks.setchks_session
 import vsmt_uprot.setchks.setchk_definitions 
 import vsmt_uprot.setchks.run_queued_setchks
+
 from vsmt_uprot.setchks.data_as_matrix.columns_info import ColumnsInfo
 from vsmt_uprot.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
 
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
+from setchks_app.sct_versions import get_sct_versions
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
@@ -173,18 +175,17 @@ def enter_metadata():
     print(request.files)
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
-
-    from fhir.resources.bundle import Bundle
-
-    
+ 
     if setchks_session.available_sct_versions is None:
-        setchks_session.terminology_server.get_jwt_token # really should check for when expires first?
-        terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
-        relative_url= "CodeSystem?url=http://snomed.info/sct"
-        response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
-        bundle=Bundle.parse_obj(response.json())
-        setchks_session.available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
+        # setchks_session.terminology_server.get_jwt_token # really should check for when expires first?
+        # terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+        #                                     auth_url=os.environ["ONTOAUTH_INSTANCE"])
+        # relative_url= "CodeSystem?url=http://snomed.info/sct"
+        # response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
+        # bundle=Bundle.parse_obj(response.json())
+        # setchks_session.available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
+        setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
+        setchks_session.sct_version=setchks_session.available_sct_versions[0]
 
     # if reach here via click on version selector
     if 'select_sct_version' in request.form:
