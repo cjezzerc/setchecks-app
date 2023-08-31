@@ -23,6 +23,11 @@
                         <li> Please load a file from your device, or paste a table. </li>
                         <li> Only permitted format is .tsv (wider range TBI) </li>
                         <li> Tab delimiting and one header row is assumed (adjustability TBI) </li>
+                        <li> Maximum number of concepts = 200 (temporary limit; range increse TBI)</li>
+                        <li> The first two columns are required to be</li>
+                        <li> .....(1) Concept ID</li>
+                        <li> .....(2) Description Term</li>
+                        <li> .....(more flexibility TBI) </li>
                         <li> You will be able to check the upload on the next screen. </li>
                         <li> See this guidance (TBI) for advice on the data required in your file </li>
                     </ul>
@@ -108,6 +113,33 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row" style="margin-top:1em">
+        
+        <div class="col-10"> 
+        </div>
+        <style>
+            .setchks-btn {
+                background-color:white;
+                color: black;
+                border-style: solid;
+                border-color:#005eb8;
+                border-width :3px; 
+                }
+            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn-inactive {
+                background-color: lightgray;
+                color: lightslategray;
+                border-style: solid;
+                }
+        </style>
+        <div class="col-2">
+
+            {% if setchks_session.data_as_matrix != [] %}
+            <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Confirm upload)</a>
+            {% endif %}
+        </div>
+    
     </div>
 </div>
 

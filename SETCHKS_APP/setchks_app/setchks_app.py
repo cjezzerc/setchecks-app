@@ -1,6 +1,7 @@
 import os
 import os.path
 import sys
+import datetime
 
 import logging
 logging.basicConfig(
@@ -81,7 +82,7 @@ def data_upload():
     bc.set_current_page("data_upload")
 
     return render_template('data_upload.html',
-                           file_data=setchks_session.data_as_matrix,
+                           setchks_session=setchks_session,
                            breadcrumbs_styles=bc.breadcrumbs_styles,
                             )
 
@@ -103,7 +104,9 @@ def confirm_upload():
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_text_file', table_has_header=True)
+        setchks_session.setchks_results={} # throw away all old results
         session['setchks_session']=setchks_session # save updated setchks_session to the session variable
+
     else:
         pass
 
@@ -175,6 +178,7 @@ def enter_metadata():
 
     
     if setchks_session.available_sct_versions is None:
+        setchks_session.terminology_server.get_jwt_token # really should check for when expires first?
         terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
                                             auth_url=os.environ["ONTOAUTH_INSTANCE"])
         relative_url= "CodeSystem?url=http://snomed.info/sct"
@@ -222,8 +226,11 @@ def select_and_run_checks():
 
     if "download_report" in request.args:
         logger.debug("Report requested")
-        setchks_session.generate_excel_output(excel_filename='/tmp/setchks_output.xlsx')
-        return send_file("/tmp/setchks_output.xlsx")
+        user_tmp_folder="/tmp/"+setchks_session.uuid
+        os.system("mkdir -p " + user_tmp_folder)
+        excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
+        setchks_session.generate_excel_output(excel_filename=excel_filename)
+        return send_file(excel_filename)
 
     results_available=len(list(setchks_session.setchks_results)) > 0
 

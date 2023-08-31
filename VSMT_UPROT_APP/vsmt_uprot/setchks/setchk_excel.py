@@ -62,6 +62,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
             setchk_results=setchks_results[setchk_name]
             data_row_cell_contents=[x.string for x in data_row]
             ws.append([i_data_row+setchks_session.first_data_row+1, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
+        ws.append(["----"]) 
     
     # crude cell with setting
     cell_widths=[15,30,50,25,50] + [20]*10
@@ -70,14 +71,16 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
 
     # example bit of formatting bling
     grey_fill= PatternFill(patternType='solid', fgColor=Color('D9D9D9'))
-    border = Border(left=Side(style='medium'), 
-                 right=Side(style='medium'), 
-                 top=Side(style='medium'), 
-                 bottom=Side(style='medium'))
+    border = Border(left=Side(style='thin'), 
+                 right=Side(style='thin'), 
+                 top=Side(style='thin'), 
+                 bottom=Side(style='thin'))
     for row in ws.iter_rows():
+        divider_line=row[0].value=="----"
         for cell in row:
             cell.alignment=cell.alignment.copy(wrap_text=True)
-            if cell.column_letter in ["A","B","C"]:
+            # if cell.column_letter in ["A","B","C"] or divider_line:
+            if divider_line:
                 cell.fill=grey_fill
                 cell.border = border  
 

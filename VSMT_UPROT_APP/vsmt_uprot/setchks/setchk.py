@@ -34,5 +34,5 @@ class Setchk():
         setchk_results.setchk_name=self.setchk_name
         self.setchk_function(setchks_session=setchks_session, setchk_results=setchk_results)
         setchks_session.setchks_results[self.setchk_name]=setchk_results
-        return("Setcheck %s has been run" % self.setchk_name)
+        return ("Setcheck %s has been run" % self.setchk_name)
 

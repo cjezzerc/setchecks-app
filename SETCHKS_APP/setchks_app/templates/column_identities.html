@@ -19,12 +19,9 @@
             <div class="card">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Instructions here </li>
-                        <li> and here </li>
-                        <li> The first two columns are required to be</li>
-                        <li> (1) Concept ID</li>
-                        <li> (2) Description Term</li>
-                        <li> (more flexibility TBI) </li>
+                        <li> Functionality behind pulldowns TBI </li>
+                        <li> Rows with grey background fail the ConceptID format test (more functionality TBI) </li>
+
                     </ul>
                 </div>
             </div>
@@ -32,7 +29,7 @@
             <div class="card" style="margin-top:1em;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Overall analysis: </li>                
+                        <li> Overall analysis: (TBI)</li>                
                     </ul>
                 </div>
             </div>
@@ -87,7 +84,7 @@
                             <tr>
                                 <th scope="col"></th>
                                 {%for cell in file_data[0] %}
-                                <th scope="col"> ........</th>
+                                <th scope="col" style="font-style:italic;"> Column analysis here (TBI)</th>
                                 {% endfor %}
                             </tr>
 
@@ -133,8 +130,8 @@
         <div class="col-7">
             <button type="button" class="btn setchks-btn-inactive">Restart</button>
             <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
-            <a href="/confirm_upload"  class="btn setchks-btn">Back (Confirm upload)</a>
-            <a href="/enter_metadata"  class="btn setchks-btn">Next (Enter Metadata)</a>
+            <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Confirm upload)</a>
+            <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Enter Metadata)</a>
         </div>
     
     </div>

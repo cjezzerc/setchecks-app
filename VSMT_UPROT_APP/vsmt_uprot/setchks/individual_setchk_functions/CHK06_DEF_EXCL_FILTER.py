@@ -1,6 +1,9 @@
 """Check for concepts that are in the Default Exclusion Filter Refset
 """
 
+import vsmt_uprot.terminology_server_module
+
+import os
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -22,6 +25,10 @@ def do_check(setchks_session=None, setchk_results=None):
     # Fetch membership of default exclusion filter refset
     # ** Assumes this refset will never be large enough to require paging
     default_exclusion_filter_refset_id=999002571000000104
+    
+    # really should check for when token expires first but that did not seem to be working
+    setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
     refset_response=setchks_session.terminology_server.do_expand(refset_id=default_exclusion_filter_refset_id, sct_version=setchks_session.sct_version, add_display_names=True)
 
     # Convert response into a dictionary of display strings keyed by concept_id
@@ -60,4 +67,4 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.row_analysis.append(row_analysis)
 
     setchk_results.set_analysis["n_set_members_in_refset"]=n_set_members_in_refset   # ** ?This could be generalised
-    setchk_results.set_analysis["Message"]="Guess what? %s of the members of your value set are in the Default Exclusion Reference Set" % n_set_members_in_refset
+    setchk_results.set_analysis["Message"]="%s of the members of your value set are in the Default Exclusion Reference Set" % n_set_members_in_refset

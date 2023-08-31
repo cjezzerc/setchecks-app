@@ -1,12 +1,12 @@
 version: "0.1"
 services:
   setchks_app:
-    image: setchks_app
+    image: cjezzerc/setchks_app
     depends_on:
       - redis-server
       - mongo-server
     ports:
-      - 5000:5000
+      - 5001:5001
     environment:
       - ONTOSERVER_USERNAME
       - ONTOSERVER_SECRET
@@ -19,7 +19,7 @@ services:
     ports:
       - 6379:6379
 
-  mongo-server:
-    image: mongo
-    ports:
-      - 27017:27017
+  # mongo-server:
+  #   image: mongo
+  #   ports:
+  #     - 27017:27017

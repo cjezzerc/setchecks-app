@@ -1,8 +1,9 @@
 """Finds the active status of the concept on each row
 
-
-
 """
+
+import os
+import vsmt_uprot.terminology_server_module
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -36,6 +37,10 @@ def do_check(setchks_session=None, setchk_results=None):
     ####################
     # Expand ECL       #
     #                  #
+    
+    # really should check for when token expires first but that did not seem to be working
+    setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
     refset_response=setchks_session.terminology_server.do_expand(ecl=ecl, 
                                                                  sct_version=setchks_session.sct_version, 
                                                                  add_display_names=True,
@@ -94,7 +99,7 @@ def do_check(setchks_session=None, setchk_results=None):
     #                           #
     #   Generate set analysis   #
     #                           #
-    setchk_results.set_analysis["Message"]= "The set has %s inactive concepts (tot=%s;active=%s;not_found=%s)" % (n_inactive,
+    setchk_results.set_analysis["Message"]= "The value set has %s inactive concepts (tot=%s;active=%s;not_found=%s)" % (n_inactive,
                                                                                                                             n_processed,
                                                                                                                             n_active,
                                                                                                                             n_not_found)

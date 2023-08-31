@@ -1,6 +1,10 @@
+""" class definition for SetCHksSession """
+
+import uuid
 
 from . import setchk_excel
 from .data_as_matrix import load_data_into_matrix
+
 
 class SetchksSession():
     """
@@ -27,7 +31,8 @@ class SetchksSession():
     every time.
     """
 
-    __slots__=("unparsed_data",
+    __slots__=("uuid",
+               "unparsed_data",
                "filename",
                "data_as_matrix", 
                "table_has_header", 
@@ -46,6 +51,7 @@ class SetchksSession():
                )
 
     def __init__(self):
+        self.uuid=str(uuid.uuid4())
         self.unparsed_data=None
         self.filename=None
         self.data_as_matrix=[]
