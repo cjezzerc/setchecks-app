@@ -1,0 +1,104 @@
+/* This code snippet downloaded from CodeHim. 
+For more web design code & scripts visit now:
+https://www.codehim.com *
+
+Generates chevron style breadcrumbs */
+
+body {
+  padding: 5rem;
+  background-color: #d7e7ff;
+}
+
+.breadcrumb {
+  background-color: #0d6efd;
+  overflow: hidden;
+}
+.breadcrumb li {
+  position: relative;
+  height: 2rem;
+  line-height: 2rem;
+  padding-left: 1.2rem !important;
+  padding-right: 0.6rem;
+  color: white !important;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+.breadcrumb li a {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+}
+.breadcrumb li:before {
+  display: none;
+}
+.breadcrumb li:after {
+  position: absolute;
+  right: -1.7rem;
+  top: 0;
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border-right: 1rem solid transparent;
+  border-bottom: 1rem solid transparent;
+  border-top: 1rem solid transparent;
+  border-left: 1rem solid blue;
+}
+.breadcrumb li:first-child {
+  background-color: #0262ef;
+  z-index: 20;
+  padding-left: 0.85rem !important;
+}
+.breadcrumb li:first-child:after {
+  border-left: 12px solid #0262ef;
+}
+.breadcrumb li:nth-child(2) {
+  background-color: #0259da;
+  z-index: 19;
+}
+.breadcrumb li:nth-child(2):after {
+  border-left: 12px solid #0259da;
+}
+.breadcrumb li:nth-child(3) {
+  background-color: #0251c6;
+  z-index: 18;
+}
+.breadcrumb li:nth-child(3):after {
+  border-left: 12px solid #0251c6;
+}
+.breadcrumb li:nth-child(4) {
+  background-color: #0149b2;
+  z-index: 17;
+}
+.breadcrumb li:nth-child(4):after {
+  border-left: 12px solid #0149b2;
+}
+.breadcrumb li:nth-child(5) {
+  background-color: #01409e;
+  z-index: 16;
+}
+.breadcrumb li:nth-child(5):after {
+  border-left: 12px solid #01409e;
+}
+.breadcrumb li:nth-child(6) {
+  background-color: #013889;
+  z-index: 15;
+}
+.breadcrumb li:nth-child(6):after {
+  border-left: 12px solid #013889;
+}
+.breadcrumb li:hover {
+  filter: drop-shadow(1px 1px 10px rgba(0, 0, 0, 0.5));
+}
+.breadcrumb.breadcrumb-responsive {
+  flex-wrap: nowrap !important;
+  overflow-x: scroll;
+}
+.breadcrumb.breadcrumb-responsive li,
+.breadcrumb.breadcrumb-responsive li a {
+  white-space: nowrap !important;
+}

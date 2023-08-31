@@ -1,0 +1,48 @@
+#progress {
+    overflow: hidden;
+    padding-bottom: 2em;
+    text-align: center;
+}
+#progress .part {
+    border-bottom: 3px solid #999;
+    float: left;
+    margin-bottom: 0.75em;
+    position: relative;
+    width: 20%;
+}
+#progress .desc {
+    height: 1.1875em;
+    padding-bottom: 1em;
+}
+#progress .desc span {
+    font-size: 0.75em;
+}
+#progress .circle {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 1.5em;
+}
+#progress .circle span {
+    background: none repeat scroll 0 0 #666;
+    border-radius: 2em 2em 2em 2em;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 0.75em;
+    height: 2em;
+    line-height: 2;
+    width: 2em;
+}
+#progress .step {
+    position: absolute;
+}
+#progress .on {
+    border-bottom-color: #FF4F00;
+}
+#progress .on .desc {
+    font-weight: bold;
+}
+#progress .on .circle span{
+    font-weight: bold;
+    background-color:#FF4F00;
+}
