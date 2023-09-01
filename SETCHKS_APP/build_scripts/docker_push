@@ -1,0 +1,11 @@
+#!/bin/csh 
+
+
+docker push cjezzerc/setchks_app
+set push_status = $status
+
+if ($push_status == 0) then
+  echo '======================= Docker push was successful'
+else
+  echo '========XXXXXXX======== Docker push failed'
+endif
