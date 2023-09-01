@@ -20,11 +20,19 @@ def load_data_into_matrix(setchks_session,
         setchks_session.filename=getattr(data,'filename',None)
         setchks_session.data_as_matrix=[]
         setchks_session.unparsed_data=data.readlines()
+    
         for line in setchks_session.unparsed_data:
             if type(line)==str:
                 decoded_line=line
-            else: # this seems to work if file data is passed from Flask app form POST
-                decoded_line=str(line, 'utf-8')
+            else: # decoding seems necessary if file data is passed from Flask app form POST
+                try:
+                    decoded_line=str(line, 'utf-8')
+
+                except: # if second decode fails will currently raise ungraceful exception
+                        # Also seems have to test every line as some lines can decode OK with utf-8 but some fail if really
+                        # is ISO-8859-1 (e.g. in original culprit file, only line 6 in an 11 line file was not decodable as UTF-8)
+                    decoded_line=str(line, 'ISO-8859-1') # this is what Excel seems to want to save tab-delimited files as
+
             f=decoded_line.split(separator)
             f=[x.strip() for x in f]
             f=[DataCellContents(cell_contents=x) for x in f]
