@@ -11,6 +11,7 @@ def get_setchk_session(session=None):
         setchks_session=session['setchks_session']
     else: # otherwise initialise the setchks_session object and save to session variable
         setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        setchks_session.uuid=session.sid
         #
         # Need to think of safer mechanism to set terminology server so does not time out
         #

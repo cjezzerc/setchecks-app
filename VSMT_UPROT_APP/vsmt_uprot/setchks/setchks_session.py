@@ -32,17 +32,17 @@ class SetchksSession():
     """
 
     __slots__=("uuid",
-               "unparsed_data",
+               "unparsed_data", # big and only needed on the confirm upload page
                "filename",
-               "data_as_matrix", 
+               "data_as_matrix", # big and only needed when populating marshalled rows
                "table_has_header", 
                "first_data_row",
                "columns_info",
-               "marshalled_rows", 
+               "marshalled_rows", # big and often needed
                "cid_col", 
                "did_col", 
                "mixed_col", 
-               "setchks_results", 
+               "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
                "terminology_server",
                "available_sct_versions", 
                "sct_version",
@@ -50,8 +50,10 @@ class SetchksSession():
                "setchks_jobs_list",
                )
 
-    def __init__(self):
-        self.uuid=str(uuid.uuid4())
+    def __init__(self, session=None):
+        # self.uuid=str(uuid.uuid4())
+        # self.uuid=session.sid
+        self.uuid=None
         self.unparsed_data=None
         self.filename=None
         self.data_as_matrix=[]

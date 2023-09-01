@@ -116,6 +116,7 @@ def confirm_upload():
     bc.set_current_page(current_page_name="confirm_upload")
 
     return render_template('confirm_upload.html',
+                           setchks_session=setchks_session,
                            file_data=setchks_session.data_as_matrix,
                            filename=setchks_session.filename,
                            breadcrumbs_styles=bc.breadcrumbs_styles,
@@ -155,6 +156,7 @@ def column_identities():
     bc.set_current_page("column_identities")
 
     return render_template('column_identities.html',
+                           setchks_session=setchks_session,
                            file_data=setchks_session.data_as_matrix,
                            filename=setchks_session.filename,
                            breadcrumbs_styles=bc.breadcrumbs_styles,
