@@ -1,7 +1,7 @@
 flask
 requests
 fhir.resources
-pymongo
+pymongo==3.12.3 # this is for avoiding issue in https://stackoverflow.com/questions/72025723/how-to-configure-mongodb-for-flask-session
 flask-session
 redis
 openpyxl
