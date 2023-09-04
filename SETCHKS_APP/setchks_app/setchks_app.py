@@ -44,15 +44,14 @@ available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 
 from pymongo import MongoClient
 
-# Consider this section again if and when hook up to mongodb
-# if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-#     print("Configuring mongodb to connect to mongo-server docker")
-#     client=MongoClient('mongo-server',27017)
-# else:
-#     print("Configuring mongodb to connect to localhost")
-#     client=MongoClient()
+if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
+    print("Configuring mongodb to connect to mongo-server docker")
+    client=MongoClient('mongo-server',27017)
+else:
+    print("Configuring mongodb to connect to localhost")
+    client=MongoClient()
 
-# db=client['setchks_app']
+mongodb_client=client['setchks_app']
 
 
 ################################

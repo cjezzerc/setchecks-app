@@ -1,8 +1,8 @@
 """Definition of interface class to database of concept_id, description_id, decription_term tuples"""
 
 class DescriptionsService():
-    def __init__(self, mongodb_conn=None):
-        self.mongodb_conn=mongodb_conn
+    def __init__(self, mongodb_client=None):
+        self.mongodb_conn=mongodb_client
     
     def get_collections(self):
         """ returns a list of the releases for which collections exist"""
@@ -16,4 +16,3 @@ class DescriptionsService():
         """ returns the information associated with a particular description id in a particular release"""
         pass
 
-    
