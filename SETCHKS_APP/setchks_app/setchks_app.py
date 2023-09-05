@@ -200,11 +200,11 @@ def enter_metadata():
         print("===>>>>", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
     
-    timeline_data_json, timeline_layout_json=graphical_timeline.create_graphical_timeline(
+    timeline_data_json, timeline_layout_json, timeline_info_json=graphical_timeline.create_graphical_timeline(
         selected_sct_version=setchks_session.sct_version,
         available_sct_versions=setchks_session.available_sct_versions,
         )
-
+    
     bc=Breadcrumbs()
     bc.set_current_page("enter_metadata")
 
@@ -214,6 +214,7 @@ def enter_metadata():
         setchks_session=setchks_session,
         timeline_data_json=timeline_data_json,
         timeline_layout_json=timeline_layout_json,
+        timeline_info_json=timeline_info_json,
         )
 
 #############################################

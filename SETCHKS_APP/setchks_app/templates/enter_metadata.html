@@ -72,7 +72,9 @@
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <li> SCT Release Timeline (Work in progress!) </li>
-                        <div id="timeline_fig" height=200 width=600 style="width:600px;height:250px;"></div> // div for the plotly figure
+                        
+                        <div id="timeline_fig"  style="width:600px;height:250px;"></div>  <!-- div for the plotly figure -->
+                        <div> <p id="timeline_hover_info"> STUFF </p> </p></div>  <!-- div for the hover info -->
                     </ul>
                 </div>
             </div>
@@ -94,6 +96,14 @@
                     timeline_input.value=event_data.points[0].pointNumber;
                     var timeline_form=document.getElementById("timeline_form")
                     timeline_form.submit()
+                    });
+            </script>
+
+            <script> // declare listener: when plotly is hovered on .. 
+                var timeline_data_info= {{ timeline_info_json | safe }}
+                timeline_fig_div.on('plotly_hover', function(event_data){
+                    var timeline_hover_info=document.getElementById("timeline_hover_info");
+                    timeline_hover_info.innerHTML=timeline_data_info[event_data.points[0].pointNumber];
                     });
             </script>
 

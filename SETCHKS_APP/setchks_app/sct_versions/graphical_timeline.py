@@ -12,7 +12,6 @@ def create_graphical_timeline(
     ):
 
     available_sct_dates=[x.date_string for x in available_sct_versions]
-    # sct_dates=['20230215','20230705','20230802']
     selected_sct_date=selected_sct_version.date_string
     selected_flags=[(x==selected_sct_date) for x in available_sct_dates]
     
@@ -35,9 +34,8 @@ def create_graphical_timeline(
     fig=go.Figure ()
         
     fig.update_layout(
-        title="SCT timeline",
-        # width=400,
-        # height=200,
+        # title="SCT timeline",
+      
         )
 
     fig.update_xaxes(
@@ -68,30 +66,18 @@ def create_graphical_timeline(
             x=x_list,
             y=y_list,
             marker=marker,
-            # marker=dict(
-            #     color='LightSkyBlue',
-            #     size=50,
-            #     line=dict(
-            #         color='MediumPurple',
-            #         width=2
-            #     )
-            # ),
-            showlegend=False,            
+            showlegend=False,
+            hoverinfo="none",
         )
     )
 
     fig.layout.template=None
 
-    logger.debug(fig.to_dict())
-
-    # return(fig.to_json())
     data_json=json.dumps(fig.to_dict()['data'])
     layout_json=json.dumps(fig.to_dict()['layout'])
-    logger.debug(data_json)
-    logger.debug(layout_json)
-    return data_json, layout_json
-    return(fig.to_dict())
 
-# var defaultPlotlyConfiguration = { modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'lasso2d', 'select2d'], displaylogo: false, showTips: true };
-#     // display the plot in divId HTML element
-#     Plotly.newPlot(divId, plotData, plotLayout, defaultPlotlyConfiguration);
+    timeline_info_json=json.dumps(available_sct_dates)
+
+    return data_json, layout_json, timeline_info_json
+
+
