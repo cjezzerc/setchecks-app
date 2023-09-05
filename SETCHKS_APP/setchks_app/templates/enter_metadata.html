@@ -71,10 +71,31 @@
             <div class="card" style="height: 40vh">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Graphical version selection will be here (TBI) </li>
+                        <li> SCT Release Timeline (Work in progress!) </li>
+                        <div id="timeline_fig" height=200 width=600 style="width:600px;height:250px;"></div> // div for the plotly figure
                     </ul>
                 </div>
             </div>
+      
+            <script> // draw plotly figure
+                var timeline_fig_div = document.getElementById('timeline_fig'); 
+                var plotlyConfiguration = { displayModeBar: false };
+                Plotly.newPlot( timeline_fig_div, {{ timeline_data_json | safe }}, {{ timeline_layout_json | safe }}, plotlyConfiguration );
+            </script>
+
+            <!-- create form with one hidden input to provide holder for value of pointNUmber to be inserted -->
+            <form id="timeline_form" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
+                <input id="timeline_input" name="pointNumber" type="hidden" > 
+            </form>
+
+            <script> // declare listener: when plotly is clicked on, insert pointNumber into hidden input and submit the form 
+                timeline_fig_div.on('plotly_click', function(event_data){
+                    var timeline_input=document.getElementById("timeline_input");
+                    timeline_input.value=event_data.points[0].pointNumber;
+                    var timeline_form=document.getElementById("timeline_form")
+                    timeline_form.submit()
+                    });
+            </script>
 
             <div class="card" style="height: 19vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">

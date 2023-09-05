@@ -31,6 +31,7 @@ from vsmt_uprot.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import get_sct_versions
+from setchks_app.sct_versions import graphical_timeline
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
@@ -171,7 +172,8 @@ def column_identities():
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
 def enter_metadata():
-    print("ENTER METADATA FROM KEYS", request.form.keys())
+    print("ENTER METADATA FORM KEYS", request.form.keys())
+    print("ENTER METADATA DATA", request.data)
     print("REQUEST:",request.args.keys())
     print(request.files)
 
@@ -188,18 +190,31 @@ def enter_metadata():
         setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
         setchks_session.sct_version=setchks_session.available_sct_versions[0]
 
-    # if reach here via click on version selector
+    # if reach here via click on versions pulldown
     if 'select_sct_version' in request.form:
         print("===>>>>", request.form['select_sct_version'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
     
+    # if reach here via click on versions timeline
+    if 'pointNumber' in request.form:
+        print("===>>>>", request.form['pointNumber'])
+        setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
+    
+    timeline_data_json, timeline_layout_json=graphical_timeline.create_graphical_timeline(
+        selected_sct_version=setchks_session.sct_version,
+        available_sct_versions=setchks_session.available_sct_versions,
+        )
+
     bc=Breadcrumbs()
     bc.set_current_page("enter_metadata")
 
-    return render_template('enter_metadata.html',
-                           breadcrumbs_styles=bc.breadcrumbs_styles,
-                           setchks_session=setchks_session,
-                            )
+    return render_template(
+        'enter_metadata.html',
+        breadcrumbs_styles=bc.breadcrumbs_styles,
+        setchks_session=setchks_session,
+        timeline_data_json=timeline_data_json,
+        timeline_layout_json=timeline_layout_json,
+        )
 
 #############################################
 #############################################

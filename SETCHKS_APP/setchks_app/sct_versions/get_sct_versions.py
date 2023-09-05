@@ -21,4 +21,4 @@ def get_sct_versions():
 
 
 def get_sortable_date_part(sct_version):
-    return sct_version.date_string_for_sorting
+    return sct_version.date_string
