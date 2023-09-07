@@ -52,7 +52,7 @@ else:
     print("Configuring mongodb to connect to localhost")
     client=MongoClient()
 
-mongodb_client=client['setchks_app']
+mongodb_db=client['setchks_app']
 
 
 ################################
