@@ -2,6 +2,8 @@
 
 import re
 
+from . import checkdigit
+
 class ParsedSCTID:
 
     __slots__=("sctid_string",
@@ -126,7 +128,10 @@ class ParsedSCTID:
             
             ##################################
             #     Check the check digit      #
-            pass
+            if not checkdigit.verhoeff_check(self.sctid_string):
+                self.valid=False
+                self.validation_message="The supplied SCTID has the incorrect checkdigit"
+                break
             #                                #
             ##################################
 

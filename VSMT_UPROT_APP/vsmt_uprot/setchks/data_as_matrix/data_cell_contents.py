@@ -1,6 +1,6 @@
 """class to hold contents of a data cell once it has been parsed etc"""
 
-from vsmt_uprot.snomed_utils import ParsedSCTID
+from setchks_app.sctid.parse_and_validate_sctid import ParsedSCTID
 
 class DataCellContents():
     __slots__=["parsed_sctid", "cell_column_type_consistency"]
