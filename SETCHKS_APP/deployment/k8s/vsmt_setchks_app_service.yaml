@@ -8,6 +8,6 @@ spec:
     - protocol: TCP
       port: PORT_TO_BE_REPLACED
       targetPort: TARGET_PORT_TO_REPLACE
-      name: vsmt-uprot-app
+      name: vsmt-setchks-app
   selector:
     app: SERVICE_SELECTOR_TO_BE_REPLACED

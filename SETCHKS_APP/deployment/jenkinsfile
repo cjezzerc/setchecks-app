@@ -21,7 +21,7 @@ if ( simplifiedBranchName.length() > 24 ){
   simplifiedBranchName = simplifiedBranchName.substring(0,23)
 }
 def jenkinsUrl = "${env.BUILD_URL}"
-def jenkinsScriptsDir = 'VSMT_UPROT_APP/deployment/scripts'
+def jenkinsScriptsDir = 'SETCHKS_APP/deployment/scripts'
 def jobFolder = "vsmt_deployment"
 // def nodeLabel = 'any'
 
@@ -29,19 +29,19 @@ def commitHash
 
 
 // App & service Team vars
-def appName = "vsmt-uprot-app"
+def appName = "vsmt-setchks-app"
 def serviceTeam
 def serviceTeamEnvName = 'dev'
-def vsmt_uprot_app_version
+def vsmt_setchks_app_version
 def version ='latest'
 def dockerDir = 'docker'
-def dockerImage = 'vsmt-uprot-app'
+def dockerImage = 'vsmt-setchks-app'
 
 
 
 // k8s vars
 // def jMeterK8sDir = 'k8s/jmeter'
-def appK8sDir = 'VSMT_UPROT_APP/deployment/k8s'
+def appK8sDir = 'SETCHKS_APP/deployment/k8s'
 def appNamespace = "${appName}-${simplifiedBranchName}-${serviceTeamEnvName}"
 def deploymentName = "${appName}-deploy"
 def serviceName = "${appName}-svc"
@@ -188,20 +188,20 @@ node {
 
     stage('Build & Push'){
         commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
-        vsmt_uprot_app_version = "${commitHash}"
+        vsmt_setchks_app_version = "${commitHash}"
 
       ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
       // This example uses a multi-stage build
-    //   sh """docker build -t ${dockerImage}-build:${version} -f VSMT_UPROT_APP/Dockerfile ."""
+    //   sh """docker build -t ${dockerImage}-build:${version} -f SETCHKS_APP/Dockerfile ."""
     //   sh """docker build -t ${dockerImage}-build:${version} -f ${dockerDir}/pipeline-build.dockerfile ."""
     //   sh """docker build --build-arg VERSION=${version} -t ${ecrImageName}:${version} -f ${dockerDir}/pipeline-runtime.dockerfile ."""
-      sh """docker build --build-arg VERSION=${vsmt_uprot_app_version} -t ${ecrImageName}:${vsmt_uprot_app_version} -f VSMT_UPROT_APP/Dockerfile ."""
+      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} -t ${ecrImageName}:${vsmt_setchks_app_version} -f SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
       sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
       // Create repo if it doesn't exist
       sh """aws ecr describe-repositories --repository-names ${dockerImage} || aws ecr create-repository --repository-name ${dockerImage}"""
       // Push image to ECR
-      sh """docker push ${ecrImageName}:${vsmt_uprot_app_version}"""
+      sh """docker push ${ecrImageName}:${vsmt_setchks_app_version}"""
     }
 
     stage('Scan Image') {
@@ -252,13 +252,13 @@ node {
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' namespace.yaml""")
             sh ("""kubectl apply -f namespace.yaml""")
 
-            // Create/update vsmt_uprot_app deployment
-            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_uprot_app_deployment.yaml""")
+            // Create/update vsmt_setchks_app deployment
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_setchks_app_deployment.yaml""")
             // Use | as a delimiter if the values contain /
-            sh ("""sed -i 's|IMAGE_NAME_TO_BE_REPLACED|${ecrImageName}:${vsmt_uprot_app_version}|g' vsmt_uprot_app_deployment.yaml""")
-            sh ("""sed -i 's/CONTAINER_NAME_TO_BE_REPLACED/${dockerImage}/g' vsmt_uprot_app_deployment.yaml""")
-            sh ("""sed -i 's/DEPLOYMENT_NAME_TO_BE_REPLACED/${deploymentName}/g' vsmt_uprot_app_deployment.yaml""")
-            sh ("""kubectl apply -f vsmt_uprot_app_deployment.yaml""")
+            sh ("""sed -i 's|IMAGE_NAME_TO_BE_REPLACED|${ecrImageName}:${vsmt_setchks_app_version}|g' vsmt_setchks_app_deployment.yaml""")
+            sh ("""sed -i 's/CONTAINER_NAME_TO_BE_REPLACED/${dockerImage}/g' vsmt_setchks_app_deployment.yaml""")
+            sh ("""sed -i 's/DEPLOYMENT_NAME_TO_BE_REPLACED/${deploymentName}/g' vsmt_setchks_app_deployment.yaml""")
+            sh ("""kubectl apply -f vsmt_setchks_app_deployment.yaml""")
 
             // Create/update redis deployment
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_deployment.yaml""")
@@ -276,13 +276,13 @@ node {
             sh ("""sed -i 's/MONGODB_DEPLOYMENT_NAME_TO_BE_REPLACED/mongodb-deployment/g' mongodb_deployment.yaml""")
             sh ("""kubectl apply -f mongodb_deployment.yaml""")
 
-            // Create/update vsmt_uprot_app service
-            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_uprot_app_service.yaml""")
-            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' vsmt_uprot_app_service.yaml""")
-            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' vsmt_uprot_app_service.yaml""")
-            sh ("""sed -i 's/TARGET_PORT_TO_REPLACE/${targetPort}/g' vsmt_uprot_app_service.yaml""")
-            sh ("""sed -i 's/SERVICE_SELECTOR_TO_BE_REPLACED/${deploymentName}/g' vsmt_uprot_app_service.yaml""")
-            sh ("""kubectl apply -f vsmt_uprot_app_service.yaml""")
+            // Create/update vsmt_setchks_app service
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_setchks_app_service.yaml""")
+            sh ("""sed -i 's/SERVICE_NAME_TO_BE_REPLACED/${serviceName}/g' vsmt_setchks_app_service.yaml""")
+            sh ("""sed -i 's/PORT_TO_BE_REPLACED/${servicePort}/g' vsmt_setchks_app_service.yaml""")
+            sh ("""sed -i 's/TARGET_PORT_TO_REPLACE/${targetPort}/g' vsmt_setchks_app_service.yaml""")
+            sh ("""sed -i 's/SERVICE_SELECTOR_TO_BE_REPLACED/${deploymentName}/g' vsmt_setchks_app_service.yaml""")
+            sh ("""kubectl apply -f vsmt_setchks_app_service.yaml""")
 
             // Create/update redis service
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' redis_service.yaml""")
