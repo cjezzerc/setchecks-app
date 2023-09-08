@@ -1,6 +1,6 @@
 """function to split up inputted value set into a matrix (list of lists)"""
 
-from setchks_app.setchks.data_as_matrix.data_cell_contents import DataCellContents
+from setchks_app.data_as_matrix.data_cell_contents import DataCellContents
 
 import logging
 logger=logging.getLogger(__name__)

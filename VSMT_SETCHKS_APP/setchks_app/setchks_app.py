@@ -24,8 +24,8 @@ import setchks_app.setchks.setchks_session
 import setchks_app.setchks.setchk_definitions 
 import setchks_app.setchks.run_queued_setchks
 
-from setchks_app.setchks.data_as_matrix.columns_info import ColumnsInfo
-from setchks_app.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
+from setchks_app.data_as_matrix.columns_info import ColumnsInfo
+from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
 
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs

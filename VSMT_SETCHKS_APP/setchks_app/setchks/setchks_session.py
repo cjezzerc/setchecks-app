@@ -3,7 +3,7 @@
 import uuid
 
 from . import setchk_excel
-from .data_as_matrix import load_data_into_matrix
+from setchks_app.data_as_matrix import load_data_into_matrix
 
 
 class SetchksSession():
