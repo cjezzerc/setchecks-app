@@ -20,12 +20,12 @@ import vsmt_uprot.fhir_utils
 
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
-import vsmt_uprot.setchks.setchks_session
-import vsmt_uprot.setchks.setchk_definitions 
-import vsmt_uprot.setchks.run_queued_setchks
+import setchks_app.setchks.setchks_session
+import setchks_app.setchks.setchk_definitions 
+import setchks_app.setchks.run_queued_setchks
 
-from vsmt_uprot.setchks.data_as_matrix.columns_info import ColumnsInfo
-from vsmt_uprot.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
+from setchks_app.setchks.data_as_matrix.columns_info import ColumnsInfo
+from setchks_app.setchks.data_as_matrix.marshalled_row_data import MarshalledRow
 
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
@@ -238,9 +238,9 @@ def select_and_run_checks():
         setchks_session.selected_setchks=available_setchks
 
     if "run_checks" in request.args:
-        setchks_to_run=[ vsmt_uprot.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
+        setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
         logger.debug(str(setchks_to_run))
-        setchks_session.setchks_jobs_list=vsmt_uprot.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
+        setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
 
     if "download_report" in request.args:
         logger.debug("Report requested")
@@ -255,7 +255,7 @@ def select_and_run_checks():
     # if setchks_session.setchks_jobs_list:
     #     import pdb; pdb.set_trace()
     #     for setchk, job_id in setchks_session.setchks_jobs_list:
-    #         job=vsmt_uprot.setchks.run_queued_setchks.get_job_by_id(job_id=job_id)
+    #         job=setchks_app.setchks.run_queued_setchks.get_job_by_id(job_id=job_id)
     #         print("====JOB=============>>", setchk.setchk_name, job.return_value())
 
 

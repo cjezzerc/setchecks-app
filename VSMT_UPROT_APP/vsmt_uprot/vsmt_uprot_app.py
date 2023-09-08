@@ -12,8 +12,8 @@ import vsmt_uprot.fhir_utils
 
 import vsmt_uprot.terminology_server_module
 import vsmt_uprot.vsmt_valueset
-import vsmt_uprot.setchks.setchks_session
-import vsmt_uprot.setchks.setchk_definitions 
+import setchks_app.setchks.setchks_session
+import setchks_app.setchks.setchk_definitions 
 
 
 from flask import (
@@ -286,7 +286,7 @@ def trial_upload():
     if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
         setchks_session=session['setchks_session']
     else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        setchks_session=setchks_app.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
     if 'myfile' in request.files:
@@ -319,7 +319,7 @@ def configure_columns():
     if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
         setchks_session=session['setchks_session']
     else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        setchks_session=setchks_app.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
     return render_template('configure_columns.html',
@@ -339,12 +339,12 @@ def configure_columns():
 def do_CHK06_DEF_EXCL_FILTER():
     
 
-    setchk=vsmt_uprot.setchks.setchk_definitions.setchks['CHK06_DEF_EXCL_FILTER']
+    setchk=setchks_app.setchks.setchk_definitions.setchks['CHK06_DEF_EXCL_FILTER']
 
     if 'setchks_session' in session.keys(): # grab setchks_session from session variable if it is in there
         setchks_session=session['setchks_session']
     else: # otherwise initialise the setchks_session object and save to session variable
-        setchks_session=vsmt_uprot.setchks.setchks_session.SetchksSession()
+        setchks_session=setchks_app.setchks.setchks_session.SetchksSession()
         session['setchks_session']=setchks_session 
 
     setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
