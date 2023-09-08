@@ -1,6 +1,6 @@
 #!/bin/csh 
 # This must current be run from root of Git folder so as to also bring in the VSMT_UPROT_APP codebase
-docker build -t cjezzerc/setchks_app -f SETCHKS_APP/Dockerfile .
+docker build -t cjezzerc/setchks_app -f VSMT_SETCHKS_APP/Dockerfile .
 set build_status = $status
 
 if ($build_status == 0) then

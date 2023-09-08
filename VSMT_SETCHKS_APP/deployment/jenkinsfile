@@ -21,7 +21,7 @@ if ( simplifiedBranchName.length() > 24 ){
   simplifiedBranchName = simplifiedBranchName.substring(0,23)
 }
 def jenkinsUrl = "${env.BUILD_URL}"
-def jenkinsScriptsDir = 'SETCHKS_APP/deployment/scripts'
+def jenkinsScriptsDir = 'VSMT_SETCHKS_APP/deployment/scripts'
 def jobFolder = "vsmt_deployment"
 // def nodeLabel = 'any'
 
@@ -41,7 +41,7 @@ def dockerImage = 'vsmt-setchks-app'
 
 // k8s vars
 // def jMeterK8sDir = 'k8s/jmeter'
-def appK8sDir = 'SETCHKS_APP/deployment/k8s'
+def appK8sDir = 'VSMT_SETCHKS_APP/deployment/k8s'
 def appNamespace = "${appName}-${simplifiedBranchName}-${serviceTeamEnvName}"
 def deploymentName = "${appName}-deploy"
 def serviceName = "${appName}-svc"
@@ -192,10 +192,10 @@ node {
 
       ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
       // This example uses a multi-stage build
-    //   sh """docker build -t ${dockerImage}-build:${version} -f SETCHKS_APP/Dockerfile ."""
+    //   sh """docker build -t ${dockerImage}-build:${version} -f VSMT_SETCHKS_APP/Dockerfile ."""
     //   sh """docker build -t ${dockerImage}-build:${version} -f ${dockerDir}/pipeline-build.dockerfile ."""
     //   sh """docker build --build-arg VERSION=${version} -t ${ecrImageName}:${version} -f ${dockerDir}/pipeline-runtime.dockerfile ."""
-      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} -t ${ecrImageName}:${vsmt_setchks_app_version} -f SETCHKS_APP/Dockerfile ."""
+      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
       sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
       // Create repo if it doesn't exist
