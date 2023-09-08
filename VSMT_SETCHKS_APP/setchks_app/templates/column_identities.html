@@ -29,7 +29,12 @@
             <div class="card" style="margin-top:1em;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Overall analysis: (TBI)</li>                
+                        <li> Overall analysis: (TBI)</li>  
+                        {% if setchks_session.columns_info.identification_sufficient ==True %}
+                        <li> You have unlocked the next level, Congratulations. Your shoelaces (and instructions) are in the post</li>
+                        {% else %}
+                        <li> You need to identify at least one column as an ID column </li>
+                        {% endif %}              
                     </ul>
                 </div>
             </div>
@@ -66,7 +71,28 @@
                                 <th scope="col">Column type</th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col">
-                                    <div class="dropdown">
+                                    <div>
+                                        {% set icol=loop.index-1 %}
+                                        {% set column_form_name = "type_selector_form_for_col_" + icol|string %}
+                                        <form action="/column_identities" class="{{ column_form_name }}" method="post" enctype="multipart/form-data">
+                                            {% set column_selector_name = "type_selector_for_col_" + icol|string %}
+                                            <select name="{{ column_selector_name }}" class="form-select" 
+                                                onchange="$('.{{ column_form_name }}').submit();" 
+                                                style="margin-top: 0.5em;"
+                                                >
+                                                {% for available_type in ["CID","DID","MIXED","DTERM","OTHER"] %} 
+                                                    {% if available_type == setchks_session.columns_info.column_types[icol] %}
+                                                    <option selected
+                                                    {% else %}
+                                                    <option
+                                                    {% endif %} 
+                                                    value={{ available_type }}> {{ available_type }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    </div>  
+                                    <!-- <div class="dropdown">
                                         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                         {{ column_type_labels[loop.index-1] }}
                                         </button>
@@ -76,7 +102,9 @@
                                         <li><a class="dropdown-item" href="#">Mixed Id</a></li>
                                         <li><a class="dropdown-item" href="#">Other</a></li>
                                         </ul>
-                                    </div>
+                                    </div> -->
+
+
                                 </th>
                                 {% endfor %}
                             </tr>
@@ -131,7 +159,14 @@
             <button type="button" class="btn setchks-btn-inactive">Restart</button>
             <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
             <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Confirm upload)</a>
-            <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Enter Metadata)</a>
+            {% if setchks_session.columns_info.identification_sufficient ==True %}
+                <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Enter Metadata)</a>
+            {% else %}
+                <a href="#"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> (Enter Metadata)</a>
+            {% endif %}
+            
+            
+            
         </div>
     
     </div>

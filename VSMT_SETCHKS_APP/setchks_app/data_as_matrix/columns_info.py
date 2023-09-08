@@ -44,6 +44,7 @@ class ColumnsInfo():
         
         # else, see if the combination after the change were made would be legal
         trial_identified_columns=copy.deepcopy(self._identified_columns)
+        trial_identified_columns[current_type]=None 
         trial_identified_columns[requested_column_type]=icol 
         test_tuple=(trial_identified_columns["CID"]!=None, 
                     trial_identified_columns["DID"]!=None, 
@@ -58,11 +59,15 @@ class ColumnsInfo():
             self._column_types[icol]=requested_column_type
             return True, "SUCCESS: Changed OK" 
         else:
-            return False, "FAIL: The resulting set of identified columns is illegal"
+            return False, "FAIL: The resulting set of identified columns is illegal" +str(test_tuple)
 
     @property
     def column_types(self):
         return self._column_types
+    
+    @property
+    def identified_columns(self):
+        return self._identified_columns
 
     @property
     def identification_sufficient(self):

@@ -30,7 +30,7 @@ class MarshalledRow():
         self.row_processable_message="processability messages not implemented yet"
 
         ########## decide if row is processable ##########
-        ########## very basic inflexxible rules for now ##
+        ########## very basic inflexible rules for now  ##
 
         ci=columns_info
         cid_col_cpt_type=None
@@ -50,7 +50,7 @@ class MarshalledRow():
                 self.row_processable=True
         
         if ci.have_just_did_column:
-            if cid_col_cpt_type=="Description_Id":
+            if did_col_cpt_type=="Description_Id":
                 self.row_processable=True
         
         if ci.have_both_cid_and_did_columns:

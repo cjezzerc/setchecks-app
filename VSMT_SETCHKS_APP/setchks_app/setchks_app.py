@@ -136,10 +136,26 @@ def column_identities():
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
 
-    ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
-    ci.set_column_type(icol=0,requested_column_type="CID")
-    ci.set_column_type(icol=1,requested_column_type="DTERM")
-    setchks_session.columns_info=ci
+    
+    if setchks_session.columns_info==None:
+        ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
+        ci.set_column_type(icol=0,requested_column_type="CID")
+        ci.set_column_type(icol=1,requested_column_type="DTERM")
+        setchks_session.columns_info=ci
+
+    # if reach here via click on versions pulldown
+    if len(request.form.keys())!=0:
+       k, v=list(request.form.items())[0]
+       print("===>>>>", k, v)
+       # col_label is of form e.g. type_selector_for_col_3
+       icol=int(k.split("_")[-1])
+       requested_column_type=v
+       ci=setchks_session.columns_info
+       success_flag, message=ci.set_column_type(icol=icol,requested_column_type=requested_column_type)
+       logger.debug("Type change attempt: %s %s %s %s" % (icol, requested_column_type, success_flag, message))
+       print(ci.column_types)
+       print(ci.identified_columns)
+    #    setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
 
     setchks_session.marshalled_rows=[]
     for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]:
@@ -180,13 +196,6 @@ def enter_metadata():
     setchks_session=gui_setchks_session.get_setchk_session(session)
  
     if setchks_session.available_sct_versions is None:
-        # setchks_session.terminology_server.get_jwt_token # really should check for when expires first?
-        # terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-        #                                     auth_url=os.environ["ONTOAUTH_INSTANCE"])
-        # relative_url= "CodeSystem?url=http://snomed.info/sct"
-        # response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
-        # bundle=Bundle.parse_obj(response.json())
-        # setchks_session.available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
         setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
         setchks_session.sct_version=setchks_session.available_sct_versions[0]
 
