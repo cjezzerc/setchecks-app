@@ -1,7 +1,7 @@
 #!/bin/csh 
 
 
-docker push cjezzerc/setchks_app
+docker push cjezzerc/vsmt_setchks_app
 set push_status = $status
 
 if ($push_status == 0) then
