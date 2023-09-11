@@ -5,6 +5,7 @@ import copy
 class ColumnsInfo():
     __slots__=["_identified_columns",   # dict of the columns nominated as providing particular info
                "_column_types", # list of types of each column; possible values="CID","DID","MIXED","DTERM","OTHER"
+                "_ncols"
                 ]
 
 # allowed combos = CID  ;   DID   ; MIXED  ; CID and DID
@@ -15,7 +16,8 @@ class ColumnsInfo():
                                  "MIXED":None,
                                  "DTERM":None,                    
                                  }
-        self._column_types=["OTHER"]*ncols
+        self._ncols=ncols
+        self._column_types=["OTHER"]*self._ncols
     
     def __str__(self):
         output_str="\n"
@@ -60,6 +62,10 @@ class ColumnsInfo():
             return True, "SUCCESS: Changed OK" 
         else:
             return False, "FAIL: The resulting set of identified columns is illegal" +str(test_tuple)
+
+    @property
+    def ncols(self):
+        return self._ncols
 
     @property
     def column_types(self):
