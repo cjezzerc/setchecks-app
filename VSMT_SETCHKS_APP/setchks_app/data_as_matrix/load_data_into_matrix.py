@@ -38,5 +38,14 @@ def load_data_into_matrix(setchks_session,
             f=[DataCellContents(cell_contents=x) for x in f]
             setchks_session.data_as_matrix.append(f)
 
+        #find maximum width and pad any rows shorter than this with empty content
+        nmax=0
+        for row in setchks_session.data_as_matrix:
+            nmax=max(nmax, len(row))
+        for row in setchks_session.data_as_matrix:
+            if len(row)<nmax:
+                row+=[DataCellContents(cell_contents="") for x in range(0,nmax-len(row))]
+
+
 
 
