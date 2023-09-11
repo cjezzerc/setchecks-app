@@ -4,6 +4,7 @@ import uuid
 
 from . import setchk_excel
 from setchks_app.data_as_matrix import load_data_into_matrix
+import setchks_app.setchks.setchk_definitions
 
 
 class SetchksSession():
@@ -46,6 +47,7 @@ class SetchksSession():
                "terminology_server",
                "available_sct_versions", 
                "sct_version",
+               "available_setchks",
                "selected_setchks",
                "setchks_jobs_list",
                )
@@ -68,6 +70,7 @@ class SetchksSession():
         self.terminology_server=None
         self.available_sct_versions=None 
         self.sct_version=None
+        self.available_setchks=setchks_app.setchks.setchk_definitions.setchks
         self.selected_setchks=None
         self.setchks_jobs_list=None
     

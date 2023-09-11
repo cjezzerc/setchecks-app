@@ -14,13 +14,20 @@ class Setchk():
     on which the check is run, thus e.g. .run_check must be supplied with a 
     setchks_session object
     """
-    def __init__(self, setchk_name=None, setchk_function=None):
+    __slots__=[
+        "setchk_code",
+        "setchk_short_name",
+        "setchk_function",
+        ]
+
+    def __init__(self, setchk_code=None, setchk_short_name=None, setchk_function=None):
         """
         Parameters
         ----------
         TBC
         """
-        self.setchk_name=setchk_name
+        self.setchk_code=setchk_code
+        self.setchk_short_name=setchk_short_name
         self.setchk_function=setchk_function
 
     def run_check(self,  setchks_session=None):
@@ -31,8 +38,8 @@ class Setchk():
         setchk_session: VsCheckSession, mandatory
         """
         setchk_results=SetchkResults()
-        setchk_results.setchk_name=self.setchk_name
+        setchk_results.setchk_code=self.setchk_code
         self.setchk_function(setchks_session=setchks_session, setchk_results=setchk_results)
-        setchks_session.setchks_results[self.setchk_name]=setchk_results
-        return ("Setcheck %s has been run" % self.setchk_name)
+        setchks_session.setchks_results[self.setchk_code]=setchk_results
+        return ("Setcheck %s has been run" % self.setchk_short_name)
 

@@ -5,16 +5,17 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Border, Side, PatternFill
 from openpyxl.styles.colors import Color
 
-def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL"):
+def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
     
+    setchks=setchks_session.available_setchks
     setchks_results=setchks_session.setchks_results
     
     #Find which of the requested checks have actually been run (silently ignores the others)
     setchks_list_to_report=[]
-    for setchk_name in setchks_results.keys():
-        if (setchk_name in setchks_to_include) or (setchks_to_include=="ALL"):
-            setchks_list_to_report.append(setchk_name)
+    for setchk_code in setchks_results.keys():
+        if (setchk_code in setchks_to_include) or (setchks_to_include=="ALL"):
+            setchks_list_to_report.append(setchk_code)
 
     ##################################################################
     ##################################################################
@@ -32,8 +33,10 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ws.append(["Check", "Message"])
 
     # Add the set level messages from each check on first sheet
-    for setchk_name in setchks_list_to_report:
-        ws.append([setchk_name, setchks_results[setchk_name].set_analysis["Message"]])
+    for setchk_code in setchks_list_to_report:
+        setchk_short_name=setchks[setchk_code].setchk_short_name
+        message=setchks_results[setchk_code].set_analysis["Message"]
+        ws.append([setchk_short_name, message])
 
     # crude cell with setting
     cell_widths=[30,100]
@@ -58,10 +61,11 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         ws.append(["Row number", "Check", "Message"] + header_row_cell_contents) # ** need to create better header row
 
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
-        for setchk_name in setchks_list_to_report:
-            setchk_results=setchks_results[setchk_name]
+        for setchk_code in setchks_list_to_report:
+            setchk_short_name=setchks[setchk_code].setchk_short_name
+            setchk_results=setchks_results[setchk_code]
             data_row_cell_contents=[x.string for x in data_row]
-            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
+            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
         ws.append(["----"]) 
     
     # crude cell with setting

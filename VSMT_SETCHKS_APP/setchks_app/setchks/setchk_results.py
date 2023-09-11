@@ -14,7 +14,7 @@ class SetchkResults():
         * the standard structures need to be at row, set and concept level (as a first stab) 
     """
     
-    __slots__=("row_analysis", "set_analysis", "concept_analysis", "setchk_name", "meta_data")
+    __slots__=("row_analysis", "set_analysis", "concept_analysis", "setchk_code", "meta_data")
 
     def __init__(self):
         """
@@ -25,7 +25,7 @@ class SetchkResults():
         self.row_analysis=[]
         self.set_analysis={}
         self.concept_analysis={}
-        self.setchk_name={}
+        self.setchk_code={}
         self.meta_data={}
 
     def __repr__(self):

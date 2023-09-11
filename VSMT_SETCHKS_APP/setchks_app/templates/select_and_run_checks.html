@@ -22,7 +22,7 @@
                     The following checks will be run (selectability and nicer set-check titles etc TBI):
                     <ul>
                         {% for sc in setchks_session.selected_setchks %}
-                        <li> {{ sc  }} </li>
+                        <li> {{ all_setchks[sc].setchk_short_name }} </li>
                         {% endfor %}
                     </ul>
                 </div>

@@ -40,7 +40,8 @@ from werkzeug.exceptions import abort
 
 bp = Blueprint('setchks_app', __name__)
 
-# This list should probably come from a config file in duw course
+# This list should probably come from a config file in due course
+# available_setchks=['CHK20_INCORR_FMT_SCTID', 'CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 
 from pymongo import MongoClient
@@ -261,15 +262,9 @@ def select_and_run_checks():
 
     results_available=len(list(setchks_session.setchks_results)) > 0
 
-    # if setchks_session.setchks_jobs_list:
-    #     import pdb; pdb.set_trace()
-    #     for setchk, job_id in setchks_session.setchks_jobs_list:
-    #         job=setchks_app.setchks.run_queued_setchks.get_job_by_id(job_id=job_id)
-    #         print("====JOB=============>>", setchk.setchk_name, job.return_value())
-
-
     return render_template('select_and_run_checks.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,
                            setchks_session=setchks_session,
                            results_available=results_available,
+                           all_setchks=setchks_app.setchks.setchk_definitions.setchks,
                             )

@@ -11,11 +11,11 @@ def run_queued_setchks(setchks_list=None, setchks_session=None):
     q = Queue(connection=redis_conn)  # no args implies the default queue
     queued_jobs=[]
     for setchk in setchks_list:
-        # logger.debug("Queueing up..: " + str(setchk.setchk_name))
+        # logger.debug("Queueing up..: " + str(setchk.setchk_code))
         # job = q.enqueue(setchk.run_check, setchks_session=setchks_session)
         # queued_jobs.append((setchk, job.id))
 
-        logger.debug("Running ..: " + str(setchk.setchk_name))
+        logger.debug("Running ..: " + str(setchk.setchk_code))
         setchk.run_check(setchks_session=setchks_session)
     
     return(queued_jobs)
