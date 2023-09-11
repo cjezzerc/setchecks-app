@@ -65,7 +65,10 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
             setchk_short_name=setchks[setchk_code].setchk_short_name
             setchk_results=setchks_results[setchk_code]
             data_row_cell_contents=[x.string for x in data_row]
-            ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
+            # ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
+            for check_item in setchk_results.row_analysis[i_data_row]:
+                message="%s : %s " % (check_item["Result_id"], check_item["Message"]) 
+                ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, message]+data_row_cell_contents)
         ws.append(["----"]) 
     
     # crude cell with setting

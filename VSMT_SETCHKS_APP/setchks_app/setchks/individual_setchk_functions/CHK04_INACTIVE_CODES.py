@@ -68,7 +68,7 @@ def do_check(setchks_session=None, setchk_results=None):
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
 
         n_processed+=1
-        row_analysis={}
+        check_item={}
         
         # concept_id=row[concept_id_col].parsed_sctid.sctid_string
         concept_id=row[concept_id_col].string
@@ -79,19 +79,19 @@ def do_check(setchks_session=None, setchk_results=None):
             active_status=None
 
         if active_status is True:
-            row_analysis["Result_id"]=1
-            row_analysis["Message"]="Concept is active"
+            check_item["Result_id"]=1
+            check_item["Message"]="Concept is active"
             n_active+=1
         elif active_status is False:
-            row_analysis["Result_id"]=2
-            row_analysis["Message"]="Concept is INACTIVE"
+            check_item["Result_id"]=2
+            check_item["Message"]="Concept is INACTIVE"
             n_inactive+=1
         else:
-            row_analysis["Result_id"]=3
-            row_analysis["Message"]="Concept could not be found in the specified release"
+            check_item["Result_id"]=3
+            check_item["Message"]="Concept could not be found in the specified release"
             n_not_found+=1
         
-        setchk_results.row_analysis.append(row_analysis)
+        setchk_results.row_analysis.append([check_item])
     #                       #
     #########################
 
