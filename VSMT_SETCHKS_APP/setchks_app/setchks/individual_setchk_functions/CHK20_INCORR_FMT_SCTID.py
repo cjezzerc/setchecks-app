@@ -61,7 +61,7 @@ The identifier in the %s column was not checked against the definition for a SNO
                     check_item["Result_id"]=2 
                     check_item["Message"]="""
 The identifier in the %s column does not meet the definition for a SNOMED identifier. 
-It should not be should not be used for recording information in a patient record.
+It should not be used for recording information in a patient record.
 It can never be extracted from a patient record (as it should never be recorded in the first place). 
 We strongly recommend that you amend your value set to replace (or remove) this malformed SNOMED identifier from your value set.
 """                     % column_types[i_cell]

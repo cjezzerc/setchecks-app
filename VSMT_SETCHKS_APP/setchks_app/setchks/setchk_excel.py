@@ -100,15 +100,17 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
     # example bit of formatting bling
+    irow=0
     for row in ws.iter_rows():
         divider_line=row[0].value=="----"
+        irow+=1
         for cell in row:
             cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
             # if cell.column_letter in ["A","B","C"] or divider_line:
             if divider_line:
                 cell.fill=grey_fill
                 cell.border = border  
-
+                ws.row_dimensions[irow].height = 3
     wb.save(filename=excel_filename)
 
         # Aide memoire snippets

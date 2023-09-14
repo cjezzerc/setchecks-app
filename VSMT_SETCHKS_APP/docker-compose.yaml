@@ -1,7 +1,7 @@
 version: "0.1"
 services:
   setchks_app:
-    image: cjezzerc/setchks_app
+    image: cjezzerc/vsmt_setchks_app
     depends_on:
       - redis-server
       - mongo-server
