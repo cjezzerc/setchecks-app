@@ -54,7 +54,8 @@ TF_OUTPUT_FILE="/var/tmp/$ENV-$REGION-$STACK-output.txt"
 
 cd $STACKDIR
 
-tfenv use 1.0.11
+#tfenv use 1.0.11
+tfenv use 0.13.6
 
 echo $ENV
 terraform --version
