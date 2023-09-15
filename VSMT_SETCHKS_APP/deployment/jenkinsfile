@@ -418,19 +418,19 @@ node {
     //   }
     // }
 
-    stage("Destroy webapp") {
-      // Prevent concurrent app ns destroys
-      lock ("${appNamespace}"){
-        withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-          "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-          "AWS_SESSION_TOKEN=${awsSessionToken}",
-          "KUBECONFIG=${kubeconfig}"
-          ])
-        {
-          sh """kubectl delete ns ${appNamespace}"""
-        }
-      }
-    }
+    // stage("Destroy webapp") {
+    //   // Prevent concurrent app ns destroys
+    //   lock ("${appNamespace}"){
+    //     withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+    //       "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+    //       "AWS_SESSION_TOKEN=${awsSessionToken}",
+    //       "KUBECONFIG=${kubeconfig}"
+    //       ])
+    //     {
+    //       sh """kubectl delete ns ${appNamespace}"""
+    //     }
+    //   }
+    // }
 
   // Post build result to GitLab
   } finally {
