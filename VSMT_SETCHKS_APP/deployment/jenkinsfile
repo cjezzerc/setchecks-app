@@ -192,7 +192,7 @@ node {
 
     stage("Authenticate to ${texasEnvName} AWS/k8s and tf plan") {
         awsCreds = sh (
-            script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} texas",
+            script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} vsmt",
             returnStdout: true)
         awsAccessKeyId=awsCreds.split(',')[0].split('=')[1].trim()
         awsSecretAccessKey=awsCreds.split(',')[1].split('=')[1].trim()
