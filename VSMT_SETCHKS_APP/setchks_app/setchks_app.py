@@ -69,6 +69,24 @@ def health_check():
     logger.info("health check called")
     return "Healthy"
 
+#################################
+#################################
+# Simple mongodb check endpoint #
+#################################
+#################################
+
+@bp.route("/mongodb_check")
+def mongodb_check():
+    logger.info("mongodb check called")
+    collection=MongoClient()["descriptions_service"]["mongodb_check"]
+    logger.info("mongodb connection to db made")
+    collection.insert_one({"insert_time": datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S')})
+    logger.info("inserted document")
+    output_strings=["Collection 'mongodb check' contents:"]
+    for doc in collection.find():
+        output_strings.append(str(doc))
+    return '<br>'.join(output_strings)
+
 #####################################
 #####################################
 ##     data upload endpoint        ##
