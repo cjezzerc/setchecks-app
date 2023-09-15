@@ -40,7 +40,6 @@ def dockerImage = 'vsmt-setchks-app'
 
 
 // k8s vars
-// def jMeterK8sDir = 'k8s/jmeter'
 def appK8sDir = 'VSMT_SETCHKS_APP/deployment/k8s'
 def appNamespace = "${appName}-${simplifiedBranchName}-${serviceTeamEnvName}"
 def deploymentName = "${appName}-deploy"
@@ -48,6 +47,7 @@ def serviceName = "${appName}-svc"
 def servicePort = 5000
 def targetPort = 5000
 def securityPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
+def saRole = "vsmt_host_role"
 
 def albIngressName = "lb" // used in R53 record
 def albScheme = 'internal' // 'internal' or 'internet-facing'
@@ -73,13 +73,6 @@ def toolTag = "k8s"
 
 def texasEnvName
 def envDomain
-
-// jMeter vars - NOTE JMeter is disabled by default to speed up the pipeline
-def jmeterEnabled = false
-def jmeterDir = 'jmeter'
-def jmeterScriptsDir = "${jmeterDir}/scripts"
-def jmeterTestDir = "${jmeterDir}/tests/loadtest1"
-def jmxFile = "example.jmx"
 
 def nodeLabel = 'master'
 // ************************************************************************************
@@ -142,8 +135,6 @@ path = '/healthy'
 url = "https://${fqdn}${path}"
 searchText = 'Healthy'
 
-// def jmeterNamespace = "${serviceTeam}-${serviceTeamEnvName}-${simplifiedBranchName}-jmeter"
-
 def postFailure() {
     updateGitlabCommitStatus name: 'build', state: 'failed'
 }
@@ -154,8 +145,6 @@ def postSuccess() {
 
 node {
   try {
-
-
 
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
@@ -169,13 +158,9 @@ node {
       echo "  appName is: ${appName}"
       echo "  version is ${version}"
       echo "  jenkinsScriptsDir is: ${jenkinsScriptsDir}"
-    //   echo "  jmeterScriptsDir is: ${jmeterScriptsDir}"
-    //   echo "  jmeterTestDir is: ${jmeterTestDir}"
-    //   echo "  jmxFile is: ${jmxFile}"
+    
       echo "####################################################"
     }
-
-
 
     stage('Checkout') {
       echo 'Git repository checkout...'
@@ -191,10 +176,6 @@ node {
         vsmt_setchks_app_version = "${commitHash}"
 
       ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
-      // This example uses a multi-stage build
-    //   sh """docker build -t ${dockerImage}-build:${version} -f VSMT_SETCHKS_APP/Dockerfile ."""
-    //   sh """docker build -t ${dockerImage}-build:${version} -f ${dockerDir}/pipeline-build.dockerfile ."""
-    //   sh """docker build --build-arg VERSION=${version} -t ${ecrImageName}:${version} -f ${dockerDir}/pipeline-runtime.dockerfile ."""
       sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
       sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
@@ -209,28 +190,23 @@ node {
       sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${env.ecrAccountId}"
     }
 
-    stage("Authenticate to ${texasEnvName} AWS/k8s") {
-      awsCreds = sh (
-        script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} ${serviceTeam}",
-        returnStdout: true)
-      awsAccessKeyId=awsCreds.split(',')[0].split('=')[1].trim()
-      awsSecretAccessKey=awsCreds.split(',')[1].split('=')[1].trim()
-      awsSessionToken=awsCreds.split(',')[2].split('=')[1].trim()
-      withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-        "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-        "AWS_SESSION_TOKEN=${awsSessionToken}"]) {
-        kubeconfig = sh ( script: "${jenkinsScriptsDir}/kube_config.sh ${texasEnvName}", returnStdout: true).trim()
-        sh """aws sts get-caller-identity"""
-      }
-      echo "kubeconfig is: ${kubeconfig}"
-    }
-
-    stage("Terraform (placeholder)"){
-      echo "placeholder for e.g. RDS, ECR"
-    }
-
-    stage("Update DB schema (placeholder)"){
-      echo "placeholder e.g. using Flyway"
+    stage("Authenticate to ${texasEnvName} AWS/k8s and tf plan") {
+        awsCreds = sh (
+            script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} texas",
+            returnStdout: true)
+        awsAccessKeyId=awsCreds.split(',')[0].split('=')[1].trim()
+        awsSecretAccessKey=awsCreds.split(',')[1].split('=')[1].trim()
+        awsSessionToken=awsCreds.split(',')[2].split('=')[1].trim()
+        withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+            "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+            "AWS_SESSION_TOKEN=${awsSessionToken}"]) {
+            kubeconfig = sh ( script: "${jenkinsScriptsDir}/kube_config.sh ${texasEnvName}", returnStdout: true).trim()
+            sh """aws sts get-caller-identity"""
+            echo "kubeconfig is: ${kubeconfig}"
+            dir ("${jenkinsScriptsDir}"){
+                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
+            }
+        }
     }
 
     stage("Deploy ${appName}"){
@@ -301,6 +277,12 @@ node {
             sh ("""sed -i 's|CERT_ARN_TO_BE_REPLACED|${certArn}|g' ingress.yaml""")
 
             sh ("""kubectl apply -f ingress.yaml""")
+
+            sh ("""sed -i 's|ACCT_NUMBER_TO_BE_REPLACED|${env.nonprodAccountId}|g' sa.yaml""")
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' sa.yaml""")
+            sh ("""sed -i 's/SA_ROLE/${saRole}/g' sa.yaml""")
+
+            sh ("""kubectl apply -f sa.yaml""")
           }
         }
       }
@@ -350,73 +332,6 @@ node {
         }
       }
     }
-
-    // if ( jmeterEnabled ){
-    //   stage("Deploy jMeter"){
-    //     // Prevent concurrent jMeter deployments
-    //     lock ("${jmeterNamespace}"){
-    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
-    //         "KUBECONFIG=${kubeconfig}"
-    //         ])
-    //       {
-    //         jMeterNamespaceExists = sh( script: """ kubectl get ns | awk '{print \$1}' | grep '^${jmeterNamespace}\$' || true """, returnStdout: true).trim()
-    //         if ( jMeterNamespaceExists != "${jmeterNamespace}" ) {
-    //           echo "namespace ${jmeterNamespace} doesn't exist, creating it..."
-    //           sh (""" kubectl create ns ${jmeterNamespace} """)
-    //         }
-    //         else {
-    //           echo "namespace ${jmeterNamespace} already exists"
-    //         }
-    //         dir ( jMeterK8sDir ){
-    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_slaves_deploy.yaml"""
-    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_slaves_svc.yaml"""
-    //           sh """kubectl apply -n ${jmeterNamespace} -f jmeter_master_deploy.yaml"""
-    //         }
-    //         // Wait for jMeter pods to be available
-    //         sh """${jenkinsScriptsDir}/check_pods.sh jmeter-master ${jmeterNamespace} 5 30"""
-    //         sh """${jenkinsScriptsDir}/check_pods.sh jmeter-slave ${jmeterNamespace} 5 30"""
-    //       }
-    //     }
-    //   }
-
-    //   stage("Run Jmeter"){
-    //     // Prevent concurrent jMeter executions in the same namespace
-    //     lock ("${jmeterNamespace}"){
-    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
-    //         "KUBECONFIG=${kubeconfig}"
-    //         ])
-    //       {
-    //         sh ("""sed -i 's|REPLACE_WITH_FQDN|${fqdn}|g' ${jmeterTestDir}/${jmxFile}""")
-    //         sh ("""sed -i 's|REPLACE_WITH_PATH|${path}|g' ${jmeterTestDir}/${jmxFile}""")
-    //         sh """kubectl config set-context --current --namespace=${jmeterNamespace}"""
-    //         sh """${jmeterScriptsDir}/jmeter_stop.sh"""
-    //         sh """${jmeterScriptsDir}/start_test.sh ${jmeterTestDir} ${jmeterTestDir}/${jmxFile}"""
-    //       }
-    //     }
-    //     // Make jMeter test report files available as build artifacts
-    //     dir('test-results') {
-    //       archiveArtifacts artifacts: '**'
-    //     }
-    //   }
-
-    //   stage("Destroy jMeter") {
-    //     // Prevent concurrent jMeter destroys
-    //     lock ("${jmeterNamespace}"){
-    //       withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-    //         "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-    //         "AWS_SESSION_TOKEN=${awsSessionToken}",
-    //         "KUBECONFIG=${kubeconfig}"
-    //         ])
-    //       {
-    //         sh """kubectl delete ns ${jmeterNamespace}"""
-    //       }
-    //     }
-    //   }
-    // }
 
     // stage("Destroy webapp") {
     //   // Prevent concurrent app ns destroys

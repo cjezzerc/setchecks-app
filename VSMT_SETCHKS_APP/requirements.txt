@@ -7,3 +7,4 @@ redis
 openpyxl
 rq
 plotly
+boto3

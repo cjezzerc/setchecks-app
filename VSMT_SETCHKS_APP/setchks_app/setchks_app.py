@@ -2,6 +2,8 @@ import os
 import os.path
 import sys
 import datetime
+import boto3
+import json
 
 import logging
 logging.basicConfig(
@@ -48,15 +50,24 @@ available_setchks=['CHK20_INCORR_FMT_SCTID']
 
 from pymongo import MongoClient
 
-if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-    print("Configuring mongodb to connect to mongo-server docker")
-    client=MongoClient('mongo-server',27017)
-else:
-    print("Configuring mongodb to connect to localhost")
-    client=MongoClient()
+# if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
+#     print("Configuring mongodb to connect to mongo-server docker")
+#     client=MongoClient('mongo-server',27017)
+# else:
+#     print("Configuring mongodb to connect to localhost")
+#     client=MongoClient()
 
-mongodb_db=client['setchks_app']
+# mongodb_db=client['setchks_app']
 
+if 'ONTOSERVER_INSTANCE' not in os.environ:
+    os.environ['ONTOSERVER_INSTANCE']='https://dev.ontology.nhs.uk/dev1/fhir/'
+    os.environ['ONTOAUTH_INSTANCE']='https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token'
+    sm_client = boto3.client('secretsmanager', region_name='eu-west-2')
+    pw_response = sm_client.get_secret_value(SecretId='vsmt-ontoserver-access')
+    passwords = pw_response['SecretString']
+    dictionary_pw = json.loads(passwords)
+    os.environ['ONTOSERVER_USERNAME']=dictionary_pw['ONTOSERVER_USERNAME']
+    os.environ['ONTOSERVER_SECRET']=dictionary_pw['ONTOSERVER_SECRET']
 
 ################################
 ################################
@@ -93,6 +104,7 @@ def mongodb_check():
 #####################################
 #####################################
 
+@bp.route('/', methods=['GET'])
 @bp.route('/data_upload', methods=['GET','POST'])
 def data_upload():
     print(request.form.keys())
