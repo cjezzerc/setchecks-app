@@ -14,6 +14,6 @@ RUN chmod +x clean_run_app.py
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD cd /app_home/VSMT_SETCHKS_APP; ./clean_run_app.py
