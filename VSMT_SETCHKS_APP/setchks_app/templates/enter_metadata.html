@@ -19,26 +19,11 @@
             
             <div class="card" style="height: 20vh">
                 <div class="card-body" style="font-size: 1em;">
-                    Set checks will be run against this SCT Release:
-                    <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
-                        <select name="select_sct_version" class="form-select" 
-                            onchange="$('.sct_version_selection_form').submit();" 
-                            style="margin-top: 0.5em;"
-                            >
-                            {% for available_sct_version in setchks_session.available_sct_versions %} 
-                                {% if available_sct_version == setchks_session.sct_version %}
-                                <option selected
-                                {% else %}
-                                <option
-                                {% endif %} 
-
-                                value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
-
-                                {% if loop.index==1 %} (current) {% endif %}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
+                    On this screen please
+                    <ul> 
+                        <li> Select the SNOMED CT release that you wish to run the checks against</li>
+                        <li> Enter descriptive metadata ...</li>
+                    </ul>             
                 </div>
             </div>
 
@@ -70,11 +55,32 @@
             <div class="card" style="height: 40vh">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
-                        <li> SCT Release Timeline (Work in progress!) </li>
-                        
+                        <li> Select a SNOMED CT release by clicking on the timeline or by using the pulldown </li>
+                        <br>
                         <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
                         <div id="timeline_fig" ></div>  <!-- div for the plotly figure -->
-                        <div> <p id="timeline_hover_info"> Hover over a release to see info </p> </p></div>  <!-- div for the hover info -->
+                        <div> <p id="timeline_hover_info"> <br> </p> </p></div>  <!-- div for the hover info -->
+                        
+                        <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
+                            <select name="select_sct_version" class="form-select" 
+                                onchange="$('.sct_version_selection_form').submit();" 
+                                style="margin-top: 0.5em;"
+                                >
+                                {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                    {% if available_sct_version == setchks_session.sct_version %}
+                                    <option selected
+                                    {% else %}
+                                    <option
+                                    {% endif %} 
+    
+                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
+    
+                                    {% if loop.index==1 %} (current) {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+
                     </ul>
                 </div>
             </div>
@@ -112,7 +118,7 @@
                 timeline_fig_div.on('plotly_unhover', function(event_data){
                     console.log("unhover")
                     var timeline_hover_info=document.getElementById("timeline_hover_info");
-                    timeline_hover_info.innerHTML='Hover over a release to see info';
+                    timeline_hover_info.innerHTML='<br>';
                     });
             </script>
 

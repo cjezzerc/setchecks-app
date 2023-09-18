@@ -36,13 +36,13 @@ def create_graphical_timeline(
     fig.update_layout(
         # title="SCT timeline",
         paper_bgcolor='rgb(200,200,200)',
-        height=150,
+        height=100,
         width=700,
         margin=dict(
-            l=20,
-            r=20,
-            b=20,
-            t=20,
+            l=2,
+            r=2,
+            b=2,
+            t=2,
             pad=0
             ),
         hoverdistance=2,
@@ -60,7 +60,7 @@ def create_graphical_timeline(
     fig.update_yaxes(
         visible=False,
         # domain=[0.0,1.0],
-        range=[-2.0,1.0],
+        range=[-1.5,0.7],
         )
 
     selected_color    ='#005eb8'
@@ -72,7 +72,7 @@ def create_graphical_timeline(
         else:
             color_list.append(not_selected_color)
 
-    marker=dict(color=color_list, size=15, line=dict(color='#005eb8', width=2))
+    marker=dict(color=color_list, size=18, line=dict(color='#005eb8', width=2))
 
     fig.add_trace(
         go.Scatter(
