@@ -186,6 +186,10 @@ class ParsedSCTID:
             else: 
                 self.item_identifier=self.sctid_string[0:-3]
             
-        self.underscore_separated_form=str(self.item_identifier)+"_"+str(self.namespace_identifier)+"_"+str(self.partition_identifier)+"_"+str(self.check_digit)
+        if self.namespace_identifier!=0:
+            self.underscore_separated_form=str(self.item_identifier)+"_"+str(self.namespace_identifier)+"_"+str(self.partition_identifier)+"_"+str(self.check_digit)
+        else:
+            self.underscore_separated_form=str(self.item_identifier)+"___"+str(self.partition_identifier)+"_"+str(self.check_digit)
+        
         # print("Message:",validation_message)
         # print("Component type:", component_type)

@@ -4,6 +4,8 @@ import sys
 import datetime
 import boto3
 import json
+import jsonpickle
+from flask import jsonify
 
 import logging
 logging.basicConfig(
@@ -300,3 +302,17 @@ def select_and_run_checks():
                            results_available=results_available,
                            all_setchks=setchks_app.setchks.setchk_definitions.setchks,
                             )
+
+#############################################
+#############################################
+##     report setchks_session  endpoint    ##
+#############################################
+#############################################
+
+@bp.route('/setchks_session', methods=['GET'])
+def setchks_session():
+    
+    setchks_session=gui_setchks_session.get_setchk_session(session)
+
+    # surely there has to be a simplification to the line below!
+    return jsonify(json.loads(jsonpickle.encode(setchks_session, unpicklable=False)))
