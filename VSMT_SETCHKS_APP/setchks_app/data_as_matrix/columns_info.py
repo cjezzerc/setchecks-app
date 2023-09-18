@@ -52,9 +52,9 @@ class ColumnsInfo():
                     trial_identified_columns["DID"]!=None, 
                     trial_identified_columns["MIXED"]!=None)
         if test_tuple in [(False,False,False),   # nothing selected
-                          (True ,False,False),   # just CID
-                          (False,True ,False),   # just DID
-                          (True ,True ,False),   # CID and DID
+                        #   (True ,False,False),   # just CID
+                        #   (False,True ,False),   # just DID
+                        #   (True ,True ,False),   # CID and DID
                           (False,False,True )]:   # Just MIXED
             self._identified_columns[current_type]=None
             self._identified_columns[requested_column_type]=icol
