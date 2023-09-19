@@ -1,6 +1,7 @@
 import os
 import os.path
 import sys
+import copy
 import datetime
 import boto3
 import json
@@ -180,17 +181,16 @@ def column_identities():
 
     # if reach here via click on versions pulldown
     if len(request.form.keys())!=0:
-       k, v=list(request.form.items())[0]
-       print("===>>>>", k, v)
-       # col_label is of form e.g. type_selector_for_col_3
-       icol=int(k.split("_")[-1])
-       requested_column_type=v
-       ci=setchks_session.columns_info
-       success_flag, message=ci.set_column_type(icol=icol,requested_column_type=requested_column_type)
-       logger.debug("Type change attempt: %s %s %s %s" % (icol, requested_column_type, success_flag, message))
-       print(ci.column_types)
-       print(ci.identified_columns)
-    #    setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
+        k, v=list(request.form.items())[0]
+        print("===>>>>", k, v)
+        # col_label is of form e.g. type_selector_for_col_3
+        icol=int(k.split("_")[-1])
+        requested_column_type=v
+        ci=setchks_session.columns_info
+        success_flag, message=ci.set_column_type(icol=icol,requested_column_type=requested_column_type)
+        logger.debug("Type change attempt: %s %s %s %s" % (icol, requested_column_type, success_flag, message))
+        if success_flag: # if have changed column types (in any way)
+            setchks_session.setchks_results={} # throw away all old results
 
     setchks_session.marshalled_rows=[]
     for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]:
@@ -234,6 +234,8 @@ def enter_metadata():
         setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
         setchks_session.sct_version=setchks_session.available_sct_versions[0]
 
+    current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
+
     # if reach here via click on versions pulldown
     if 'select_sct_version' in request.form:
         print("===>>>>", request.form['select_sct_version'])
@@ -244,6 +246,9 @@ def enter_metadata():
         print("===>>>>", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
     
+    if setchks_session.sct_version!=current_sct_version: # if have changed sct_version
+        setchks_session.setchks_results={} # throw away all old results
+
     timeline_data_json, timeline_layout_json, timeline_info_json=graphical_timeline.create_graphical_timeline(
         selected_sct_version=setchks_session.sct_version,
         available_sct_versions=setchks_session.available_sct_versions,
@@ -282,6 +287,7 @@ def select_and_run_checks():
         setchks_session.selected_setchks=available_setchks
 
     if "run_checks" in request.args:
+        # propose to add call to update setchks_session.marshalled_rows at this point
         setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
         logger.debug(str(setchks_to_run))
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
