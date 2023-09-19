@@ -50,21 +50,17 @@ def do_check(setchks_session=None, setchk_results=None):
                     n_OUTCOME_ROWS[col_type]+=1
                     check_item={}
                     check_item["Result_id"]=1 
-                    check_item["Message"]="""
-The identifier in the %s column was not checked against the definition for a SNOMED identifier as no value was provided. 
-"""                     % column_types[i_cell] 
+                    check_item["Message"]="""The identifier in the %s column was not checked against the definition for a SNOMED identifier as no value was provided. """                     % column_types[i_cell] 
                     row_analysis.append(check_item)
                 else: # CHK20-OUT-03  (invalid SCTID)
                     outcome_seen_this_row=True
                     n_OUTCOME_ROWS[col_type]+=1
                     check_item={}
                     check_item["Result_id"]=2 
-                    check_item["Message"]="""
-The identifier in the %s column does not meet the definition for a SNOMED identifier. 
+                    check_item["Message"]="""The identifier in the %s column does not meet the definition for a SNOMED identifier. 
 It should not be used for recording information in a patient record.
 It can never be extracted from a patient record (as it should never be recorded in the first place). 
-We strongly recommend that you amend your value set to replace (or remove) this malformed SNOMED identifier from your value set.
-"""                     % column_types[i_cell]
+We strongly recommend that you amend your value set to replace (or remove) this malformed SNOMED identifier from your value set."""                     % column_types[i_cell]
                     row_analysis.append(check_item)
         if outcome_seen_this_row:
             n_OUTCOME_ROWS['ALL']+=1
@@ -92,9 +88,7 @@ We strongly recommend that you amend your value set to replace (or remove) this 
             msg=msg_format % (n_NO_OUTCOME_ROWS[short_form], 'correctly', 'in the ' + long_form + ' column of your', FILE_TOTAL_ROWS)
             setchk_results.set_analysis["Messages"].append(msg)
 
-    msg="""
-Your input file contains a total of %s rows.
+    msg="""Your input file contains a total of %s rows.
 The system has assessed that %s rows could not be processed for this Set Check.
-The system has processed %s rows for this Set Check. 
-""" % (FILE_TOTAL_ROWS, FILE_UNPROCESSABLE_ROWS, FILE_PROCESSABLE_ROWS)
+The system has processed %s rows for this Set Check.""" % (FILE_TOTAL_ROWS, FILE_UNPROCESSABLE_ROWS, FILE_PROCESSABLE_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)

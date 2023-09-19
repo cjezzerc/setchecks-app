@@ -46,7 +46,7 @@ bp = Blueprint('setchks_app', __name__)
 
 # This list should probably come from a config file in due course
 # available_setchks=['CHK20_INCORR_FMT_SCTID', 'CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
-available_setchks=['CHK20_INCORR_FMT_SCTID']
+available_setchks=['CHK01_APPROP_SCTID', 'CHK20_INCORR_FMT_SCTID']
 # available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 # available_setchks=['CHK06_DEF_EXCL_FILTER']
 
