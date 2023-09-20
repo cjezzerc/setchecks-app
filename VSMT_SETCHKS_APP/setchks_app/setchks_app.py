@@ -143,7 +143,8 @@ def confirm_upload():
     if 'uploaded_file' in request.files:
         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_text_file', table_has_header=True)
         setchks_session.setchks_results={} # throw away all old results
-        session['setchks_session']=setchks_session # save updated setchks_session to the session variable
+        setchks_session.marshalled_rows=[]
+        # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
     else:
         pass
@@ -191,11 +192,12 @@ def column_identities():
         logger.debug("Type change attempt: %s %s %s %s" % (icol, requested_column_type, success_flag, message))
         if success_flag: # if have changed column types (in any way)
             setchks_session.setchks_results={} # throw away all old results
+            setchks_session.marshalled_rows=[] # force recalc of marshalled rows
 
-    setchks_session.marshalled_rows=[]
-    for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]:
-        mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
-        setchks_session.marshalled_rows.append(mr)
+    if setchks_session.marshalled_rows==[]:
+        for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]:
+            mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
+            setchks_session.marshalled_rows.append(mr)
 
     type_labels={"CID":"Concept Id", "DID":"Description Id", "MIXED":"Mixed Id", "DTERM":"Term","OTHER":"Other"}
     column_type_labels=[type_labels[x] for x in setchks_session.columns_info.column_types]
@@ -288,6 +290,10 @@ def select_and_run_checks():
 
     if "run_checks" in request.args:
         # propose to add call to update setchks_session.marshalled_rows at this point
+        #if setchks_session.setchks_results=={}: Missing results means either marshalled rows never calculated, or sct_release or column_identities have changed
+        # for mr in setchks_session.marshalled_rows:
+        # mr.get_implied_concept_ids()
+        
         setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
         logger.debug(str(setchks_to_run))
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
