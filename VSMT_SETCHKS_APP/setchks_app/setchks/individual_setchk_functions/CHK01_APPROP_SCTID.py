@@ -53,7 +53,7 @@ It is recommended that value set members should be identified by Concept Ids.
 Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids.""" 
                     row_analysis.append(check_item)
                 elif cell.parsed_sctid.sctid_string=="": # CHK20-OUT-12 (blank cell)
-                    n_BLANK_ENTRIES+=1
+                    n_BLANK_ENTRY_ROWS+=1
                     check_item={}
                     check_item["Result_id"]=3 
                     check_item["Message"]="""An entry is missing in the Mixed Id column.

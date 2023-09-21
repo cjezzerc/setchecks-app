@@ -30,3 +30,11 @@ class DataCellContents():
     @property
     def component_type(self):
         return self.parsed_sctid.component_type
+    
+    @property
+    def blank(self):
+        return self.parsed_sctid.blank
+    
+    @property
+    def valid(self):
+        return self.parsed_sctid.valid

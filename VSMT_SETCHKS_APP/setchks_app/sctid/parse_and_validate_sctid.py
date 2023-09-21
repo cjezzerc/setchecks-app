@@ -9,6 +9,7 @@ class ParsedSCTID:
     __slots__=("sctid_string",
                "underscore_separated_form",
                "valid",
+               "blank",
                "validation_message", 
                "short_form_flag",
                "long_form_flag",
@@ -24,6 +25,7 @@ class ParsedSCTID:
         self.sctid_string=string
         self.underscore_separated_form=None
         self.valid=None
+        self.blank=None
         self.validation_message=""
         self.required_check_digit=None
         self.check_digit=None
@@ -81,8 +83,11 @@ class ParsedSCTID:
             #    Check input is not ""       #
             if self.sctid_string== "":
                 self.valid=False
+                self.blank=True
                 self.validation_message="The supplied SCTID is a null string."
                 break
+            else:
+                self.blank=False
             #                                 #
             ###################################
 

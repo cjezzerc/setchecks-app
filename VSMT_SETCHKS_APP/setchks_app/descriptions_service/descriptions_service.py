@@ -4,6 +4,7 @@ import os
 import requests
 import shutil
 import glob
+import json
 
 import logging
 logger=logging.getLogger
@@ -100,11 +101,20 @@ class DescriptionsService():
  
         logging.debug("%s : %s" % (success_flag,message))
 
-    def search_by_description_id(self, description_id=None, sct_version=None):
+    def get_data_about_description_id(self, description_id=None, sct_version=None):
         """ returns the information associated with a particular description id in a particular release"""
-        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version
-        data_found=self.db[collection_name].find_one({"desc_id":str(description_id)})
+        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        data_found=list(self.db[collection_name].find({"desc_id":str(description_id)}))
+        if data_found==[]:
+            return None
+        else:
+            assert(len(data_found)==1)
+            return data_found[0]
+        
+    def get_data_about_concept_id(self, concept_id=None, sct_version=None):
+        """ returns the information associated with a particular concept id in a particular release"""
+        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
         return data_found
-        pass
 
     
