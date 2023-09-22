@@ -35,6 +35,7 @@ class MarshalledRow():
     __slots__=[
         "sctid_cell",
         "dterm_cell",
+        "blank_row",
         "C_Id_entered",
         "D_Id_entered",
         "D_Term_entered",
@@ -63,11 +64,16 @@ class MarshalledRow():
         self.D_Id_entered=None
         self.D_Term_entered=None
         
-        
         self.row_processable=False # this will be set to True only if certain conditions are met
         self.row_processable_message="processability messages not implemented yet"
 
         ci=columns_info
+
+        self.blank_row=True
+        for cell in row_data:
+            if not cell.blank:
+                self.blank_row=False
+                break
         
         if ci.have_mixed_column:
             self.sctid_cell=row_data[ci.mixed_column]
@@ -77,6 +83,7 @@ class MarshalledRow():
                     self.C_Id_entered=self.sctid_cell.string
                 else:
                     self.D_Id_entered=self.sctid_cell.string
+        
         if ci.have_dterm_column:
             self.dterm_cell=row_data[ci.dterm_column]
             self.D_Term_entered=self.dterm_cell.string
@@ -106,7 +113,7 @@ class MarshalledRow():
             return
 
         if self.C_Id_entered is not None:
-            C_id=self.C_Id_entered
+            self.C_Id=self.C_Id_entered
             self.C_Id_source="ENTERED"
         else: 
             assert(self.D_Id_entered is not None)
@@ -115,6 +122,8 @@ class MarshalledRow():
                 self.C_Id_derived_from_D_Id_entered=D_Id_data["concept_id"]
                 self.D_Id_active=D_Id_data["active_status"]
                 self.D_Term_derived_from_D_Id_entered=D_Id_data["term"]
+                self.C_Id=self.C_Id_derived_from_D_Id_entered
+                self.C_Id_source="DERIVED"
                 self.C_Id_why_none=None
                 if self.D_Term_entered:
                     self.congruence_of_D_Id_entered_and_D_Term_entered=(D_Id_data["term"].lower()==self.D_Term_entered.lower())

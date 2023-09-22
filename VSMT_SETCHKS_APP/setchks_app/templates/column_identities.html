@@ -62,7 +62,7 @@
                         
                             <!-- add the row of column titles -->
                             <tr>
-                                <th scope="col"></th>
+                                <th scope="col">1</th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col">{{ cell.string }}</th>
                                 {% endfor %}
@@ -128,7 +128,7 @@
                             {% else %}
                             <tr style="background-color: lightgray;">
                             {% endif %}
-                                    <th scope="row">{{ loop.index }}</th>
+                                    <th scope="row">{{ loop.index+1 }}</th>
                             {%for cell in row %}
                                 <td>{{ cell.string }}
                                 {% set column_type=setchks_session.columns_info.column_types[loop.index-1] %}

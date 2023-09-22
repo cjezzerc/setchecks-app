@@ -47,7 +47,7 @@ bp = Blueprint('setchks_app', __name__)
 
 # This list should probably come from a config file in due course
 # available_setchks=['CHK20_INCORR_FMT_SCTID', 'CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
-available_setchks=['CHK01_APPROP_SCTID', 'CHK20_INCORR_FMT_SCTID']
+available_setchks=['CHK01_APPROP_SCTID', 'CHK20_INCORR_FMT_SCTID', 'CHK06_DEF_EXCL_FILTER']
 # available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 # available_setchks=['CHK06_DEF_EXCL_FILTER']
 
@@ -195,7 +195,7 @@ def column_identities():
             setchks_session.marshalled_rows=[] # force recalc of marshalled rows
 
     if setchks_session.marshalled_rows==[]:
-        for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]:
+        for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]: # The marshalled_rows list does NOTinclude the header row
             mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
             setchks_session.marshalled_rows.append(mr)
 

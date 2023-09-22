@@ -58,7 +58,7 @@
                         </thead>
                         {% for row in file_data[1:] %}
                             <tr>
-                                <th scope="row">{{ loop.index }}</th>
+                                <th scope="row">{{ loop.index+1 }}</th>
                                 {%for cell in row %}
                                     <td>{{ cell.string }}</td>
                                 {% endfor %}
