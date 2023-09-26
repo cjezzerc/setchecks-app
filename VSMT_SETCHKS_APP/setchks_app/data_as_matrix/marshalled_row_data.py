@@ -116,7 +116,6 @@ class MarshalledRow():
                 self.C_Id=self.C_Id_entered
                 self.C_Id_source="ENTERED"
             else:   # C_Id_entered is not in selected release
-                    # really also need to check if selected release is actually the latest release here and deal wth that more efficiently
                 if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
                     self.C_Id_why_none="CID_NISR_SRIL"
                 else: # look in latest release
@@ -146,7 +145,7 @@ class MarshalledRow():
                 self.C_Id_why_none=None
                 if self.D_Term_entered:
                     self.congruence_of_D_Id_entered_and_D_Term_entered=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
-            else: # see comment above about what if selected is the latest version
+            else: 
                 if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
                     self.C_Id_why_none="DID_NISR_SRIL"
                 else: # look in latest release
