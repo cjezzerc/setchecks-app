@@ -2,32 +2,25 @@
 
 from setchks_app.descriptions_service import descriptions_service
 
-# changes to make to get derived C_id from D_id
+"""
+For details of the different cases inferring C_Id or C_Id_via_latest_release etc see https://nhsd-jira.digital.nhs.uk/browse/SIV-500
+In particular for meanings of all codes like:
+ 	DID_NISR_DID_ILR_CID_ISR
+(The above case means "DID was entered but is Not In the Selected Release; But the DID IS In Latest Release; The derived CID is in the Selected Release)
+Other codes build up from 
+CID 	Concept Id
+DID 	Description Id
+ISR 	In Selected Release
+NISR 	Not In Selected Release
+ILR 	(but) In Latest Release
+NILR 	(and) Not IN Latest Release
+SILR 	Selected (release) Is Latest Release
 
-# In marshalled_row add:
-
-# attribute: C_Id - set to either
-
-#     C_Id_entered
-#     or if that does not exist
-#     C_Id_derived_from_D_Id
-#     or if that is not possible
-#     None
-
-# attribute: C_Id_why_none, one of
-
-#     None (if C_id is OK)
-#     "BLANK_ENTRY"
-#     "INVALID_SCTID"
-#     "DID_NOT_IN_RELEASE"
-
- 
-
-# attribute: C_Id_source, one of
-
-#     "ENTERED"
-#     "DERIVED"
-#     None
+The last code here covers cases where the selected release is the latest release so cannot do the two separate checks.
+This part of the code is required for CHK02 SNOMED CT Identifiers are in selected SNOMED CT release
+This code is heavily dependent on the mongodb code. If the the ontoserver were to develop ability to handle Description Ids completely
+then this could all be rewritten.
+"""
 
 ds=descriptions_service.DescriptionsService()
 
@@ -51,6 +44,7 @@ class MarshalledRow():
         "C_Id", # this will contain either an entered C_Id or if D_Id given then the implied C_Id  
         "C_Id_source", # either "ENTERED", "DERIVED" or None  
         "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "DID_NOT_IN_RELEASE"
+        "C_Id_via_latest_release", # This is C_Id obtained by looking in latest release; if derived from a D_Id in latest release then *may* also be in selected release
         "C_Id_active", # TBI possibly
         "D_Id_active",
         "row_processable",
@@ -100,6 +94,7 @@ class MarshalledRow():
         self.C_Id=None
         self.C_Id_source=None
         self.C_Id_why_none="NOT_SET_YET"
+        self.C_Id_via_latest_release=None
         self.C_Id_active=None #TBI possibly
         self.D_Id_active=None
         ci=setchks_session.columns_info
@@ -113,11 +108,35 @@ class MarshalledRow():
             return
 
         if self.C_Id_entered is not None:
-            self.C_Id=self.C_Id_entered
-            self.C_Id_source="ENTERED"
+            C_Id_data=ds.get_data_about_concept_id(
+                concept_id=self.C_Id_entered, 
+                sct_version=setchks_session.sct_version,
+                )
+            if C_Id_data!=[]: # so C_Id_entered exists in selected release
+                self.C_Id=self.C_Id_entered
+                self.C_Id_source="ENTERED"
+            else:   # C_Id_entered is not in selected release
+                    # really also need to check if selected release is actually the latest release here and deal wth that more efficiently
+                if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
+                    self.C_Id_why_none="CID_NISR_SRIL"
+                else: # look in latest release
+                    C_Id_data_latest=ds.get_data_about_concept_id(
+                        concept_id=self.C_Id_entered, 
+                        sct_version=setchks_session.available_sct_versions[0],
+                        )
+                    print("==>>>", C_Id_data_latest)
+                    if C_Id_data_latest!=[]: # C_Id_entered is in latest release
+                        self.C_Id_why_none="CID_NISR_CID_ILR"
+                        self.C_Id_via_latest_release=self.C_Id_entered
+                    else:                    # C_Id_entered is not in lateset release either
+                        self.C_Id_why_none="CID_NISR_CID_NILR"
+
         else: 
             assert(self.D_Id_entered is not None)
-            D_Id_data=ds.get_data_about_description_id(description_id=self.D_Id_entered, sct_version=setchks_session.sct_version)
+            D_Id_data=ds.get_data_about_description_id(
+                description_id=self.D_Id_entered, 
+                sct_version=setchks_session.sct_version
+                )
             if D_Id_data is not None: # D_Id_data is a single dict (as can have only one associated concept)
                 self.C_Id_derived_from_D_Id_entered=D_Id_data["concept_id"]
                 self.D_Id_active=D_Id_data["active_status"]
@@ -127,9 +146,31 @@ class MarshalledRow():
                 self.C_Id_why_none=None
                 if self.D_Term_entered:
                     self.congruence_of_D_Id_entered_and_D_Term_entered=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
-            else:
-                self.C_Id_why_none="DID_NOT_IN_RELEASE"
-                return
+            else: # see comment above about what if selected is the latest version
+                if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
+                    self.C_Id_why_none="DID_NISR_SRIL"
+                else: # look in latest release
+                    D_Id_data_latest=ds.get_data_about_description_id(
+                        description_id=self.D_Id_entered, 
+                        sct_version=setchks_session.available_sct_versions[0],
+                        )
+                    if D_Id_data_latest is not None:
+                        self.C_Id_derived_from_D_Id_entered=D_Id_data_latest["concept_id"]
+                        self.D_Id_active=D_Id_data_latest["active_status"]
+                        self.D_Term_derived_from_D_Id_entered=D_Id_data_latest["term"]
+                        self.C_Id_via_latest_release=self.C_Id_derived_from_D_Id_entered
+                        C_Id_data=ds.get_data_about_concept_id(
+                            concept_id=self.C_Id_derived_from_D_Id_entered, 
+                            sct_version=setchks_session.sct_version,
+                            )
+                        if C_Id_data!=[]:
+                            self.C_Id_why_none="DID_NISR_DID_ILR_CID_ISR"
+                        else:
+                            self.C_Id_why_none="DID_NISR_DID_ILR_CID_NISR"
+                    else:
+                        self.C_Id_why_none="DID_NISR_DID_NILR"
+            
+                # return # CHECK THIS!!!!!!!!!!!!!!!!
             
         if self.C_Id_entered and self.D_Term_entered:
             C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
