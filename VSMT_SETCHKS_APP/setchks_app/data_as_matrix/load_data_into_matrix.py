@@ -17,7 +17,10 @@ def load_data_into_matrix(setchks_session,
     else:
         setchks_session.first_data_row=0 
     if upload_method=="from_text_file":
-        setchks_session.filename=getattr(data,'filename',None)
+        setchks_session.filename=getattr(data,'filename',None)  # file obj for data passed in via GUI 
+                                                                # seems to have "filename" attribute 
+        if setchks_session.filename==None: # whereas if from data=open(file) has "name" 
+            setchks_session.filename=getattr(data,'name',None)
         setchks_session.data_as_matrix=[]
         setchks_session.unparsed_data=data.readlines()
     
