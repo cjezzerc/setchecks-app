@@ -52,7 +52,13 @@ TF_OUTPUT_FILE="/var/tmp/$ENV-$REGION-$STACK-output.txt"
 # Generate undeclared tfvars to prevent warnings
 # ./generateMissingTFvars.sh $ENV $REGION $STACK
 
+echo '=============================='
+pwd
 cd $STACKDIR
+pwd
+ls $GLOBAL_TFVARS_FILE
+echo '=============================='
+
 
 tfenv use 1.0.11
 
