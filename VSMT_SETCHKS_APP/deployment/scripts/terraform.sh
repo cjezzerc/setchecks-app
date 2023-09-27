@@ -65,7 +65,7 @@ terraform --version
 terraformStateBucket="nhsd-texasplatform-terraform-service-state-store-lk8s-nonprod"
 keyToUse="vsmt/service_account"
 awsRegion="eu-west-2"
-terraform init -backend-config="bucket=$terraformStateBucket" -backend-config="key=$keyToUse/terraform.tfstate" -backend-config="region=$awsRegion" -no-color
+terraform init -upgrade -reconfigure -backend-config="bucket=$terraformStateBucket" -backend-config="key=$keyToUse/terraform.tfstate" -backend-config="region=$awsRegion" -no-color
 
 #   terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep -v euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
 # else
