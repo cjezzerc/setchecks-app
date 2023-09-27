@@ -11,7 +11,8 @@ def do_check(setchks_session=None, setchk_results=None):
 
     """
     """
-
+    selected_sct_version = setchks_session.sct_version.date_string
+    latest_sct_version   = setchks_session.available_sct_versions[0].date_string
     
     n_FILE_TOTAL_ROWS=setchks_session.first_data_row
     n_FILE_PROCESSABLE_ROWS=0
@@ -24,37 +25,116 @@ def do_check(setchks_session=None, setchk_results=None):
     n_DID_NISR=0
     n_DID_ISR=0
     n_DID_NILR=0
-    n_DID_NILR=0
+    n_DID_ILR=0
 
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
         check_item={}
         if not mr.blank_row:
             n_FILE_PROCESSABLE_ROWS+=1
-            
-#             if concept_id is not None:
-#                 if concept_id in refset_concept_ids: # CHK06-OUT-01
-#                     n_OUTCOME_IN_EXCL_REF_SET+=1
-#                     check_item["Result_id"]=1 # ** How generalisable is concept of a enumerated result_id across the suite of checks?
-#                     check_item["Message"]="""This concept is not recommended for use within a patient record, i.e., is not recommended for clinical data entry.
-# Please replace this concept. 
-# We recommend you visit termbrowser.nhs.uk to identify a more suitable term"""
+            if mr.C_Id_why_none=="CID_NISR_CID_NILR": # CHK02-OUT-01 
+                n_CID_NISR+=1
+                n_CID_NILR+=1
+                check_item["Result_id"]=1
+                check_item["Message"]=(
+                    "The Concept Id in the MIXED column " 
+                    "is not an identifiable concept in either "
+                    f"the selected SNOMED CT release {selected_sct_version} "
+                    f"or the most recent SNOMED release {latest_sct_version}."
+                    )
+            elif mr.C_Id_why_none=="CID_NISR_CID_ILR": # CHK02-OUT-02 
+                n_CID_NISR+=1
+                n_CID_ILR+=1
+                check_item["Result_id"]=2
+                check_item["Message"]=(
+                    "The Concept Id in the MIXED column" 
+                    "is not an identifiable concept in "
+                    f"the selected SNOMED CT release {selected_sct_version} "
+                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}.\n"
+                    "This suggests the concept has been introduced after "
+                    "the selected SNOMED release; consider removing the concept or selecting a later SNOMED release."
+                    )
+            elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": # CHK02-OUT-03
+                n_CID_ISR+=1
+                check_item["Result_id"]=0 
+                check_item["Message"]="OK"
+            elif mr.C_Id_why_none=="DID_NISR_DID_NILR": # CHK02-OUT-04 
+                n_DID_NISR+=1
+                n_DID_NILR+=1
+                check_item["Result_id"]=4
+                check_item["Message"]=(
+                    "The Description Id in the MIXED column " 
+                    "is not an identifiable description in either "
+                    f"the selected SNOMED CT release {selected_sct_version} "
+                    f"or the most recent SNOMED release {latest_sct_version}."
+                    )
+            elif mr.C_Id_why_none in ["DID_NISR_DID_ILR_CID_ISR", "DID_NISR_DID_ILR_CID_NISR"]: # CHK02-OUT-05 
+                n_DID_NISR+=1
+                n_DID_ILR+=1
+                check_item["Result_id"]=5
+                check_item["Message"]=(
+                    "The Description Id in the MIXED column " 
+                    "is not an identifiable concept in "
+                    f"the selected SNOMED CT release {selected_sct_version} "
+                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}.\n"
+                    "This suggests the description has been introduced after "
+                    "the selected SNOMED release; consider removing the description or selecting a later SNOMED release."
+                    )
+            elif mr.C_Id is not None and mr.C_Id_source=="DERIVED": # CHK02-OUT-06
+                n_DID_ISR+=1
+                check_item["Result_id"]=0 
+                check_item["Message"]="OK"
+            elif mr.C_Id_why_none=="INVALID_SCTID": # CHK02-OUT-07
+                n_FILE_NON_PROCESSABLE_ROWS+=1 
+                check_item["Result_id"]=5
+                check_item["Message"]=(
+                    "The unexpected value in the MIXED column " 
+                    "has not been checked against " 
+                    f"the selected SNOMED CT release {selected_sct_version}."
+                    )
+            elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK02-OUT-08 
+                n_FILE_NON_PROCESSABLE_ROWS+=1
+                check_item["Result_id"]=5
+                check_item["Message"]=(
+                    "The blank in the MIXED column " 
+                    "has not been checked against " 
+                    f"the selected SNOMED CT release {selected_sct_version}."
+                    )
+            else:
+                check_item["Result_id"]=-1
+                check_item["Message"]=(
+                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
+                    )
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows
             check_item["Message"]="Blank line"
             check_item["Result_id"]=-2 # this flags a blank line
         setchk_results.row_analysis.append([check_item])
 
-
     setchk_results.set_analysis["Messages"]=[] 
     
-    msg_format="There are %s rows where the concept was assessed %s for use as part of this value set, in your input file of  %s rows"
-    msg=msg_format % (n_OUTCOME_IN_EXCL_REF_SET, 'as not recommended', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
-    msg=msg_format % (n_NO_OUTCOME_EXCL_REF_SET, 'as permissible', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg="""Your input file contains a total of %s rows.
-The system has assessed that %s rows could not be processed for this Set Check (blank or header rows).
-The system has assessed %s rows for this Set Check.""" % (n_FILE_TOTAL_ROWS, n_FILE_NON_PROCESSABLE_ROWS, n_FILE_PROCESSABLE_ROWS)
+    for counter, c_or_d, sense, release_word, release_date, in [
+        [n_CID_NISR, "Concept",     "not ",  "selected", selected_sct_version],
+        [n_CID_ISR,  "Concept",     "",      "selected", selected_sct_version],
+        [n_CID_NILR, "Concept",     "not ",  "latest",   latest_sct_version  ],
+        [n_CID_ILR,  "Concept",     "",      "latest",   latest_sct_version  ],
+        [n_DID_NISR, "Description", "not ",  "selected", selected_sct_version],
+        [n_DID_ISR,  "Description", "",      "selected", selected_sct_version],
+        [n_DID_NILR, "Description", "not ",  "latest",   latest_sct_version  ],
+        [n_DID_ILR,  "Description", "",      "latest",   latest_sct_version  ],
+        ]:
+        msg=(
+            f"There are {counter} rows "  
+            f"containing {c_or_d} Ids that are {sense}identifiable " 
+            f"in the {release_word} SNOMED release {release_date}, " 
+            f"in your input file of {n_FILE_TOTAL_ROWS} rows"
+            )
+        setchk_results.set_analysis["Messages"].append(msg)
+
+    msg=(
+        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows. "
+        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows). "
+        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
+        ) 
     setchk_results.set_analysis["Messages"].append(msg)
