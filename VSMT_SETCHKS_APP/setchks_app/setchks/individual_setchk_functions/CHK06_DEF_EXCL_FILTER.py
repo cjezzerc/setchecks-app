@@ -51,9 +51,6 @@ def do_check(setchks_session=None, setchk_results=None):
     ##################################################################
     ##################################################################
     
-    # concept_id_col=setchks_session.cid_col
-    concept_id_col=setchks_session.columns_info.cid_column
-    
     n_FILE_TOTAL_ROWS=setchks_session.first_data_row
     n_FILE_PROCESSABLE_ROWS=0
     n_FILE_NON_PROCESSABLE_ROWS=setchks_session.first_data_row  # with gatekeeper this is just blank or header rows
