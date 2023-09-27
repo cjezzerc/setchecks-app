@@ -209,6 +209,16 @@ node {
         }
     }
 
+    stage('Run script') {
+        withEnv(["MY_TOOL_DIR=${tool name: 'tfenv', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'}"]){
+            sh "tfenv install 0.14.4"
+            sh "tfenv use 0.14.4"
+        }
+        dir ("${jenkinsScriptsDir}"){
+                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
+            }
+    }
+
     stage("Deploy ${appName}"){
       // Prevent concurrent deployments
       lock ("${appNamespace}"){
