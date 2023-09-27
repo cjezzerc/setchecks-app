@@ -12,14 +12,8 @@ locals {
   live_mgmt_aws_account_id = jsondecode(data.aws_secretsmanager_secret_version.account_ids.secret_string)["live-mgmt"]
 }
 
-data "terraform_remote_state" "eks" {
-  backend = "s3"
-
-  config = {
-    bucket = var.terraform_state_s3_bucket
-    key    = "eks/terraform.tfstate"
-    region = var.aws_region
-  }
+data "aws_eks_cluster" "eks" {
+    name = "live-leks-cluster"
 }
 
 data "aws_secretsmanager_secret" "texas_infra" {

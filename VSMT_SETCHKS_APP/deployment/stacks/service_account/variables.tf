@@ -39,9 +39,7 @@ variable "subenv" {
 #######
 # TERRAFORM COMMON
 #######
-variable "terraform_state_s3_bucket" {
-  description = "Name of the S3 bucket used to store the Terraform state"
-}
+
 variable "terraform_service_state_s3_bucket" {
   description = "Name of the S3 bucket used to store the Terraform state"
 }

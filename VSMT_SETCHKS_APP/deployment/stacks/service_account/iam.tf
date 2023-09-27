@@ -12,13 +12,13 @@ resource "aws_iam_role" "iam_host_role" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::${local.aws_account_id}:oidc-provider/${trimprefix(data.terraform_remote_state.eks.outputs.eks_oidc_issuer_url, "https://")}"
+        "Federated": "arn:aws:iam::${local.aws_account_id}:oidc-provider/${trimprefix(data.aws_eks_cluster.eks.outputs.eks_oidc_issuer_url, "https://")}"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringLike": {
-          "${trimprefix(data.terraform_remote_state.eks.outputs.eks_oidc_issuer_url, "https://")}:aud": "sts.amazonaws.com",
-          "${trimprefix(data.terraform_remote_state.eks.outputs.eks_oidc_issuer_url, "https://")}:sub": "system:serviceaccount:vsmt-setchks-app*:ddc-vsmt-setchks-app"
+          "${trimprefix(data.aws_eks_cluster.eks.outputs.eks_oidc_issuer_url, "https://")}:aud": "sts.amazonaws.com",
+          "${trimprefix(data.aws_eks_cluster.eks.outputs.eks_oidc_issuer_url, "https://")}:sub": "system:serviceaccount:vsmt-setchks-app*:ddc-vsmt-setchks-app"
         }
       }
     }
