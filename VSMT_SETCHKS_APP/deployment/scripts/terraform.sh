@@ -41,10 +41,13 @@ else
   exit 1
 fi
 
-VSMT_SETCHKS_APP_REPO_DIR='..'
-TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/env/$ENV-$REGION.tfvars"
-GLOBAL_TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/global/global.tfvars"
-STACKDIR="$VSMT_SETCHKS_APP_REPO_DIR/stacks/$STACK"
+# VSMT_SETCHKS_APP_REPO_DIR='..'
+# TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/env/$ENV-$REGION.tfvars"
+# GLOBAL_TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/global/global.tfvars"
+# STACKDIR="$VSMT_SETCHKS_APP_REPO_DIR/stacks/$STACK"
+TFVARS_FILE="../../tfvars/env/$ENV-$REGION.tfvars"
+GLOBAL_TFVARS_FILE="../../tfvars/global/global.tfvars"
+STACKDIR="../stacks/$STACK"
 TF_OUTPUT_FILE="/var/tmp/$ENV-$REGION-$STACK-output.txt"
 
 > $TF_OUTPUT_FILE
