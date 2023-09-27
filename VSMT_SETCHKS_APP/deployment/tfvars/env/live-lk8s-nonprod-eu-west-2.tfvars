@@ -17,4 +17,4 @@ domain_name          = "k8s-nonprod.texasplatform.uk"
 # TODO what domain name should we use
 billing_code_tag                      = "k8s-nonprod.texasplatform.uk"
 environment_tag                       = "lk8s-nonprod.texasplatform.uk"
-terraform_service_state_s3_bucket     = "nhsd-texasplatform-terraform-service-state-store-lk8s-nonprod/vsmt/"
+terraform_state_s3_bucket     = "nhsd-texasplatform-terraform-service-state-store-lk8s-nonprod"
