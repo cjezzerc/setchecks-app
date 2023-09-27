@@ -59,12 +59,18 @@ tfenv use 1.0.11
 echo $ENV
 terraform --version
 
-if [[ $REGION = 'eu-west-2' ]]
-then
-  terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep -v euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
-else
-  terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
-fi
+# if [[ $REGION = 'eu-west-2' ]]
+# then
+
+terraformStateBucket="nhsd-texasplatform-terraform-service-state-store-lk8s-nonprod"
+keyToUse="vsmt/service_account"
+awsRegion="eu-west-2"
+terraform init -backend-config="bucket=$terraformStateBucket" -backend-config="key=$keyToUse/terraform.tfstate" -backend-config="region=$awsRegion" -no-color
+
+#   terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep -v euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
+# else
+#   terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
+# fi
 
 if [[ ${OVERRIDE_TFVARS} == '' ]]
 then
