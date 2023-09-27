@@ -191,6 +191,10 @@ node {
     }
 
     stage("Authenticate to ${texasEnvName} AWS/k8s and tf plan") {
+        withEnv(["MY_TOOL_DIR=${tool name: 'tfenv', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'}"]){
+            sh "tfenv install 1.0.11"
+            sh "tfenv use 1.0.11"
+        }
         awsCreds = sh (
             script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} vsmt",
             returnStdout: true)
@@ -207,16 +211,6 @@ node {
                 sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
             }
         }
-    }
-
-    stage('Run script') {
-        withEnv(["MY_TOOL_DIR=${tool name: 'tfenv', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'}"]){
-            sh "tfenv install 0.14.4"
-            sh "tfenv use 0.14.4"
-        }
-        dir ("${jenkinsScriptsDir}"){
-                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
-            }
     }
 
     stage("Deploy ${appName}"){
