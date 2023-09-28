@@ -10,6 +10,8 @@ import vsmt_uprot.terminology_server_module
 def do_check(setchks_session=None, setchk_results=None):
 
     """
+    NB This does not handle the SRIL case yet. Spec needs updating and then can be included
+
     """
     selected_sct_version = setchks_session.sct_version.date_string
     latest_sct_version   = setchks_session.available_sct_versions[0].date_string
@@ -104,7 +106,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item["Result_id"]=-1
                 check_item["Message"]=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
                     )
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows

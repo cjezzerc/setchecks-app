@@ -22,13 +22,13 @@ setchks={}
 
 setchks['CHK01_APPROP_SCTID']=Setchk(
     setchk_code='CHK01_APPROP_SCTID',
-    setchk_short_name='Appropriate SNOMED CT identifiers for value set members', 
+    setchk_short_name='CHK01 Appropriate SNOMED CT identifiers for value set members', 
     setchk_function=CHK01_APPROP_SCTID.do_check,
     )
 
 setchks['CHK02_IDS_IN_RELEASE']=Setchk(
     setchk_code='CHK02_IDS_IN_RELEASE',
-    setchk_short_name='Identifiers are in selected the SNOMED CT release.', 
+    setchk_short_name='CHK02 Identifiers are in selected the SNOMED CT release.', 
     setchk_function=CHK02_IDS_IN_RELEASE.do_check,
     )
 
@@ -44,11 +44,11 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
 #     )
 setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_code='CHK06_DEF_EXCL_FILTER', 
-    setchk_short_name='Inclusion of not recommended concepts', 
+    setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
     )
 setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
     setchk_code='CHK20_INCORR_FMT_SCTID',
-    setchk_short_name='Incorrectly formatted SNOMED CT identifiers', 
+    setchk_short_name='CHK20 Incorrectly formatted SNOMED CT identifiers', 
     setchk_function=CHK20_INCORR_FMT_SCTID.do_check,
     )
