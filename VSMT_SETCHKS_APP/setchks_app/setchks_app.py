@@ -9,11 +9,6 @@ import jsonpickle
 from flask import jsonify
 
 import logging
-logging.basicConfig(
-    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%SZ",
-    level=logging.DEBUG,
-)
 logger=logging.getLogger(__name__)
 
 location=os.path.abspath(os.getcwd())
@@ -31,12 +26,18 @@ import setchks_app.setchks.run_queued_setchks
 
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
-
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
+from setchks_app.mongodb import get_mongodb_client
+from setchks_app.redis.rq import get_rq_info, launch_sleep_job
+from setchks_app.redis.get_redis_client import get_redis_string
+
+
+
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
@@ -52,7 +53,7 @@ available_setchks=['CHK20_INCORR_FMT_SCTID', 'CHK02_IDS_IN_RELEASE', 'CHK01_APPR
 # available_setchks=['CHK04_INACTIVE_CODES', 'CHK06_DEF_EXCL_FILTER']
 # available_setchks=['CHK06_DEF_EXCL_FILTER']
 
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
 # if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
 #     print("Configuring mongodb to connect to mongo-server docker")
@@ -62,16 +63,6 @@ from pymongo import MongoClient
 #     client=MongoClient()
 
 # mongodb_db=client['setchks_app']
-
-if 'ONTOSERVER_INSTANCE' not in os.environ:
-    os.environ['ONTOSERVER_INSTANCE']='https://dev.ontology.nhs.uk/dev1/fhir/'
-    os.environ['ONTOAUTH_INSTANCE']='https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token'
-    sm_client = boto3.client('secretsmanager', region_name='eu-west-2')
-    pw_response = sm_client.get_secret_value(SecretId='vsmt-ontoserver-access')
-    passwords = pw_response['SecretString']
-    dictionary_pw = json.loads(passwords)
-    os.environ['ONTOSERVER_USERNAME']=dictionary_pw['ONTOSERVER_USERNAME']
-    os.environ['ONTOSERVER_SECRET']=dictionary_pw['ONTOSERVER_SECRET']
 
 ################################
 ################################
@@ -86,6 +77,59 @@ def health_check():
 
 #################################
 #################################
+# Simple redis endpoint #
+#################################
+#################################
+
+@bp.route("/redis_check")
+def redis_check():
+    logger.debug("redis check called (with ssl=True)")
+    
+    import redis
+
+    if os.environ["DEPLOYMENT_ENV"]=="AWS":
+        redis_connection=get_redis_string()
+    else:
+        redis_host="localhost"
+
+    logger.debug(f"redis_host = {redis_host}")
+
+    if os.environ["DEPLOYMENT_ENV"]=="AWS":
+        redis_connection = redis.Redis(host=redis_host, port=6379, decode_responses=True, ssl=True)
+    else: # so not really an SSL test if going to localhost (otherwise it does hang to localhost)
+        redis_connection = redis.Redis(host=redis_host, port=6379, decode_responses=True, ssl=False)
+
+    logger.debug(f"redis_connection = {redis_connection}")
+    
+    logger.debug(f"about to do ping..")
+    redis_ping=redis_connection.ping()
+    logger.debug(f"..ping result is {redis_ping}")
+
+    logger.debug(f"about to do set..")
+    redis_connection.set('mykey', str(datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S')))
+    logger.debug(f"..done set")
+
+    logger.debug(f"about to do get..")
+    time_value=redis_connection.get('mykey')
+    logger.debug(f"..done get")
+
+    return f"redis check:_____{redis_ping}______{time_value}"
+
+
+#################################
+#################################
+#   Simple session endpoint     #
+#################################
+#################################
+
+@bp.route("/session_check")
+def session_check():
+    logger.info("session check called")
+    session['time']=str(datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
+    return f"session contents:{session.items()}"
+
+#################################
+#################################
 # Simple mongodb check endpoint #
 #################################
 #################################
@@ -93,14 +137,94 @@ def health_check():
 @bp.route("/mongodb_check")
 def mongodb_check():
     logger.info("mongodb check called")
-    collection=MongoClient()["descriptions_service"]["mongodb_check"]
+
+    mongodb_client=get_mongodb_client.get_mongodb_client()
+    collection=mongodb_client["mongodb_check"]["mongodb_check"]
     logger.info("mongodb connection to db made")
     collection.insert_one({"insert_time": datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S')})
     logger.info("inserted document")
     output_strings=["Collection 'mongodb check' contents:"]
     for doc in collection.find():
         output_strings.append(str(doc))
+    output_strings.append("/nDatabase contents:")
+    for db_name in mongodb_client.list_database_names():
+        db=mongodb_client[db_name]
+        logger.debug("db_name")
+        for c_name in db.list_collection_names():
+            logger.debug("db_name"+"-"+c_name)
+            c=db[c_name]
+            # n_documents=c.estimated_document_count() # does not seem to work in DocumentDB
+            #  n_documents=c.count_documents({}) # horribly slow on ig tables
+            # output_strings.append(f'db: {db_name:30s} collection:{c_name:30s} est_n_documents:{n_documents}')                
+            output_strings.append(f'db: {db_name:30s} collection:{c_name:30s}')                
+
     return '<br>'.join(output_strings)
+
+
+#################################
+#################################
+# manipulate descriptions db    #
+#################################
+#################################
+
+@bp.route("/descriptions_db")
+def descriptions_db():
+    ds=DescriptionsService()
+    logger.info("descriptions_db called")
+    logger.debug(list(request.args.items()))
+    action=request.args.get("action", None)
+    date_string=request.args.get("date_string", None)
+    
+    if action=="list":
+        output_strings=["db 'descriptions_service' contents:"]
+        for c_name in ds.db.list_collection_names():
+            logger.debug("db_name"+"-"+c_name)
+            output_strings.append(f'collection:{c_name:30s}')                
+        return '<br>'.join(output_strings)
+    
+    if action=="drop":
+        collection_name=ds.make_collection_name(date_string=date_string)
+        collection=ds.db[collection_name]
+        collection.drop()
+        return f"Dropped {collection_name}"
+    
+    if action=="describe_collection":
+        collection_name=ds.make_collection_name(date_string=date_string)
+        collection=ds.db[collection_name]
+        output_strings=[f"Information for collection with date_string: {date_string}"]
+        output_strings.append(f"Number of documents : {collection.count_documents({})}")
+        output_strings.append(f"Index information : {collection.index_information()}")
+        return "<br>".join(output_strings)
+    
+    if action=="make":
+        ds.pull_release_from_trud(date_string=date_string)
+        return f"made collection for {date_string}"
+
+    return f"Did not understand that"
+
+#####################################
+#####################################
+##     rq endpoint                 ##
+#####################################
+#####################################
+
+@bp.route("/rq")
+def rq():
+    logger.info("rq called")
+    logger.debug(list(request.args.items()))
+    action=request.args.get("action", None)
+    
+    if action is None:
+        output_strings=get_rq_info()
+        return '<br>'.join(output_strings)
+    
+    if action =="launch_sleep_job":
+        result=launch_sleep_job()
+        result=str(result)[1:-1]
+        logger.debug(f'result={result}')
+        return result
+    
+    return f"Did not understand that: {action}"
 
 #####################################
 #####################################

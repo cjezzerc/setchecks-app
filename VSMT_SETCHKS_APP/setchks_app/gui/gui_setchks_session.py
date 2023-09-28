@@ -15,7 +15,7 @@ def get_setchk_session(session=None):
         #
         # Need to think of safer mechanism to set terminology server so does not time out
         #
-        setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
+        #setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
+                                            # auth_url=os.environ["ONTOAUTH_INSTANCE"])
         session['setchks_session']=setchks_session 
     return setchks_session

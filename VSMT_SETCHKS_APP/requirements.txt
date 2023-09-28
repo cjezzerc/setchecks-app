@@ -8,3 +8,4 @@ openpyxl
 rq
 plotly
 boto3
+jsonpickle

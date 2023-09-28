@@ -48,6 +48,7 @@ resource "aws_iam_role_policy" "iam_host_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "host_profile" {
+  name = "${var.service_name}-instance-profile"
   role = aws_iam_role.iam_host_role.name
   path = "/"
 }

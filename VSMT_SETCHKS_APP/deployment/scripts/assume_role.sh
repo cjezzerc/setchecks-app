@@ -18,7 +18,7 @@ AWS_ROLE="${SERVICETEAM}-jenkins-assume-role"
 AWS_ROLE_SESSION="${SERVICETEAM}-jenkins-mom"
 
 # call assume role
-assume_role_result=$(aws sts assume-role --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/${AWS_ROLE} --role-session-name ${AWS_ROLE_SESSION} --duration-seconds 900)
+assume_role_result=$(aws sts assume-role --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/${AWS_ROLE} --role-session-name ${AWS_ROLE_SESSION} --duration-seconds 3600)
 
 # parse response
 export AWS_ACCESS_KEY_ID=$(echo ${assume_role_result} | jq --raw-output '.Credentials.AccessKeyId')

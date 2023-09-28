@@ -12,7 +12,19 @@ WORKDIR /app_home/VSMT_SETCHKS_APP
 RUN tr -d '\r' <run_app.py >clean_run_app.py 
 RUN chmod +x clean_run_app.py
 
+ENV ONTOSERVER_INSTANCE=https://dev.ontology.nhs.uk/dev1/fhir/
+ENV ONTOAUTH_INSTANCE=https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token
+
+# pass in --build-arg DEPLOYMENT_ENV=    LOCAL or AWS
+ARG DEPLOYMENT_ENV 
+ENV DEPLOYMENT_ENV=$DEPLOYMENT_ENV
+
 RUN pip install -r requirements.txt
+
+# try this to prevent this https://stackoverflow.com/questions/77222538/need-to-downgrade-to-werkzeug-2-3-7-from-werkzeug-3-0-0-to-avoid-werkzeug-http
+RUN pip uninstall -y werkzeug
+RUN pip install werkzeug==2.3.7 
+
 
 EXPOSE 5000
 

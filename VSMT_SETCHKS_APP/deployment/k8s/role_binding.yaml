@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vsmt_readwrite_rolebinding
+  namespace: NAMESPACE_TO_BE_REPLACED
+subjects:
+- kind: Group
+  name: texas:vsmt-service-developer
+roleRef:
+  kind: Role
+  name: vsmt_readwrite
+  apiGroup: rbac.authorization.k8s.io

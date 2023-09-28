@@ -5,3 +5,4 @@
 # AWS COMMON
 ############################
 aws_region         = "eu-west-2"
+texas_domain       = "texasplatform.uk"

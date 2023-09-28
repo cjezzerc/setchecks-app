@@ -10,13 +10,19 @@ import logging
 logger=logging.getLogger
 
 from . import RF2_handling
-from pymongo import MongoClient
+from setchks_app.mongodb import get_mongodb_client
+
+# from pymongo import MongoClient
 
 from setchks_app.sct_versions import get_sct_versions
 
 class DescriptionsService():
+
+    __slots__=["db"]
+
     def __init__(self):
-        self.db=MongoClient()["descriptions_service"]
+        # self.db=MongoClient()["descriptions_service"]
+        self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
     
     def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False):
         """ creates a collection from a specified RF2 file"""
@@ -26,8 +32,12 @@ class DescriptionsService():
     def get_list_of_releases_on_ontoserver(self):
         return [x.date_string for x in get_sct_versions.get_sct_versions()]
     
+    def make_collection_name(self, date_string=None):
+        return "sct2_Description_MONOSnapshot-en_GB_%s" % date_string
+
     def check_have_sct_version_collection_in_db(self, sct_version=None):
-        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version
+        # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version
+        collection_name=self.make_collection_name(date_string=sct_version)
         return collection_name in self.db.list_collection_names()
     
  
@@ -75,7 +85,9 @@ class DescriptionsService():
 
         print("fetching file from", url)
         response = requests.get(url)
-        out_file='/tmp/trud_download_temp_files/' + filename
+        download_folder="/tmp/trud_download_temp_files"
+        os.system(f"mkdir {download_folder}") # in case does not already exist
+        out_file=f'{download_folder}/{filename}'
         
         print("writing file to", out_file)
         ofh=open(out_file,'wb')
@@ -103,7 +115,9 @@ class DescriptionsService():
 
     def get_data_about_description_id(self, description_id=None, sct_version=None):
         """ returns the information associated with a particular description id in a particular release"""
-        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        collection_name=self.make_collection_name(date_string=sct_version.date_string)
+
         data_found=list(self.db[collection_name].find({"desc_id":str(description_id)}))
         if data_found==[]:
             return None
@@ -113,7 +127,8 @@ class DescriptionsService():
         
     def get_data_about_concept_id(self, concept_id=None, sct_version=None):
         """ returns the information associated with a particular concept id in a particular release"""
-        collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
+        collection_name=self.make_collection_name(date_string=sct_version.date_string)
         data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
         return data_found
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+shopt -s expand_aliases
+alias terraform='/cygdrive/c/Users/jeremy/OneDrive\ -\ NHS/Texas/terraform_1.0.11_windows_386/terraform.exe'
+
 STACK=$1
 ENV=$2
 REGION=$3
@@ -63,7 +66,7 @@ ls $GLOBAL_TFVARS_FILE
 echo '=============================='
 
 
-tfenv use 1.6.0
+# tfenv use 1.0.11
 
 echo $ENV
 terraform --version

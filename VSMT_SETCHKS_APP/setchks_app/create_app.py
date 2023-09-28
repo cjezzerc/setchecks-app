@@ -2,7 +2,18 @@ import os
 
 from flask import Flask
 import flask_session
+import boto3
+import json
 
+import logging
+logging.basicConfig(
+    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+    level=logging.DEBUG,
+)
+logger=logging.getLogger(__name__)
+
+from setchks_app.redis.get_redis_client import get_redis_client
 
 def create_app():
 
@@ -17,14 +28,41 @@ def create_app():
         app.config['SESSION_TYPE'] = 'redis'
         app.config['SESSION_PERMANENT'] = False
         app.config['SESSION_USE_SIGNER'] = True
-        if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-            print("Configuring redis to connect to redis-server docker")
-            app.config['SESSION_REDIS'] = redis.from_url('redis://redis-server:6379')
-        else:
-            print("Configuring redis to connect to localhost")
-            app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+        redis_connection=get_redis_client()
+        app.config['SESSION_REDIS'] = redis_connection
+        
 
-    if flask_session_type=="mongodb":
+    # get CA file for DocumentDB (do this even if connecting to a local mongoDB for debugging of CA file download) 
+    import requests
+    logger.debug(f'About to grab global-bundle-pem')
+    r=requests.get("https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem")
+    filename="/tmp/global-bundle.pem"
+    ofh=open(filename,'w')
+    byes_written=ofh.write(r.text)
+    logger.debug(f'Wrote {byes_written} bytes to {filename}')
+
+    # get secrets if necessary (but why not test DEPLYOMENT_ENV?)
+    logger.debug("About to see if need to get secrets")
+    if 'ONTOSERVER_USERNAME' not in os.environ:
+        logger.debug("getting secrets")
+        # os.environ['ONTOSERVER_INSTANCE']='https://dev.ontology.nhs.uk/dev1/fhir/'
+        # os.environ['ONTOAUTH_INSTANCE']='https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token'
+        sm_client = boto3.client('secretsmanager', region_name='eu-west-2')
+        pw_response = sm_client.get_secret_value(SecretId='vsmt-ontoserver-access')
+        passwords = pw_response['SecretString']
+        dictionary_pw = json.loads(passwords)
+        os.environ['ONTOSERVER_USERNAME']=dictionary_pw['ONTOSERVER_USERNAME']
+        os.environ['ONTOSERVER_SECRET']=dictionary_pw['ONTOSERVER_SECRET']
+        os.environ['TRUDAPIKEY']=dictionary_pw['TRUDAPIKEY']
+        os.environ['DOCUMENTDB_USERNAME']=dictionary_pw['DOCUMENTDB_USERNAME']
+        os.environ['DOCUMENTDB_PASSWORD']=dictionary_pw['DOCUMENTDB_PASSWORD']
+        logger.debug("got secrets")
+    else:
+        logger.debug("no need to get secrets")
+    logger.debug("OS_ENVIRON_KEYS:"+str(list(os.environ.keys())))
+
+
+    if flask_session_type=="mongodb":   # STILL NEED TO CHANGE THIS IF WANT  ATTACH TO DOCUMENTDB!!!
         # currently requires pymngo <v4 see:
         # https://stackoverflow.com/questions/72025723/how-to-configure-mongodb-for-flask-session
         from pymongo import MongoClient

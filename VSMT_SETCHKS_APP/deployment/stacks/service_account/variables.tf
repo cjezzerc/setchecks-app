@@ -53,3 +53,21 @@ variable "service_prefix" {
   default     = "vsmt"
   description = "Name of the kubernetes service"
 }
+
+variable "name_prefix" {
+  description = "Prefix used for naming resources"
+  type = string
+  default = "live-lk8s-nonprod"  
+}
+
+variable "texas_domain" {
+	description = "The top level Texas domain name"
+	type = string
+}
+
+variable "environment_tag" {
+  description = "The tag used to identify component environment"
+  type = string
+  default = "lk8s-nonprod.texasplatform.uk"
+}
+

@@ -50,7 +50,7 @@ def securityPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
 def saRole = "vsmt_host_role"
 
 def albIngressName = "lb" // used in R53 record
-def albScheme = 'internal' // 'internal' or 'internet-facing'
+def albScheme = 'internet-facing' // 'internal' or 'internet-facing'
 
 //*******TAGS******************
 //***** BILLING TAGS ******
@@ -177,7 +177,7 @@ node {
         vsmt_setchks_app_version = "${commitHash}"
 
       ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
-      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
+      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} --build-arg DEPLOYMENT_ENV=AWS -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
       sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
       // Create repo if it doesn't exist
@@ -193,8 +193,8 @@ node {
 
     stage("Authenticate to ${texasEnvName} AWS/k8s and tf apply") {
         withEnv(["MY_TOOL_DIR=${tool name: 'tfenv', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'}"]){
-            sh "tfenv install 1.0.11"
-            sh "tfenv use 1.0.11"
+            sh "tfenv install 1.6.0"
+            sh "tfenv use 1.6.0"
         }
         awsCreds = sh (
             script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} vsmt",
@@ -288,6 +288,13 @@ node {
             sh ("""sed -i 's/SA_ROLE/${saRole}/g' sa.yaml""")
 
             sh ("""kubectl apply -f sa.yaml""")
+
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' role.yaml""")
+            sh ("""kubectl apply -f role.yaml""")
+
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' role_binding.yaml""")
+            sh ("""kubectl apply -f role_binding.yaml""")
+
           }
         }
       }
