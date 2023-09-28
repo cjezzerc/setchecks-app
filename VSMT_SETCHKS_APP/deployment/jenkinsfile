@@ -113,6 +113,7 @@ else {
 if ( texasEnvName == 'live-lk8s-nonprod' ){
   envDomain = 'k8s-nonprod.texasplatform.uk'
 } else if ( texasEnvName == 'live-lk8s-prod') {
+  currentBuild.result = 'FAILURE'
   envDomain = 'k8s-prod.texasplatform.uk'
 } else if ( texasEnvName == 'live-mgmt') {
   envDomain = 'mgmt.texasplatform.uk'
@@ -190,7 +191,7 @@ node {
       sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${env.ecrAccountId}"
     }
 
-    stage("Authenticate to ${texasEnvName} AWS/k8s and tf plan") {
+    stage("Authenticate to ${texasEnvName} AWS/k8s and tf apply") {
         withEnv(["MY_TOOL_DIR=${tool name: 'tfenv', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'}"]){
             sh "tfenv install 1.0.11"
             sh "tfenv use 1.0.11"
@@ -208,7 +209,7 @@ node {
             sh """aws sts get-caller-identity"""
             echo "kubeconfig is: ${kubeconfig}"
             dir ("${jenkinsScriptsDir}"){
-                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
+                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 apply"
             }
         }
     }
