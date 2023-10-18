@@ -174,14 +174,16 @@ node {
     }
 
     stage("Authenticate") {
-        AWSCreds = sh ( script: "${scriptsDir}/assume_role.sh ${envName}", returnStdout: true)
-        AWSAccessKeyId = AWSCreds.split(',')[0].split('=')[1]
-        AWSSecretAccessKey = AWSCreds.split(',')[1].split('=')[1]
-        AWSSessionToken = AWSCreds.split(',')[2].split('=')[1]
-        withEnv([ "AWS_ACCESS_KEY_ID=${AWSAccessKeyId}",
-        "AWS_SECRET_ACCESS_KEY=${AWSSecretAccessKey}",
-        "AWS_SESSION_TOKEN=${AWSSessionToken}"]) {
-        kubeconfig = sh ( script: "${scriptsDir}/kube_config.sh ${envName}", returnStdout: true).trim()
+        awsCreds = sh (
+            script: "${jenkinsScriptsDir}/assume_role.sh ${texasEnvName} vsmt",
+            returnStdout: true)
+        awsAccessKeyId=awsCreds.split(',')[0].split('=')[1].trim()
+        awsSecretAccessKey=awsCreds.split(',')[1].split('=')[1].trim()
+        awsSessionToken=awsCreds.split(',')[2].split('=')[1].trim()
+        withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
+            "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
+            "AWS_SESSION_TOKEN=${awsSessionToken}"]) {
+            kubeconfig = sh ( script: "${jenkinsScriptsDir}/kube_config.sh ${texasEnvName}", returnStdout: true).trim()
         accountSecrets = sh (
             script: """ aws secretsmanager get-secret-value --secret-id aws_account_ids \
             --region ${awsRegion} --query "SecretString" --output text """,
@@ -189,7 +191,7 @@ node {
         )
         accountSecretsMap = readJSON text: accountSecrets
         liveMgmtAccountId = accountSecretsMap[live-mgmt]
-        currentAccountId = accountSecretsMap["${envName}"]
+        currentAccountId = accountSecretsMap[envName]
         echo "liveMgmt Account id = ${liveMgmtAccountId}"
         echo "current Account id = ${currentAccountId}"
         sleep 500
