@@ -191,8 +191,8 @@ node {
             returnStdout: true
         )
         accountSecretsMap = readJSON text: accountSecrets
-        liveMgmtAccountId = accountSecretsMap[live-mgmt]
-        currentAccountId = accountSecretsMap[envName]
+        liveMgmtAccountId = accountSecretsMap['live-mgmt']
+        currentAccountId = accountSecretsMap["${envName}"]
         echo "liveMgmt Account id = ${liveMgmtAccountId}"
         echo "current Account id = ${currentAccountId}"
         sleep 500
