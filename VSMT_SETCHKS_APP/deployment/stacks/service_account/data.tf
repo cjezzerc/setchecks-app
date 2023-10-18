@@ -6,8 +6,16 @@ data "aws_secretsmanager_secret_version" "vsmt_ontoserver_access" {
   secret_id = data.aws_secretsmanager_secret.vsmt_ontoserver_access.id
 }
 
+data "aws_secretsmanager_secret" "aws_account_ids" {
+  name = "aws_account_ids"
+}
+
+data "aws_secretsmanager_secret_version" "aws_account_ids" {
+  secret_id = data.aws_secretsmanager_secret.aws_account_ids.id
+}
+
 locals {
-  aws_account_id = jsondecode(data.aws_secretsmanager_secret_version.vsmt_ontoserver_access.secret_string)["nonprod_account_id"]
+  aws_account_id = jsondecode(data.aws_secretsmanager_secret_version.aws_account_ids.secret_string)["${var.env}-${var.envtype2}${var.subenv}"]
   docdb_username = jsondecode(data.aws_secretsmanager_secret_version.vsmt_ontoserver_access.secret_string)["DOCUMENTDB_USERNAME"]
   docdb_password = jsondecode(data.aws_secretsmanager_secret_version.vsmt_ontoserver_access.secret_string)["DOCUMENTDB_PASSWORD"]
   tags = {

@@ -41,8 +41,7 @@ data "aws_iam_policy_document" "iam_host_role_policy_document" {
   }
   statement {
     actions = [
-        "rds:Describe*",
-        "rds:List*"
+        "rds:*"
         ]
     resources =  flatten([
       [
