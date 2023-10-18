@@ -195,7 +195,6 @@ node {
         currentAccountId = accountSecretsMap["${texasEnvName}"]
         echo "liveMgmt Account id = ${liveMgmtAccountId}"
         echo "current Account id = ${currentAccountId}"
-        sleep 500
         }
     }
 
