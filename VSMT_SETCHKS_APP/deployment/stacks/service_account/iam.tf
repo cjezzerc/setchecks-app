@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "iam_host_role_policy_document" {
         ]
     resources =  flatten([
       [
-        "arn:aws:rds:${var.aws_region}:${local.aws_account_id}:*:${service_prefix}*",
+        "arn:aws:rds:${var.aws_region}:${local.aws_account_id}:*:${var.service_prefix}*",
         "arn:aws:rds:${var.aws_region}:${local.aws_account_id}:db-proxy-endpoint:*",
         "arn:aws:rds:${var.aws_region}:${local.aws_account_id}:db-proxy:*",
         "arn:aws:rds:${var.aws_region}:${local.aws_account_id}:target-group:*"
@@ -57,11 +57,11 @@ data "aws_iam_policy_document" "iam_host_role_policy_document" {
     actions = ["elasticache:*"]
     resources = flatten([
       [
-        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:${service_prefix}*",
-        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:replicationgroup:${service_prefix}*",
-        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:parametergroup:${service_prefix}*",
-        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:subnetgroup:${service_prefix}*",
-        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:snapshot:${service_prefix}*"
+        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:${var.service_prefix}*",
+        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:replicationgroup:${var.service_prefix}*",
+        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:parametergroup:${var.service_prefix}*",
+        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:subnetgroup:${var.service_prefix}*",
+        "arn:aws:elasticache:${var.aws_region}:${local.aws_account_id}:snapshot:${var.service_prefix}*"
       ]
     ])
   }
