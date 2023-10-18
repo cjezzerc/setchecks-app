@@ -37,7 +37,8 @@ def version ='latest'
 def dockerDir = 'docker'
 def dockerImage = 'vsmt-setchks-app'
 
-
+def liveMgmtAccountId
+def currentAccountId
 
 // k8s vars
 def appK8sDir = 'VSMT_SETCHKS_APP/deployment/k8s'
@@ -172,14 +173,37 @@ node {
       echo "Placeholder for e.g. Sonarqube, git-secrets etc."
     }
 
+    stage("Authenticate") {
+        AWSCreds = sh ( script: "${scriptsDir}/assume_role.sh ${envName}", returnStdout: true)
+        AWSAccessKeyId = AWSCreds.split(',')[0].split('=')[1]
+        AWSSecretAccessKey = AWSCreds.split(',')[1].split('=')[1]
+        AWSSessionToken = AWSCreds.split(',')[2].split('=')[1]
+        withEnv([ "AWS_ACCESS_KEY_ID=${AWSAccessKeyId}",
+        "AWS_SECRET_ACCESS_KEY=${AWSSecretAccessKey}",
+        "AWS_SESSION_TOKEN=${AWSSessionToken}"]) {
+        kubeconfig = sh ( script: "${scriptsDir}/kube_config.sh ${envName}", returnStdout: true).trim()
+        accountSecrets = sh (
+            script: """ aws secretsmanager get-secret-value --secret-id aws_account_ids \
+            --region ${awsRegion} --query "SecretString" --output text """,
+            returnStdout: true
+        )
+        accountSecretsMap = readJSON text: accountSecrets
+        liveMgmtAccountId = accountSecretsMap[live-mgmt]
+        currentAccountId = accountSecretsMap["${envName}"]
+        echo "liveMgmt Account id = ${liveMgmtAccountId}"
+        echo "current Account id = ${currentAccountId}"
+        sleep 500
+        }
+    }
+
     stage('Build & Push'){
         commitHash = sh ( script: 'printf \$(git log --format=%h --abbrev=8 -n 1)', returnStdout: true).trim()
         vsmt_setchks_app_version = "${commitHash}"
 
-      ecrImageName = "${env.ecrAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
+      ecrImageName = "${liveMgmtAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
       sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} --build-arg DEPLOYMENT_ENV=AWS -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
-      sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${env.ecrAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
+      sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${liveMgmtAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
       // Create repo if it doesn't exist
       sh """aws ecr describe-repositories --repository-names ${dockerImage} || aws ecr create-repository --repository-name ${dockerImage}"""
       // Push image to ECR
@@ -188,7 +212,7 @@ node {
 
     stage('Scan Image') {
       sh "chmod +x ${jenkinsScriptsDir}/*.sh"
-      sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${env.ecrAccountId}"
+      sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${liveMgmtAccountId}"
     }
 
     stage("Authenticate to ${texasEnvName} AWS/k8s and tf apply") {
@@ -283,7 +307,7 @@ node {
 
             sh ("""kubectl apply -f ingress.yaml""")
 
-            sh ("""sed -i 's|ACCT_NUMBER_TO_BE_REPLACED|${env.nonprodAccountId}|g' sa.yaml""")
+            sh ("""sed -i 's|ACCT_NUMBER_TO_BE_REPLACED|${currentAccountId}|g' sa.yaml""")
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' sa.yaml""")
             sh ("""sed -i 's/SA_ROLE/${saRole}/g' sa.yaml""")
 
