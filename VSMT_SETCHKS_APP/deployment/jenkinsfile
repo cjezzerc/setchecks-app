@@ -209,7 +209,7 @@ node {
             sh """aws sts get-caller-identity"""
             echo "kubeconfig is: ${kubeconfig}"
             dir ("${jenkinsScriptsDir}"){
-                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 plan"
+                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 apply"
             }
         }
     }
