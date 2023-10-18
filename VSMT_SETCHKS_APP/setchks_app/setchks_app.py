@@ -33,8 +33,10 @@ from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
-from setchks_app.redis.rq import get_rq_info, launch_sleep_job
+from setchks_app.redis.rq import get_rq_info, launch_sleep_job, jobs, job_stack_trace
 from setchks_app.redis.get_redis_client import get_redis_string
+from rq import Queue
+from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
 
 
@@ -197,8 +199,12 @@ def descriptions_db():
         return "<br>".join(output_strings)
     
     if action=="make":
-        ds.pull_release_from_trud(date_string=date_string)
-        return f"made collection for {date_string}"
+        redis_connection=get_redis_client()
+        q = Queue(connection=redis_connection)
+        ds_temp=DescriptionsService(preconnect_to_db=False)
+        result = q.enqueue(ds_temp.pull_release_from_trud, job_timeout='15m', date_string=date_string)
+        # ds.pull_release_from_trud(date_string=date_string)
+        return str(result) # f"made collection for {date_string}"
 
     return f"Did not understand that"
 
@@ -213,6 +219,7 @@ def rq():
     logger.info("rq called")
     logger.debug(list(request.args.items()))
     action=request.args.get("action", None)
+    job_id=request.args.get("job_id", None)
     
     if action is None:
         output_strings=get_rq_info()
@@ -223,6 +230,12 @@ def rq():
         result=str(result)[1:-1]
         logger.debug(f'result={result}')
         return result
+    
+    if action =="jobs":
+        return '<pre>'+'<br>'.join(jobs())+'</pre>'
+    
+    if action=="job_stack_trace":
+        return '<pre>'+'<br>'.join(job_stack_trace(job_id=job_id))+'</pre>'
     
     return f"Did not understand that: {action}"
 

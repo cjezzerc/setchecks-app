@@ -10,6 +10,8 @@ logging.basicConfig(
 )
 
 from rq import Queue
+from rq.job import Job
+
 
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
@@ -46,6 +48,51 @@ def get_rq_info():
     redis_string=get_redis_string()
     data=os.popen(f"rq info --url '{redis_string}'").readlines()
     return data
+
+def job_stack_trace(job_id=None):
+    redis_connection=get_redis_client()
+    job=Job.fetch(job_id, connection=redis_connection)
+    return job.exc_info.split('/n')
+
+def jobs():
+    redis_connection=get_redis_client()
+    q = Queue(connection=redis_connection)
+    
+    data=[]
+    job_ids_in_queue = q.job_ids
+    job_ids_started = q.started_job_registry.get_job_ids()
+    job_ids_finished = q.finished_job_registry.get_job_ids()
+    job_ids_failed = q.failed_job_registry.get_job_ids()
+    for job_id in job_ids_in_queue+job_ids_started+job_ids_finished+job_ids_failed:
+        job = Job.fetch(job_id, connection=redis_connection)
+        status=job.get_status()
+        func=job.func_name
+        kwargs=job.kwargs
+        enqueued_at=str(job.enqueued_at)[:16]
+        started_at=str(job.started_at)[:16]
+        ended_at=str(job.ended_at)[:16]
+        data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
+    return data
+
+
+
+# job.get_status(refresh=True) Possible values are queued, started, deferred, finished, stopped, scheduled, canceled and failed. If refresh is True fresh values are fetched from Redis.
+# job.get_meta(refresh=True) Returns custom job.meta dict containing user stored data. If refresh is True fresh values are fetched from Redis.
+# job.origin queue name of this job
+# job.func_name
+# job.args arguments passed to the underlying job function
+# job.kwargs key word arguments passed to the underlying job function
+# job.result stores the return value of the job being executed, will return None prior to job execution. Results are kept according to the result_ttl parameter (500 seconds by default).
+# job.enqueued_at
+# job.started_at
+# job.ended_at
+# job.exc_info stores exception information if job doesn’t finish successfully.
+# job.last_heartbeat the latest timestamp that’s periodically updated when the job is executing. Can be used to determine if the job is still active.
+# job.worker_name returns the worker name currently executing this job.
+    
+    
+    
+
 
 def launch_sleep_job():
     redis_connection=get_redis_client()

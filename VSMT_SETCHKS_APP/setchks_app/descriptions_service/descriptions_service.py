@@ -14,16 +14,20 @@ from setchks_app.mongodb import get_mongodb_client
 
 # from pymongo import MongoClient
 
-from setchks_app.sct_versions import get_sct_versions
+# TEMPRARY COMMENT OUT !!!!!! WHILE TEST RQ
+# from setchks_app.sct_versions import get_sct_versions
 
 class DescriptionsService():
 
     __slots__=["db"]
 
-    def __init__(self):
+    def __init__(self, preconnect_to_db=True):
         # self.db=MongoClient()["descriptions_service"]
-        self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
-    
+        if preconnect_to_db:
+            self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+        else: # this is for case of functions that want to run via redis queue and cannot pickle the threadlock
+            self.db=None
+
     def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False):
         """ creates a collection from a specified RF2 file"""
         success_flag, message=RF2_handling.create_collection_from_RF2_file(db=self.db, RF2_filename=RF2_filename, delete_if_exists=delete_if_exists)
@@ -75,6 +79,11 @@ class DescriptionsService():
         return trud_dict
     
     def pull_release_from_trud(self, date_string=None):
+
+        if self.db is None: # for running this via redis queue cannot send the mongodb_connection through so have to make afresh
+            print("Making new mongo db connection")
+            self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+
         trud_dict=self.get_trud_releases_info()
         filename, url= trud_dict[date_string]
         

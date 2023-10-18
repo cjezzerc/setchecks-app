@@ -40,6 +40,7 @@ def create_collection_from_RF2_file(db=None, RF2_filename=None, delete_if_exists
         documents.append(document)
         if i_document%n_documents_per_chunk==0:
             logger.debug("Have sent %s documents to mongodb" % i_document)
+            print(i_document)
             collection.insert_many(documents)
             documents=[]
     collection.insert_many(documents) # insert any left in the last set
