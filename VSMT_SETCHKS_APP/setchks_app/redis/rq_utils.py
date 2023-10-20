@@ -12,7 +12,6 @@ logging.basicConfig(
 from rq import Queue
 from rq.job import Job
 
-
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
 def start_rq_worker():
@@ -54,6 +53,11 @@ def job_stack_trace(job_id=None):
     job=Job.fetch(job_id, connection=redis_connection)
     return job.exc_info.split('/n')
 
+def job_result(job_id=None):
+    redis_connection=get_redis_client()
+    job=Job.fetch(job_id, connection=redis_connection)
+    return job.result
+
 def jobs():
     redis_connection=get_redis_client()
     q = Queue(connection=redis_connection)
@@ -66,12 +70,13 @@ def jobs():
     for job_id in job_ids_in_queue+job_ids_started+job_ids_finished+job_ids_failed:
         job = Job.fetch(job_id, connection=redis_connection)
         status=job.get_status()
-        func=job.func_name
-        kwargs=job.kwargs
-        enqueued_at=str(job.enqueued_at)[:16]
-        started_at=str(job.started_at)[:16]
-        ended_at=str(job.ended_at)[:16]
-        data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
+        # func=job.func_name
+        # kwargs=job.kwargs
+        # enqueued_at=str(job.enqueued_at)[:16]
+        # started_at=str(job.started_at)[:16]
+        # ended_at=str(job.ended_at)[:16]
+        data.append(f'{job_id} {status:10} ')
+        # data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {"func"} {kwargs} ')
     return data
 
 
@@ -90,10 +95,6 @@ def jobs():
 # job.last_heartbeat the latest timestamp that’s periodically updated when the job is executing. Can be used to determine if the job is still active.
 # job.worker_name returns the worker name currently executing this job.
     
-    
-    
-
-
 def launch_sleep_job():
     redis_connection=get_redis_client()
     q = Queue(connection=redis_connection)
@@ -103,3 +104,17 @@ def launch_sleep_job():
 def rq_dummy_sleep_job(sleep_time=None):
     time.sleep(sleep_time)
 
+def report_on_env_vars():
+    output_strings=['open values:']
+    for env_var in ['DEPLOYMENT_ENV', 'ONTOSERVER_INSTANCE', 'ONTOAUTH_INSTANCE']:
+        output_strings.append(f'{env_var:20}: {os.environ[env_var]}' )
+    output_strings.append('secrets exist:')
+    for env_var in ['ONTOSERVER_USERNAME', 'ONTOSERVER_SECRET', 'TRUDAPIKEY', 'DOCUMENTDB_USERNAME', 'DOCUMENTDB_PASSWORD']:
+        output_strings.append(f'{env_var:20}: {env_var in os.environ}' )
+    return output_strings                    
+                    
+def launch_report_on_env_vars():
+    redis_connection=get_redis_client()
+    q = Queue(connection=redis_connection)
+    result = q.enqueue(report_on_env_vars)
+    return result

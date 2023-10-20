@@ -25,6 +25,7 @@ then this could all be rewritten.
 ds=descriptions_service.DescriptionsService()
 
 class MarshalledRow():
+
     __slots__=[
         "sctid_cell",
         "dterm_cell",

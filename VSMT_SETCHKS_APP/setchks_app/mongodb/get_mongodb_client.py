@@ -5,6 +5,8 @@ import os
 import json
 import boto3
 
+from flask import current_app
+
 import logging
 logger=logging.getLogger()
 
@@ -19,10 +21,7 @@ def get_documentdb_endpoint():
 
 def get_mongodb_client():
     logger.debug("Getting mongodb client..")
-    if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-        logger.debug("Configuring mongodb to connect to mongo-server docker")
-        mongodb_client=MongoClient('mongo-server',27017)
-    elif os.environ["DEPLOYMENT_ENV"]=="AWS":
+    if os.environ["DEPLOYMENT_ENV"]=="AWS":
         logger.debug("Configuring mongodb to connect to DocumentDB")
         endpoint=get_documentdb_endpoint()
         url_root=f'mongodb://{os.environ["DOCUMENTDB_USERNAME"]}:{os.environ["DOCUMENTDB_PASSWORD"]}@{endpoint}:27017/'

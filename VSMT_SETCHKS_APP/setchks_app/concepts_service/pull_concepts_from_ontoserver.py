@@ -4,8 +4,10 @@ import sys, os, pprint
 
 from pymongo import MongoClient
 
-sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/')
-from vsmt_uprot.terminology_server_module import TerminologyServer
+from flask import current_app
+
+# sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/')
+from setchks_app.terminology_server_module import TerminologyServer
 
 from fhir.resources.valueset import ValueSet
 import vsmt_uprot.fhir_utils
@@ -36,8 +38,7 @@ def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None
     # relative_sub_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "<<"+str(root_id))
     relative_sub_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "*")
     # relative_sub_url= "ValueSet/$expand?activeOnly=false&=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "<<"+str(root_id))
-    terminology_server=TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                     auth_url=os.environ["ONTOAUTH_INSTANCE"])
+    terminology_server=TerminologyServer()
     
     # work out how many fetches to do
     relative_url=relative_sub_url+"&count=0"
@@ -54,8 +55,7 @@ def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None
     while offset<total_concepts:
         print("offset = %s" % (offset))
         relative_url=relative_sub_url+"&count=%s&offset=%s" % (n_per_fetch, offset)
-        terminology_server=TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                     auth_url=os.environ["ONTOAUTH_INSTANCE"]) # call every time as bodge to prevent token expiring
+        terminology_server=TerminologyServer() # call every time as bodge to prevent token expiring
         response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
         print(response)
         print("Parsing..")

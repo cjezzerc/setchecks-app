@@ -1,12 +1,14 @@
 import requests
 import os
+import time
 
 from fhir.resources.valueset import ValueSet
+from flask import current_app
 
 class TerminologyServer():
-    def __init__(self, base_url=None, auth_url=None):
-        self.base_url=base_url
-        self.auth_url=auth_url
+    def __init__(self):
+        self.base_url=os.environ["ONTOSERVER_INSTANCE"]
+        self.auth_url=os.environ["ONTOAUTH_INSTANCE"]
         self.get_jwt_token()
 
     def get_jwt_token(self):

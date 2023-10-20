@@ -2,8 +2,6 @@
 """
 import os
 
-import vsmt_uprot.terminology_server_module
-
 def do_check(setchks_session=None, setchk_results=None):
 
     """

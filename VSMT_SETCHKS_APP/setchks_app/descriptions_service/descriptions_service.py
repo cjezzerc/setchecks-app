@@ -9,6 +9,8 @@ import json
 import logging
 logger=logging.getLogger
 
+from flask import current_app
+
 from . import RF2_handling
 from setchks_app.mongodb import get_mongodb_client
 
@@ -19,14 +21,15 @@ from setchks_app.mongodb import get_mongodb_client
 
 class DescriptionsService():
 
-    __slots__=["db"]
+    __slots__=["_db"]
 
     def __init__(self, preconnect_to_db=True):
         # self.db=MongoClient()["descriptions_service"]
-        if preconnect_to_db:
-            self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
-        else: # this is for case of functions that want to run via redis queue and cannot pickle the threadlock
-            self.db=None
+        # if preconnect_to_db:
+        #     self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+        # else: # this is for case of functions that want to run via redis queue and cannot pickle the threadlock
+        #     self.db=None
+        self._db=None
 
     def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False):
         """ creates a collection from a specified RF2 file"""
@@ -140,5 +143,12 @@ class DescriptionsService():
         collection_name=self.make_collection_name(date_string=sct_version.date_string)
         data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
         return data_found
+    
+    @property
+    def db(self): # only connect the first time it is needed and then store it
+        if self._db is None:
+            self._db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+        return self._db 
+
 
     

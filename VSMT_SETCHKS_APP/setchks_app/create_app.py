@@ -13,12 +13,16 @@ logging.basicConfig(
 )
 logger=logging.getLogger(__name__)
 
-from setchks_app.redis.get_redis_client import get_redis_client
+from redis import from_url
+
+from setchks_app.redis.get_redis_client import get_redis_string
 
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.secret_key = 'BAD_SECRET_KEY'
+
+    app.config["REDIS_STRING"]=get_redis_string()
 
     flask_session_type="redis" # "redis" or "mongodb"
     # flask_session_type="mongodb" # "redis" or "mongodb"
@@ -28,7 +32,7 @@ def create_app():
         app.config['SESSION_TYPE'] = 'redis'
         app.config['SESSION_PERMANENT'] = False
         app.config['SESSION_USE_SIGNER'] = True
-        redis_connection=get_redis_client()
+        redis_connection=from_url(app.config["REDIS_STRING"])
         app.config['SESSION_REDIS'] = redis_connection
         
 
@@ -45,8 +49,6 @@ def create_app():
     logger.debug("About to see if need to get secrets")
     if 'ONTOSERVER_USERNAME' not in os.environ:
         logger.debug("getting secrets")
-        # os.environ['ONTOSERVER_INSTANCE']='https://dev.ontology.nhs.uk/dev1/fhir/'
-        # os.environ['ONTOAUTH_INSTANCE']='https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token'
         sm_client = boto3.client('secretsmanager', region_name='eu-west-2')
         pw_response = sm_client.get_secret_value(SecretId='vsmt-ontoserver-access')
         passwords = pw_response['SecretString']
@@ -59,8 +61,11 @@ def create_app():
         logger.debug("got secrets")
     else:
         logger.debug("no need to get secrets")
-    logger.debug("OS_ENVIRON_KEYS:"+str(list(os.environ.keys())))
 
+    # these os.environ elements would need to be passed to an process running via redis queue
+    # ['DEPLOYMENT_ENV', 'ONTOSERVER_INSTANCE', 'ONTOAUTH_INSTANCE', 'ONTOSERVER_USERNAME', 'ONTOSERVER_SECRET', 
+    # 'TRUDAPIKEY', 
+    # 'DOCUMENTDB_USERNAME', 'DOCUMENTDB_PASSWORD'] 
 
     if flask_session_type=="mongodb":   # STILL NEED TO CHANGE THIS IF WANT  ATTACH TO DOCUMENTDB!!!
         # currently requires pymngo <v4 see:
@@ -79,6 +84,8 @@ def create_app():
             print("Configuring mongodb to connect to localhost")
             app.config['SESSION_MONGODB']=MongoClient()
 
+    from setchks_app.redis.rq_utils import start_rq_worker_if_none_running
+    start_rq_worker_if_none_running()
 
     server_session = flask_session.Session(app) # resets session variable behaviour so uses redis
     

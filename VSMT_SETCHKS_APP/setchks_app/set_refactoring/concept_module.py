@@ -156,14 +156,6 @@ class ConceptsDict(UserDict):
 
 if __name__=="__main__":
 
-    # terminology_server=terminology_server_module.TerminologyServer(base_url="https://r4.ontoserver.csiro.au/fhir/")
-    # concepts=ConceptsDict(terminology_server=terminology_server, sct_version="http://snomed.info/sct/83821000000107/version/20190807")
-
-    # client=MongoClient()
-    # db=client['VSMT_uprot_app']
-    # concepts_db_document=db['concepts']
-
-    # concepts=ConceptsDict(concepts_db_document=concepts_db_document)
     concepts=ConceptsDict(sct_version="20230510")
    
     print(concepts[91487003])

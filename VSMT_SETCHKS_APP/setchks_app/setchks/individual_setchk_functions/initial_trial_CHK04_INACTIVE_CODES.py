@@ -3,7 +3,7 @@
 """
 
 import os
-import vsmt_uprot.terminology_server_module
+import setchks_app.terminology_server_module
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -39,8 +39,7 @@ def do_check(setchks_session=None, setchk_results=None):
     #                  #
     
     # really should check for when token expires first but that did not seem to be working
-    setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
+    setchks_session.terminology_server=setchks_app.terminology_server_module.TerminologyServer()
     refset_response=setchks_session.terminology_server.do_expand(ecl=ecl, 
                                                                  sct_version=setchks_session.sct_version.formal_version_string, 
                                                                  add_display_names=True,

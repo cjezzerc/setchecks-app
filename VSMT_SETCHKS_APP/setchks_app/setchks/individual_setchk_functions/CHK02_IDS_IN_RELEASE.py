@@ -5,8 +5,6 @@ import os
 import logging
 logger=logging.getLogger()
 
-import vsmt_uprot.terminology_server_module
-
 def do_check(setchks_session=None, setchk_results=None):
 
     """

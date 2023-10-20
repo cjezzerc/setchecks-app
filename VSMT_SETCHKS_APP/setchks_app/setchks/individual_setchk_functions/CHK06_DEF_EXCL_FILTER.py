@@ -5,7 +5,9 @@ import os
 import logging
 logger=logging.getLogger()
 
-import vsmt_uprot.terminology_server_module
+from flask import current_app
+
+import setchks_app.terminology_server_module
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -28,8 +30,7 @@ def do_check(setchks_session=None, setchk_results=None):
     default_exclusion_filter_refset_id=999002571000000104
     
     # really should check for when token expires first but that did not seem to be working
-    setchks_session.terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
+    setchks_session.terminology_server=setchks_app.terminology_server_module.TerminologyServer()
     refset_response=setchks_session.terminology_server.do_expand(refset_id=default_exclusion_filter_refset_id, sct_version=setchks_session.sct_version.formal_version_string, add_display_names=True)
 
     # Convert response into a dictionary of display strings keyed by concept_id

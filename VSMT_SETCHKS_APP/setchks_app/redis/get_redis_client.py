@@ -5,6 +5,8 @@ import json
 import logging
 logger=logging.getLogger()
 
+from flask import current_app
+
 import redis
 import boto3
 
@@ -16,10 +18,7 @@ def get_elasticache_endpoint():
     return endpoint
 
 def get_redis_string():
-    if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-        logger.debug("Configuring redis to connect to redis-server docker")
-        redis_string='redis://redis-server:6379'
-    elif os.environ["DEPLOYMENT_ENV"]=="AWS":
+    if os.environ["DEPLOYMENT_ENV"]=="AWS":
         logger.debug("Configuring redis to connect to elsticache")
         endpoint=get_elasticache_endpoint()
         redis_string=f'rediss://{endpoint}:6379'

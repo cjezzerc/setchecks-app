@@ -16,10 +16,7 @@ print(location)
 sys.path.append(location+"/../VSMT_UPROT_APP/")
 
 from fhir.resources.valueset import ValueSet
-import vsmt_uprot.fhir_utils
 
-import vsmt_uprot.terminology_server_module
-import vsmt_uprot.vsmt_valueset
 import setchks_app.setchks.setchks_session
 import setchks_app.setchks.setchk_definitions 
 import setchks_app.setchks.run_queued_setchks
@@ -33,13 +30,10 @@ from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
-from setchks_app.redis.rq import get_rq_info, launch_sleep_job, jobs, job_stack_trace
+from setchks_app.redis.rq_utils import get_rq_info, launch_sleep_job, jobs, job_result, job_stack_trace, report_on_env_vars, launch_report_on_env_vars
 from setchks_app.redis.get_redis_client import get_redis_string
 from rq import Queue
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
-
-
-
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
@@ -231,11 +225,22 @@ def rq():
         logger.debug(f'result={result}')
         return result
     
+    if action=="app_ev":
+        return '<pre>'+'<br>'.join(report_on_env_vars())+'</pre>'
+    
+    if action=="worker_ev":
+        launch_report_on_env_vars()
+        return 'Look in logs for output'
+
     if action =="jobs":
-        return '<pre>'+'<br>'.join(jobs())+'</pre>'
+        return str(jobs())
+        # return '<pre>'+'<br>'.join(jobs())+'</pre>'
     
     if action=="job_stack_trace":
         return '<pre>'+'<br>'.join(job_stack_trace(job_id=job_id))+'</pre>'
+    
+    if action=="job_result":
+        return '<pre>'+str(job_result(job_id=job_id))+'</pre>'
     
     return f"Did not understand that: {action}"
 

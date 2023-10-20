@@ -1,14 +1,14 @@
 """ function to pull version list from terminology server and convert to date sorted list of SCT objects"""
 
 import os
+from flask import current_app
 from . import sct_version
-import vsmt_uprot.terminology_server_module
+import setchks_app.terminology_server_module
 from fhir.resources.bundle import Bundle
 
 def get_sct_versions():
 
-        terminology_server=vsmt_uprot.terminology_server_module.TerminologyServer(base_url=os.environ["ONTOSERVER_INSTANCE"],
-                                            auth_url=os.environ["ONTOAUTH_INSTANCE"])
+        terminology_server=setchks_app.terminology_server_module.TerminologyServer()
         relative_url= "CodeSystem?url=http://snomed.info/sct"
         response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
         bundle=Bundle.parse_obj(response.json())
