@@ -84,7 +84,8 @@ def create_app():
             print("Configuring mongodb to connect to localhost")
             app.config['SESSION_MONGODB']=MongoClient()
 
-    from setchks_app.redis.rq_utils import start_rq_worker_if_none_running
+    from setchks_app.redis.rq_utils import start_rq_worker_if_none_running, kill_all_rq_workers
+    kill_all_rq_workers()
     start_rq_worker_if_none_running()
 
     server_session = flask_session.Session(app) # resets session variable behaviour so uses redis

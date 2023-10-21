@@ -31,7 +31,6 @@ from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
 from setchks_app.redis.rq_utils import get_rq_info, launch_sleep_job, jobs, job_result, job_stack_trace, report_on_env_vars, launch_report_on_env_vars
-from setchks_app.redis.get_redis_client import get_redis_string
 from rq import Queue
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
@@ -241,6 +240,10 @@ def rq():
     
     if action=="job_result":
         return '<pre>'+str(job_result(job_id=job_id))+'</pre>'
+    
+    if action=="setchk_job_result":
+        return str(job_result(job_id=job_id).__repr__())
+        # return jsonify(json.loads(jsonpickle.encode(job_result(job_id=job_id), unpicklable=False)))
     
     return f"Did not understand that: {action}"
 

@@ -1,9 +1,11 @@
 """Check for concepts that are in the Default Exclusion Filter Refset
 """
-import os
+import os, json, jsonpickle
 
 import logging
 logger=logging.getLogger()
+
+from flask import jsonify
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -138,3 +140,5 @@ def do_check(setchks_session=None, setchk_results=None):
         f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
         ) 
     setchk_results.set_analysis["Messages"].append(msg)
+
+    # return setchk_results

@@ -11,6 +11,8 @@ logging.basicConfig(
 
 from rq import Queue
 from rq.job import Job
+from rq.command import send_shutdown_command
+from rq.worker import Worker
 
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
@@ -29,6 +31,13 @@ def count_running_rq_workers():
     n_workers=int(data[-1].split()[0])
     logger.debug(f"{n_workers} rq workers running")
     return n_workers
+
+def kill_all_rq_workers():
+    logger.debug("Killing all rq workers")
+    redis = get_redis_client()
+    workers = Worker.all(redis)
+    for worker in workers:
+        send_shutdown_command(redis, worker.name)  # Tells worker to shutdown
 
 def start_rq_worker_if_none_running():
     n_workers=count_running_rq_workers()
