@@ -196,8 +196,26 @@ def descriptions_db():
         q = Queue(connection=redis_connection)
         ds_temp=DescriptionsService(preconnect_to_db=False)
         result = q.enqueue(ds_temp.pull_release_from_trud, job_timeout='15m', date_string=date_string)
-        # ds.pull_release_from_trud(date_string=date_string)
-        return str(result) # f"made collection for {date_string}"
+        result=str(result)[1:-1]
+        logger.debug(f'result={result}')
+        return f'jobid={result}'
+    
+    if action=="make_missing":
+        redis_connection=get_redis_client()
+        q = Queue(connection=redis_connection)
+        ds_temp=DescriptionsService(preconnect_to_db=False)
+        result = q.enqueue(ds_temp.make_missing_collections, job_timeout='2h')
+        result=str(result)[1:-1]
+        logger.debug(f'result={result}')
+        return f'jobid={result}'
+    
+    if action=="check_coverage":
+        redis_connection=get_redis_client()
+        ds_temp=DescriptionsService(preconnect_to_db=False)
+        result = ds_temp.check_whether_releases_on_ontoserver_have_collections()
+        output_strings=[f'{x}:{result[x]}' for x in result]
+        return "<br>".join(output_strings)
+    
 
     return f"Did not understand that"
 
@@ -232,8 +250,8 @@ def rq():
         return 'Look in logs for output'
 
     if action =="jobs":
-        return str(jobs())
-        # return '<pre>'+'<br>'.join(jobs())+'</pre>'
+        # return str(jobs())
+        return '<pre>'+'<br>'.join(jobs())+'</pre>'
     
     if action=="job_stack_trace":
         return '<pre>'+'<br>'.join(job_stack_trace(job_id=job_id))+'</pre>'

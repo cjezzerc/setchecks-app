@@ -17,7 +17,7 @@ from setchks_app.mongodb import get_mongodb_client
 # from pymongo import MongoClient
 
 # TEMPRARY COMMENT OUT !!!!!! WHILE TEST RQ
-# from setchks_app.sct_versions import get_sct_versions
+from setchks_app.sct_versions import get_sct_versions
 
 class DescriptionsService():
 
