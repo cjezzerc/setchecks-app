@@ -14,8 +14,8 @@ def get_sct_versions():
         response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
         bundle=Bundle.parse_obj(response.json())
 
-        for be in bundle.entry:
-            print("\n".join(repr_resource(resource=be.resource)))
+        # for be in bundle.entry:
+        #     print("\n".join(repr_resource(resource=be.resource)))
 
         available_sct_versions=[be.resource.dict()["version"] for be in bundle.entry]
         available_sct_versions=[sct_version.SctVersion(formal_version_string=x) for x in available_sct_versions]

@@ -7,11 +7,12 @@ def create_collection_from_RF2_file(
         db=None, 
         RF2_filename=None, 
         delete_if_exists=False,
-        data_type=None
+        data_type=None,
+        collection_name=None
         ):
 
-    f=RF2_filename.split("/")
-    collection_name=f[-1].split(".")[0]
+    # f=RF2_filename.split("/")
+    # collection_name=f[-1].split(".")[0]
     logger.debug("Creating collection" + str(collection_name))
 
     collection=db[collection_name]

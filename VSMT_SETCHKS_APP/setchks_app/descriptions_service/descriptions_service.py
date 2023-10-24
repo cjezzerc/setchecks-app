@@ -29,13 +29,14 @@ class DescriptionsService():
         self._db=None
         self.data_type=data_type
 
-    def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False):
+    def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False, collection_name=None):
         """ creates a collection from a specified RF2 file"""
         success_flag, message=RF2_handling.create_collection_from_RF2_file(
             db=self.db, 
             RF2_filename=RF2_filename, 
             delete_if_exists=delete_if_exists,
             data_type=self.data_type,
+            collection_name=collection_name,
             )
         return success_flag, message
     
@@ -148,6 +149,7 @@ class DescriptionsService():
         success_flag, message= self.create_collection_from_RF2_file(
             RF2_filename=data_filename,
             delete_if_exists=True,
+            collection_name=self.make_collection_name(date_string),
             )
     
         print("Cleaning up")
