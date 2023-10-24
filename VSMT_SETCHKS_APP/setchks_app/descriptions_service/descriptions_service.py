@@ -105,6 +105,11 @@ class DescriptionsService():
         #     self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
 
         trud_dict=self.get_trud_releases_info()
+
+        if date_string not in trud_dict:
+            logging.debug(f"{date_string} does not have a trud release for {self.data_type}")
+            return 
+
         filename, url= trud_dict[date_string]
         
         # url above will be of form resulting from this:
