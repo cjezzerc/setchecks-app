@@ -48,8 +48,11 @@ class DescriptionsService():
             return f"sct2_Description_MONOSnapshot-en_GB_{date_string}"
         elif self.data_type=="hst":
             # return f"xres2_HistorySubstitutionTable_Concepts_GB1000000_{date_string}"
-            return f"HistorySubstitutionTable_Concepts_GB1000000_{date_string}" # slightly shorter than actual trud filename
-                                                                                # to avoid 57 char limit on DocumentDB collection names
+            # return f"HistorySubstitutionTable_Concepts_GB1000000_{date_string}" # slightly shorter than actual trud filename
+            #                                                                     # to avoid 57 char limit on DocumentDB collection names
+            return f"hst_{date_string}" # drastically slightly shorter than actual trud filename
+                                                            # to avoid 57 char limit on DocumentDB collection names
+                                                            # and 63 char limit on index names as col.$<index>
         elif self.data_type=="qt":
             return f"xres2_SNOMEDQueryTable_CORE-UK_{date_string}"
         else:
