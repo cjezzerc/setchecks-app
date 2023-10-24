@@ -164,14 +164,15 @@ def mongodb_check():
 
 @bp.route("/descriptions_db")
 def descriptions_db():
-    ds=DescriptionsService()
     logger.info("descriptions_db called")
     logger.debug(list(request.args.items()))
     action=request.args.get("action", None)
     date_string=request.args.get("date_string", None)
-    
+    data_type=request.args.get("data_type", "descriptions") # alternatives are "hst" or "qt" though "qt" not used currently
+    ds=DescriptionsService(data_type=data_type)
+
     if action=="list":
-        output_strings=["db 'descriptions_service' contents:"]
+        output_strings=[f"db '{data_type}' contents:"]
         for c_name in ds.db.list_collection_names():
             logger.debug("db_name"+"-"+c_name)
             output_strings.append(f'collection:{c_name:30s}')                
@@ -194,8 +195,7 @@ def descriptions_db():
     if action=="make":
         redis_connection=get_redis_client()
         q = Queue(connection=redis_connection)
-        ds_temp=DescriptionsService(preconnect_to_db=False)
-        result = q.enqueue(ds_temp.pull_release_from_trud, job_timeout='15m', date_string=date_string)
+        result = q.enqueue(ds.pull_release_from_trud, job_timeout='15m', date_string=date_string)
         result=str(result)[1:-1]
         logger.debug(f'result={result}')
         return f'jobid={result}'
@@ -203,16 +203,14 @@ def descriptions_db():
     if action=="make_missing":
         redis_connection=get_redis_client()
         q = Queue(connection=redis_connection)
-        ds_temp=DescriptionsService(preconnect_to_db=False)
-        result = q.enqueue(ds_temp.make_missing_collections, job_timeout='2h')
+        result = q.enqueue(ds.make_missing_collections, job_timeout='2h')
         result=str(result)[1:-1]
         logger.debug(f'result={result}')
         return f'jobid={result}'
     
     if action=="check_coverage":
         redis_connection=get_redis_client()
-        ds_temp=DescriptionsService(preconnect_to_db=False)
-        result = ds_temp.check_whether_releases_on_ontoserver_have_collections()
+        result = ds.check_whether_releases_on_ontoserver_have_collections()
         output_strings=[f'{x}:{result[x]}' for x in result]
         return "<br>".join(output_strings)
     

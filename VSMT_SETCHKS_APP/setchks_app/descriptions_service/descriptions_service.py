@@ -16,32 +16,41 @@ from setchks_app.mongodb import get_mongodb_client
 
 # from pymongo import MongoClient
 
-# TEMPRARY COMMENT OUT !!!!!! WHILE TEST RQ
 from setchks_app.sct_versions import get_sct_versions
 
 class DescriptionsService():
 
-    __slots__=["_db"]
+    __slots__=[
+        "_db",
+        "data_type",
+        ]
 
-    def __init__(self, preconnect_to_db=True):
-        # self.db=MongoClient()["descriptions_service"]
-        # if preconnect_to_db:
-        #     self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
-        # else: # this is for case of functions that want to run via redis queue and cannot pickle the threadlock
-        #     self.db=None
+    def __init__(self, data_type="descriptions"):
         self._db=None
+        self.data_type=data_type
 
     def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False):
         """ creates a collection from a specified RF2 file"""
-        success_flag, message=RF2_handling.create_collection_from_RF2_file(db=self.db, RF2_filename=RF2_filename, delete_if_exists=delete_if_exists)
+        success_flag, message=RF2_handling.create_collection_from_RF2_file(
+            db=self.db, 
+            RF2_filename=RF2_filename, 
+            delete_if_exists=delete_if_exists,
+            data_type=self.data_type,
+            )
         return success_flag, message
     
     def get_list_of_releases_on_ontoserver(self):
         return [x.date_string for x in get_sct_versions.get_sct_versions()]
     
     def make_collection_name(self, date_string=None):
-        return "sct2_Description_MONOSnapshot-en_GB_%s" % date_string
-
+        if self.data_type=="descriptions":
+            return f"sct2_Description_MONOSnapshot-en_GB_{date_string}"
+        elif self.data_type=="hst":
+            return f"xres2_HistorySubstitutionTable_Concepts_GB1000000_{date_string}"
+        elif self.data_type=="qt":
+            return f"xres2_SNOMEDQueryTable_CORE-UK_{date_string}"
+        else:
+            return None
     def check_have_sct_version_collection_in_db(self, sct_version=None):
         # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version
         collection_name=self.make_collection_name(date_string=sct_version)
@@ -67,9 +76,17 @@ class DescriptionsService():
         return return_data
     
     def get_trud_releases_info(self):
-        url="https://isd.digital.nhs.uk/trud/api/v1/keys/%s/items/1799/releases" % (
-            os.environ["TRUDAPIKEY"],
-        )
+        if self.data_type=="descriptions":
+            url="https://isd.digital.nhs.uk/trud/api/v1/keys/%s/items/1799/releases" % (
+                os.environ["TRUDAPIKEY"],
+            )
+        elif self.data_type in ["hst", "qt"]:
+            url="https://isd.digital.nhs.uk/trud/api/v1/keys/%s/items/276/releases" % (
+                os.environ["TRUDAPIKEY"],
+            )
+        else:
+            return None
+
         response = requests.get(url)
         data=response.json()
         trud_dict={}
@@ -83,9 +100,9 @@ class DescriptionsService():
     
     def pull_release_from_trud(self, date_string=None):
 
-        if self.db is None: # for running this via redis queue cannot send the mongodb_connection through so have to make afresh
-            print("Making new mongo db connection")
-            self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+        # if self.db is None: # for running this via redis queue cannot send the mongodb_connection through so have to make afresh
+        #     print("Making new mongo db connection")
+        #     self.db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
 
         trud_dict=self.get_trud_releases_info()
         filename, url= trud_dict[date_string]
@@ -111,10 +128,18 @@ class DescriptionsService():
         shutil.unpack_archive(out_file, extract_dir)
 
         print("Making collection..")
-        glob_pattern=extract_dir+"/*/Snapshot/Terminology/sct2_Description_*"
-        descriptions_file=glob.glob(glob_pattern)[0]
+        if self.data_type=="descriptions":
+            glob_pattern=extract_dir+"/*/Snapshot/Terminology/sct2_Description_*"
+        elif self.data_type=="hst":
+            glob_pattern=extract_dir+"/*/Resources/HistorySubstitutionTable/xres*"
+        elif self.data_type=="qt":
+            glob_pattern=extract_dir+"/*/Resources/QueryTable/xres*"
+        else:
+            glob_pattern=None             
+
+        data_filename=glob.glob(glob_pattern)[0]
         success_flag, message= self.create_collection_from_RF2_file(
-            RF2_filename=descriptions_file,
+            RF2_filename=data_filename,
             delete_if_exists=True,
             )
     
@@ -147,7 +172,14 @@ class DescriptionsService():
     @property
     def db(self): # only connect the first time it is needed and then store it
         if self._db is None:
-            self._db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+            if self.data_type=="descriptions":
+                self._db=get_mongodb_client.get_mongodb_client()["descriptions_service"]
+            elif self.data_type=="hst":
+                self._db=get_mongodb_client.get_mongodb_client()["hst"]
+            elif self.data_type=="qt":
+                self._db=get_mongodb_client.get_mongodb_client()["qt"]
+            else:
+                self.db=None
         return self._db 
 
 
