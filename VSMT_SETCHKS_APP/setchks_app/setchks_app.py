@@ -207,7 +207,7 @@ def descriptions_db():
     if action=="make_missing":
         redis_connection=get_redis_client()
         q = Queue(connection=redis_connection)
-        result = q.enqueue(ds.make_missing_collections, job_timeout='2h')
+        result = q.enqueue(ds.make_missing_collections, job_timeout='24h')
         result=str(result)[1:-1]
         logger.debug(f'result={result}')
         return f'jobid={result}'
