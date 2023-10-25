@@ -25,6 +25,8 @@ RUN pip install -r requirements.txt
 RUN pip uninstall -y werkzeug
 RUN pip install werkzeug==2.3.7 
 
+RUN ["apt-get", "update"]
+RUN ["apt-get", "install", "-y", "vim"]
 
 EXPOSE 5000
 
