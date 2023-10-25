@@ -245,7 +245,11 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
                     # 'As long as the proposed new FitThreshold is above some minimum floor Fit level
                     # '(and also as long as its actually different from the current FitThreshold...)
                     # 'then accept it, and reset the Zoom to the normal starting level for each pass
-                    fit_threshold = new_fit_threshold
+                    # fit_threshold = new_fit_threshold
+                    fit_threshold=round(new_fit_threshold*0.95,3) # added 25oct23 after discussion with Jeremy Rogers
+                                                                 # JR added this to DMWB due to a small rounding issue
+                                                                 # that stopped the python code and DMWB getting same results
+                                                                 # in a few cases
                     zoom = ideal_clause_count
                     winner_exists_at_current_zoom=False
                 else:
