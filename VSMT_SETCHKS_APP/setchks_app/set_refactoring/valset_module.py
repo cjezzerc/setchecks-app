@@ -71,7 +71,7 @@ class ClauseMembershipAnalysis():   # one Clause could have one of these
         self.branch_label=branch_label
 
         #for ontoserver style need to force concept to be looked for
-        print("==>>>", clause)
+        # print("==>>>", clause)
 
         # if clause.clause_base_concept_id not in concepts:
         #     dummy=concepts[clause.clause_base_concept_id]
@@ -80,7 +80,7 @@ class ClauseMembershipAnalysis():   # one Clause could have one of these
 
         # if clause.clause_base_concept_id in concepts:
         concept=concepts[clause.clause_base_concept_id]
-        print("Got the base concept")
+        # print("Got the base concept")
         if concept is not None:
             if clause.clause_operator=="=":
                 self.members=[concept.concept_id]
@@ -289,9 +289,9 @@ class ValsetMembershipAnalysis():
         #   assemble full inclusion and exclusion sets for valset
         #   get final_inclusion set using difference method on the above
         for clause in valset.clause_based_rule.clauses:
-            print("cma start..")
+            # print("cma start..")
             clause_membership_analysis=ClauseMembershipAnalysis(clause=clause, concepts=concepts)
-            print("..cma done")
+            # print("..cma done")
             
             self.clause_membership_analyses_list.append(clause_membership_analysis)
             if clause.clause_type=="exclude":

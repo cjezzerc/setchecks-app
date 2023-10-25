@@ -133,7 +133,7 @@ class ConceptsDict(UserDict):
             # concept_fhir_parameters=Parameters.parse_obj(r.json())
             # concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)
         
-            print("mongo db call for concept code = %s" % key)
+            # print("mongo db call for concept code = %s" % key)
             mongo_db_concept=self.concepts_db_document.find_one({'code':key})
             if mongo_db_concept is not None:
                 concept=Concept(mongo_db_concept=mongo_db_concept, concepts=self)

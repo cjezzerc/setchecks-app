@@ -2,15 +2,9 @@
 
 import sys, os, pprint
 
-from pymongo import MongoClient
-
-from flask import current_app
-
-# sys.path.append('/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP/')
 from setchks_app.terminology_server_module import TerminologyServer
 
 from fhir.resources.valueset import ValueSet
-import vsmt_uprot.fhir_utils
 
 def transitive_closure(start_id, concepts, visited): # at first call pass in visited as empty dictionary 
    
