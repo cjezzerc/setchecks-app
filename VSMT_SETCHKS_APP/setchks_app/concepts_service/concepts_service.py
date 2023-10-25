@@ -13,22 +13,22 @@ from pymongo import MongoClient
 
 from setchks_app.sct_versions import get_sct_versions
 from . import pull_concepts_from_ontoserver
+from setchks_app.mongodb import get_mongodb_client
 
 class ConceptsService():
 
-    __slots__=["db"]
+    __slots__=["_db"]
 
     def __init__(self):
-        self.db=MongoClient()["concepts_service"]
+        self._db=None
+        # self.db=MongoClient()["concepts_service"]
         # self.db=MongoClient()["VSMT_uprot_app"]
-    
-    
     
     def get_list_of_releases_on_ontoserver(self):
         return [x.date_string for x in get_sct_versions.get_sct_versions()]
     
     def check_have_sct_version_collection_in_db(self, sct_version=None):
-        collection_name=f"concepts_{sct_version}"
+        collection_name=self.make_collection_name(date_string=sct_version)
         return collection_name in self.db.list_collection_names()
     
     def make_missing_collections(self):
@@ -62,6 +62,9 @@ class ConceptsService():
     #     collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
     #     data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
     #     return data_found
+
+    def make_collection_name(self, date_string=None):
+        return 'concepts_' + date_string
 
     def create_collection_from_ontoserver(self, sct_version=None, delete_if_exists=False):
         sct_version=sct_version
@@ -102,3 +105,10 @@ class ConceptsService():
 
         # for code, concept in concepts.items():
         #     populate_collection.add_concept_to_db(concept=concept, db_document=db_document)
+
+
+    @property
+    def db(self): # only connect the first time it is needed and then store it
+        if self._db is None:
+            self._db=get_mongodb_client.get_mongodb_client()["concepts_service"]
+        return self._db 

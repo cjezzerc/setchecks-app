@@ -168,8 +168,9 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
         for cbc in imperfect_fit_incl_cbcs:
             cbc.set_score(zoom=zoom, verbose=False)
             scores.append((cbc.score, cbc))
-            # if cbc.concept_id==problem_incl_id:
-            #     print("PROBLEM_INCL SCORE %s %s" % (problem_incl_id, cbc.score))
+            problem_incl_id=143571000237105
+            if cbc.concept_id==problem_incl_id:
+                print("PROBLEM_INCL SCORE %s %s" % (problem_incl_id, cbc.score))
 
         #Find the cbc with highest score
         cbcs_sorted_by_score=sorted(imperfect_fit_incl_cbcs, key= lambda cbc: cbc.score, reverse=True)

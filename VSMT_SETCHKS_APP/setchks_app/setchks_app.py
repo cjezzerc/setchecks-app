@@ -24,6 +24,7 @@ import setchks_app.setchks.run_queued_setchks
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.concepts_service.concepts_service import ConceptsService
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
@@ -169,7 +170,10 @@ def descriptions_db():
     action=request.args.get("action", None)
     date_string=request.args.get("date_string", None)
     data_type=request.args.get("data_type", "descriptions") # alternatives are "hst" or "qt" though "qt" not used currently
-    ds=DescriptionsService(data_type=data_type)
+    if data_type=="concepts":
+      ds=ConceptsService()
+    else:
+      ds=DescriptionsService(data_type=data_type)
 
     if action=="list":
         output_strings=[f"db '{data_type}' contents:"]
@@ -216,6 +220,7 @@ def descriptions_db():
     
 
     return f"Did not understand that"
+
 
 #####################################
 #####################################
