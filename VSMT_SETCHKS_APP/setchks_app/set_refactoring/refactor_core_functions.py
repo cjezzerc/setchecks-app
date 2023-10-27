@@ -142,7 +142,9 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
     concepts=None,
     ):    
     ideal_clause_count=1
-    max_clause_count=300
+    # max_clause_count=300
+    # MaxClauseCount = IIf((ClauseNumber * 2) < MaxClauseCount, MaxClauseCount, (ClauseNumber * 2))
+    max_clause_count=max(300, len(refactored_query)*2)
     min_fit_threshold=0.5
 
     fit_threshold=0.9
