@@ -27,7 +27,7 @@ def do_check(setchks_session=None, setchk_results=None):
         n_NO_OUTCOME_ROWS[col_type] =0
     FILE_TOTAL_ROWS=0       # this definition still to be finalised
     FILE_PROCESSABLE_ROWS=0 # this definition still to be finalised
-    FILE_UNPROCESSABLE_ROWS=0 # this definition still to be finalised
+    FILE_NON_PROCESSABLE_ROWS=0 # this definition still to be finalised
 
     for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         FILE_TOTAL_ROWS+=1       
@@ -88,5 +88,5 @@ We strongly recommend that you amend your value set to replace (or remove) this 
 
     msg="""Your input file contains a total of %s rows.
 The system has assessed that %s rows could not be processed for this Set Check.
-The system has processed %s rows for this Set Check.""" % (FILE_TOTAL_ROWS, FILE_UNPROCESSABLE_ROWS, FILE_PROCESSABLE_ROWS)
+The system has processed %s rows for this Set Check.""" % (FILE_TOTAL_ROWS, FILE_NON_PROCESSABLE_ROWS, FILE_PROCESSABLE_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)

@@ -2,7 +2,7 @@
 
 import uuid
 
-from . import setchk_excel
+from ..excel import generate_excel_output
 from setchks_app.data_as_matrix import load_data_into_matrix
 import setchks_app.setchks.setchk_definitions
 
@@ -100,6 +100,6 @@ class SetchksSession():
                                 separator=separator)
 
     def generate_excel_output(self, excel_filename=None, setchks_to_include="ALL"):
-        setchk_excel.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)
+        generate_excel_output.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)
         
 
