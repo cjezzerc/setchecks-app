@@ -55,6 +55,8 @@ def purge_poor_quality_incl_cbcs(all_incl_cbcs=None):
             to_be_purged_reason+="reason3 "
         if ((float(cbc.n_children_in_membership)/cbc.n_children_all)<0.6) and (cbc.n_children_all>9):
             to_be_purged_reason+="reason4 "
+        if cbc.concept_id==996581000000109:
+            print(f"PROBLEM ID DATA nc:{cbc.n_children_all} ncm:{cbc.n_children_in_membership}")
         if to_be_purged_reason != "":
             # if cbc.concept_id==problem_incl_id:
             #     print("PURGING %s reason: %s" % (problem_incl_id, to_be_purged_reason))
