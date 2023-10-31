@@ -24,51 +24,39 @@ def do_check(setchks_session=None, setchk_results=None):
     n_DID_ROWS=0
     n_BLANK_ENTRY_ROWS=0
     n_UNEXPECTED_ENTRY_ROWS=0
-    FILE_TOTAL_ROWS=0       # this definition still to be finalised
-    FILE_PROCESSABLE_ROWS=0 # this definition still to be finalised
-    FILE_NON_PROCESSABLE_ROWS=0 # this definition still to be finalised
+    n_FILE_TOTAL_ROWS=setchks_session.first_data_row
+    n_FILE_PROCESSABLE_ROWS=0
+    n_FILE_NON_PROCESSABLE_ROWS=setchks_session.first_data_row  # with gatekeeper this is just blank or header rows
 
-    for i_row, row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
-        FILE_TOTAL_ROWS+=1       
-        FILE_PROCESSABLE_ROWS+=1 
-        row_analysis=[]
-        for i_cell, cell in enumerate(row):
-            col_type=column_types[i_cell]
-            # if col_type in ["CID", "DID", "MIXED"]: # only check in these types of column
-            if col_type in ["MIXED"]: # only check in these types of column
-                if cell.parsed_sctid.component_type=="Concept_Id": # CHK01-OUT-09 (CID)
-                    n_CID_ROWS+=1
-                    check_item={}
-                    check_item["Result_id"]=0 
-                    check_item["Message"]="OK"
-                    row_analysis.append(check_item)
-                elif cell.parsed_sctid.component_type=="Description_Id": # CHK01-OUT-10 (CID)
-                    n_DID_ROWS+=1
-                    check_item={}
-                    check_item["Result_id"]=1 
-                    check_item["Message"]="""A Description Id value has been detected in the SNOMED Id column. 
+    for mr in setchks_session.marshalled_rows:
+        n_FILE_TOTAL_ROWS+=1
+        n_FILE_PROCESSABLE_ROWS+=1
+        check_item={}
+        if not mr.blank_row:
+            if mr.C_Id_entered is not None: # CHK01-OUT-09 (CID)
+                n_CID_ROWS+=1
+                check_item={}
+                check_item["Result_id"]=0 
+                check_item["Message"]="OK"
+            elif mr.D_Id_entered is not None: # CHK01-OUT-10 (DID)
+                n_DID_ROWS+=1
+                check_item={}
+                check_item["Result_id"]=1 
+                check_item["Message"]="""A Description Id value has been detected in the SNOMED Id column. 
 It is recommended that value set members should be identified by Concept Ids. 
 Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids.""" 
-                    row_analysis.append(check_item)
-                elif cell.parsed_sctid.sctid_string=="": # CHK20-OUT-12 (blank cell)
-                    n_BLANK_ENTRY_ROWS+=1
-                    check_item={}
-                    check_item["Result_id"]=3 
-                    check_item["Message"]="""An entry is missing in the Mixed Id column.
-It is recommended that value set members should be identified by Concept Ids.
-Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids.
-If continuing to use a single column of Mixed Ids, consider populating it with a Concept Id or a Description Id."""
-                    row_analysis.append(check_item)
-                else: # CHK01-OUT-11 (CID)
-                    n_UNEXPECTED_ENTRY_ROWS+=1
-                    check_item={}
-                    check_item["Result_id"]=4 
-                    check_item["Message"]="""An unexpected value has been detected in the Mixed Id column.
-It is recommended that value set members should be identified by Concept Ids.
-Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids.
-If continuing to use a single column of Mixed Ids, consider replacing the unexpected value with a Concept Id or a Description Id."""
-                    row_analysis.append(check_item)
-        setchk_results.row_analysis.append(row_analysis)
+            else: # with gatekeeper this should never be reached
+                check_item["Result_id"]=-1
+                check_item["Message"]=(
+                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
+                    )
+        else:
+            n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
+            check_item["Message"]="Blank line"
+            check_item["Result_id"]=-2 # this flags a blank line
+        setchk_results.row_analysis.append([check_item])
+    
 
     ##################################################################
     #     Generate set(file) level analysis                          #     
@@ -77,19 +65,19 @@ If continuing to use a single column of Mixed Ids, consider replacing the unexpe
     setchk_results.set_analysis["Messages"]=[] 
     msg_format="There are %s rows containing %s in the MIXED column, of your input file of %s rows"
     
-    msg=msg_format % (n_CID_ROWS, 'Concept IDs', FILE_TOTAL_ROWS)
+    msg=msg_format % (n_CID_ROWS, 'Concept IDs', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
     
-    msg=msg_format % (n_DID_ROWS, 'Description IDs', FILE_TOTAL_ROWS)
+    msg=msg_format % (n_DID_ROWS, 'Description IDs', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
     
-    msg=msg_format % (n_UNEXPECTED_ENTRY_ROWS, 'unexpected values', FILE_TOTAL_ROWS)
+    msg=msg_format % (n_UNEXPECTED_ENTRY_ROWS, 'unexpected values', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
     
-    msg=msg_format % (n_BLANK_ENTRY_ROWS, 'blanks', FILE_TOTAL_ROWS)
+    msg=msg_format % (n_BLANK_ENTRY_ROWS, 'blanks', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
     
     msg="""Your input file contains a total of %s rows.
 The system has assessed that %s rows could not be processed for this Set Check.
-The system has processed %s rows for this Set Check.""" % (FILE_TOTAL_ROWS, FILE_NON_PROCESSABLE_ROWS, FILE_PROCESSABLE_ROWS)
+The system has processed %s rows for this Set Check.""" % (n_FILE_TOTAL_ROWS, n_FILE_NON_PROCESSABLE_ROWS, n_FILE_PROCESSABLE_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
