@@ -1,5 +1,3 @@
-"""Check for concepts that are in the Default Exclusion Filter Refset
-"""
 import os, json, jsonpickle
 
 import logging
@@ -31,12 +29,15 @@ def do_check(setchks_session=None, setchk_results=None):
 
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
-        check_item={}
+        this_row_analysis=[]
+        setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis updated below, 
+                                                              # this will automatically update
         if not mr.blank_row:
             n_FILE_PROCESSABLE_ROWS+=1
             if mr.C_Id_why_none=="CID_NISR_CID_NILR": # CHK02-OUT-01 
                 n_CID_NISR+=1
                 n_CID_NILR+=1
+                check_item={}
                 check_item["Result_id"]=1
                 check_item["Message"]=(
                     "The Concept Id in the MIXED column " 
@@ -44,9 +45,11 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"the selected SNOMED CT release {selected_sct_version} "
                     f"or the most recent SNOMED release {latest_sct_version}."
                     )
+                this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="CID_NISR_CID_ILR": # CHK02-OUT-02 
                 n_CID_NISR+=1
                 n_CID_ILR+=1
+                check_item={}
                 check_item["Result_id"]=2
                 check_item["Message"]=(
                     "The Concept Id in the MIXED column" 
@@ -56,13 +59,17 @@ def do_check(setchks_session=None, setchk_results=None):
                     "This suggests the concept has been introduced after "
                     "the selected SNOMED release; consider removing the concept or selecting a later SNOMED release."
                     )
+                this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": # CHK02-OUT-03
                 n_CID_ISR+=1
+                check_item={}
                 check_item["Result_id"]=0 
                 check_item["Message"]="OK"
+                this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="DID_NISR_DID_NILR": # CHK02-OUT-04 
                 n_DID_NISR+=1
                 n_DID_NILR+=1
+                check_item={}
                 check_item["Result_id"]=4
                 check_item["Message"]=(
                     "The Description Id in the MIXED column " 
@@ -70,9 +77,11 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"the selected SNOMED CT release {selected_sct_version} "
                     f"or the most recent SNOMED release {latest_sct_version}."
                     )
+                this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["DID_NISR_DID_ILR_CID_ISR", "DID_NISR_DID_ILR_CID_NISR"]: # CHK02-OUT-05 
                 n_DID_NISR+=1
                 n_DID_ILR+=1
+                check_item={}
                 check_item["Result_id"]=5
                 check_item["Message"]=(
                     "The Description Id in the MIXED column " 
@@ -82,37 +91,47 @@ def do_check(setchks_session=None, setchk_results=None):
                     "This suggests the description has been introduced after "
                     "the selected SNOMED release; consider removing the description or selecting a later SNOMED release."
                     )
+                this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="DERIVED": # CHK02-OUT-06
                 n_DID_ISR+=1
+                check_item={}
                 check_item["Result_id"]=0 
                 check_item["Message"]="OK"
+                this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="INVALID_SCTID": # CHK02-OUT-07
                 n_FILE_NON_PROCESSABLE_ROWS+=1 
+                check_item={}
                 check_item["Result_id"]=5
                 check_item["Message"]=(
                     "The unexpected value in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
+                this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK02-OUT-08 
                 n_FILE_NON_PROCESSABLE_ROWS+=1
+                check_item={}
                 check_item["Result_id"]=5
                 check_item["Message"]=(
                     "The blank in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
+                this_row_analysis.append(check_item)
             else:
+                check_item={}
                 check_item["Result_id"]=-1
                 check_item["Message"]=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
                     )
+                this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows
+            check_item={}
             check_item["Message"]="Blank line"
             check_item["Result_id"]=-2 # this flags a blank line
-        setchk_results.row_analysis.append([check_item])
+            this_row_analysis.append(check_item)
 
     setchk_results.set_analysis["Messages"]=[] 
     
@@ -135,10 +154,8 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_analysis["Messages"].append(msg)
 
     msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows. "
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows). "
+        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
+        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
         f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
         ) 
     setchk_results.set_analysis["Messages"].append(msg)
-
-    # return setchk_results

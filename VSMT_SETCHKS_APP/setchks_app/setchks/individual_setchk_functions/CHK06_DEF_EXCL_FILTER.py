@@ -1,5 +1,3 @@
-"""Check for concepts that are in the Default Exclusion Filter Refset
-"""
 import os
 
 import logging
@@ -58,33 +56,47 @@ def do_check(setchks_session=None, setchk_results=None):
     n_OUTCOME_IN_EXCL_REF_SET=0
     n_NO_OUTCOME_EXCL_REF_SET=0
 
+
+
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
-        check_item={}
+        this_row_analysis=[]
+        setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis is updated below, 
+                                                              # this will automatically update
         if not mr.blank_row:
             concept_id=mr.C_Id
             if concept_id is not None:
                 n_FILE_PROCESSABLE_ROWS+=1
                 if concept_id in refset_concept_ids: # CHK06-OUT-01
                     n_OUTCOME_IN_EXCL_REF_SET+=1
+                    check_item={}
                     check_item["Result_id"]=1 # ** How generalisable is concept of a enumerated result_id across the suite of checks?
-                    check_item["Message"]="""This concept is not recommended for use within a patient record, i.e., is not recommended for clinical data entry.
-Please replace this concept. 
-We recommend you visit termbrowser.nhs.uk to identify a more suitable term"""
+                    check_item["Message"]=(
+                        "This concept is not recommended for use within a patient record, "
+                        "i.e., is not recommended for clinical data entry. Please replace this concept. "
+                        "We recommend you visit termbrowser.nhs.uk to identify a more suitable term"
+                        )
+                    this_row_analysis.append(check_item)
                 else: # CHK06-OUT-02
                     n_NO_OUTCOME_EXCL_REF_SET+=1
+                    check_item={}
                     check_item["Result_id"]=0
                     check_item["Message"]="OK"
+                    this_row_analysis.append(check_item)
+
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
+                check_item={}
                 check_item["Result_id"]=-1 # This flags an error condition that should not occur
                 check_item["Message"]="THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                this_row_analysis.append(check_item)
+
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
+            check_item={}
             check_item["Message"]="Blank line"
             check_item["Result_id"]=-2 # this flags a blank line
-        setchk_results.row_analysis.append([check_item])
-
+            this_row_analysis.append(check_item)
 
     setchk_results.set_analysis["Messages"]=[] 
     
