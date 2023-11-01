@@ -1,7 +1,7 @@
 
 from openpyxl.utils import get_column_letter
 
-def make_row_analysis_sheet(
+def make_analysis_by_message_sheet(
     ws=None, 
     setchks_list_to_report=None,
     setchks_session=None,
@@ -35,14 +35,10 @@ def make_row_analysis_sheet(
             data_row_cell_contents=[x.string for x in data_row]
             # ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
             for check_item in setchk_results.row_analysis[i_data_row]:
-                if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
-                    message=f"{check_item.outcome_code}:{check_item.general_message}" 
-                    ws.append([
-                        i_data_row+setchks_session.first_data_row+1, 
-                        setchk_short_name, 
-                        message] 
-                        + data_row_cell_contents
-                        )
+                if output_OK_messages or (check_item["Result_id"]!=0):
+                    # message="%s : %s " % (check_item["Result_id"], check_item["Message"]) 
+                    message="%s" % (check_item["Message"]) 
+                    ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, message]+data_row_cell_contents)
                     current_row_map[setchk_code]=ws.max_row
                     something_was_output=True
         if something_was_output:

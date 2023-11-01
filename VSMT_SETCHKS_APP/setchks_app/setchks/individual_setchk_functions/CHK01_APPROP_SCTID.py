@@ -1,5 +1,7 @@
 import os
 
+from ..check_item import CheckItem
+
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -29,33 +31,32 @@ def do_check(setchks_session=None, setchk_results=None):
         if not mr.blank_row:
             if mr.C_Id_entered is not None: # CHK01-OUT-09 (CID)
                 n_CID_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=0 
-                check_item["Message"]="OK"
+                check_item=CheckItem("CHK01-OUT-09")
+                check_item.general_message="OK"
+                check_item.outcome_level="INFO"
                 this_row_analysis.append(check_item)
             elif mr.D_Id_entered is not None: # CHK01-OUT-10 (DID)
                 n_DID_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=1 
-                check_item["Message"]=(
+                check_item=CheckItem("CHK01-OUT-10")
+                check_item.outcome_level="ERROR"
+                check_item.general_message=(
                     "A Description Id value has been detected in the SNOMED Id column. "
                     "It is recommended that value set members should be identified by Concept Ids. "
                     "Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids."
                     )
                 this_row_analysis.append(check_item)
             else: # with gatekeeper this should never be reached
-                check_item={}
-                check_item["Result_id"]=-1
-                check_item["Message"]=(
+                check_item=CheckItem("CHK01-OUT-NOT_FOR_PRODUCTION")
+                check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
-            check_item={}
-            check_item["Message"]="Blank line"
-            check_item["Result_id"]=-2 # this flags a blank line
+            check_item=CheckItem("CHK01-OUT-BLANK_ROW")
+            check_item.general_mesage="Blank line"
+            check_item.outcome_level="INFO"
             this_row_analysis.append(check_item)
     
     ##################################################################
