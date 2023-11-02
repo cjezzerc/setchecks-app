@@ -4,7 +4,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Border, Side, PatternFill
 from openpyxl.styles.colors import Color
-from . import make_row_analysis_sheet, make_set_analysis_sheet, make_row_overview_sheet
+from . import make_row_analysis_sheet, make_set_analysis_sheet, make_row_overview_sheet, make_analysis_by_message_sheet
 
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
@@ -61,7 +61,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         output_OK_messages=output_OK_messages,
         )
-    
+
     ##################################################################
     #           Sheet 3: Row overview                                #     
     ##################################################################
@@ -78,6 +78,21 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         row_analysis_row_numbers_map=row_analysis_row_numbers_map,
         )
     
+    ##################################################################
+    #           Sheet 4: Analysis by message                         #     
+    ##################################################################
+
+    # add sheet with row by row analysis
+    ws=wb.create_sheet(title="Row_analysis")
+
+    analysis_by_message_row_numbers_map=make_analysis_by_message_sheet.make_analysis_by_message_sheet(
+        ws=ws, 
+        setchks_list_to_report=setchks_list_to_report,
+        setchks_session=setchks_session,
+        color_fills=color_fills,
+        border=border,
+        output_OK_messages=output_OK_messages,
+        )
     
     ##################################################################
     #          Write workbook to file                                #     
