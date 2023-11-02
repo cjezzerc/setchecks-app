@@ -93,5 +93,11 @@ def create_app():
     from . import setchks_app
     app.register_blueprint(setchks_app.bp)
 
+    if "VERSION" in os.environ:
+        app.config["VERSION"]=os.environ["VERSION"]
+    else:
+        app.config["VERSION"]="no-version-info-available"
+    
+    
     return app
 
