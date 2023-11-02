@@ -18,6 +18,8 @@ ENV ONTOAUTH_INSTANCE=https://dev.ontology.nhs.uk/authorisation/auth/realms/term
 # pass in --build-arg DEPLOYMENT_ENV=    LOCAL or AWS
 ARG DEPLOYMENT_ENV 
 ENV DEPLOYMENT_ENV=$DEPLOYMENT_ENV
+ARG VERSION
+ENV VERSION=$VERSION
 
 RUN pip install -r requirements.txt
 
