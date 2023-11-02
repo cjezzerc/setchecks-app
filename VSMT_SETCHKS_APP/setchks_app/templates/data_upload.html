@@ -21,7 +21,7 @@
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <li> Please load a file from your device, or paste a table. </li>
-                        <li> Only permitted format is .tsv (wider range TBI) </li>
+                        <li> Permitted formats are .xlsx or tab separated (.txt or .tsv)</li>
                         <li> Tab delimiting and one header row is assumed (adjustability TBI) </li>
                         <li> Maximum number of concepts = 200 (temporary limit; unenforced - too big will give a messy error screen; range increase TBI)</li>
                         <li> You will be able to check the upload on the next screen. </li>
@@ -85,7 +85,12 @@
                                 <label for="data-browse-input" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> Browse for a file
                                 </label>
-                                <input id="data-browse-input" type="file" name="uploaded_file" onchange="$('.data-browse-form').submit();" />
+                                <input id="data-browse-input" 
+                                    type="file" 
+                                    name="uploaded_file"
+                                    accept=".txt,.tsv,.xlsx" 
+                                    onchange="$('.data-browse-form').submit();" 
+                                    />
                             </form>
                         </div>
                     

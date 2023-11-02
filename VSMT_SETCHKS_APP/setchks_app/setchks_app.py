@@ -304,7 +304,7 @@ def confirm_upload():
 
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
-        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_text_file', table_has_header=True)
+        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
         setchks_session.setchks_results={} # throw away all old results
         setchks_session.marshalled_rows=[]
         # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
