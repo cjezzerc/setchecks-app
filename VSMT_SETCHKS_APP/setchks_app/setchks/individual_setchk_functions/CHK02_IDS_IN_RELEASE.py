@@ -5,6 +5,8 @@ logger=logging.getLogger()
 
 from flask import jsonify
 
+from ..check_item import CheckItem
+
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -37,9 +39,8 @@ def do_check(setchks_session=None, setchk_results=None):
             if mr.C_Id_why_none=="CID_NISR_CID_NILR": # CHK02-OUT-01 
                 n_CID_NISR+=1
                 n_CID_NILR+=1
-                check_item={}
-                check_item["Result_id"]=1
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-01")
+                check_item.general_message=(
                     "The Concept Id in the MIXED column " 
                     "is not an identifiable concept in either "
                     f"the selected SNOMED CT release {selected_sct_version} "
@@ -49,9 +50,8 @@ def do_check(setchks_session=None, setchk_results=None):
             elif mr.C_Id_why_none=="CID_NISR_CID_ILR": # CHK02-OUT-02 
                 n_CID_NISR+=1
                 n_CID_ILR+=1
-                check_item={}
-                check_item["Result_id"]=2
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-02")
+                check_item.general_message=(
                     "The Concept Id in the MIXED column" 
                     "is not an identifiable concept in "
                     f"the selected SNOMED CT release {selected_sct_version} "
@@ -62,16 +62,15 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": # CHK02-OUT-03
                 n_CID_ISR+=1
-                check_item={}
-                check_item["Result_id"]=0 
-                check_item["Message"]="OK"
+                check_item=CheckItem("CHK02-OUT-03")
+                check_item.outcome_level="INFO"
+                check_item.general_message="OK"
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="DID_NISR_DID_NILR": # CHK02-OUT-04 
                 n_DID_NISR+=1
                 n_DID_NILR+=1
-                check_item={}
-                check_item["Result_id"]=4
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-04")
+                check_item.general_message=(
                     "The Description Id in the MIXED column " 
                     "is not an identifiable description in either "
                     f"the selected SNOMED CT release {selected_sct_version} "
@@ -81,9 +80,8 @@ def do_check(setchks_session=None, setchk_results=None):
             elif mr.C_Id_why_none in ["DID_NISR_DID_ILR_CID_ISR", "DID_NISR_DID_ILR_CID_NISR"]: # CHK02-OUT-05 
                 n_DID_NISR+=1
                 n_DID_ILR+=1
-                check_item={}
-                check_item["Result_id"]=5
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-05")
+                check_item.general_message=(
                     "The Description Id in the MIXED column " 
                     "is not an identifiable concept in "
                     f"the selected SNOMED CT release {selected_sct_version} "
@@ -94,15 +92,14 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="DERIVED": # CHK02-OUT-06
                 n_DID_ISR+=1
-                check_item={}
-                check_item["Result_id"]=0 
-                check_item["Message"]="OK"
+                check_item=CheckItem("CHK02-OUT-06")
+                check_item.outcome_level="INFO"
+                check_item.general_message="OK"
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="INVALID_SCTID": # CHK02-OUT-07
                 n_FILE_NON_PROCESSABLE_ROWS+=1 
-                check_item={}
-                check_item["Result_id"]=5
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-06")
+                check_item.general_message=(
                     "The unexpected value in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
@@ -110,28 +107,27 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK02-OUT-08 
                 n_FILE_NON_PROCESSABLE_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=5
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-08")
+                check_item.general_message=(
                     "The blank in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
                 this_row_analysis.append(check_item)
             else:
-                check_item={}
-                check_item["Result_id"]=-1
-                check_item["Message"]=(
+                check_item=CheckItem("CHK02-OUT-NOT_FOR_PRODUCTION")
+                check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
                     )
                 this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows
-            check_item={}
-            check_item["Message"]="Blank line"
-            check_item["Result_id"]=-2 # this flags a blank line
+            check_item=CheckItem("CHK01-OUT-BLANK_ROW")
+            check_item.outcome_level="INFO"
+            check_item.general_mesage="Blank line"
             this_row_analysis.append(check_item)
+
 
     setchk_results.set_analysis["Messages"]=[] 
     

@@ -1,5 +1,7 @@
 import os
 
+from ..check_item import CheckItem
+
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -28,9 +30,8 @@ def do_check(setchks_session=None, setchk_results=None):
         if not mr.blank_row:
             if mr.C_Id_why_none=="INVALID_SCTID": # CHK20-OUT-03  (invalid SCTID)
                 n_OUTCOME_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=2 
-                check_item["Message"]=(
+                check_item=CheckItem("CHK20-OUT-03")
+                check_item.general_message=(
                     "The identifier in the MIXED column does not meet the definition for a SNOMED identifier. "
                     "It should not be used for recording information in a patient record. "
                     "It can never be extracted from a patient record "
@@ -41,24 +42,22 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK20-OUT-O2 (blank cell)
                 n_OUTCOME_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=1 
-                check_item["Message"]=(
+                check_item=CheckItem("CHK20-OUT-02")
+                check_item.general_message=(
                     "The identifier in the MIXED column was not checked against the definition " 
                     "for a SNOMED identifier as no value was provided."
                     ) 
                 this_row_analysis.append(check_item)
             else: # CHK20-OUT-01 (Valid SCTID)
                 n_NO_OUTCOME_ROWS+=1
-                check_item={}
-                check_item["Result_id"]=0 
-                check_item["Message"]="OK"
+                check_item=CheckItem("CHK20-OUT-01")
+                check_item.general_message="OK"
                 this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
-            check_item={}
-            check_item["Message"]="Blank line"
-            check_item["Result_id"]=-2 # this flags a blank line
+            check_item=CheckItem("CHK20-OUT-BLANK_ROW")
+            check_item.outcome_level="INFO"
+            check_item.general_mesage="Blank line"
             this_row_analysis.append(check_item)
 
         setchk_results.row_analysis.append([check_item])

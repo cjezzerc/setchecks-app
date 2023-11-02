@@ -7,6 +7,8 @@ from flask import current_app
 
 import setchks_app.terminology_server_module
 
+from ..check_item import CheckItem
+
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -69,9 +71,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 if concept_id in refset_concept_ids: # CHK06-OUT-01
                     n_OUTCOME_IN_EXCL_REF_SET+=1
-                    check_item={}
-                    check_item["Result_id"]=1 # ** How generalisable is concept of a enumerated result_id across the suite of checks?
-                    check_item["Message"]=(
+                    check_item=CheckItem("CHK06-OUT-01")
+                    check_item.general_message=(
                         "This concept is not recommended for use within a patient record, "
                         "i.e., is not recommended for clinical data entry. Please replace this concept. "
                         "We recommend you visit termbrowser.nhs.uk to identify a more suitable term"
@@ -79,23 +80,25 @@ def do_check(setchks_session=None, setchk_results=None):
                     this_row_analysis.append(check_item)
                 else: # CHK06-OUT-02
                     n_NO_OUTCOME_EXCL_REF_SET+=1
-                    check_item={}
-                    check_item["Result_id"]=0
-                    check_item["Message"]="OK"
+                    check_item=CheckItem("CHK06-OUT-02")
+                    check_item.general_message="OK"
                     this_row_analysis.append(check_item)
 
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 check_item={}
-                check_item["Result_id"]=-1 # This flags an error condition that should not occur
-                check_item["Message"]="THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
+                check_item.general_message=(
+                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    )
                 this_row_analysis.append(check_item)
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
-            check_item={}
-            check_item["Message"]="Blank line"
-            check_item["Result_id"]=-2 # this flags a blank line
+            check_item=CheckItem("CHK06-OUT-BLANK_ROW")
+            check_item.outcome_level="INFO"
+            check_item.general_mesage="Blank line"
             this_row_analysis.append(check_item)
 
     setchk_results.set_analysis["Messages"]=[] 

@@ -38,9 +38,8 @@ def do_check(setchks_session=None, setchk_results=None):
             elif mr.D_Id_entered is not None: # CHK01-OUT-10 (DID)
                 n_DID_ROWS+=1
                 check_item=CheckItem("CHK01-OUT-10")
-                check_item.outcome_level="ERROR"
                 check_item.general_message=(
-                    "A Description Id value has been detected in the SNOMED Id column. "
+                    "A Description Id value has been detected in the MIXED column. "
                     "It is recommended that value set members should be identified by Concept Ids. "
                     "Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids."
                     )
