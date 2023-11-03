@@ -55,8 +55,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     "The Concept Id in the MIXED column" 
                     "is not an identifiable concept in "
                     f"the selected SNOMED CT release {selected_sct_version} "
-                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}.\n"
-                    "This suggests the concept has been introduced after "
+                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}."
+                    "\nThis suggests the concept has been introduced after "
                     "the selected SNOMED release; consider removing the concept or selecting a later SNOMED release."
                     )
                 this_row_analysis.append(check_item)
@@ -85,8 +85,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     "The Description Id in the MIXED column " 
                     "is not an identifiable concept in "
                     f"the selected SNOMED CT release {selected_sct_version} "
-                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}.\n"
-                    "This suggests the description has been introduced after "
+                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}."
+                    "\nThis suggests the description has been introduced after "
                     "the selected SNOMED release; consider removing the description or selecting a later SNOMED release."
                     )
                 this_row_analysis.append(check_item)

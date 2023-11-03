@@ -4,7 +4,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Border, Side, PatternFill
 from openpyxl.styles.colors import Color
-from . import make_row_analysis_sheet, make_set_analysis_sheet, make_row_overview_sheet, make_analysis_by_message_sheet
+from . import make_analysis_by_outcome_sheet, make_analysis_by_row_sheet, make_set_analysis_sheet, make_row_overview_sheet
 
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
@@ -32,12 +32,16 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
             setchks_list_to_report.append(setchk_code)
 
     wb=openpyxl.Workbook()
+    for i in range(0,5):
+        ws=wb.create_sheet()
 
     ##################################################################
-    #           Sheet 1: Set_analysis                                #     
+    #           Set_analysis sheet                               #     
     ##################################################################
 
-    ws=wb.active
+    ws=wb.worksheets[3]
+    ws.title='Set analyses'
+
     make_set_analysis_sheet.make_set_analysis_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
@@ -47,13 +51,13 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         )
 
     ##################################################################
-    #           Sheet 2: Row analysis                                #     
+    #           By_Outcome sheet                                     #     
     ##################################################################
 
-    # add sheet with row by row analysis
-    ws=wb.create_sheet(title="Row_analysis")
+    ws=wb.worksheets[2]
+    ws.title='By_Outcome'
 
-    row_analysis_row_numbers_map=make_row_analysis_sheet.make_row_analysis_sheet(
+    analysis_by_outcome_row_numbers_map=make_analysis_by_outcome_sheet.make_analysis_by_outcome_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
         setchks_session=setchks_session,
@@ -61,13 +65,30 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         output_OK_messages=output_OK_messages,
         )
+    
+    ##################################################################
+    #           By_Row sheet                                         #     
+    ##################################################################
+
+    ws=wb.worksheets[1]
+    ws.title='By_Row'
+
+    row_analysis_row_numbers_map=make_analysis_by_row_sheet.make_analysis_by_row_sheet(
+        ws=ws, 
+        setchks_list_to_report=setchks_list_to_report,
+        setchks_session=setchks_session,
+        color_fills=color_fills,
+        border=border,
+        output_OK_messages=output_OK_messages,
+        analysis_by_outcome_row_numbers_map=analysis_by_outcome_row_numbers_map
+        )
 
     ##################################################################
-    #           Sheet 3: Row overview                                #     
+    #           Row_Overview sheet                                   #     
     ##################################################################
 
-    # add sheet with row by row analysis
-    ws=wb.create_sheet(title="Row_Overview")
+    ws=wb.worksheets[0]
+    ws.title='Row_Overview'
 
     make_row_overview_sheet.make_row_overview_sheet(
         ws=ws, 
@@ -78,29 +99,13 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         row_analysis_row_numbers_map=row_analysis_row_numbers_map,
         )
     
-    ##################################################################
-    #           Sheet 4: Analysis by message                         #     
-    ##################################################################
 
-    # add sheet with row by row analysis
-    ws=wb.create_sheet(title="Row_analysis")
-
-    analysis_by_message_row_numbers_map=make_analysis_by_message_sheet.make_analysis_by_message_sheet(
-        ws=ws, 
-        setchks_list_to_report=setchks_list_to_report,
-        setchks_session=setchks_session,
-        color_fills=color_fills,
-        border=border,
-        output_OK_messages=output_OK_messages,
-        )
     
     ##################################################################
     #          Write workbook to file                                #     
     ##################################################################
 
     wb.save(filename=excel_filename)
-
-
 
         # Aide memoire snippets
         # from openpyxl.styles import Alignment, Border, Side, PatternFill
