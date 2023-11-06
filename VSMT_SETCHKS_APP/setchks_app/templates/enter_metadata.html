@@ -37,9 +37,38 @@
 
             <div class="card" style="height: 19vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">
-                    <ul>
+                    <form action="/enter_metadata" class="data_entry_extract_type_buttons" method="post" enctype="multipart/form-data">
+                        {% for a_type in [
+                            ("ENTRY_PRIMARY","Data entry (Primary care)"),
+                            ("ENTRY_OTHER","Data entry (Other setting)"),
+                            ("EXTRACT","Data extraction"),
+                            ] %}
+                            {% if a_type[0] == setchks_session.data_entry_extract_type %}
+                                {% set checked_var="checked" %}
+                            {% else %}
+                                {% set checked_var="" %}
+                            {% endif %}
+
+                            <div class="form-check">
+                                <input  class="form-check-input" 
+                                        type="radio" 
+                                        name="data_entry_extract_type" 
+                                        {{ checked_var}} 
+                                        value="{{ a_type[0] }}" 
+                                        id={{ a_type[0] }} 
+                                        onchange="$('.data_entry_extract_type_buttons').submit();"
+                                        >
+                                <label class="form-check-label" for={{ a_type[0] }}>
+                                {{ a_type[1]}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                        
+                    </form>
+
+                    <!-- <ul>
                         <li> You will choose "data entry" etc here (TBI) </li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
 
@@ -91,7 +120,7 @@
                 Plotly.newPlot( timeline_fig_div, {{ timeline_data_json | safe }}, {{ timeline_layout_json | safe }}, plotlyConfiguration );
             </script>
 
-            <!-- create form with one hidden input to provide holder for value of pointNUmber to be inserted -->
+            <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
             <form id="timeline_form" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
                 <input id="timeline_input" name="pointNumber" type="hidden" > 
             </form>

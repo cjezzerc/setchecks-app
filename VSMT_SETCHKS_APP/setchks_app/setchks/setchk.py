@@ -18,9 +18,16 @@ class Setchk():
         "setchk_code",
         "setchk_short_name",
         "setchk_function",
+        "setchk_data_entry_extract_types",
         ]
 
-    def __init__(self, setchk_code=None, setchk_short_name=None, setchk_function=None):
+    def __init__(
+        self, 
+        setchk_code=None, 
+        setchk_short_name=None, 
+        setchk_function=None,
+        setchk_data_entry_extract_types=None,
+        ):
         """
         Parameters
         ----------
@@ -29,6 +36,8 @@ class Setchk():
         self.setchk_code=setchk_code
         self.setchk_short_name=setchk_short_name
         self.setchk_function=setchk_function
+        self.setchk_data_entry_extract_types=setchk_data_entry_extract_types
+
 
     def run_check(self,  setchks_session=None):
         """Runs the actual check

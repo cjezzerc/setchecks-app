@@ -408,9 +408,15 @@ def enter_metadata():
     
     # if reach here via click on versions timeline
     if 'pointNumber' in request.form:
-        print("===>>>>", request.form['pointNumber'])
+        print("===>>>> pointNumber=", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
-    
+
+    if 'data_entry_extract_type' in request.form:
+        print("===>>>>", request.form['data_entry_extract_type'])
+        setchks_session.data_entry_extract_type=request.form['data_entry_extract_type']
+        setchks_session.setchks_results={} # throw away all old results
+
+
     if setchks_session.sct_version!=current_sct_version: # if have changed sct_version
         setchks_session.setchks_results={} # throw away all old results
 
@@ -463,9 +469,24 @@ def select_and_run_checks():
                 print("=======================")
 
             
-        setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
+        setchks_to_run=[]
+        for sc in setchks_session.selected_setchks: # really the logic in next two lines should be applied when 
+                                                    # creating/amending selected_setchks list - change when implement that
+            this_setchk = setchks_session.available_setchks[sc]
+            if ("ALL" in this_setchk.setchk_data_entry_extract_types or 
+                setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
+                ):
+                setchks_to_run.append(this_setchk)
+                print("YES -", sc)
+            else:
+                print("NO -", sc)
+
+        # setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
         logger.debug(str(setchks_to_run))
-        setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(setchks_list=setchks_to_run, setchks_session=setchks_session)
+        setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
+            setchks_list=setchks_to_run, 
+            setchks_session=setchks_session
+            )
 
     if "download_report" in request.args:
         logger.debug("Report requested")

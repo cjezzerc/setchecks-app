@@ -40,10 +40,8 @@ class SetchksSession():
                "table_has_header", 
                "first_data_row",
                "columns_info",
+               "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
-               "cid_col", 
-               "did_col", 
-               "mixed_col", 
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
                "terminology_server",
                "available_sct_versions", 
@@ -64,10 +62,8 @@ class SetchksSession():
         self.table_has_header=None
         self.first_data_row=None
         self.columns_info=None
+        self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
-        self.cid_col=None
-        self.did_col=None
-        self.mixed_col=None
         self.setchks_results={}
         self.terminology_server=None
         self.available_sct_versions=None 

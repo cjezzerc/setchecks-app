@@ -22,7 +22,14 @@
                     The following checks will be run (selectability and nicer set-check titles etc TBI):
                     <ul>
                         {% for sc in setchks_session.selected_setchks %}
-                        <li> {{ all_setchks[sc].setchk_short_name }} </li>
+                            {% set this_setchk = all_setchks[sc] %}
+                            {% if "ALL"                                in this_setchk.setchk_data_entry_extract_types
+                            or setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types %}
+                                {% set flag = "YES"%}
+                            {% else %}
+                                {% set flag = "NO"%}
+                            {% endif %}
+                        <li> {{ flag }} {{ this_setchk.setchk_short_name }} </li>
                         {% endfor %}
                     </ul>
                 </div>
