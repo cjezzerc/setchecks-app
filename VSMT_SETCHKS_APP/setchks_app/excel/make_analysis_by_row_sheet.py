@@ -35,10 +35,20 @@ def make_analysis_by_row_sheet(
             setchk_results=setchks_results[setchk_code]
             data_row_cell_contents=[x.string for x in data_row]
             # ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
+            outcome_codes_count={} # this is used to make sure that in the case where the same outcome_code
+                                   # can occur more than once for the same row (e.g. where checking for unreccomended tl-hierarchies
+                                   # and the concept is in more than one tl-hierarchy then) then the hyperlink fgoes to the
+                                   # correct row of the "by outcome" table
+                                   # this has been implemented but not thoroughly tested yet! 
             for check_item in setchk_results.row_analysis[i_data_row]:
                 if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
-                    row_to_link_to=analysis_by_outcome_row_numbers_map[check_item.outcome_code][i_data_row]
-                    message=f"{check_item.outcome_code}:{check_item.general_message}" 
+                    outcome_code=check_item.outcome_code
+                    if outcome_code not in outcome_codes_count:
+                        outcome_codes_count[outcome_code]=0
+                    else:
+                        outcome_codes_count[outcome_code]+=1
+                    row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
+                    message=f"{outcome_code}:{check_item.general_message}" 
                     hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
                     # print(f"MESSAGE_CCELL_CONTENTS:{message_cell_contents}")
                     # print(len(message_cell_contents))

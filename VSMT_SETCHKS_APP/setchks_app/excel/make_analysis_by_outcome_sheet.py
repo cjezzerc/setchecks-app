@@ -67,7 +67,11 @@ def make_analysis_by_outcome_sheet(
                     ] 
                     + data_row_cell_contents
                     )
-                analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row]=ws.max_row
+                if i_data_row not in analysis_by_outcomes_row_numbers_map[outcome_code]:
+                    analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row]=[] # that this is a list is for the rare case where
+                                                                                      # the same outcome code might occur more than once for the same row
+                                                                                      # see comment in make_analysis_by_row_sheet.py
+                analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row].append(ws.max_row)
             ws.append(["----"]) 
         ws.append(["----"]) 
         ws.append(["----"]) 
