@@ -9,6 +9,7 @@ check's long identifier
 from .setchk import Setchk
 from .individual_setchk_functions import CHK01_APPROP_SCTID
 from .individual_setchk_functions import CHK02_IDS_IN_RELEASE
+from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 # from .individual_setchk_functions import CHK00_DUMMY_CHECK
 # from .individual_setchk_functions import CHK04_INACTIVE_CODES
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
@@ -33,6 +34,14 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
     setchk_function=CHK02_IDS_IN_RELEASE.do_check,
     setchk_data_entry_extract_types=["ALL"],
     )
+
+setchks['CHK05_UNRECC_HIERARCH']=Setchk(
+    setchk_code='CHK05_UNRECC_HIERARCH',
+    setchk_short_name='CHK05 Prohibited hierarchies for collating into a value set for clinical data entry.', 
+    setchk_function=CHK05_UNRECC_HIERARCH.do_check,
+    setchk_data_entry_extract_types=["ALL"],
+    )
+
 
 setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_code='CHK06_DEF_EXCL_FILTER', 

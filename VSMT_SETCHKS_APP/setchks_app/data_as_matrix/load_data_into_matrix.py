@@ -18,11 +18,15 @@ def load_data_into_matrix(setchks_session,
         setchks_session.first_data_row=1
     else:
         setchks_session.first_data_row=0 
-    if upload_method=="from_file":
-        setchks_session.filename=getattr(data,'filename',None)  # file obj for data passed in via GUI 
-                                                                # seems to have "filename" attribute 
-        if setchks_session.filename==None: # whereas if from data=open(file) has "name" 
-            setchks_session.filename=getattr(data,'name',None)
+    if upload_method in ["from_file","from_filename"]: # from_filename only implemented for xlsx due to issue with zip file error
+        
+        if upload_method=="from_file":
+            setchks_session.filename=getattr(data,'filename',None)  # file obj for data passed in via GUI 
+                                                                    # seems to have "filename" attribute 
+            if setchks_session.filename==None: # whereas if from data=open(file) has "name" 
+                setchks_session.filename=getattr(data,'name',None)
+        else:
+            setchks_session.filename=data
         
         if (len(setchks_session.filename)>=6) and (setchks_session.filename[-5:]=='.xlsx'):
             file_type="xlsx"

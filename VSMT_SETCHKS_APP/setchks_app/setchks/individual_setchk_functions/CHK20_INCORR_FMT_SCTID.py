@@ -51,6 +51,7 @@ def do_check(setchks_session=None, setchk_results=None):
             else: # CHK20-OUT-01 (Valid SCTID)
                 n_NO_OUTCOME_ROWS+=1
                 check_item=CheckItem("CHK20-OUT-01")
+                check_item.outcome_level="INFO"
                 check_item.general_message="OK"
                 this_row_analysis.append(check_item)
         else:

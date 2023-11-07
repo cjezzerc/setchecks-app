@@ -81,6 +81,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 else: # CHK06-OUT-02
                     n_NO_OUTCOME_EXCL_REF_SET+=1
                     check_item=CheckItem("CHK06-OUT-02")
+                    check_item.outcome_level="INFO"
                     check_item.general_message="OK"
                     this_row_analysis.append(check_item)
 
