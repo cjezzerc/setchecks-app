@@ -1,0 +1,126 @@
+
+
+{% block header %}
+  <h1>{% block title %}Set Checks{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+    
+
+<div class="container-fluid  mt-5 ">
+    
+    <div class="row">    
+
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-6 ">
+            
+            <div class="card">
+                <div class="card-body" style="font-size: 1em;">
+                    <ul>
+                        <li> Hello</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+
+            <!-- <div class="card" style="height: 60vh;  background-color: #f0f4f5;" > -->
+            <div class="card border-0" style="height: 10vh;  background-color: #f0f4f5;">
+
+                <div>
+                               <!-- THE UPLOAD METHODS -->
+                    <!-- SELECT A FILE -->
+                    <style>
+                    input[type="file"] {
+                        display: none;
+                    }
+                    .custom-file-upload {
+                       
+                        display: inline-block;
+                        padding: 6px 12px;
+                        cursor: pointer;
+                        width: 60vw; 
+                        max-width: 400px; 
+                        margin: 5 auto; 
+                        border-style: solid;
+                        border-width: 5px;
+                        border-color: #005eb8;
+                        background-color: white; 
+                        border-radius: 20px; 
+                        font-size: 2em; 
+                        line-height: 2em; 
+                        padding: 10px; 
+                        text-align: center; 
+                        /* color: */
+                    }
+                    .custom-file-upload:hover { background-color: #ffeb3b;} 
+                    .custom-file-upload:active { background-color: #ffeb3b; }
+
+                    </style>
+
+
+                    <style>
+                        .upload-methods > div {
+                            display: block;
+                            vertical-align: top;
+                            margin-right: 1em;
+                            padding-bottom: 1em ;
+                            }
+                    </style>
+                    
+                    <div  class="upload-methods">   
+                        <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
+                        <div>       
+                            <form action="/path_validator" class="data-browse-form" method="post" enctype="multipart/form-data">
+                                <label for="data-browse-input" class="custom-file-upload">
+                                    <i class="bi bi-cloud-upload-fill"></i> Browse for a file
+                                </label>
+                                <input id="data-browse-input" 
+                                    type="file" 
+                                    name="uploaded_file"
+                                    accept=".json,.xml" 
+                                    onchange="$('.data-browse-form').submit();" 
+                                    />
+                                <input type="submit" value="Submit">
+                            </form>
+                        </div>
+                    
+                     
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:1em">
+        
+        <div class="col-9"> 
+        </div>
+        <style>
+            .setchks-btn {
+                background-color:white;
+                color: black;
+                border-style: solid;
+                border-color:#005eb8;
+                border-width :3px; 
+                }
+            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn-inactive {
+                background-color: lightgray;
+                color: lightslategray;
+                border-style: solid;
+                }
+        </style>
+        <div class="col-2">
+            {{data_to_show|safe}} 
+            
+        </div>
+    
+    </div>
+</div>
+
+  
+{% endblock %}

@@ -519,3 +519,44 @@ def setchks_session():
 
     # surely there has to be a simplification to the line below!
     return jsonify(json.loads(jsonpickle.encode(setchks_session, unpicklable=False)))
+
+######################################
+######################################
+## path validaotr endpoint endpoint ##
+######################################
+######################################
+
+@bp.route('/', methods=['GET'])
+@bp.route('/path_validator', methods=['GET','POST'])
+def path_validator():
+    print(request.form.keys())
+    print("REQUEST:",request.args.keys())
+    print(request.files)
+    import requests, pprint
+    data_to_show="No data yet"
+    if 'uploaded_file' in request.files:
+        # ofh=open("/tmp/path_validator.json","wb")
+        json_data=request.files['uploaded_file'].read()
+        # ofh.write(data)
+        # ofh.close()
+
+        profile="https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
+        url=f'https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/Conformance/FHIR/R4/$validate?profile={profile}'
+        # url=f'https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/Conformance/FHIR/R4/$validate'
+
+        # json_data=open(filename).read()
+        dict_data=json.loads(json_data)
+
+        headers={}
+        headers["accept"]="application/fhir+json"
+        headers["Content-Type"]="application/fhir+json"
+
+        r=requests.post(url=url, json=dict_data, headers=headers)
+        
+        data_to_show="<br>".join(pprint.pformat(r.json()).split('\n'))
+        # data_to_show=r.json()
+
+
+    return render_template('path_validator.html',
+                            data_to_show=data_to_show
+                            )

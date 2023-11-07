@@ -181,6 +181,12 @@ class DescriptionsService():
         data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
         return data_found
     
+    def get_hst_data_from_old_concept_id(self, old_concept_id=None, sct_version=None):
+        """ returns the hst information associated with a particular concept id as old_concept_id in a particular release"""
+        collection_name=self.make_collection_name(date_string=sct_version.date_string)
+        data_found=list(self.db[collection_name].find({"old_concept_id":str(old_concept_id)}))
+        return data_found
+    
     @property
     def db(self): # only connect the first time it is needed and then store it
         if self._db is None:

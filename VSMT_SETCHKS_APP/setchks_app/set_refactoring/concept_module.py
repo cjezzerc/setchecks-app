@@ -15,6 +15,20 @@ from setchks_app.concepts_service.concepts_service import ConceptsService
 from pymongo import MongoClient
 
 class Concept():
+
+    __slots__={
+        "concept_id",
+        "concepts",
+        "active",
+        "effective_time",
+        "children",
+        "parents",
+        "ancestors",
+        "descendants",
+        "pt",
+        "semantic_tag",
+        }
+    
     # This is a minimal version using data from concepts stroed as dicts on mongodb
     # many parameters not set (including fsn)
     def __init__(self, mongo_db_concept=None, concepts=None):
