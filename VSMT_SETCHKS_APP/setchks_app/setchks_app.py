@@ -43,8 +43,14 @@ from werkzeug.exceptions import abort
 bp = Blueprint('setchks_app', __name__)
 
 # This list should probably come from a config file in due course
-# available_setchks=['CHK20_INCORR_FMT_SCTID', 'CHK02_IDS_IN_RELEASE', 'CHK01_APPROP_SCTID', 'CHK06_DEF_EXCL_FILTER']
-available_setchks=['CHK05_UNRECC_HIERARCH']
+available_setchks=[
+    'CHK20_INCORR_FMT_SCTID', 
+    'CHK02_IDS_IN_RELEASE', 
+    'CHK01_APPROP_SCTID', 
+    'CHK06_DEF_EXCL_FILTER',
+    'CHK05_UNRECC_HIERARCH',
+    'CHK04_INACTIVES_ENTRY',
+    ]
 
 # from pymongo import MongoClient
 
@@ -536,7 +542,12 @@ def path_validator():
     data_to_show="No data yet"
     if 'uploaded_file' in request.files:
         # ofh=open("/tmp/path_validator.json","wb")
-        json_data=request.files['uploaded_file'].read()
+        filename=getattr(request.files['uploaded_file'],'filename',None)
+        file_data=request.files['uploaded_file'].read()
+        if filename[-4:]==".xml":
+            file_type="xml"
+        else:
+            file_type="json"
         # ofh.write(data)
         # ofh.close()
 
@@ -545,15 +556,24 @@ def path_validator():
         # url=f'https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/Conformance/FHIR/R4/$validate'
 
         # json_data=open(filename).read()
-        dict_data=json.loads(json_data)
+        
 
         headers={}
-        headers["accept"]="application/fhir+json"
-        headers["Content-Type"]="application/fhir+json"
+        if file_type=="json":
+            dict_data=json.loads(file_data)
+            headers["accept"]="application/fhir+json"
+            headers["Content-Type"]="application/fhir+json"
+            r=requests.post(url=url, json=dict_data, headers=headers)
+        else:
+            # print(file_data.decode())
+            # dict_data=json.loads(file_data.decode())
+            headers["accept"]="application/fhir+xml"
+            headers["Content-Type"]="application/fhir+xml"
+            r=requests.post(url=url, json=file_data.decode(), headers=headers)
 
-        r=requests.post(url=url, json=dict_data, headers=headers)
         
-        data_to_show="<br>".join(pprint.pformat(r.json()).split('\n'))
+        
+        data_to_show="<pre>"+"<br>".join(pprint.pformat(r.json()).split('\n'))+"</pre>"
         # data_to_show=r.json()
 
 

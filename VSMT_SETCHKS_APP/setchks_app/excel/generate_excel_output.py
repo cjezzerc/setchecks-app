@@ -4,7 +4,13 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Border, Side, PatternFill
 from openpyxl.styles.colors import Color
-from . import make_analysis_by_outcome_sheet, make_analysis_by_row_sheet, make_set_analysis_sheet, make_row_overview_sheet
+from . import (
+    make_analysis_by_outcome_sheet, 
+    make_analysis_by_row_sheet, 
+    make_set_analysis_sheet, 
+    make_row_overview_sheet, 
+    make_supp_tab_sheets
+    )
 
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
@@ -14,6 +20,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         "findings_identified": PatternFill(patternType='solid', fgColor=Color('C5D9F1')),
         "apricot": PatternFill(patternType='solid', fgColor=Color('FCD5B4')),
         "user_notes": PatternFill(patternType='solid', fgColor=Color('DAEEF3')),
+        "light_grey_band": PatternFill(patternType='solid', fgColor=Color('E9E9E9')),
     }
 
     border = Border(left=Side(style='thin'), 
@@ -51,6 +58,20 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         )
 
     ##################################################################
+    #           Make supp tabs sheet                                 #     
+    ##################################################################
+
+    supp_tabs_row_numbers_map=make_supp_tab_sheets.make_supp_tab_sheets(
+        wb=wb,
+        first_i_ws=4, 
+        setchks_list_to_report=setchks_list_to_report,
+        setchks_session=setchks_session,
+        color_fills=color_fills,
+        border=border,
+        )
+    print(supp_tabs_row_numbers_map)
+
+    ##################################################################
     #           By_Outcome sheet                                     #     
     ##################################################################
 
@@ -80,7 +101,8 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         color_fills=color_fills,
         border=border,
         output_OK_messages=output_OK_messages,
-        analysis_by_outcome_row_numbers_map=analysis_by_outcome_row_numbers_map
+        analysis_by_outcome_row_numbers_map=analysis_by_outcome_row_numbers_map,
+        supp_tabs_row_numbers_map=supp_tabs_row_numbers_map,
         )
 
     ##################################################################

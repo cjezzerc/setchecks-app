@@ -9,6 +9,7 @@ def make_analysis_by_row_sheet(
     border=None,
     output_OK_messages=None,
     analysis_by_outcome_row_numbers_map=None,
+    supp_tabs_row_numbers_map=None,
     ): 
 
     setchks=setchks_session.available_setchks
@@ -24,7 +25,7 @@ def make_analysis_by_row_sheet(
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
-        ws.append(["Row number", "Check", "Message","Link"] + header_row_cell_contents) # ** need to create better header row
+        ws.append(["Row number", "Check", "Message","Link","Supp tab link"] + header_row_cell_contents) # ** need to create better header row
 
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         something_was_output=False
@@ -33,6 +34,11 @@ def make_analysis_by_row_sheet(
         for setchk_code in setchks_list_to_report:
             setchk_short_name=setchks[setchk_code].setchk_short_name
             setchk_results=setchks_results[setchk_code]
+            if setchk_code in supp_tabs_row_numbers_map: # i.e. there is a supp tab for this check
+                supp_tab_ws, supp_tab_mapping=supp_tabs_row_numbers_map[setchk_code]
+                print(f"supp_tab_mapping:{supp_tab_mapping}")
+            else:
+                supp_tab_ws=None        
             data_row_cell_contents=[x.string for x in data_row]
             # ws.append([i_data_row+setchks_session.first_data_row+1, setchk_short_name, setchk_results.row_analysis[i_data_row]["Message"]]+data_row_cell_contents)
             outcome_codes_count={} # this is used to make sure that in the case where the same outcome_code
@@ -50,6 +56,18 @@ def make_analysis_by_row_sheet(
                     row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
                     message=f"{outcome_code}:{check_item.general_message}" 
                     hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
+                    print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
+                    if supp_tab_ws is not None:
+                        print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
+                        if supp_tab_mapping[i_data_row] is not None:
+                            row_to_link_to=supp_tab_mapping[i_data_row]
+                            print(f"row_to_link_to {i_data_row} {row_to_link_to}")
+                            supp_tab_hyperlink_cell_contents=f'=HYPERLINK("#{supp_tab_ws.title}!A{row_to_link_to}","S")'
+                        else:
+                            supp_tab_hyperlink_cell_contents=""
+                    else:
+                        supp_tab_hyperlink_cell_contents=""
+
                     # print(f"MESSAGE_CCELL_CONTENTS:{message_cell_contents}")
                     # print(len(message_cell_contents))
                     ws_row_contents=[
@@ -57,6 +75,7 @@ def make_analysis_by_row_sheet(
                         setchk_short_name, 
                         message,
                         hyperlink_cell_contents,
+                        supp_tab_hyperlink_cell_contents,
                         ] 
                     if not something_was_output: # only add the file data for the first outcome line
                         ws_row_contents+=data_row_cell_contents
@@ -67,7 +86,7 @@ def make_analysis_by_row_sheet(
             ws.append(["----"]) 
     
     # crude cell with setting
-    cell_widths=[15,30,50,5,25,50] + [20]*10
+    cell_widths=[15,30,50,5,5,25,50] + [20]*10
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 

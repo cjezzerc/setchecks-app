@@ -9,10 +9,8 @@ check's long identifier
 from .setchk import Setchk
 from .individual_setchk_functions import CHK01_APPROP_SCTID
 from .individual_setchk_functions import CHK02_IDS_IN_RELEASE
-# from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
+from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
 from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
-# from .individual_setchk_functions import CHK00_DUMMY_CHECK
-# from .individual_setchk_functions import CHK04_INACTIVE_CODES
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
 
@@ -36,12 +34,12 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
     setchk_data_entry_extract_types=["ALL"],
     )
 
-# setchks['CHK04_INACTIVES_ENTRY']=Setchk(
-#     setchk_code='CHK04_INACTIVES_ENTRY',
-#     setchk_short_name='CHK04 Inactive content in sets for data entry', 
-#     setchk_function=CHK04_INACTIVES_ENTRY.do_check,
-#     setchk_data_entry_extract_types=["ALL"],
-#     )
+setchks['CHK04_INACTIVES_ENTRY']=Setchk(
+    setchk_code='CHK04_INACTIVES_ENTRY',
+    setchk_short_name='CHK04 Inactive content in sets for data entry', 
+    setchk_function=CHK04_INACTIVES_ENTRY.do_check,
+    setchk_data_entry_extract_types=["ENTRY_PRIMARY","ENTRY_OTHER"],
+    )
 
 setchks['CHK05_UNRECC_HIERARCH']=Setchk(
     setchk_code='CHK05_UNRECC_HIERARCH',
@@ -50,13 +48,13 @@ setchks['CHK05_UNRECC_HIERARCH']=Setchk(
     setchk_data_entry_extract_types=["ALL"],
     )
 
-
 setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_code='CHK06_DEF_EXCL_FILTER', 
     setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
     )
+
 setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
     setchk_code='CHK20_INCORR_FMT_SCTID',
     setchk_short_name='CHK20 Incorrectly formatted SNOMED CT identifiers', 

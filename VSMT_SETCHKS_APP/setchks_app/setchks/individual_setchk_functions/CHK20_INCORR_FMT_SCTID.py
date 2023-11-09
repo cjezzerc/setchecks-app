@@ -58,7 +58,7 @@ def do_check(setchks_session=None, setchk_results=None):
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
             check_item=CheckItem("CHK20-OUT-BLANK_ROW")
             check_item.outcome_level="INFO"
-            check_item.general_mesage="Blank line"
+            check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
         setchk_results.row_analysis.append([check_item])
