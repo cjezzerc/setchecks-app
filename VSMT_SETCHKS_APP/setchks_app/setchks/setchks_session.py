@@ -1,12 +1,10 @@
-""" class definition for SetCHksSession """
+""" class definition for SetchksSession """
 
 import uuid
 
 from ..excel import generate_excel_output
 from setchks_app.data_as_matrix import load_data_into_matrix
 import setchks_app.setchks.setchk_definitions
-# from flask import current_app
-
 
 class SetchksSession():
     """

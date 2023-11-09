@@ -102,14 +102,16 @@ class Concept():
 
     def __repr__(self):
         repr_strings=[]
-        for k,v in self.__dict__.items():
-            if k not in ["concepts", "normal_form","normal_form_terse"]:
-                if type(v) in (list, set) and len(v)>20:
-                    repr_strings.append("%20s : %s of %s elements" % (k, type(v), len(v)))
-                else:
-                    repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
-        return "\n".join(repr_strings)
-
+        # for k in self.__slots__:
+        #     v=getattr(self,k)
+        #     if k not in ["concepts", "normal_form","normal_form_terse"]:
+        #         if type(v) in (list, set) and len(v)>20:
+        #             repr_strings.append("%20s : %s of %s elements" % (k, type(v), len(v)))
+        #         else:
+        #             repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
+        # return "\n".join(repr_strings)
+        return f"Concept object with id {self.concept_id}"
+    
 class ConceptsDict(UserDict):
     
     # def __init__(self, concepts_db_document=None, sct_version=None):

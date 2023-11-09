@@ -12,6 +12,7 @@ from .individual_setchk_functions import CHK02_IDS_IN_RELEASE
 from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
 from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
+from .individual_setchk_functions import CHK10_MISSING_CONCEPTS
 from .individual_setchk_functions import CHK14_MANY_CLAUSES
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
 
@@ -53,6 +54,13 @@ setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_code='CHK06_DEF_EXCL_FILTER', 
     setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
+    setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    )
+
+setchks['CHK10_MISSING_CONCEPTS']=Setchk(
+    setchk_code='CHK10_MISSING_CONCEPTS', 
+    setchk_short_name='CHK10 Check for omitted descendants from a specific region of the hierarchy', 
+    setchk_function=CHK10_MISSING_CONCEPTS.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
     )
 

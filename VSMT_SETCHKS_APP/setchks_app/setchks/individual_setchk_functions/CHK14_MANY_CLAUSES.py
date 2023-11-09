@@ -41,12 +41,12 @@ def do_check(setchks_session=None, setchk_results=None):
         if concept_id is not None:
             value_set_members.add(concept_id)
             
-    original_valset, refactored_valset=refactor_core_code.refactor_core_code(
-                valset_extens_defn=value_set_members,
-                concepts=concepts,
-                ) 
-    
-    setchks_session.refactored_form=refactored_valset
+    if setchks_session.refactored_form is None: # do refactoring if not already done
+        original_valset, refactored_valset=refactor_core_code.refactor_core_code(
+                    valset_extens_defn=value_set_members,
+                    concepts=concepts,
+                    ) 
+        setchks_session.refactored_form=refactored_valset
 
     setchk_results.set_analysis["Messages"]=[]
     msg=(   
@@ -56,7 +56,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
     n_INCLUDE_CLAUSES=0
     n_EXCLUDE_CLAUSES=0
-    for clause in refactored_valset.clause_based_rule.clauses:
+    for clause in setchks_session.refactored_form.clause_based_rule.clauses:
         clause_base_concept_id=str(clause.clause_base_concept_id)
         clause_type=clause.clause_type
         if clause_type=="include":
