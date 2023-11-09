@@ -45,107 +45,53 @@ def do_check(setchks_session=None, setchk_results=None):
                 valset_extens_defn=value_set_members,
                 concepts=concepts,
                 ) 
+    setchk_results.set_analysis["Messages"]=[]
+    msg=(   
+        f"Refactored form:" 
+        )
+    setchk_results.set_analysis["Messages"].append(msg)
 
-    print(refactored_valset)
-    setchks_session.refactored_form=refactored_valset
-    return
-    sys.exit()
-    ##################################################################
-    ##################################################################
-    ##################################################################
-    #           Test concept on each row of value set                #     
-    ##################################################################
-    ##################################################################
-    ##################################################################
-    
-    n_FILE_TOTAL_ROWS=setchks_session.first_data_row
-    n_FILE_PROCESSABLE_ROWS=0
-    n_FILE_NON_PROCESSABLE_ROWS=setchks_session.first_data_row  # with gatekeeper this is just blank or header rows
-    
-    n_CONCEPTS_ACTIVE=0
-    n_CONCEPTS_INACTIVE=0
-    n_CONCEPTS_NO_REPLACEMENT=0
-    n_CONCEPTS_WITH_REPLACEMENTS=0
-
-
-    for i_data_row,mr in enumerate(setchks_session.marshalled_rows):
-        n_FILE_TOTAL_ROWS+=1
-        this_row_analysis=[]
-        setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis is updated below, 
-                                                              # this will automatically update
-        if not mr.blank_row:
-            concept_id=mr.C_Id
-            if concept_id is not None:
-                n_FILE_PROCESSABLE_ROWS+=1
-                if setchk_results.supp_tab_blocks[i_data_row] is None: #"CHK04-OUT-i"
-                    n_CONCEPTS_ACTIVE+=1
-                    check_item=CheckItem("CHK04-OUT-i")
-                    check_item.outcome_level="INFO"
-                    check_item.general_message=(
-                        "Concept is active"
-                        )
-                    this_row_analysis.append(check_item)
-                elif setchk_results.supp_tab_blocks[i_data_row]==[]: #"CHK04-OUT-ii"
-                    n_CONCEPTS_INACTIVE+=1
-                    n_CONCEPTS_NO_REPLACEMENT+=1
-                    check_item=CheckItem("CHK04-OUT-ii")
-                    check_item.general_message=(
-                        "This concept is inactive and should be removed. "
-                        "There is no suggested replacement for this concept."
-                        )
-                    this_row_analysis.append(check_item)
-                else: #"CHK04-OUT-v"
-                    n_CONCEPTS_INACTIVE+=1
-                    n_CONCEPTS_WITH_REPLACEMENTS+=1
-                    check_item=CheckItem("CHK04-OUT-v")
-                    check_item.general_message=(
-                        "This concept is inactive and should be removed. "
-                        "There is at least one suggested replacement for this concept. "
-                        "See supplementary tab for details"
-                        )
-                    this_row_analysis.append(check_item)
-            else:
-                # gatekeeper should catch this. This clause allows code to run without gatekeeper
-                check_item={}
-                check_item=CheckItem("CHK04-OUT-NOT_FOR_PRODUCTION")
-                check_item.general_message=(
-                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
-                    )
-                this_row_analysis.append(check_item)
-
+    n_INCLUDE_CLAUSES=0
+    n_EXCLUDE_CLAUSES=0
+    for clause in setchks_session.refactored_form.clause_based_rule.clauses:
+        clause_base_concept_id=str(clause.clause_base_concept_id)
+        clause_type=clause.clause_type
+        if clause_type=="include":
+            n_INCLUDE_CLAUSES+=1
         else:
-            n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
-            check_item=CheckItem("CHK04-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
-            check_item.general_mesage="Blank line"
-            this_row_analysis.append(check_item)
-
-    setchk_results.set_analysis["Messages"]=[] 
-            
+            n_EXCLUDE_CLAUSES+=1
+        clause_operator=clause.clause_operator
+        if clause_operator[0]=="=":
+            clause_operator=clause_operator[1:]
+        pt=concepts[clause_base_concept_id].pt
+        msg=(
+            f"{clause_type} {clause_operator:2} {clause_base_concept_id:20} {pt}"
+            )
+        setchk_results.set_analysis["Messages"].append(msg)     
+        
+    
     msg=(
-    f"There are {n_CONCEPTS_ACTIVE} active concepts in the value set" 
+    f"There are {n_INCLUDE_CLAUSES} include clauses in the refactored form "  
+    )
+    setchk_results.set_analysis["Messages"].append(msg)
+
+
+    msg=(
+    f"There are {n_EXCLUDE_CLAUSES} exclude clauses in the refactored form "  
     )
     setchk_results.set_analysis["Messages"].append(msg)
     
+    n_CLAUSES=n_INCLUDE_CLAUSES+n_EXCLUDE_CLAUSES
     msg=(
-    f"There are {n_CONCEPTS_INACTIVE} inactive concepts in the value set "  
+    f"There are {n_CLAUSES} clauses in total in the refactored form "  
     )
     setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(
-    f"{n_CONCEPTS_NO_REPLACEMENT} inactive concepts in the value set have no replacement"  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(
-    f"{n_CONCEPTS_WITH_REPLACEMENTS} inactive concepts in the value set have at least one replacement"  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+    
+    if n_CLAUSES>30:
+        msg=(
+        "There are more than 30 clauses in the refactored form. "
+        "This suggests that either you ahave a very scattered set of clauses, or "
+        "that you are trying to cover too large an scope with one value set"
+        )
+        setchk_results.set_analysis["Messages"].append(msg)
+    

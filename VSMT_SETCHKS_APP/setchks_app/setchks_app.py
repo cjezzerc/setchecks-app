@@ -525,6 +525,25 @@ def setchks_session():
     # surely there has to be a simplification to the line below!
     return jsonify(json.loads(jsonpickle.encode(setchks_session, unpicklable=False)))
 
+#############################################
+#############################################
+##     report refactored form  endpoint    ##
+#############################################
+#############################################
+
+@bp.route('/refactored_form', methods=['GET'])
+def refactored_form():
+    from setchks_app.set_refactoring.concept_module import ConceptsDict
+    setchks_session=gui_setchks_session.get_setchk_session(session)
+    concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
+    output_strings=["Refactored form:"]
+    for clause in setchks_session.refactored_form.clause_based_rule.clauses:
+        pt=concepts[str(clause.clause_base_concept_id)].pt
+        output_strings.append(f"{clause.clause_type} {clause.clause_operator:2} {str(clause.clause_base_concept_id):20} {pt}")
+    return_string="<pre>"+"<br>".join(output_strings)+"</pre>"
+    # surely there has to be a simplification to the line below!
+    return return_string
+
 ######################################
 ######################################
 ## path validaotr endpoint endpoint ##
