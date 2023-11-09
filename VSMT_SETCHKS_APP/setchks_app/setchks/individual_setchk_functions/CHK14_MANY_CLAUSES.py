@@ -45,6 +45,9 @@ def do_check(setchks_session=None, setchk_results=None):
                 valset_extens_defn=value_set_members,
                 concepts=concepts,
                 ) 
+    
+    setchks_session.refactored_form=refactored_valset
+
     setchk_results.set_analysis["Messages"]=[]
     msg=(   
         f"Refactored form:" 
@@ -53,7 +56,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
     n_INCLUDE_CLAUSES=0
     n_EXCLUDE_CLAUSES=0
-    for clause in setchks_session.refactored_form.clause_based_rule.clauses:
+    for clause in refactored_valset.clause_based_rule.clauses:
         clause_base_concept_id=str(clause.clause_base_concept_id)
         clause_type=clause.clause_type
         if clause_type=="include":
