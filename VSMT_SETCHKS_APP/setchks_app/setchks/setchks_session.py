@@ -43,6 +43,7 @@ class SetchksSession():
                "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
+               "refactored_form",
                "terminology_server",
                "available_sct_versions", 
                "sct_version",
@@ -65,6 +66,7 @@ class SetchksSession():
         self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
         self.setchks_results={}
+        self.refactored_form=None
         self.terminology_server=None
         self.available_sct_versions=None 
         self.sct_version=None
@@ -101,4 +103,8 @@ class SetchksSession():
     def generate_excel_output(self, excel_filename=None, setchks_to_include="ALL"):
         generate_excel_output.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)
         
-
+    def reset_analysis(self): # this should be called whenever a change is made 
+                              # (e.g. choice of sct release or data_entry_extract_type)
+                              # that renders analyses done invalid
+        self.setchks_results={}
+        self.refactored_form=None

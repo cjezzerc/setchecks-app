@@ -114,14 +114,15 @@ def make_row_overview_sheet(
         # not_blank_row_flag=not(setchks_session.marshalled_rows[i_data_row].blank_row)
         for setchk_code in setchks_list_to_report:
             setchk_results=setchks_results[setchk_code]
-            for check_item in setchk_results.row_analysis[i_data_row]:
-                # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
-                if check_item.outcome_level not in ["INFO","DEBUG"]:
-                    row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                    x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
-                    at_least_one_x=True
-                else:
-                    x_cells.append("")
+            if setchk_results.row_analysis!=[]:
+                for check_item in setchk_results.row_analysis[i_data_row]:
+                    # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
+                    if check_item.outcome_level not in ["INFO","DEBUG"]:
+                        row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
+                        x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
+                        at_least_one_x=True
+                    else:
+                        x_cells.append("")
         if at_least_one_x:
             x_cells.append("*")
         else:

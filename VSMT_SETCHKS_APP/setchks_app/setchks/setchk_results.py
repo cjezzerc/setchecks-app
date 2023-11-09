@@ -25,11 +25,7 @@ class SetchkResults():
         )
 
     def __init__(self):
-        """
-        Parameters
-        ----------
-        TBC
-        """
+
         self.row_analysis=[]
         self.set_analysis={}
         self.concept_analysis={}

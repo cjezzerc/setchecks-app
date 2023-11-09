@@ -124,7 +124,7 @@ class MarshalledRow():
                         concept_id=self.C_Id_entered, 
                         sct_version=setchks_session.available_sct_versions[0],
                         )
-                    print("==>>>", C_Id_data_latest)
+                    # print("==>>>", C_Id_data_latest)
                     if C_Id_data_latest!=[]: # C_Id_entered is in latest release
                         self.C_Id_why_none="CID_NISR_CID_ILR"
                         self.C_Id_via_latest_release=self.C_Id_entered

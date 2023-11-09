@@ -42,7 +42,7 @@ def refactor_core_code(
         valset_extens_defn=valset_extens_defn,
         valset_name='input')
     valsets.append(valset=valset)
-    print(valset)
+    # print(valset)
 
     valset=valsets[valsets.valset_name_to_id[input_valset_name]]
 

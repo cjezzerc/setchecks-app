@@ -46,42 +46,43 @@ def make_analysis_by_row_sheet(
                                    # and the concept is in more than one tl-hierarchy then) then the hyperlink fgoes to the
                                    # correct row of the "by outcome" table
                                    # this has been implemented but not thoroughly tested yet! 
-            for check_item in setchk_results.row_analysis[i_data_row]:
-                if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
-                    outcome_code=check_item.outcome_code
-                    if outcome_code not in outcome_codes_count:
-                        outcome_codes_count[outcome_code]=0
-                    else:
-                        outcome_codes_count[outcome_code]+=1
-                    row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
-                    message=f"{outcome_code}:{check_item.general_message}" 
-                    hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
-                    print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
-                    if supp_tab_ws is not None:
-                        print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
-                        if supp_tab_mapping[i_data_row] is not None:
-                            row_to_link_to=supp_tab_mapping[i_data_row]
-                            print(f"row_to_link_to {i_data_row} {row_to_link_to}")
-                            supp_tab_hyperlink_cell_contents=f'=HYPERLINK("#{supp_tab_ws.title}!A{row_to_link_to}","S")'
+            if setchk_results.row_analysis!=[]:
+                for check_item in setchk_results.row_analysis[i_data_row]:
+                    if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
+                        outcome_code=check_item.outcome_code
+                        if outcome_code not in outcome_codes_count:
+                            outcome_codes_count[outcome_code]=0
+                        else:
+                            outcome_codes_count[outcome_code]+=1
+                        row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
+                        message=f"{outcome_code}:{check_item.general_message}" 
+                        hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
+                        print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
+                        if supp_tab_ws is not None:
+                            print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
+                            if supp_tab_mapping[i_data_row] is not None:
+                                row_to_link_to=supp_tab_mapping[i_data_row]
+                                print(f"row_to_link_to {i_data_row} {row_to_link_to}")
+                                supp_tab_hyperlink_cell_contents=f'=HYPERLINK("#{supp_tab_ws.title}!A{row_to_link_to}","S")'
+                            else:
+                                supp_tab_hyperlink_cell_contents=""
                         else:
                             supp_tab_hyperlink_cell_contents=""
-                    else:
-                        supp_tab_hyperlink_cell_contents=""
 
-                    # print(f"MESSAGE_CCELL_CONTENTS:{message_cell_contents}")
-                    # print(len(message_cell_contents))
-                    ws_row_contents=[
-                        i_data_row+setchks_session.first_data_row+1, 
-                        setchk_short_name, 
-                        message,
-                        hyperlink_cell_contents,
-                        supp_tab_hyperlink_cell_contents,
-                        ] 
-                    if not something_was_output: # only add the file data for the first outcome line
-                        ws_row_contents+=data_row_cell_contents
-                    ws.append(ws_row_contents)
-                    current_row_map[setchk_code]=ws.max_row
-                    something_was_output=True
+                        # print(f"MESSAGE_CCELL_CONTENTS:{message_cell_contents}")
+                        # print(len(message_cell_contents))
+                        ws_row_contents=[
+                            i_data_row+setchks_session.first_data_row+1, 
+                            setchk_short_name, 
+                            message,
+                            hyperlink_cell_contents,
+                            supp_tab_hyperlink_cell_contents,
+                            ] 
+                        if not something_was_output: # only add the file data for the first outcome line
+                            ws_row_contents+=data_row_cell_contents
+                        ws.append(ws_row_contents)
+                        current_row_map[setchk_code]=ws.max_row
+                        something_was_output=True
         if something_was_output:
             ws.append(["----"]) 
     

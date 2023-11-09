@@ -35,13 +35,14 @@ def make_analysis_by_outcome_sheet(
             if setchk_code not in check_items_dict:
                 check_items_dict[setchk_code]={}
             setchk_results=setchks_results[setchk_code]
-            for check_item in setchk_results.row_analysis[i_data_row]:
-                output_OK_messages=True  # TEMPORARY while implementing
-                if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
-                    outcome_code=check_item.outcome_code
-                    if outcome_code not in check_items_dict[setchk_code]:
-                        check_items_dict[setchk_code][outcome_code]=[]
-                    check_items_dict[setchk_code][outcome_code].append((i_data_row, data_row, check_item,))
+            if setchk_results.row_analysis!=[]:
+                for check_item in setchk_results.row_analysis[i_data_row]:
+                    output_OK_messages=True  # TEMPORARY while implementing
+                    if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
+                        outcome_code=check_item.outcome_code
+                        if outcome_code not in check_items_dict[setchk_code]:
+                            check_items_dict[setchk_code][outcome_code]=[]
+                        check_items_dict[setchk_code][outcome_code].append((i_data_row, data_row, check_item,))
 
 
     ####################################

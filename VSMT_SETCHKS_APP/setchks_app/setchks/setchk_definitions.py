@@ -12,6 +12,7 @@ from .individual_setchk_functions import CHK02_IDS_IN_RELEASE
 from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
 from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
+from .individual_setchk_functions import CHK14_MANY_CLAUSES
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
 
 setchks={}
@@ -53,6 +54,13 @@ setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    )
+
+setchks['CHK14_MANY_CLAUSES']=Setchk(
+    setchk_code='CHK14_MANY_CLAUSES',
+    setchk_short_name='CHK14 Value Set membership expression requires 30-40 clauses', 
+    setchk_function=CHK14_MANY_CLAUSES.do_check,
+    setchk_data_entry_extract_types=["ALL"],
     )
 
 setchks['CHK20_INCORR_FMT_SCTID']=Setchk(

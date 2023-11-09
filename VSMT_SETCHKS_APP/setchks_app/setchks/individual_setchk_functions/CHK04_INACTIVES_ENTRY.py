@@ -165,6 +165,8 @@ def do_check(setchks_session=None, setchk_results=None):
     for i_data_row, mr in enumerate(setchks_session.marshalled_rows):
         if mr.C_Id is not None:
             concept_id=mr.C_Id
+            print(f"concept_id: {concept_id}")
+            print(f"mr: {mr}")
             valset_members.add(concept_id)  
             active_status[concept_id]=concepts[concept_id].active
             if active_status[concept_id] is False:
@@ -196,9 +198,12 @@ def do_check(setchks_session=None, setchk_results=None):
                             supp_tab_row.is_correct_representation_type_in_set="-"
                         supp_tab_entries.append(supp_tab_row)
                         print(supp_tab_row.format_as_list())
-            else:
+            else: # if active
                 supp_tab_entries=None
-            setchk_results.supp_tab_blocks.append(supp_tab_entries)
+        else: # if e.g. a rogue entry that should not have got past the gatekeeper (assume this only happens in dev)
+            supp_tab_entries=None
+
+        setchk_results.supp_tab_blocks.append(supp_tab_entries)
 
 
 
@@ -259,7 +264,7 @@ def do_check(setchks_session=None, setchk_results=None):
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 check_item={}
-                check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
+                check_item=CheckItem("CHK04-OUT-NOT_FOR_PRODUCTION")
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
@@ -268,7 +273,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
-            check_item=CheckItem("CHK06-OUT-BLANK_ROW")
+            check_item=CheckItem("CHK04-OUT-BLANK_ROW")
             check_item.outcome_level="INFO"
             check_item.general_mesage="Blank line"
             this_row_analysis.append(check_item)

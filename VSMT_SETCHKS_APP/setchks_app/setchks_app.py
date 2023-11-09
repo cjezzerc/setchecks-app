@@ -50,6 +50,7 @@ available_setchks=[
     'CHK06_DEF_EXCL_FILTER',
     'CHK05_UNRECC_HIERARCH',
     'CHK04_INACTIVES_ENTRY',
+    'CHK14_MANY_CLAUSES',
     ]
 
 # from pymongo import MongoClient
@@ -312,7 +313,7 @@ def confirm_upload():
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
-        setchks_session.setchks_results={} # throw away all old results
+        setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
         # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
@@ -353,7 +354,7 @@ def column_identities():
     # if reach here via click on versions pulldown
     if len(request.form.keys())!=0:
         k, v=list(request.form.items())[0]
-        print("===>>>>", k, v)
+        # print("===>>>>", k, v)
         # col_label is of form e.g. type_selector_for_col_3
         icol=int(k.split("_")[-1])
         requested_column_type=v
@@ -361,7 +362,7 @@ def column_identities():
         success_flag, message=ci.set_column_type(icol=icol,requested_column_type=requested_column_type)
         logger.debug("Type change attempt: %s %s %s %s" % (icol, requested_column_type, success_flag, message))
         if success_flag: # if have changed column types (in any way)
-            setchks_session.setchks_results={} # throw away all old results
+            setchks_session.reset_analysis() # throw away all old results
             setchks_session.marshalled_rows=[] # force recalc of marshalled rows
 
     if setchks_session.marshalled_rows==[]:
@@ -410,22 +411,22 @@ def enter_metadata():
 
     # if reach here via click on versions pulldown
     if 'select_sct_version' in request.form:
-        print("===>>>>", request.form['select_sct_version'])
+        # print("===>>>>", request.form['select_sct_version'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
     
     # if reach here via click on versions timeline
     if 'pointNumber' in request.form:
-        print("===>>>> pointNumber=", request.form['pointNumber'])
+        # print("===>>>> pointNumber=", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
 
     if 'data_entry_extract_type' in request.form:
-        print("===>>>>", request.form['data_entry_extract_type'])
+        # print("===>>>>", request.form['data_entry_extract_type'])
         setchks_session.data_entry_extract_type=request.form['data_entry_extract_type']
-        setchks_session.setchks_results={} # throw away all old results
+        setchks_session.reset_analysis() # throw away all old results
 
 
     if setchks_session.sct_version!=current_sct_version: # if have changed sct_version
-        setchks_session.setchks_results={} # throw away all old results
+        setchks_session.reset_analysis() # throw away all old results
 
     timeline_data_json, timeline_layout_json, timeline_info_json=graphical_timeline.create_graphical_timeline(
         selected_sct_version=setchks_session.sct_version,
@@ -471,9 +472,7 @@ def select_and_run_checks():
                                                 # or sct_release or column_identities have changed
             for mr in setchks_session.marshalled_rows:
                 mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
-                print("=======================")
-                print(mr)
-                print("=======================")
+
 
             
         setchks_to_run=[]
