@@ -11,6 +11,7 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.set_refactoring.valset_module import ClauseMembershipAnalysis
 
 from ..check_item import CheckItem
+from ..chk_specific_sheet import ChkSpecificSheet, ChkSpecificSheetRow
 
 
        
@@ -26,6 +27,12 @@ def do_check(setchks_session=None, setchk_results=None):
 
     concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
 
+    plain_english_operators_fmts={
+        "=":"Just %s ",
+        "<":"All the descendants of %s (but not including itself)",
+        "<<":"All the descendants of %s (including itself)",
+        }
+    
     ##################################################################
     ##################################################################
     ##################################################################
@@ -48,7 +55,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     ) 
         setchks_session.refactored_form=refactored_valset
 
-# A pattern analysis of your value set indicates that you have 37 concepts that are all descendants of the concept X but there are 8 descendants that you have not included.
+# A pattern analysis of your value set indicates that you have 37 concepts that are all descendants of the concept X but there are 8 descendants that you have not in_vs.
 # These m concepts (that you may have omitted in error) are: ….  Overlap (I1,E1)+overlap(I1+E2)+overlap(I1+E3) …
 # Additional part (of form):
 # It may help you in your further analysis to know that this list of omissions contains all the 4 descendants (and self as case may be) 
@@ -60,7 +67,12 @@ def do_check(setchks_session=None, setchk_results=None):
     exclude_clauses_and_memberships=[]
     all_excluded_concepts=set()
 
-    for clause in clauses:
+    ##################################################################
+    # get members of clauses and separate into includes and excludes #
+    # and build up total set of excludes                             #
+    ##################################################################
+
+    for clause in clauses: 
         members=ClauseMembershipAnalysis(clause=clause, concepts=concepts).members # members is a list of concept ids
         members=set(concepts[x] for x in members) # now members is a set of Concepts
         if clause.clause_type=="include":
@@ -69,21 +81,112 @@ def do_check(setchks_session=None, setchk_results=None):
             exclude_clauses_and_memberships.append((clause, members,))
             all_excluded_concepts.update(members)
 
+    
+    ###########################################
+    #    output sheet header rows             #
+    ###########################################
+    chk_specific_sheet=ChkSpecificSheet()
+    setchk_results.chk_specific_sheet=chk_specific_sheet
+    chk_specific_sheet.col_widths=[20,40,20,40,20,40,20]
+
+
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+        "",
+        "",
+        "CURRENT CONTENT",
+        "",
+        "SUGGESTED EXTRA CONTENT",
+        "",
+        ]
+
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+        "",
+        "",
+        "CURRENT CONTENT",
+        "",
+        "SUGGESTED EXTRA CONTENT",
+        "",
+        ]
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+        "Group",
+        "(Preferred Term)",
+        "Concept ID",
+        "Preferred Term",
+        "Concept_Id",
+        "Preferred Term",
+        "Common nature"
+        ]
+    #############################################
+    # analyse and report on each include clause #
+    #############################################
+
+
     for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
         include_clause, include_members=clause_and_members_tuple
-        members_excluded_from_this_include=include_members.intersection(all_excluded_concepts)
-        if members_excluded_from_this_include==set():
-            print(f"include clause {i_clause}:{include_clause.clause_string} is included in its entirety")
-        else:
-            print(f"")
-            print(f"include clause {i_clause}:{include_clause.clause_string} has {len(members_excluded_from_this_include)} exclusions")
-            print(f"these are:")
-            for concept in members_excluded_from_this_include:
-                print(f"{concept.concept_id} | {concept.pt} |")
+        members_in_vs_from_this_clause=include_members.difference(all_excluded_concepts)
+        members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
+        n_members_of_clause=len(include_members)
+        n_members_of_clause_in_vs=len(members_in_vs_from_this_clause)
+        n_members_of_clause_excluded=len(members_excluded_from_this_clause)
+        include_cbc_id=str(include_clause.clause_base_concept_id)
+        include_cbc_pt=concepts[include_cbc_id].pt
+        plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+        row=chk_specific_sheet.new_row()
+        row.cell_contents=[
+        plain_english_formatted_clause,
+        include_cbc_pt,
+        f"{n_members_of_clause_in_vs}/{n_members_of_clause}",
+        "",
+        f"{n_members_of_clause_excluded}/{n_members_of_clause}",
+        ]
+        
+        
+        
+        for ei_clause, e_clause_and_members_tuple in enumerate(exclude_clauses_and_memberships):
+            exclude_clause, exclude_members=e_clause_and_members_tuple
+            members_of_include_that_this_exclude_removes=members_excluded_from_this_clause.intersection(exclude_members)
+            exclude_cbc_id=str(exclude_clause.clause_base_concept_id)
+            exclude_cbc_pt=concepts[exclude_cbc_id].pt
+            plain_english_formatted_clause=plain_english_operators_fmts[exclude_clause.clause_operator] % exclude_cbc_id
+            if members_of_include_that_this_exclude_removes != set():
+                n_removed=len(members_of_include_that_this_exclude_removes)
+                n_in_exclude=len(exclude_members)
+                for member in members_of_include_that_this_exclude_removes:
+                    row=chk_specific_sheet.new_row()
+                    row.cell_contents=[
+                    "","","","",
+                    str(member.concept_id),
+                    member.pt,
+                    plain_english_formatted_clause,
+                    ]
+                row=chk_specific_sheet.new_row()
+                row.row_fill="grey"
+                row.row_height=2
+
+        row=chk_specific_sheet.new_row()
+        row.cell_contents=["","","","","","",""]
+        row.row_fill="grey"
+        row.row_height=4
+
+        for member in members_in_vs_from_this_clause:
+            row=chk_specific_sheet.new_row()
+            row.cell_contents=[
+                "",
+                "",
+                str(member.concept_id),
+                member.pt
+            ]
+        
+        row=chk_specific_sheet.new_row()
+        row.row_fill="grey"
+        row.row_height=16
 
     setchk_results.set_analysis["Messages"]=[]
     msg=(   
-        f"Hello" 
+        f"See CHK10 specific sheet" 
         )
     setchk_results.set_analysis["Messages"].append(msg)
 

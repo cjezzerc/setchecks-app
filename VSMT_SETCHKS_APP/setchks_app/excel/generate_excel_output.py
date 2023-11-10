@@ -9,7 +9,8 @@ from . import (
     make_analysis_by_row_sheet, 
     make_set_analysis_sheet, 
     make_row_overview_sheet, 
-    make_supp_tab_sheets
+    make_supp_tab_sheets,
+    make_chk_specific_sheets,
     )
 
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
@@ -61,7 +62,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           Make supp tabs sheet                                 #     
     ##################################################################
 
-    supp_tabs_row_numbers_map=make_supp_tab_sheets.make_supp_tab_sheets(
+    final_supp_tab_i_ws,supp_tabs_row_numbers_map=make_supp_tab_sheets.make_supp_tab_sheets(
         wb=wb,
         first_i_ws=4, 
         setchks_list_to_report=setchks_list_to_report,
@@ -69,7 +70,19 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         color_fills=color_fills,
         border=border,
         )
-    print(supp_tabs_row_numbers_map)
+
+    ##################################################################
+    #           Make chk specific sheets                             #     
+    ##################################################################
+
+    final_chk_specific_i_ws=make_chk_specific_sheets.make_chk_specific_sheets(
+        wb=wb,
+        first_i_ws=final_supp_tab_i_ws+1, 
+        setchks_list_to_report=setchks_list_to_report,
+        setchks_session=setchks_session,
+        color_fills=color_fills,
+        border=border,
+        )
 
     ##################################################################
     #           By_Outcome sheet                                     #     

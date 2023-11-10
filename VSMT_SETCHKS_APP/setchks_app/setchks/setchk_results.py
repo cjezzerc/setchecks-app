@@ -22,6 +22,7 @@ class SetchkResults():
         "meta_data",
         "supp_tab_headers",
         "supp_tab_blocks",
+        "chk_specific_sheet"
         )
 
     def __init__(self):

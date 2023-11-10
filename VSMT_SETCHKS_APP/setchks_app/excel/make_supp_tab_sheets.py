@@ -13,9 +13,9 @@ def make_supp_tab_sheets(
     supp_tabs_row_numbers_map={} # keyed by setchk code
                                  # values are tuples (ws, supp_tab_row_numbers_map) 
                                    
+    i_ws=first_i_ws-1
     for setchk_code in setchks_list_to_report:
         setchk_results=setchks_session.setchks_results[setchk_code]
-        i_ws=first_i_ws-1
         if setchk_results.supp_tab_blocks is not None:
             i_ws+=1
             ws=wb.worksheets[i_ws]
@@ -28,7 +28,7 @@ def make_supp_tab_sheets(
                 border=border,
                 )
             supp_tabs_row_numbers_map[setchk_code]=(ws, supp_tab_row_numbers_map)
-    return supp_tabs_row_numbers_map
+    return i_ws, supp_tabs_row_numbers_map
 
 def make_one_supp_tab_sheet(
     ws=None,
