@@ -21,6 +21,8 @@ def get_sct_versions():
         available_sct_versions=[sct_version.SctVersion(formal_version_string=x) for x in available_sct_versions]
         available_sct_versions.sort(key=get_sortable_date_part, reverse=True) # mild overkill since as it stands sorting on 
                                                                                 # whole formal_version_string would work
+        # TEMPORARY FIX FOR FAMILIARISATION DAY - REMOVE OCT VERSION AS HAS NOT HST AND SO MEANS THE DEFAULT CURRENT VERSION IS PROBLEMATIC
+        available_sct_versions=available_sct_versions[1:]
         return available_sct_versions
 
 
