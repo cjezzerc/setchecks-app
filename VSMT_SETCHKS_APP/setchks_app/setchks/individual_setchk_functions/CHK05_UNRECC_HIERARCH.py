@@ -152,18 +152,18 @@ def do_check(setchks_session=None, setchk_results=None):
                                 "OK"
                                 )
                             this_row_analysis.append(check_item)
-                        elif acceptability=="MAY_NOT_BE_APPROPRIATE": #"CHK05-OUT-02"
+                        elif acceptability=="MAY_NOT_BE_APPROPRIATE": 
                             n_CONCEPTS_MAY_NOT_BE_APPROPRIATE+=1
-                            check_item=CheckItem("CHK05-OUT-02")
+                            check_item=CheckItem("CHK05-OUT-03")
                             check_item.general_message=(
                                 f"The Concept Id is a subtype of the {domain_name} hierarchy in SNOMED CT." 
                                 f"The hierarchy has been categorised as ‘may not be appropriate’ for the "
                                 f"{data_entry_extract_type} data entry type assigned to this value set."
                                 )
                             this_row_analysis.append(check_item)
-                        elif acceptability=="NOT_RECOMMENDED": #"CHK05-OUT-03"
+                        elif acceptability=="NOT_RECOMMENDED": 
                             n_CONCEPTS_NOT_RECOMMENDED+=1
-                            check_item=CheckItem("CHK05-OUT-03")
+                            check_item=CheckItem("CHK05-OUT-04")
                             check_item.general_message=(
                                 f"The Concept Id is a subtype of the {domain_name} hierarchy in SNOMED CT." 
                                 f"The hierarchy has been categorised as ‘not recommended’ for the "
@@ -172,7 +172,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             this_row_analysis.append(check_item)
                         else:
                             check_item={}
-                            check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
+                            check_item=CheckItem("CHK05-OUT-NOT_FOR_PRODUCTION")
                             check_item.general_message=(
                                 "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                                 f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (unrecognised acceptabiliy)"

@@ -29,15 +29,15 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis is updated below, 
                                                               # this will automatically update
         if not mr.blank_row:
-            if mr.C_Id_entered is not None: # CHK01-OUT-09 (CID)
+            if mr.C_Id_entered is not None: 
                 n_CID_ROWS+=1
-                check_item=CheckItem("CHK01-OUT-09")
+                check_item=CheckItem("CHK01-OUT-01")
                 check_item.general_message="OK"
                 check_item.outcome_level="INFO"
                 this_row_analysis.append(check_item)
-            elif mr.D_Id_entered is not None: # CHK01-OUT-10 (DID)
+            elif mr.D_Id_entered is not None: 
                 n_DID_ROWS+=1
-                check_item=CheckItem("CHK01-OUT-10")
+                check_item=CheckItem("CHK01-OUT-02")
                 check_item.general_message=(
                     "A Description Id value has been detected in the MIXED column. "
                     "It is recommended that value set members should be identified by Concept Ids. "
@@ -70,6 +70,14 @@ def do_check(setchks_session=None, setchk_results=None):
     
     msg=msg_format % (n_DID_ROWS, 'Description IDs', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
+
+    if (n_CID_ROWS!=0) and (n_DID_ROWS!=0):
+        msg=("A mixture of Concept Ids and Descriptions Ids has been detected "
+            "in the MIXED column for this value set, which should be avoided. "
+            "It is recommended that value set members shold be identified by "
+            "Concept rather than Description Ids"
+            )
+        setchk_results.set_analysis["Messages"].append(msg)
 
     msg=(
         f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"

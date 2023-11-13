@@ -69,7 +69,7 @@ def do_check(setchks_session=None, setchk_results=None):
             concept_id=mr.C_Id
             if concept_id is not None:
                 n_FILE_PROCESSABLE_ROWS+=1
-                if concept_id in refset_concept_ids: # CHK06-OUT-01
+                if concept_id in refset_concept_ids:
                     n_OUTCOME_IN_EXCL_REF_SET+=1
                     check_item=CheckItem("CHK06-OUT-01")
                     check_item.general_message=(
@@ -78,7 +78,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "We recommend you visit termbrowser.nhs.uk to identify a more suitable term"
                         )
                     this_row_analysis.append(check_item)
-                else: # CHK06-OUT-02
+                else: 
                     n_NO_OUTCOME_EXCL_REF_SET+=1
                     check_item=CheckItem("CHK06-OUT-02")
                     check_item.outcome_level="INFO"
@@ -91,7 +91,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 this_row_analysis.append(check_item)
 

@@ -28,9 +28,9 @@ def do_check(setchks_session=None, setchk_results=None):
         this_row_analysis=[]
         setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis updated below, 
         if not mr.blank_row:
-            if mr.C_Id_why_none=="INVALID_SCTID": # CHK20-OUT-03  (invalid SCTID)
+            if mr.C_Id_why_none=="INVALID_SCTID":
                 n_OUTCOME_ROWS+=1
-                check_item=CheckItem("CHK20-OUT-03")
+                check_item=CheckItem("CHK20-OUT-01")
                 check_item.general_message=(
                     "The identifier in the MIXED column does not meet the definition for a SNOMED identifier. "
                     "It should not be used for recording information in a patient record. "
@@ -42,7 +42,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK20-OUT-O2 (blank cell)
                 n_OUTCOME_ROWS+=1
-                check_item=CheckItem("CHK20-OUT-02")
+                check_item=CheckItem("CHK20-OUT-03")
                 check_item.general_message=(
                     "The identifier in the MIXED column was not checked against the definition " 
                     "for a SNOMED identifier as no value was provided."
@@ -50,7 +50,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             else: # CHK20-OUT-01 (Valid SCTID)
                 n_NO_OUTCOME_ROWS+=1
-                check_item=CheckItem("CHK20-OUT-01")
+                check_item=CheckItem("CHK20-OUT-02")
                 check_item.outcome_level="INFO"
                 check_item.general_message="OK"
                 this_row_analysis.append(check_item)
@@ -73,6 +73,13 @@ def do_check(setchks_session=None, setchk_results=None):
     msg=msg_format % (n_OUTCOME_ROWS, 'incorrectly', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
     msg=msg_format % (n_NO_OUTCOME_ROWS, 'correctly', n_FILE_TOTAL_ROWS)
+    setchk_results.set_analysis["Messages"].append(msg)
+
+    msg=(
+        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
+        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
+        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
+        ) 
     setchk_results.set_analysis["Messages"].append(msg)
 
 

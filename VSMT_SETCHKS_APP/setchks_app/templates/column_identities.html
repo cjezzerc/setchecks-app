@@ -81,7 +81,7 @@
                                                 onchange="$('.{{ column_form_name }}').submit();" 
                                                 style="margin-top: 0.5em;"
                                                 >
-                                                {% for available_type in ["CID","DID","MIXED","DTERM","OTHER"] %} 
+                                                {% for available_type in ["MIXED","DTERM","OTHER"] %} 
                                                     {% if available_type == setchks_session.columns_info.column_types[icol] %}
                                                     <option selected
                                                     {% else %}

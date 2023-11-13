@@ -36,7 +36,7 @@ def do_check(setchks_session=None, setchk_results=None):
                                                               # this will automatically update
         if not mr.blank_row:
             n_FILE_PROCESSABLE_ROWS+=1
-            if mr.C_Id_why_none=="CID_NISR_CID_NILR": # CHK02-OUT-01 
+            if mr.C_Id_why_none in ["CID_NISR_CID_NILR","CID_NISR_SRIL"]: # CHK02-OUT-01 
                 n_CID_NISR+=1
                 n_CID_NILR+=1
                 check_item=CheckItem("CHK02-OUT-01")
@@ -66,7 +66,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="INFO"
                 check_item.general_message="OK"
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none=="DID_NISR_DID_NILR": # CHK02-OUT-04 
+            elif mr.C_Id_why_none in ["DID_NISR_DID_NILR", "DID_NISR_SRIL"]: # CHK02-OUT-04 
                 n_DID_NISR+=1
                 n_DID_NILR+=1
                 check_item=CheckItem("CHK02-OUT-04")
