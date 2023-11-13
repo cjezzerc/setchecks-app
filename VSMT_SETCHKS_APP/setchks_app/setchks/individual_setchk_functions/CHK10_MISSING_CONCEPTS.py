@@ -89,7 +89,6 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.chk_specific_sheet=chk_specific_sheet
     chk_specific_sheet.col_widths=[20,40,20,40,20,40,20]
 
-
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "",
@@ -100,15 +99,7 @@ def do_check(setchks_session=None, setchk_results=None):
         "",
         ]
 
-    row=chk_specific_sheet.new_row()
-    row.cell_contents=[
-        "",
-        "",
-        "CURRENT CONTENT",
-        "",
-        "SUGGESTED EXTRA CONTENT",
-        "",
-        ]
+
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "Group",

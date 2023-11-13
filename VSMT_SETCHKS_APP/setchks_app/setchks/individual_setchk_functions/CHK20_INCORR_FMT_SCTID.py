@@ -61,7 +61,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-        setchk_results.row_analysis.append([check_item])
+        # setchk_results.row_analysis.append([check_item])
     
     ##################################################################
     #     Generate set(file) level analysis                          #     

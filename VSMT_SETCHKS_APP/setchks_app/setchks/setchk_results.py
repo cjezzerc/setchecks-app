@@ -34,6 +34,7 @@ class SetchkResults():
         self.meta_data={}
         self.supp_tab_headers=None
         self.supp_tab_blocks=None
+        self.chk_specific_sheet=None
 
     def __repr__(self):
         repr_strings=[]

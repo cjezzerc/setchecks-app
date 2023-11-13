@@ -43,7 +43,10 @@ def load_data_into_matrix(setchks_session,
             for row in ws.iter_rows():
                 row_as_list=[]
                 for cell in row:
-                    row_as_list.append(DataCellContents(cell_contents=cell.value))
+                    cell_contents=cell.value
+                    if cell_contents is not None:
+                        cell_contents=cell_contents.strip()
+                    row_as_list.append(DataCellContents(cell_contents=cell_contents))
                 setchks_session.data_as_matrix.append(row_as_list)
 
         else:

@@ -224,8 +224,12 @@ class Valset():
         self.clause_set_string=clause_set_string
         #quick workround to allow extensional definition 
         if valset_extens_defn!=None:
-            valset_extens_defn=[str(x) for x in valset_extens_defn] # make sure all strings
-            self.clause_set_string="=" +"|=".join(valset_extens_defn)
+            if valset_extens_defn!=set():
+                valset_extens_defn=[str(x) for x in valset_extens_defn] # make sure all strings
+                self.clause_set_string="=" +"|=".join(valset_extens_defn)
+            else:
+                self.clause_set_string="" # otherwise empty set generate "=" which causes int() error below
+                                          # need to still test to see what happens if give refactoring an empy clause_set_string
         self.clause_based_rule=ClauseBasedRule(clause_set_string=self.clause_set_string)
 
         self.metadata_column=metadata_column
