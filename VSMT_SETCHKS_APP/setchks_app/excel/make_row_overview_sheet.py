@@ -123,6 +123,8 @@ def make_row_overview_sheet(
                         at_least_one_x=True
                     else:
                         x_cells.append("")
+            else:
+                x_cells.append("")
         if at_least_one_x:
             x_cells.append("*")
         else:

@@ -47,7 +47,7 @@ setchks['CHK05_UNRECC_HIERARCH']=Setchk(
     setchk_code='CHK05_UNRECC_HIERARCH',
     setchk_short_name='CHK05 Prohibited hierarchies for collating into a value set for clinical data entry.', 
     setchk_function=CHK05_UNRECC_HIERARCH.do_check,
-    setchk_data_entry_extract_types=["ALL"],
+    setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
     )
 
 setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
