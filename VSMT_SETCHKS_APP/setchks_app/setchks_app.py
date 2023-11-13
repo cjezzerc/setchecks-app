@@ -285,6 +285,7 @@ def data_upload():
     print(request.form.keys())
     print("REQUEST:",request.args.keys())
     print(request.files)
+    print(f"session keys={list(session.keys())}")
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
 
@@ -525,6 +526,17 @@ def setchks_session():
 
     # surely there has to be a simplification to the line below!
     return jsonify(json.loads(jsonpickle.encode(setchks_session, unpicklable=False)))
+
+#############################################
+#############################################
+##     hard reset endpoint    ##
+#############################################
+#############################################
+
+@bp.route('/reset_setchks_session', methods=['GET'])
+def reset_setchks_session():
+    session['setchks_session']=None
+    return redirect("/data_upload")
 
 #############################################
 #############################################

@@ -166,8 +166,9 @@
                 }
         </style>
         <div class="col-7">
-            <button type="button" class="btn setchks-btn-inactive">Restart</button>
-            <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
+            <a href="/reset_setchks_session"  class="btn setchks-btn"> Reset and upload new file</a>
+            <!-- <button type="button" class="btn setchks-btn">Reset and upload new file</button> -->
+            <!-- <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button> -->
             <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Confirm upload)</a>
             {% if setchks_session.columns_info.identification_sufficient ==True %}
                 <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Enter Metadata)</a>

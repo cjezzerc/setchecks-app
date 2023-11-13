@@ -182,8 +182,9 @@
                 }
         </style>
         <div class="col-7">
-            <button type="button" class="btn setchks-btn-inactive">Restart</button>
-            <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button>
+            <a href="/reset_setchks_session"  class="btn setchks-btn"> Reset and upload new file</a>
+            <!-- <button type="button" class="btn setchks-btn">Reset and upload new file</button> -->
+            <!-- <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button> -->
             <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Column identities)</a>
             {% if setchks_session.sct_version == None %}
                 <a href="/select_and_run_checks"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> (Select and run checks)</a>
