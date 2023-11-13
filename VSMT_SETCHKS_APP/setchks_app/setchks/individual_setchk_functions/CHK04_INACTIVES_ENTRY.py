@@ -275,7 +275,7 @@ def do_check(setchks_session=None, setchk_results=None):
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
             check_item=CheckItem("CHK04-OUT-BLANK_ROW")
             check_item.outcome_level="INFO"
-            check_item.general_mesage="Blank line"
+            check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
     setchk_results.set_analysis["Messages"]=[] 

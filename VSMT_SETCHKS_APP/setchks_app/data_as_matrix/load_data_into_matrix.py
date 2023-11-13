@@ -47,6 +47,8 @@ def load_data_into_matrix(setchks_session,
                     if cell_contents is not None:
                         cell_contents=str(cell_contents) # force to str
                         cell_contents=cell_contents.strip() # strip off any blank space
+                    else:
+                        cell_contents=""
                     row_as_list.append(DataCellContents(cell_contents=cell_contents))
                 setchks_session.data_as_matrix.append(row_as_list)
 

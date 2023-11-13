@@ -93,8 +93,8 @@ def do_check(setchks_session=None, setchk_results=None):
     if n_CLAUSES>30:
         msg=(
         "There are more than 30 clauses in the refactored form. "
-        "This suggests that either you ahave a very scattered set of clauses, or "
-        "that you are trying to cover too large an scope with one value set"
+        "This suggests that either you have a very scattered set of clauses, or "
+        "that you are trying to cover too large a scope with one value set"
         )
         setchk_results.set_analysis["Messages"].append(msg)
     
