@@ -26,7 +26,7 @@ setchks['CHK01_APPROP_SCTID']=Setchk(
     setchk_code='CHK01_APPROP_SCTID',
     setchk_short_name='CHK01 Appropriate SNOMED CT identifiers for value set members', 
     setchk_function=CHK01_APPROP_SCTID.do_check,
-    setchk_data_entry_extract_types=["ALL"],
+    setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
     )
 
 setchks['CHK02_IDS_IN_RELEASE']=Setchk(
@@ -61,7 +61,7 @@ setchks['CHK10_MISSING_CONCEPTS']=Setchk(
     setchk_code='CHK10_MISSING_CONCEPTS', 
     setchk_short_name='CHK10 Check for omitted descendants from a specific region of the hierarchy', 
     setchk_function=CHK10_MISSING_CONCEPTS.do_check,
-    setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_data_entry_extract_types=["ALL"],
     )
 
 setchks['CHK14_MANY_CLAUSES']=Setchk(
