@@ -41,6 +41,10 @@
                                     </tr>
                                 {% endif %}
                             {% endfor %}
+                            <tr>
+                                <td> Generate Excel Output</td>
+                                <td> {{setchks_session.setchks_run_status["GENERATE_EXCEL"]}}</td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -94,6 +98,11 @@
                             <a href="/select_and_run_checks?run_checks=True"  class="btn setchks-btn">Run checks</a>
                         {% endif %}
                         {% if results_available %}
+                            <a href="/select_and_run_checks?generate_report=True" class="btn setchks-btn-green">Generate Excel Report</a>
+                        {% else %}
+                            <li> Download report button will appear here when report data available</li>
+                        {% endif %}
+                        {% if setchks_session.excel_file_available %}
                             <a href="/select_and_run_checks?download_report=True" class="btn setchks-btn-green">Download Excel Report</a>
                         {% else %}
                             <li> Download report button will appear here when report data available</li>

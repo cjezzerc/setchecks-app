@@ -20,11 +20,15 @@ class SetchksJobsManager():
         self.redis_connection_string=get_redis_string() # use string rather than client so object is hashable
         self.setchks_session=setchks_session
         
-    def launch_job(self, setchk=None, setchks_session=None):
+    def launch_job(self, setchk=None, setchks_session=None, generate_excel=False):
         q = rq.Queue(connection=redis.from_url(self.redis_connection_string))
-        rq_job = q.enqueue(setchk.run_check, setchks_session=setchks_session)
+        if generate_excel:
+            rq_job = q.enqueue(setchks_session.generate_excel_output)
+            self.jobs.append(SetchksJob(rq_job=rq_job, associated_task="GENERATE_EXCEL"))
+        else: # run a setchk        
+            rq_job = q.enqueue(setchk.run_check, setchks_session=setchks_session)
+            self.jobs.append(SetchksJob(rq_job=rq_job, associated_task=setchk.setchk_code))
         self.jobs_running=True
-        self.jobs.append(SetchksJob(rq_job=rq_job, associated_task=setchk.setchk_code))
         
 
     def update_job_statuses(self):
@@ -38,6 +42,8 @@ class SetchksJobsManager():
                     if setchks_job.associated_task[:3]=="CHK":
                         self.setchks_session.setchks_results[setchks_job.associated_task]=rq_job.result
                         setchks_job.results_fetched=True
+                    if setchks_job.associated_task=="GENERATE_EXCEL":
+                        self.setchks_session.excel_file_available=True
                 elif rq_status=="failed":
                     pass # no specific action but setchks_job_status will pick this up     
                 else: # still running or queued

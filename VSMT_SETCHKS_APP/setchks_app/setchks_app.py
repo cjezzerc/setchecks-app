@@ -482,6 +482,7 @@ def select_and_run_checks():
 
         # trialling reset results to {}
         setchks_session.setchks_results={}  
+        setchks_session.setchks_run_status={}
 
         # not convinced why would not always recalculate mr when run checks
         if setchks_session.setchks_results=={}: # Missing results means either 
@@ -490,9 +491,6 @@ def select_and_run_checks():
             for mr in setchks_session.marshalled_rows:
                 mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
         
-
-
-            
         setchks_to_run=[]
         for sc in setchks_session.selected_setchks: # really the logic in next two lines should be applied when 
                                                     # creating/amending selected_setchks list - change when implement that
@@ -508,13 +506,27 @@ def select_and_run_checks():
             setchks_session=setchks_session
             )
 
-    if "download_report" in request.args:
+    if "generate_report" in request.args:
         logger.debug("Report requested")
         user_tmp_folder="/tmp/"+setchks_session.uuid
         os.system("mkdir -p " + user_tmp_folder)
         excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
-        setchks_session.generate_excel_output(excel_filename=excel_filename)
-        return send_file(excel_filename)
+        setchks_session.excel_filename=excel_filename
+        run_in_rq=True
+        if run_in_rq:
+            setchks_jobs_manager.launch_job(
+                generate_excel=True,
+                setchks_session=setchks_session,
+                )
+            job_status_report=setchks_jobs_manager.update_job_statuses()
+            logger.debug("\n".join(job_status_report))
+        else:
+            logger.debug("Generating excel ..: " + excel_filename)
+            setchks_session.generate_excel_output()
+        
+    
+    if "download_report" in request.args:
+        return send_file(setchks_session.excel_filename)
 
     results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
 

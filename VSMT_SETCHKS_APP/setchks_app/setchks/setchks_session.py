@@ -50,6 +50,8 @@ class SetchksSession():
                "setchks_jobs_list",
                "setchks_jobs_manager",
                "setchks_run_status",
+               "excel_filename",
+               "excel_file_available",
                "app_version",
                )
 
@@ -75,6 +77,8 @@ class SetchksSession():
         self.setchks_jobs_list=None
         self.setchks_jobs_manager=None
         self.setchks_run_status={}
+        self.excel_filename=None
+        self.excel_file_available=False
         self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
     
     def __repr__(self):
@@ -102,8 +106,12 @@ class SetchksSession():
                                 table_has_header=table_has_header, 
                                 separator=separator)
 
-    def generate_excel_output(self, excel_filename=None, setchks_to_include="ALL"):
-        generate_excel_output.generate_excel_output(setchks_session=self, excel_filename=excel_filename, setchks_to_include=setchks_to_include)
+    def generate_excel_output(self, setchks_to_include="ALL"):
+        generate_excel_output.generate_excel_output(
+            setchks_session=self, 
+            excel_filename=self.excel_filename, 
+            setchks_to_include=setchks_to_include
+            )
         
     def reset_analysis(self): # this should be called whenever a change is made 
                               # (e.g. choice of sct release or data_entry_extract_type)

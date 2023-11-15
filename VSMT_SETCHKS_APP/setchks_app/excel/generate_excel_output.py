@@ -13,6 +13,9 @@ from . import (
     make_chk_specific_sheets,
     )
 
+import logging
+logger=logging.getLogger(__name__)
+
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
     
@@ -140,6 +143,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #          Write workbook to file                                #     
     ##################################################################
 
+    logger.debug(f"About to save file {excel_filename}")
     wb.save(filename=excel_filename)
 
         # Aide memoire snippets
