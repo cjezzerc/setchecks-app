@@ -86,7 +86,8 @@ def jobs():
             started_at=str(job.started_at)[:16]
             ended_at=str(job.ended_at)[:16]
             # data.append(f'{job_id} {status:10} ')
-            data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
+            # data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
+            data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func}')
         except:
             data.append(f'{job_id} {status:10} no more data available ')
 

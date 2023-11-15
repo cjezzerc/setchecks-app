@@ -36,11 +36,11 @@ def make_one_chk_specific_sheet(
     chk_specific_sheet=setchk_results.chk_specific_sheet
 
     for chk_specific_row in chk_specific_sheet.rows:
-        print(chk_specific_row.row_fill, chk_specific_row.row_height, chk_specific_row.cell_contents)
+        # print(chk_specific_row.row_fill, chk_specific_row.row_height, chk_specific_row.cell_contents)
         ws.append(chk_specific_row.cell_contents)
         irow=ws.max_row
         if chk_specific_row.row_height is not None:
-            print(f"irow={irow}")
+            # print(f"irow={irow}")
             ws.row_dimensions[irow].height = chk_specific_row.row_height
         for cell in ws[irow]:
             cell.alignment=cell.alignment.copy(wrap_text=True)

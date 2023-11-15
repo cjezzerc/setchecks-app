@@ -41,13 +41,15 @@ def do_check(setchks_session=None, setchk_results=None):
         if concept_id is not None:
             value_set_members.add(concept_id)
             
-    if setchks_session.refactored_form is None: # do refactoring if not already done
-        original_valset, refactored_valset=refactor_core_code.refactor_core_code(
-                    valset_extens_defn=value_set_members,
-                    concepts=concepts,
-                    ) 
-        setchks_session.refactored_form=refactored_valset
-
+    # disable caching of refactored form as would have to be done differently since if running a batch of setchks in redis queue then
+    # updates to setchks_session will be lost. Would have to run things like refactoring in a "pre" job
+    # if setchks_session.refactored_form is None: # do refactoring if not already done
+    original_valset, refactored_valset=refactor_core_code.refactor_core_code(
+                valset_extens_defn=value_set_members,
+                concepts=concepts,
+                ) 
+        # setchks_session.refactored_form=refactored_valset
+    
     setchk_results.set_analysis["Messages"]=[]
     msg=(   
         f"Refactored form:" 
@@ -56,7 +58,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
     n_INCLUDE_CLAUSES=0
     n_EXCLUDE_CLAUSES=0
-    for clause in setchks_session.refactored_form.clause_based_rule.clauses:
+    for clause in refactored_valset.clause_based_rule.clauses:
         clause_base_concept_id=str(clause.clause_base_concept_id)
         clause_type=clause.clause_type
         if clause_type=="include":

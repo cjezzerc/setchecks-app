@@ -467,8 +467,18 @@ def select_and_run_checks():
     if setchks_session.selected_setchks==None:
         setchks_session.selected_setchks=available_setchks
 
-    if "run_checks" in request.args:
-        # propose to add call to update setchks_session.marshalled_rows at this point
+    setchks_jobs_manager=setchks_session.setchks_jobs_manager
+    if setchks_jobs_manager is not None:
+        job_status_report=setchks_jobs_manager.update_job_statuses()
+        logger.debug("\n".join(job_status_report))
+
+    if (
+        "run_checks" in request.args 
+        and (
+             setchks_jobs_manager is None
+             or setchks_jobs_manager.jobs_running==False 
+             )
+        ):
         if setchks_session.setchks_results=={}: # Missing results means either 
                                                 # marshalled rows never calculated, 
                                                 # or sct_release or column_identities have changed

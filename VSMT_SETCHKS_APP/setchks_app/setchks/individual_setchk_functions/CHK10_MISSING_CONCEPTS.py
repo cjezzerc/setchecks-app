@@ -48,12 +48,14 @@ def do_check(setchks_session=None, setchk_results=None):
         if concept_id is not None:
             value_set_members.add(concept_id)
             
-    if setchks_session.refactored_form is None: # do refactoring if not already done
-        original_valset, refactored_valset=refactor_core_code.refactor_core_code(
-                    valset_extens_defn=value_set_members,
-                    concepts=concepts,
-                    ) 
-        setchks_session.refactored_form=refactored_valset
+    # disable caching of refactored form as would have to be done differently since if running a batch of setchks in redis queue then
+    # updates to setchks_session will be lost. Would have to run things like refactoring in a "pre" job
+    # if setchks_session.refactored_form is None: # do refactoring if not already done
+    original_valset, refactored_valset=refactor_core_code.refactor_core_code(
+                valset_extens_defn=value_set_members,
+                concepts=concepts,
+                ) 
+        # setchks_session.refactored_form=refactored_valset
 
 # A pattern analysis of your value set indicates that you have 37 concepts that are all descendants of the concept X but there are 8 descendants that you have not in_vs.
 # These m concepts (that you may have omitted in error) are: ….  Overlap (I1,E1)+overlap(I1+E2)+overlap(I1+E3) …
@@ -61,7 +63,8 @@ def do_check(setchks_session=None, setchk_results=None):
 # It may help you in your further analysis to know that this list of omissions contains all the 4 descendants (and self as case may be) 
 # of Y (the root of E1):            only if overlap(I1,E1) = membership(E1)
 
-    clauses=setchks_session.refactored_form.clause_based_rule.clauses
+    # clauses=setchks_session.refactored_form.clause_based_rule.clauses
+    clauses=refactored_valset.clause_based_rule.clauses
 
     include_clauses_and_memberships=[]
     exclude_clauses_and_memberships=[]

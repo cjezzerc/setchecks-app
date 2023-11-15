@@ -36,7 +36,7 @@ def make_analysis_by_row_sheet(
             setchk_results=setchks_results[setchk_code]
             if setchk_code in supp_tabs_row_numbers_map: # i.e. there is a supp tab for this check
                 supp_tab_ws, supp_tab_mapping=supp_tabs_row_numbers_map[setchk_code]
-                print(f"supp_tab_mapping:{supp_tab_mapping}")
+                # print(f"supp_tab_mapping:{supp_tab_mapping}")
             else:
                 supp_tab_ws=None        
             data_row_cell_contents=[x.string for x in data_row]
@@ -57,12 +57,12 @@ def make_analysis_by_row_sheet(
                         row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
                         message=f"{outcome_code}:{check_item.general_message}" 
                         hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
-                        print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
+                        # print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
                         if supp_tab_ws is not None:
-                            print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
+                            # print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
                             if supp_tab_mapping[i_data_row] is not None:
                                 row_to_link_to=supp_tab_mapping[i_data_row]
-                                print(f"row_to_link_to {i_data_row} {row_to_link_to}")
+                                # print(f"row_to_link_to {i_data_row} {row_to_link_to}")
                                 supp_tab_hyperlink_cell_contents=f'=HYPERLINK("#{supp_tab_ws.title}!A{row_to_link_to}","S")'
                             else:
                                 supp_tab_hyperlink_cell_contents=""
