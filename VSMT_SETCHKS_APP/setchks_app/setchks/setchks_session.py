@@ -49,6 +49,7 @@ class SetchksSession():
                "selected_setchks",
                "setchks_jobs_list",
                "setchks_jobs_manager",
+               "setchks_run_status",
                "app_version",
                )
 
@@ -73,6 +74,7 @@ class SetchksSession():
         self.selected_setchks=None
         self.setchks_jobs_list=None
         self.setchks_jobs_manager=None
+        self.setchks_run_status={}
         self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
     
     def __repr__(self):

@@ -43,6 +43,7 @@ class SetchksJobsManager():
                 else: # still running or queued
                     self.jobs_running=True
                 setchks_job.status=rq_status
+                self.setchks_session.setchks_run_status[setchks_job.associated_task]=setchks_job.status
         return self.repr_job_statuses()
 
 

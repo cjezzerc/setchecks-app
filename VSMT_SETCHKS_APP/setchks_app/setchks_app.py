@@ -479,11 +479,17 @@ def select_and_run_checks():
              or setchks_jobs_manager.jobs_running==False 
              )
         ):
+
+        # trialling reset results to {}
+        setchks_session.setchks_results={}  
+
+        # not convinced why would not always recalculate mr when run checks
         if setchks_session.setchks_results=={}: # Missing results means either 
                                                 # marshalled rows never calculated, 
                                                 # or sct_release or column_identities have changed
             for mr in setchks_session.marshalled_rows:
                 mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
+        
 
 
             
@@ -495,11 +501,7 @@ def select_and_run_checks():
                 setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
                 ):
                 setchks_to_run.append(this_setchk)
-                print("YES -", sc)
-            else:
-                print("NO -", sc)
 
-        # setchks_to_run=[ setchks_app.setchks.setchk_definitions.setchks[x] for x in setchks_session.selected_setchks]
         logger.debug(str(setchks_to_run))
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
             setchks_list=setchks_to_run, 
@@ -514,7 +516,7 @@ def select_and_run_checks():
         setchks_session.generate_excel_output(excel_filename=excel_filename)
         return send_file(excel_filename)
 
-    results_available=len(list(setchks_session.setchks_results)) > 0
+    results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
 
     return render_template('select_and_run_checks.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,
