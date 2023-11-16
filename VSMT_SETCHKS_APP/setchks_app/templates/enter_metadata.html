@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="card" style="height: 19vh; margin-top:1vh;">
+            <div class="card" style="height: 10vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <li> You will enter name and purpose here (TBI) </li>
@@ -35,8 +35,38 @@
                 </div>
             </div>
 
-            <div class="card" style="height: 19vh; margin-top:1vh;">
+            <div class="card" style="height: 28vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">
+                    <span> Mode: </span>
+                    <form action="/enter_metadata" class="sct_version_mode_buttons" method="post" enctype="multipart/form-data">
+                        {% for a_type in [
+                            ("SINGLE_SCT_VERSION","Set checks"),
+                            ("DUAL_SCT_VERSIONS","Assess changes between two releases (NOT FOR USE YET)"),
+                            ] %}
+                            {% if a_type[0] == setchks_session.sct_version_mode %}
+                                {% set checked_var="checked" %}
+                            {% else %}
+                                {% set checked_var="" %}
+                            {% endif %}
+
+                            <div class="form-check">
+                                <input  class="form-check-input" s
+                                        type="radio" 
+                                        name="sct_version_mode" 
+                                        {{ checked_var}} 
+                                        value="{{ a_type[0] }}" 
+                                        id={{ a_type[0] }} 
+                                        onchange="$('.sct_version_mode_buttons').submit();"
+                                        >
+                                <label class="form-check-label" for={{ a_type[0] }}>
+                                {{ a_type[1]}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                        
+                    </form>
+                    <span> Context: </span>
+
                     <form action="/enter_metadata" class="data_entry_extract_type_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("ENTRY_PRIMARY","Data entry (Primary care)"),
@@ -66,6 +96,14 @@
                         
                     </form>
 
+
+
+
+
+
+
+
+
                     <!-- <ul>
                         <li> You will choose "data entry" etc here (TBI) </li>
                     </ul> -->
@@ -81,7 +119,11 @@
         <div class="col-6">
 
 
-            <div class="card" style="height: 40vh">
+            <!-- ##############################################################
+            #    Start of block for first sct_version - "sct_version"    #
+            ############################################################## -->
+
+            <div class="card" style="height: 29vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         <li> Select a SNOMED CT release by clicking on the timeline or by using the pulldown </li>
@@ -151,13 +193,100 @@
                     });
             </script>
 
-            <div class="card" style="height: 19vh; margin-top:1vh;">
+            <!-- ############################################################
+            #    End of block for first sct_version - "sct_version"    #
+            ############################################################ -->
+
+            {% if setchks_session.sct_version_mode=="DUAL_SCT_VERSIONS" %}
+
+            <!-- ###################################################################
+            #    Start of block for second sct_version - "sct_version_b"      #
+            #   This is a like for like copy with _b tagged on as appropriate #
+            ################################################################### -->
+            
+            <div class="card" style="height: 29vh; margin-top:1vh;">
+                <div class="card-body overflow-auto" style="font-size: 1em;" >
+                    <ul>
+                        <li> Select a SNOMED CT release by clicking on the timeline or by using the pulldown </li>
+                        <br>
+                        <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
+                        <div id="timeline_fig_b" ></div>  <!-- div for the plotly figure -->
+                        <div> <p id="timeline_hover_info_b"> <br> </p> </p></div>  <!-- div for the hover info -->
+                        
+                        <form action="/enter_metadata" class="sct_version_selection_form_b" method="post" enctype="multipart/form-data">
+                            <select name="select_sct_version_b" class="form-select" 
+                                onchange="$('.sct_version_selection_form_b').submit();" 
+                                style="margin-top: 0.5em;"
+                                >
+                                {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                    {% if available_sct_version == setchks_session.sct_version_b %}
+                                    <option selected
+                                    {% else %}
+                                    <option
+                                    {% endif %} 
+    
+                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
+    
+                                    {% if loop.index==1 %} (current) {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+
+                    </ul>
+                </div>
+            </div>
+      
+            <script> // draw plotly figure
+                var timeline_fig_div_b = document.getElementById('timeline_fig_b'); 
+                var plotlyConfiguration = { displayModeBar: false };
+                Plotly.newPlot( timeline_fig_div_b, {{ timeline_data_json_b | safe }}, {{ timeline_layout_json_b | safe }}, plotlyConfiguration );
+            </script>
+
+            <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
+            <form id="timeline_form_b" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
+                <input id="timeline_input_b" name="pointNumber_b" type="hidden" > 
+            </form>
+
+            <script> // declare listener: when plotly is clicked on, insert pointNumber into hidden input and submit the form 
+                timeline_fig_div_b.on('plotly_click', function(event_data_b){
+                    var timeline_input=document.getElementById("timeline_input_b");
+                    timeline_input.value=event_data_b.points[0].pointNumber;
+                    var timeline_form=document.getElementById("timeline_form_b")
+                    timeline_form.submit()
+                    });
+            </script>
+
+            <script> // declare listener: when plotly is hovered on .. 
+                var timeline_data_info_b= {{ timeline_info_json_b | safe }}
+                timeline_fig_div_b.on('plotly_hover', function(event_data_b){
+                    console.log("hover")
+                    var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
+                    timeline_hover_info_b.innerHTML=timeline_data_info_b[event_data_b.points[0].pointNumber];
+                    });
+            </script>
+
+            <script> // declare listener: when plotly is un-hovered  .. 
+                timeline_fig_div.on('plotly_unhover', function(event_data_b){
+                    console.log("unhover")
+                    var timeline_hover_info=document.getElementById("timeline_hover_info_b");
+                    timeline_hover_info.innerHTML='<br>';
+                    });
+            </script>
+
+            <!-- ############################################################
+            #    End of Block for second sct_version - "sct_version_b" #
+            ############################################################ -->
+
+            {% endif %}
+
+            <!-- <div class="card" style="height: 19vh; margin-top:1vh;">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <li> Version detail info will be here (TBI) </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
 
         </div>
     </div>

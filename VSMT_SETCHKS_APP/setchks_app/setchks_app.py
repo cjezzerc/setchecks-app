@@ -408,8 +408,10 @@ def enter_metadata():
     if setchks_session.available_sct_versions is None:
         setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
         setchks_session.sct_version=setchks_session.available_sct_versions[0]
+        setchks_session.sct_version_b=setchks_session.available_sct_versions[0]
 
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
+    current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections
 
     # if reach here via click on versions pulldown
     if 'select_sct_version' in request.form:
@@ -421,19 +423,43 @@ def enter_metadata():
         # print("===>>>> pointNumber=", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
 
+       # if reach here via click on versions pulldown (b)
+    if 'select_sct_version_b' in request.form:
+        # print("===>>>>", request.form['select_sct_version'])
+        setchks_session.sct_version_b=setchks_session.available_sct_versions[int(request.form['select_sct_version_b'])-1]
+    
+    # if reach here via click on versions timeline (b)
+    if 'pointNumber_b' in request.form:
+        # print("===>>>> pointNumber=", request.form['pointNumber'])
+        setchks_session.sct_version_b=setchks_session.available_sct_versions[int(request.form['pointNumber_b'])]
+
     if 'data_entry_extract_type' in request.form:
-        # print("===>>>>", request.form['data_entry_extract_type'])
         setchks_session.data_entry_extract_type=request.form['data_entry_extract_type']
         setchks_session.reset_analysis() # throw away all old results
 
+    if 'sct_version_mode' in request.form:   
+        setchks_session.sct_version_mode=request.form['sct_version_mode']
+        setchks_session.reset_analysis() # throw away all old results
 
     if setchks_session.sct_version!=current_sct_version: # if have changed sct_version
         setchks_session.reset_analysis() # throw away all old results
+    
+    if setchks_session.sct_version_b!=current_sct_version_b: # if have changed sct_version_b
+        setchks_session.reset_analysis() # throw away all old results
+
 
     timeline_data_json, timeline_layout_json, timeline_info_json=graphical_timeline.create_graphical_timeline(
         selected_sct_version=setchks_session.sct_version,
         available_sct_versions=setchks_session.available_sct_versions,
         )
+    
+    if setchks_session.sct_version_mode=="DUAL_SCT_VERSIONS":
+        timeline_data_json_b, timeline_layout_json_b, timeline_info_json_b=graphical_timeline.create_graphical_timeline(
+        selected_sct_version=setchks_session.sct_version_b,
+        available_sct_versions=setchks_session.available_sct_versions,
+        )
+    else:
+        timeline_data_json_b, timeline_layout_json_b, timeline_info_json_b=(None,None,None,)
     
     bc=Breadcrumbs()
     bc.set_current_page("enter_metadata")
@@ -445,6 +471,9 @@ def enter_metadata():
         timeline_data_json=timeline_data_json,
         timeline_layout_json=timeline_layout_json,
         timeline_info_json=timeline_info_json,
+        timeline_data_json_b=timeline_data_json_b,
+        timeline_layout_json_b=timeline_layout_json_b,
+        timeline_info_json_b=timeline_info_json_b,
         )
 
 #############################################

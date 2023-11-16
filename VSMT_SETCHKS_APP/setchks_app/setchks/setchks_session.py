@@ -45,6 +45,8 @@ class SetchksSession():
                "terminology_server",
                "available_sct_versions", 
                "sct_version",
+               "sct_version_b",
+               "sct_version_mode",
                "available_setchks",
                "selected_setchks",
                "setchks_jobs_list",
@@ -73,6 +75,8 @@ class SetchksSession():
         self.terminology_server=None
         self.available_sct_versions=None 
         self.sct_version=None
+        self.sct_version_b=None
+        self.sct_version_mode="SINGLE_SCT_VERSION"
         self.available_setchks=setchks_app.setchks.setchk_definitions.setchks
         self.selected_setchks=None
         self.setchks_jobs_list=None
