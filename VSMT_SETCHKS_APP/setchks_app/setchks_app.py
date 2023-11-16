@@ -528,7 +528,8 @@ def select_and_run_checks():
     if "download_report" in request.args:
         return send_file(setchks_session.excel_filename)
 
-    results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
+    # results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
+    results_available=setchks_session.all_CHKXX_finished
 
     return render_template('select_and_run_checks.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,

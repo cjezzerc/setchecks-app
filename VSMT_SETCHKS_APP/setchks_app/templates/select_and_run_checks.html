@@ -93,19 +93,17 @@
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                            <a href="/select_and_run_checks" class="btn setchks-btn">Checks running - click to refresh run statuses</a>
-                        {% else %}
+                            <a href="/select_and_run_checks" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
+                        <br>Please do not navigate away from this page while jobs are running (safeguards TBI)
+                        {% elif not setchks_session.all_CHKXX_finished %}
                             <a href="/select_and_run_checks?run_checks=True"  class="btn setchks-btn">Run checks</a>
                         {% endif %}
-                        {% if results_available %}
+                        {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
+                            results_available and (not setchks_session.excel_file_available) %}
                             <a href="/select_and_run_checks?generate_report=True" class="btn setchks-btn-green">Generate Excel Report</a>
-                        {% else %}
-                            <li> Download report button will appear here when report data available</li>
                         {% endif %}
                         {% if setchks_session.excel_file_available %}
                             <a href="/select_and_run_checks?download_report=True" class="btn setchks-btn-green">Download Excel Report</a>
-                        {% else %}
-                            <li> Download report button will appear here when report data available</li>
                         {% endif %}
 
                     </ul>
@@ -117,8 +115,6 @@
 
     <div class="row" style="margin-top:1em">
     
-        <div class="col-4"> 
-        </div>
         <style>
             .setchks-btn {
                 background-color:white;
@@ -136,12 +132,13 @@
             
             
         </style>
-        <div class="col-8">
-            <a href="/reset_setchks_session"  class="btn setchks-btn"> Reset and upload new file</a>
-            <!-- <button type="button" class="btn setchks-btn">Reset and upload new file</button> -->
-            <!-- <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button> -->
+         <div class="col-9"> 
+            <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a>
+            <a href="/data_upload"  class="btn setchks-btn">Data upload</a>
+        </div>
+        <div class="col-3">
             <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Enter metadata)</a>
-            <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-cloud-upload-fill"></i> Load a new file for checks</a>
+            <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Data upload</a>
         </div>
     
     </div>

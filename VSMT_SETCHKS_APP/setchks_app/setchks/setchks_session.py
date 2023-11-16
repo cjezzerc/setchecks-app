@@ -50,6 +50,7 @@ class SetchksSession():
                "setchks_jobs_list",
                "setchks_jobs_manager",
                "setchks_run_status",
+               "all_CHKXX_finished",
                "excel_filename",
                "excel_file_available",
                "app_version",
@@ -77,6 +78,7 @@ class SetchksSession():
         self.setchks_jobs_list=None
         self.setchks_jobs_manager=None
         self.setchks_run_status={}
+        self.all_CHKXX_finished=False
         self.excel_filename=None
         self.excel_file_available=False
         self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
@@ -118,3 +120,7 @@ class SetchksSession():
                               # that renders analyses done invalid
         self.setchks_results={}
         self.refactored_form=None
+        self.setchks_run_status={}
+        self.setchks_jobs_manager=None
+        self.excel_file_available=False
+        self.all_CHKXX_finished=False

@@ -33,23 +33,31 @@ class SetchksJobsManager():
 
     def update_job_statuses(self):
         self.jobs_running=False # this will set back to True if finds any jobs running/queued below
-        for setchks_job in self.jobs:
-            if setchks_job.status not in ["finished","failed"]: # i.e. if we do not yet know if it has finished/failed
-                rq_job_id=setchks_job.rq_job_id
-                rq_job = rq.job.Job.fetch(rq_job_id, connection=redis.from_url(self.redis_connection_string))
-                rq_status=rq_job.get_status()
-                if rq_status=="finished":
-                    if setchks_job.associated_task[:3]=="CHK":
-                        self.setchks_session.setchks_results[setchks_job.associated_task]=rq_job.result
-                        setchks_job.results_fetched=True
-                    if setchks_job.associated_task=="GENERATE_EXCEL":
-                        self.setchks_session.excel_file_available=True
-                elif rq_status=="failed":
-                    pass # no specific action but setchks_job_status will pick this up     
-                else: # still running or queued
-                    self.jobs_running=True
-                setchks_job.status=rq_status
-                self.setchks_session.setchks_run_status[setchks_job.associated_task]=setchks_job.status
+        self.setchks_session.all_CHKXX_finished=True # ditto in reverse and does not include
+                                                             # other things like excel generation
+        if self.jobs:
+            for setchks_job in self.jobs:
+                if setchks_job.status not in ["finished","failed"]: # i.e. if we do not yet know if it has finished/failed
+                    rq_job_id=setchks_job.rq_job_id
+                    rq_job = rq.job.Job.fetch(rq_job_id, connection=redis.from_url(self.redis_connection_string))
+                    rq_status=rq_job.get_status()
+                    if rq_status=="finished":
+                        if setchks_job.associated_task[:3]=="CHK":
+                            self.setchks_session.setchks_results[setchks_job.associated_task]=rq_job.result
+                            setchks_job.results_fetched=True
+                        if setchks_job.associated_task=="GENERATE_EXCEL":
+                            self.setchks_session.excel_file_available=True
+                    elif rq_status=="failed":
+                        pass # no specific action but setchks_job_status will pick this up     
+                    else: # still running or queued
+                        self.jobs_running=True
+                        if setchks_job.associated_task[:3]=="CHK":
+                            self.setchks_session.all_CHKXX_finished=False
+                    setchks_job.status=rq_status
+                    self.setchks_session.setchks_run_status[setchks_job.associated_task]=setchks_job.status
+        else: # have not got to the satge of having any jobs yet, so all have not finished
+              # without this the run checks button does not appear in some scenarios
+            self.setchks_session.all_CHKXX_finished=False
         return self.repr_job_statuses()
 
 

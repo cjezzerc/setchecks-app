@@ -102,8 +102,6 @@
     </div>
     <div class="row" style="margin-top:1em">
         
-        <div class="col-9"> 
-        </div>
         <style>
             .setchks-btn {
                 background-color:white;
@@ -119,8 +117,10 @@
                 border-style: solid;
                 }
         </style>
+         <div class="col-10"> 
+            <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a>
+        </div>
         <div class="col-2">
-
             {% if setchks_session.data_as_matrix != [] %}
             <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Confirm upload)</a>
             {% endif %}
