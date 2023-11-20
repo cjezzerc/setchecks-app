@@ -117,66 +117,70 @@ def do_check(setchks_session=None, setchk_results=None):
     # analyse and report on each include clause #
     #############################################
 
+    for sorting_flag in ["ONLY_NON_ZERO", "ONLY_ZERO"]: # sorting_flag float include clauses with some 
+                                                        # "interacting" exclude clauses to the top
+        for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
+            include_clause, include_members=clause_and_members_tuple
+            members_in_vs_from_this_clause=include_members.difference(all_excluded_concepts)
+            members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
+            n=len(members_excluded_from_this_clause)
+            do_output_this_loop=( (n==0 and sorting_flag=="ONLY_ZERO") or (n>1 and sorting_flag=="ONLY_NON_ZERO") )
+            if do_output_this_loop:
+                n_members_of_clause=len(include_members)
+                n_members_of_clause_in_vs=len(members_in_vs_from_this_clause)
+                n_members_of_clause_excluded=len(members_excluded_from_this_clause)
+                include_cbc_id=str(include_clause.clause_base_concept_id)
+                include_cbc_pt=concepts[include_cbc_id].pt
+                plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+                row=chk_specific_sheet.new_row()
+                row.cell_contents=[
+                plain_english_formatted_clause,
+                include_cbc_pt,
+                f"{n_members_of_clause_in_vs}/{n_members_of_clause}",
+                "",
+                f"{n_members_of_clause_excluded}/{n_members_of_clause}",
+                ]
+                
+                
+                
+                for ei_clause, e_clause_and_members_tuple in enumerate(exclude_clauses_and_memberships):
+                    exclude_clause, exclude_members=e_clause_and_members_tuple
+                    members_of_include_that_this_exclude_removes=members_excluded_from_this_clause.intersection(exclude_members)
+                    exclude_cbc_id=str(exclude_clause.clause_base_concept_id)
+                    exclude_cbc_pt=concepts[exclude_cbc_id].pt
+                    plain_english_formatted_clause=plain_english_operators_fmts[exclude_clause.clause_operator] % exclude_cbc_id
+                    if members_of_include_that_this_exclude_removes != set():
+                        n_removed=len(members_of_include_that_this_exclude_removes)
+                        n_in_exclude=len(exclude_members)
+                        for member in members_of_include_that_this_exclude_removes:
+                            row=chk_specific_sheet.new_row()
+                            row.cell_contents=[
+                            "","","","",
+                            str(member.concept_id),
+                            member.pt,
+                            plain_english_formatted_clause,
+                            ]
+                        row=chk_specific_sheet.new_row()
+                        row.row_fill="grey"
+                        row.row_height=2
 
-    for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
-        include_clause, include_members=clause_and_members_tuple
-        members_in_vs_from_this_clause=include_members.difference(all_excluded_concepts)
-        members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
-        n_members_of_clause=len(include_members)
-        n_members_of_clause_in_vs=len(members_in_vs_from_this_clause)
-        n_members_of_clause_excluded=len(members_excluded_from_this_clause)
-        include_cbc_id=str(include_clause.clause_base_concept_id)
-        include_cbc_pt=concepts[include_cbc_id].pt
-        plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=[
-        plain_english_formatted_clause,
-        include_cbc_pt,
-        f"{n_members_of_clause_in_vs}/{n_members_of_clause}",
-        "",
-        f"{n_members_of_clause_excluded}/{n_members_of_clause}",
-        ]
-        
-        
-        
-        for ei_clause, e_clause_and_members_tuple in enumerate(exclude_clauses_and_memberships):
-            exclude_clause, exclude_members=e_clause_and_members_tuple
-            members_of_include_that_this_exclude_removes=members_excluded_from_this_clause.intersection(exclude_members)
-            exclude_cbc_id=str(exclude_clause.clause_base_concept_id)
-            exclude_cbc_pt=concepts[exclude_cbc_id].pt
-            plain_english_formatted_clause=plain_english_operators_fmts[exclude_clause.clause_operator] % exclude_cbc_id
-            if members_of_include_that_this_exclude_removes != set():
-                n_removed=len(members_of_include_that_this_exclude_removes)
-                n_in_exclude=len(exclude_members)
-                for member in members_of_include_that_this_exclude_removes:
+                row=chk_specific_sheet.new_row()
+                row.cell_contents=["","","","","","",""]
+                row.row_fill="grey"
+                row.row_height=4
+
+                for member in members_in_vs_from_this_clause:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                    "","","","",
-                    str(member.concept_id),
-                    member.pt,
-                    plain_english_formatted_clause,
+                        "",
+                        "",
+                        str(member.concept_id),
+                        member.pt
                     ]
+                
                 row=chk_specific_sheet.new_row()
                 row.row_fill="grey"
-                row.row_height=2
-
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=["","","","","","",""]
-        row.row_fill="grey"
-        row.row_height=4
-
-        for member in members_in_vs_from_this_clause:
-            row=chk_specific_sheet.new_row()
-            row.cell_contents=[
-                "",
-                "",
-                str(member.concept_id),
-                member.pt
-            ]
-        
-        row=chk_specific_sheet.new_row()
-        row.row_fill="grey"
-        row.row_height=16
+                row.row_height=16
 
     setchk_results.set_analysis["Messages"]=[]
     msg=(   
