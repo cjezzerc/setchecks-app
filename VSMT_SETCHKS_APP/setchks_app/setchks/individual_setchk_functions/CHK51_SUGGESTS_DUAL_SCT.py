@@ -146,96 +146,101 @@ def do_check(setchks_session=None, setchk_results=None):
     # analyse and report on each include clause #
     #############################################
 
+    for sorting_flag in ["ONLY_NON_ZERO", "ONLY_ZERO"]: # sorting_flag float include clauses with something in earlier
+                                                        # or later column to top as those are most interesting
+        for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
+            include_clause, include_members_earlier, include_members_later=clause_and_members_tuple
+            members_in_vs_from_this_clause_earlier=include_members_earlier.difference(all_excluded_concepts_earlier)
+            members_in_vs_from_this_clause_later=include_members_later.difference(all_excluded_concepts_later)
+            
+            # as the "member" object for a particular concept_id will be different between the two releases
+            # now need to build dict of members keyed by concept_id and sets of concept_ids so that 
+            # can do appropriate intersections on concept_ids and then rebuild the sets of members
+            # (at least this is one way to code it..!)
+            
+            # build the dicts of members and sets of concept_ids:
+            members_in_vs_from_this_clause_earlier_dict={ m.concept_id:m for m in members_in_vs_from_this_clause_earlier}
+            concept_ids_in_vs_from_this_clause_earlier=set(members_in_vs_from_this_clause_earlier_dict.keys())
+            members_in_vs_from_this_clause_later_dict={ m.concept_id:m for m in members_in_vs_from_this_clause_later}
+            concept_ids_in_vs_from_this_clause_later=set(members_in_vs_from_this_clause_later_dict.keys())
 
-    for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
-        include_clause, include_members_earlier, include_members_later=clause_and_members_tuple
-        members_in_vs_from_this_clause_earlier=include_members_earlier.difference(all_excluded_concepts_earlier)
-        members_in_vs_from_this_clause_later=include_members_later.difference(all_excluded_concepts_later)
-        
-        # as the "member" object for a particular concept_id will be different between the two releases
-        # now need to build dict of members keyed by concept_id and sets of concept_ids so that 
-        # can do appropriate intersections on concept_ids and then rebuild the sets of members
-        # (at least this is one way to code it..!)
-        
-        # build the dicts of members and sets of concept_ids:
-        members_in_vs_from_this_clause_earlier_dict={ m.concept_id:m for m in members_in_vs_from_this_clause_earlier}
-        concept_ids_in_vs_from_this_clause_earlier=set(members_in_vs_from_this_clause_earlier_dict.keys())
-        members_in_vs_from_this_clause_later_dict={ m.concept_id:m for m in members_in_vs_from_this_clause_later}
-        concept_ids_in_vs_from_this_clause_later=set(members_in_vs_from_this_clause_later_dict.keys())
+            # now do set operations on concept_id sets
+            concept_ids_in_vs_from_this_clause_common=concept_ids_in_vs_from_this_clause_earlier.intersection(
+                                                                            concept_ids_in_vs_from_this_clause_later)
+            concept_ids_in_vs_from_this_clause_only_earlier=concept_ids_in_vs_from_this_clause_earlier.difference(
+                                                                            concept_ids_in_vs_from_this_clause_later)
+            concept_ids_in_vs_from_this_clause_only_later=concept_ids_in_vs_from_this_clause_later.difference(
+                                                                            concept_ids_in_vs_from_this_clause_earlier)
 
-        # now do set operations on concept_id sets
-        concept_ids_in_vs_from_this_clause_common=concept_ids_in_vs_from_this_clause_earlier.intersection(
-                                                                        concept_ids_in_vs_from_this_clause_later)
-        concept_ids_in_vs_from_this_clause_only_earlier=concept_ids_in_vs_from_this_clause_earlier.difference(
-                                                                        concept_ids_in_vs_from_this_clause_later)
-        concept_ids_in_vs_from_this_clause_only_later=concept_ids_in_vs_from_this_clause_later.difference(
-                                                                        concept_ids_in_vs_from_this_clause_earlier)
+            # now build member sets back from member dicts and concept_id sets
+            members_in_vs_from_this_clause_common=set(members_in_vs_from_this_clause_earlier_dict[cid] 
+                                                        for cid in concept_ids_in_vs_from_this_clause_common)
+            members_in_vs_from_this_clause_only_earlier=set(members_in_vs_from_this_clause_earlier_dict[cid] 
+                                                        for cid in concept_ids_in_vs_from_this_clause_only_earlier)
+            members_in_vs_from_this_clause_only_later=set(members_in_vs_from_this_clause_later_dict[cid] 
+                                                        for cid in concept_ids_in_vs_from_this_clause_only_later)
+            
+            # members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
+            # n_members_of_clause=len(include_members)
+            n_members_of_clause_in_vs_common=len(members_in_vs_from_this_clause_common)
+            n_members_of_clause_in_vs_only_earlier=len(members_in_vs_from_this_clause_only_earlier)
+            n_members_of_clause_in_vs_only_later=len(members_in_vs_from_this_clause_only_later)
+            # n_members_of_clause_excluded=len(members_excluded_from_this_clause)
 
-        # now build member sets back from member dicts and concept_id sets
-        members_in_vs_from_this_clause_common=set(members_in_vs_from_this_clause_earlier_dict[cid] 
-                                                    for cid in concept_ids_in_vs_from_this_clause_common)
-        members_in_vs_from_this_clause_only_earlier=set(members_in_vs_from_this_clause_earlier_dict[cid] 
-                                                    for cid in concept_ids_in_vs_from_this_clause_only_earlier)
-        members_in_vs_from_this_clause_only_later=set(members_in_vs_from_this_clause_later_dict[cid] 
-                                                    for cid in concept_ids_in_vs_from_this_clause_only_later)
-        
-        # members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
-        # n_members_of_clause=len(include_members)
-        n_members_of_clause_in_vs_common=len(members_in_vs_from_this_clause_common)
-        n_members_of_clause_in_vs_only_earlier=len(members_in_vs_from_this_clause_only_earlier)
-        n_members_of_clause_in_vs_only_later=len(members_in_vs_from_this_clause_only_later)
-        # n_members_of_clause_excluded=len(members_excluded_from_this_clause)
-        include_cbc_id=str(include_clause.clause_base_concept_id)
-        include_cbc_pt=concepts_earlier[include_cbc_id].pt
-        plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=[
-        plain_english_formatted_clause,
-        include_cbc_pt,
-        f"{n_members_of_clause_in_vs_only_earlier}",
-        "", 
-        f"{n_members_of_clause_in_vs_common}",
-        "",
-        f"{n_members_of_clause_in_vs_only_later}", 
-        ]
-        
-        for member in members_in_vs_from_this_clause_only_later:
-            row=chk_specific_sheet.new_row()
-            row.cell_contents=[
-                "","","","","","",
-                str(member.concept_id),
-                member.pt,
-            ]
-        
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=["","","","","","",""]
-        row.row_fill="grey"
-        row.row_height=4
-        
-        for member in members_in_vs_from_this_clause_only_earlier:
-            row=chk_specific_sheet.new_row()
-            row.cell_contents=[
-                "","",
-                str(member.concept_id),
-                member.pt,
-            ]
-        
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=["","","","","","",""]
-        row.row_fill="grey"
-        row.row_height=4
+            n=n_members_of_clause_in_vs_only_earlier+n_members_of_clause_in_vs_only_later
+            do_output_this_loop=( (n==0 and sorting_flag=="ONLY_ZERO") or (n>1 and sorting_flag=="ONLY_NON_ZERO") )
+            if do_output_this_loop:
+                include_cbc_id=str(include_clause.clause_base_concept_id)
+                include_cbc_pt=concepts_earlier[include_cbc_id].pt
+                plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+                row=chk_specific_sheet.new_row()
+                row.cell_contents=[
+                plain_english_formatted_clause,
+                include_cbc_pt,
+                f"{n_members_of_clause_in_vs_only_earlier}",
+                "", 
+                f"{n_members_of_clause_in_vs_common}",
+                "",
+                f"{n_members_of_clause_in_vs_only_later}", 
+                ]
+                
+                for member in members_in_vs_from_this_clause_only_later:
+                    row=chk_specific_sheet.new_row()
+                    row.cell_contents=[
+                        "","","","","","",
+                        str(member.concept_id),
+                        member.pt,
+                    ]
+                
+                row=chk_specific_sheet.new_row()
+                row.cell_contents=["","","","","","",""]
+                row.row_fill="grey"
+                row.row_height=4
+                
+                for member in members_in_vs_from_this_clause_only_earlier:
+                    row=chk_specific_sheet.new_row()
+                    row.cell_contents=[
+                        "","",
+                        str(member.concept_id),
+                        member.pt,
+                    ]
+                
+                row=chk_specific_sheet.new_row()
+                row.cell_contents=["","","","","","",""]
+                row.row_fill="grey"
+                row.row_height=4
 
-        for member in members_in_vs_from_this_clause_common:
-            row=chk_specific_sheet.new_row()
-            row.cell_contents=[
-                "","","","",
-                str(member.concept_id),
-                member.pt,
-            ]
-        
-        row=chk_specific_sheet.new_row()
-        row.row_fill="grey"
-        row.row_height=16
+                for member in members_in_vs_from_this_clause_common:
+                    row=chk_specific_sheet.new_row()
+                    row.cell_contents=[
+                        "","","","",
+                        str(member.concept_id),
+                        member.pt,
+                    ]
+                
+                row=chk_specific_sheet.new_row()
+                row.row_fill="grey"
+                row.row_height=16
 
     setchk_results.set_analysis["Messages"]=[]
 
