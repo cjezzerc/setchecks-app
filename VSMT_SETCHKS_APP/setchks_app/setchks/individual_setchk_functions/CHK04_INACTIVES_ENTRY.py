@@ -294,11 +294,12 @@ def do_check(setchks_session=None, setchk_results=None):
                         else:
                             n_CONCEPTS_INACTIVE+=1
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
-                            check_item=CheckItem("CHK04-OUT-ii-c") # NB this gives same message as CHK04-OUT-v-c
+                            check_item=CheckItem("CHK04-OUT-ii-c") 
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                                "This issue should be resolved via running CHK04 in single version mode "
+                                "There is no suggested replacement for this concept - "
+                                "this issue should be resolved via running CHK04 in single version mode"
                                 )
                             this_row_analysis.append(check_item)
                 else: #"CHK04-OUT-v"
@@ -328,11 +329,12 @@ def do_check(setchks_session=None, setchk_results=None):
                         else:
                             n_CONCEPTS_INACTIVE+=1
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
-                            check_item=CheckItem("CHK04-OUT-v-c") # NB this gives same message as CHK04-OUT-ii-c 
+                            check_item=CheckItem("CHK04-OUT-v-c") 
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                                "This issue should be resolved via running CHK04 in single version mode "
+                                "There is at least one suggested replacement for this concept - "
+                                "this issue should be resolved via running CHK04 in single version mode "
                                 )
                             this_row_analysis.append(check_item)
             else:
