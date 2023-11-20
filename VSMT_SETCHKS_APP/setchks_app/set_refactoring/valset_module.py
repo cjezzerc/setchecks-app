@@ -268,7 +268,7 @@ class Valset():
 
 
 class ValsetMembershipAnalysis():
-    def __init__(self, valset=None, concepts=None, global_exclusions=None, stub_out_interaction_matrix_calc=False, verbose=False):
+    def __init__(self, valset=None, concepts=None, global_exclusions=None, stub_out_interaction_matrix_calc=True, verbose=False):
         self.clause_membership_analyses_list=[]
         # do membership analysis for each clause
         # full_exclusion_set=set(global_exclusions)

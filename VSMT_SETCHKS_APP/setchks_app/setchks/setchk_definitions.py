@@ -15,6 +15,7 @@ from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
 from .individual_setchk_functions import CHK10_MISSING_CONCEPTS
 from .individual_setchk_functions import CHK14_MANY_CLAUSES
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
+from .individual_setchk_functions import CHK51_SUGGESTS_DUAL_SCT
 
 setchks={}
 
@@ -75,5 +76,12 @@ setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
     setchk_code='CHK20_INCORR_FMT_SCTID',
     setchk_short_name='CHK20 Incorrectly formatted SNOMED CT identifiers', 
     setchk_function=CHK20_INCORR_FMT_SCTID.do_check,
+    setchk_data_entry_extract_types=["ALL"],
+    )
+
+setchks['CHK51_SUGGESTS_DUAL_SCT']=Setchk(
+    setchk_code='CHK51_SUGGESTS_DUAL_SCT',
+    setchk_short_name='CHK51 Suggested changes to content (refactoring dual SCT versions)', 
+    setchk_function=CHK51_SUGGESTS_DUAL_SCT.do_check,
     setchk_data_entry_extract_types=["ALL"],
     )
