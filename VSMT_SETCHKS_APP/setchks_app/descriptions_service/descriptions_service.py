@@ -29,11 +29,18 @@ class DescriptionsService():
         self._db=None
         self.data_type=data_type
 
-    def create_collection_from_RF2_file(self, RF2_filename=None, delete_if_exists=False, collection_name=None):
+    def create_collection_from_RF2_file(
+        self, 
+        RF2_filename=None, 
+        RF2_filename2=None, 
+        delete_if_exists=False, 
+        collection_name=None
+        ):
         """ creates a collection from a specified RF2 file"""
         success_flag, message=RF2_handling.create_collection_from_RF2_file(
             db=self.db, 
-            RF2_filename=RF2_filename, 
+            RF2_filename=RF2_filename,
+            RF2_filename2=RF2_filename2, 
             delete_if_exists=delete_if_exists,
             data_type=self.data_type,
             collection_name=collection_name,
@@ -122,7 +129,7 @@ class DescriptionsService():
         # url="https://isd.digital.nhs.uk/download/api/v1/keys/%s/content/items/1799/uk_sct2mo_36.5.0_20230830000001Z.zip" % (
         #     os.environ["TRUDAPIKEY"],
         # )
-
+        
         print("fetching file from", url)
         response = requests.get(url)
         download_folder="/tmp/trud_download_temp_files"
@@ -141,24 +148,32 @@ class DescriptionsService():
         print("Making collection..")
         if self.data_type=="descriptions":
             glob_pattern=extract_dir+"/*/Snapshot/Terminology/sct2_Description_*"
+            glob_pattern2=extract_dir+"/*/Snapshot/Refset/Language/der2_cRefset_Language*"
         elif self.data_type=="hst":
             glob_pattern=extract_dir+"/*/Resources/HistorySubstitutionTable/xres*"
+            glob_pattern2=None
         elif self.data_type=="qt":
             glob_pattern=extract_dir+"/*/Resources/QueryTable/xres*"
+            glob_pattern2=None
         else:
             glob_pattern=None             
 
         data_filename=glob.glob(glob_pattern)[0]
+        if glob_pattern2 is not None:
+            data_filename2=glob.glob(glob_pattern2)[0]
+        else:
+            data_filename2=None
         success_flag, message= self.create_collection_from_RF2_file(
             RF2_filename=data_filename,
+            RF2_filename2=data_filename2,
             delete_if_exists=True,
             collection_name=self.make_collection_name(date_string),
             )
     
         print("Cleaning up")
+
         shutil.rmtree(extract_dir)
         os.remove(out_file)
-
  
         logging.debug("%s : %s" % (success_flag,message))
 

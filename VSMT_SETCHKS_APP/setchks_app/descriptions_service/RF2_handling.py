@@ -6,6 +6,7 @@ logger=logging.getLogger(__name__)
 def create_collection_from_RF2_file(
         db=None, 
         RF2_filename=None, 
+        RF2_filename2=None, 
         delete_if_exists=False,
         data_type=None,
         collection_name=None
@@ -25,6 +26,28 @@ def create_collection_from_RF2_file(
             logger.debug("Collection %s already exists" % collection_name)
             return False, "Collection %s already exists; use delete_if_exists=True to overwrite" % collection_name
 
+
+    # for descriptions, additionally read the language file and build dict of acc/pref keyed by D_Id
+    if data_type=="descriptions":
+        acceptabilities={}
+        for line in open(RF2_filename2).readlines()[1:]: 
+            f=line.split('\t')
+            acceptability_active_status=f[2]
+            refsetId=f[4]
+            referenceComponentId=f[5]
+            acceptabilityId=f[6].strip()
+            # import pdb; pdb.set_trace()
+            if refsetId=="999001261000000100": # NHS realm lang refset (clinical part)
+                assert referenceComponentId not in acceptabilities # double check no duplicates
+                if acceptability_active_status=="1":
+                    if acceptabilityId=="900000000000548007": # = preferred
+                        acceptabilities[referenceComponentId]="pref"
+                    else:
+                        acceptabilities[referenceComponentId]="acceptable"
+                else:
+                    pass    # acceptabilities entry will be missing if the active status in the 
+                            # lang refset is 0, which can be considered same as "is no longer in the refset"
+
     n_documents_per_chunk=100000
     i_document=0
     documents=[]
@@ -35,15 +58,36 @@ def create_collection_from_RF2_file(
             desc_id=f[0]
             active_status=f[2]
             concept_id=f[4]
+            typeId=f[6]
             term=f[7]
             case_sig=f[8]
-            document={
-                "desc_id":desc_id,
-                "active_status":active_status,
-                "concept_id":concept_id,
-                "term":term,
-                "case_sig":case_sig
-                }
+
+            if desc_id in acceptabilities: # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
+                acceptability=acceptabilities[desc_id]
+                if typeId=="900000000000003001": # = fsn
+                    if acceptability=="pref":
+                        term_type="fsn" 
+                    else: # ?? can an fsn have acceptable status?
+                        print(f"fsn with only acceptable status {desc_id}")
+                        term_type="ignore"
+                else:
+                    if acceptability=="pref":
+                        term_type="pt"
+                    else:
+                        term_type="syn"
+                # print(acceptability, desc_id, typeId, term_type)
+                document={
+                    "desc_id":desc_id,
+                    "active_status":active_status,
+                    "concept_id":concept_id,
+                    "term":term,
+                    "term_type":term_type,
+                    "case_sig":case_sig
+                    }
+            else:
+                term_type="ignore"
+            if term_type!="ignore":
+                documents.append(document)
         elif data_type=="qt":
             supertype_id=f[0]
             subtype_id=f[1]
@@ -53,6 +97,7 @@ def create_collection_from_RF2_file(
                 "subtype_id":subtype_id,
                 "provenance":provenance,
                 }
+            documents.append(document)
         elif data_type=="hst":
             old_concept_id=f[0]
             old_concept_status=f[1]
@@ -70,15 +115,17 @@ def create_collection_from_RF2_file(
                 "is_ambiguous":is_ambiguous,
                 "iterations":iterations,
                 }
+            documents.append(document)
         else:
-            document={}
-        documents.append(document)
+            raise Exception(f"Unknown data_type: {data_type}") 
         if i_document%n_documents_per_chunk==0:
             logger.debug("Have sent %s documents to mongodb" % i_document)
             print(i_document)
-            collection.insert_many(documents)
+            if documents != []: # need check as unacceptable descriptions are skipped
+                collection.insert_many(documents)
             documents=[]
-    collection.insert_many(documents) # insert any left in the last set
+    if documents != []: # need check as unacceptable descriptions are skipped 
+        collection.insert_many(documents) # insert any left in the last set
     logger.debug("Finished sending %s documents to mongodb" % i_document)
     logger.debug("Creating indexes..")
     if data_type=="descriptions":
