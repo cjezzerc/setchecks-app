@@ -28,6 +28,7 @@ setchks['CHK01_APPROP_SCTID']=Setchk(
     setchk_short_name='CHK01 Appropriate SNOMED CT identifiers for value set members', 
     setchk_function=CHK01_APPROP_SCTID.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK02_IDS_IN_RELEASE']=Setchk(
@@ -35,6 +36,7 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
     setchk_short_name='CHK02 Identifiers are in selected the SNOMED CT release.', 
     setchk_function=CHK02_IDS_IN_RELEASE.do_check,
     setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
     )
 
 setchks['CHK04_INACTIVES_ENTRY']=Setchk(
@@ -42,6 +44,7 @@ setchks['CHK04_INACTIVES_ENTRY']=Setchk(
     setchk_short_name='CHK04 Inactive content in sets for data entry', 
     setchk_function=CHK04_INACTIVES_ENTRY.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY","ENTRY_OTHER"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
     )
 
 setchks['CHK05_UNRECC_HIERARCH']=Setchk(
@@ -49,6 +52,7 @@ setchks['CHK05_UNRECC_HIERARCH']=Setchk(
     setchk_short_name='CHK05 Prohibited hierarchies for collating into a value set for clinical data entry.', 
     setchk_function=CHK05_UNRECC_HIERARCH.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
@@ -56,6 +60,7 @@ setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK10_MISSING_CONCEPTS']=Setchk(
@@ -63,6 +68,7 @@ setchks['CHK10_MISSING_CONCEPTS']=Setchk(
     setchk_short_name='CHK10 Check for omitted descendants from a specific region of the hierarchy', 
     setchk_function=CHK10_MISSING_CONCEPTS.do_check,
     setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK14_MANY_CLAUSES']=Setchk(
@@ -70,6 +76,7 @@ setchks['CHK14_MANY_CLAUSES']=Setchk(
     setchk_short_name='CHK14 Value Set membership expression requires 30-40 clauses', 
     setchk_function=CHK14_MANY_CLAUSES.do_check,
     setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
@@ -77,6 +84,7 @@ setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
     setchk_short_name='CHK20 Incorrectly formatted SNOMED CT identifiers', 
     setchk_function=CHK20_INCORR_FMT_SCTID.do_check,
     setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
     )
 
 setchks['CHK51_SUGGESTS_DUAL_SCT']=Setchk(
@@ -84,4 +92,5 @@ setchks['CHK51_SUGGESTS_DUAL_SCT']=Setchk(
     setchk_short_name='CHK51 Suggested changes to content (refactoring dual SCT versions)', 
     setchk_function=CHK51_SUGGESTS_DUAL_SCT.do_check,
     setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["DUAL_SCT_VERSIONS"],
     )

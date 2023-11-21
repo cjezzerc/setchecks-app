@@ -52,6 +52,7 @@ available_setchks=[
     'CHK04_INACTIVES_ENTRY',
     'CHK10_MISSING_CONCEPTS',
     'CHK14_MANY_CLAUSES',
+    'CHK51_SUGGESTS_DUAL_SCT',
     ]
 
 # from pymongo import MongoClient
@@ -496,11 +497,14 @@ def select_and_run_checks():
     setchks_session.selected_setchks=[]
     for sc in available_setchks:
         this_setchk = setchks_app.setchks.setchk_definitions.setchks[sc]
+        print(setchks_session.sct_version_mode, 
+              this_setchk.setchk_sct_version_modes,
+              setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes)
         if (
             "ALL" in this_setchk.setchk_data_entry_extract_types or 
             setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
-            # ) and (
-            # setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes    
+            ) and (
+            setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes    
         ):
             setchks_session.selected_setchks.append(this_setchk)
     logger.debug(setchks_session.selected_setchks)
