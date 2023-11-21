@@ -30,16 +30,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for sc in setchks_session.selected_setchks %}
-                                {% set this_setchk = all_setchks[sc] %}
-                                {% if "ALL"                                in this_setchk.setchk_data_entry_extract_types
-                                or setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types %}
-                                    {% set setchk_run_status = setchks_session.setchks_run_status[sc] %}
-                                    <tr>
-                                    <td> {{ this_setchk.setchk_short_name }}</td>
-                                    <td> {{ setchk_run_status }} </td>
-                                    </tr>
-                                {% endif %}
+                            {% for setchk in setchks_session.selected_setchks %}
+                                {% set sc=setchk.setchk_code %}
+                                {% set setchk_run_status = setchks_session.setchks_run_status[sc] %}
+                                <tr>
+                                <td> {{ setchk.setchk_short_name }}</td>
+                                <td> {{ setchk_run_status }} </td>
+                                </tr>
                             {% endfor %}
                             <tr>
                                 <td> Generate Excel Output</td>

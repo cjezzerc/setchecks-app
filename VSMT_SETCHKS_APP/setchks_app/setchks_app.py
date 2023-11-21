@@ -493,8 +493,17 @@ def select_and_run_checks():
     bc=Breadcrumbs()
     bc.set_current_page("select_and_run_checks")
 
-    if setchks_session.selected_setchks==None:
-        setchks_session.selected_setchks=available_setchks
+    setchks_session.selected_setchks=[]
+    for sc in available_setchks:
+        this_setchk = setchks_app.setchks.setchk_definitions.setchks[sc]
+        if (
+            "ALL" in this_setchk.setchk_data_entry_extract_types or 
+            setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
+            # ) and (
+            # setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes    
+        ):
+            setchks_session.selected_setchks.append(this_setchk)
+    logger.debug(setchks_session.selected_setchks)
 
     setchks_jobs_manager=setchks_session.setchks_jobs_manager
     if setchks_jobs_manager is not None:
@@ -520,19 +529,9 @@ def select_and_run_checks():
             for mr in setchks_session.marshalled_rows:
                 mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
         
-        setchks_to_run=[]
-        for sc in setchks_session.selected_setchks: # really the logic in next two lines should be applied when 
-                                                    # creating/amending selected_setchks list - change when implement that
-            this_setchk = setchks_session.available_setchks[sc]
-            if ("ALL" in this_setchk.setchk_data_entry_extract_types or 
-                setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
-                ):
-                setchks_to_run.append(this_setchk)
-
-        logger.debug(str(setchks_to_run))
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
-            setchks_list=setchks_to_run, 
-            setchks_session=setchks_session
+            setchks_list=setchks_session.selected_setchks, 
+            setchks_session=setchks_session,
             )
 
     if "generate_report" in request.args:

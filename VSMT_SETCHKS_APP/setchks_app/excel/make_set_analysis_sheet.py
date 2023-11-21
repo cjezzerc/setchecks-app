@@ -1,6 +1,7 @@
 
 
 from openpyxl.utils import get_column_letter
+import setchks_app.setchks.setchk_definitions
 
 
 def make_set_analysis_sheet(
@@ -11,7 +12,7 @@ def make_set_analysis_sheet(
     border=None,
     ):
 
-    setchks=setchks_session.available_setchks
+    setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
 
     ws.title='Set analyses'

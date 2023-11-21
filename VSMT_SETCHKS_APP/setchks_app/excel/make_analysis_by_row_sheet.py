@@ -1,6 +1,7 @@
 
 from openpyxl.utils import get_column_letter
-
+import setchks_app.setchks.setchk_definitions
+ 
 def make_analysis_by_row_sheet(
     ws=None, 
     setchks_list_to_report=None,
@@ -12,7 +13,7 @@ def make_analysis_by_row_sheet(
     supp_tabs_row_numbers_map=None,
     ): 
 
-    setchks=setchks_session.available_setchks
+    setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
 
     row_analysis_row_numbers_map=[] # each entry in list corresponds 1:1 to a row in data file

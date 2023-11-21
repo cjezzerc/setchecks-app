@@ -33,7 +33,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
                  bottom=Side(style='thin'))
     
 
-    setchks=setchks_session.available_setchks
+    setchks=setchks_session.selected_setchks
     setchks_results=setchks_session.setchks_results
     
     #Find which of the requested checks have actually been run (silently ignores the others)

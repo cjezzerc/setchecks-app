@@ -13,6 +13,9 @@ from openpyxl.worksheet.filters import (
 
 from openpyxl.styles.colors import Color
 
+import setchks_app.setchks.setchk_definitions
+
+
 
 
 def make_row_overview_sheet(
@@ -24,8 +27,7 @@ def make_row_overview_sheet(
     row_analysis_row_numbers_map=None,
     ): 
 
-
-    setchks=setchks_session.available_setchks
+    setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
 
     current_row=0
