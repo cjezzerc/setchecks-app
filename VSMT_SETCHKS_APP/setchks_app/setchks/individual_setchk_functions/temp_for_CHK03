@@ -1,0 +1,22 @@
+if have_dterm_column is False:
+    if C_Id_entered is None:
+        OUTCOME i
+    else:
+        OUTCOME ii
+else:
+    if C_Id_entered is not None:
+        if congruence_of_C_Id_entered_and_D_Term_entered_case_insens:
+            OUTCOME iii
+        else:
+            if congruence_of_C_Id_entered_and_D_Term_entered_csr:
+                OUTCOME iv
+            else:
+                OUTCOME v
+    else:
+        if congruence_of_D_Id_entered_and_D_Term_entered_case_insens:
+            if congruence_of_D_Id_entered_and_D_Term_entered_csr:
+                OUTCOME vi
+            else:
+                OUTCOME vii
+        else:
+            OUTCOME viii

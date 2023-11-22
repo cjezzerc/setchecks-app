@@ -25,12 +25,8 @@ def do_check(setchks_session=None, setchk_results=None):
 
     concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
 
-    
-    valset_members=set()
-    for mr in setchks_session.marshalled_rows:
-        if mr.C_Id is not None:
-            valset_members.add(mr.C_Id)  
-    print(f"valset_members {valset_members}")
+    have_dterm_column=setchks_session.ci.have_dterm_column
+
    
 
     ##################################################################
