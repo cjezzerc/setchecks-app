@@ -31,6 +31,7 @@ def create_collection_from_RF2_file(
     if data_type=="descriptions":
         acceptabilities={}
         for line in open(RF2_filename2).readlines()[1:]: 
+            line=line.strip()
             f=line.split('\t')
             acceptability_active_status=f[2]
             refsetId=f[4]
@@ -51,9 +52,9 @@ def create_collection_from_RF2_file(
     n_documents_per_chunk=100000
     i_document=0
     documents=[]
-    for line in open(RF2_filename).readlines()[1:]: 
+    for line in open(RF2_filename).readlines()[1:]:
         i_document+=1
-        f=line.split('\t')
+        f=[x.strip() for x in line.split('\t')]
         if data_type=="descriptions":
             desc_id=f[0]
             active_status=f[2]

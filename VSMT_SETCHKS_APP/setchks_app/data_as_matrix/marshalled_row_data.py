@@ -40,8 +40,8 @@ class MarshalledRow():
         "D_Term_derived_from_D_Id_entered", 
         "D_Id_derived_from_C_Id_entered_and_D_Term_entered", 
         #    "congruence_of_C_Id_entered_and_D_Id_entered",
-        "congruence_of_C_Id_entered_and_D_Term_entered", 
-        "congruence_of_D_Id_entered_and_D_Term_entered", 
+        "congruence_of_C_Id_entered_and_D_Term_entered_case_loose", 
+        "congruence_of_D_Id_entered_and_D_Term_entered_case_loose", 
         "C_Id", # this will contain either an entered C_Id or if D_Id given then the implied C_Id  
         "C_Id_source", # either "ENTERED", "DERIVED" or None  
         "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "DID_NOT_IN_RELEASE"
@@ -90,8 +90,8 @@ class MarshalledRow():
         self.C_Id_derived_from_D_Id_entered=None
         self.D_Term_derived_from_D_Id_entered=None
         self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=None
-        self.congruence_of_C_Id_entered_and_D_Term_entered=None
-        self.congruence_of_D_Id_entered_and_D_Term_entered=None
+        self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=None
+        self.congruence_of_D_Id_entered_and_D_Term_entered_case_loose=None
         self.C_Id=None
         self.C_Id_source=None
         self.C_Id_why_none="NOT_SET_YET"
@@ -145,7 +145,7 @@ class MarshalledRow():
                 self.C_Id_source="DERIVED"
                 self.C_Id_why_none=None
                 if self.D_Term_entered:
-                    self.congruence_of_D_Id_entered_and_D_Term_entered=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
+                    self.congruence_of_D_Id_entered_and_D_Term_entered_case_loose=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
             else: 
                 if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
                     self.C_Id_why_none="DID_NISR_SRIL"
@@ -174,10 +174,10 @@ class MarshalledRow():
             
         if self.C_Id_entered and self.D_Term_entered:
             C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
-            self.congruence_of_C_Id_entered_and_D_Term_entered=False
+            self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=False
             for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
                 if item["term"].lower()==self.D_Term_entered.lower(): # case significance TBI
-                    self.congruence_of_C_Id_entered_and_D_Term_entered=True
+                    self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=True
                     self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
                     break
 
