@@ -5,7 +5,7 @@ import boto3
 
 sys.path.append('../..')
 
-from setchks_app.concepts_service.concepts_service import ConceptsService
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 print("About to see if need to get secrets")
 if 'ONTOSERVER_USERNAME' not in os.environ:
@@ -23,16 +23,17 @@ if 'ONTOSERVER_USERNAME' not in os.environ:
 else:
     print("no need to get secrets")
 
-cs=ConceptsService()
+ds=DescriptionsService()
 
 action=sys.argv[1]
 
 if action=="check_coverage":
-    for k,v in cs.check_whether_releases_on_ontoserver_have_collections().items():
+    for k,v in ds.check_whether_releases_on_ontoserver_have_collections().items():
         print(f'{k}: {v}')
 
 if action=="make_missing":
-    cs.make_missing_collections()
+    ds.make_missing_collections()
 
 if action=="delete_database": # dangerous! do with intention!
-    cs.delete_database()
+    ds.delete_database()
+

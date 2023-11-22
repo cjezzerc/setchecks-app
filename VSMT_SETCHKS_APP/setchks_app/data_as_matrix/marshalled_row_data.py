@@ -22,9 +22,36 @@ This code is heavily dependent on the mongodb code. If the the ontoserver were t
 then this could all be rewritten.
 """
 
+csr_indicators={ # these abbreviations as in the SNOMED confluence pages
+    "900000000000020002":"cI", 
+    "900000000000448009":"ci",
+    "900000000000017005":"CS",
+}
+
+csr_terms={
+    "900000000000020002":"Only initial character case insensitive", 
+    "900000000000448009":"Entire term case insensitive",
+    "900000000000017005":"Entire term case sensitive",
+}
+
+def compare_strings_csr(string1=None, string2=None, csr_SCT_code=None, csr_indicator=None):
+    # applies case significance rules
+    # if csr_indicator not given, then csr_SCT_code must be given (and no checking of this done)
+    # no checking for illegal code or very short strings implemented
+    if csr_indicator is None:
+        csr_indicator=csr_indicators[csr_SCT_code]
+    print(f"string1:{string1} {csr_indicator}")
+    if csr_indicator=="ci":
+        return string1.lower()==string2.lower()
+    elif csr_indicator=="cI":
+        return (string1[0].lower()==string2[0].lower()) and (string1[1:]==string2[1:])
+    else:
+        return string1==string2
+        
 ds=descriptions_service.DescriptionsService()
 
 class MarshalledRow():
+
 
     __slots__=[
         "sctid_cell",
@@ -40,8 +67,10 @@ class MarshalledRow():
         "D_Term_derived_from_D_Id_entered", 
         "D_Id_derived_from_C_Id_entered_and_D_Term_entered", 
         #    "congruence_of_C_Id_entered_and_D_Id_entered",
-        "congruence_of_C_Id_entered_and_D_Term_entered_case_loose", 
-        "congruence_of_D_Id_entered_and_D_Term_entered_case_loose", 
+        "congruence_of_C_Id_entered_and_D_Term_entered_case_insens", 
+        "congruence_of_D_Id_entered_and_D_Term_entered_case_insens", 
+        "congruence_of_C_Id_entered_and_D_Term_entered_csr", 
+        "congruence_of_D_Id_entered_and_D_Term_entered_csr", 
         "C_Id", # this will contain either an entered C_Id or if D_Id given then the implied C_Id  
         "C_Id_source", # either "ENTERED", "DERIVED" or None  
         "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "DID_NOT_IN_RELEASE"
@@ -90,8 +119,10 @@ class MarshalledRow():
         self.C_Id_derived_from_D_Id_entered=None
         self.D_Term_derived_from_D_Id_entered=None
         self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=None
-        self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=None
-        self.congruence_of_D_Id_entered_and_D_Term_entered_case_loose=None
+        self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=None
+        self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=None
+        self.congruence_of_C_Id_entered_and_D_Term_entered_csr=None
+        self.congruence_of_D_Id_entered_and_D_Term_entered_csr=None
         self.C_Id=None
         self.C_Id_source=None
         self.C_Id_why_none="NOT_SET_YET"
@@ -145,7 +176,17 @@ class MarshalledRow():
                 self.C_Id_source="DERIVED"
                 self.C_Id_why_none=None
                 if self.D_Term_entered:
-                    self.congruence_of_D_Id_entered_and_D_Term_entered_case_loose=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
+                    # self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
+                    self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=compare_strings_csr(
+                        string1=D_Id_data["term"],
+                        string2=self.D_Term_entered,
+                        csr_indicator="ci"
+                        )
+                    self.congruence_of_D_Id_entered_and_D_Term_entered_csr=compare_strings_csr(
+                        string1=D_Id_data["term"],
+                        string2=self.D_Term_entered,
+                        csr_SCT_code=D_Id_data["case_sig"]
+                        )
             else: 
                 if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
                     self.C_Id_why_none="DID_NISR_SRIL"
@@ -174,11 +215,25 @@ class MarshalledRow():
             
         if self.C_Id_entered and self.D_Term_entered:
             C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
-            self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=False
+            self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=False
+            self.congruence_of_C_Id_entered_and_D_Term_entered_csr=False
             for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
-                if item["term"].lower()==self.D_Term_entered.lower(): # case significance TBI
-                    self.congruence_of_C_Id_entered_and_D_Term_entered_case_loose=True
+                # if item["term"].lower()==self.D_Term_entered.lower(): # case significance TBI
+                if compare_strings_csr(
+                    string1=item["term"],
+                    string2=self.D_Term_entered,
+                    csr_indicator="ci",
+                    ):
+                    self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
                     self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
+                    # propose add if statement here that now checks if it still matches using CSR and sets#
+                    # self.congruence_of_C_Id_entered_and_D_Term_entered_case_csr and similar line 5 lines up
+                    if item["case_sig"]=="ci" or compare_strings_csr(
+                        string1=item["term"],
+                        string2=self.D_Term_entered,
+                        csr_SCT_code=item["case_sig"],
+                        ):
+                        self.congruence_of_C_Id_entered_and_D_Term_entered_csr=True
                     break
 
     def __str__(self):

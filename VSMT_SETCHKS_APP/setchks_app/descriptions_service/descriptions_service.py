@@ -69,7 +69,15 @@ class DescriptionsService():
         collection_name=self.make_collection_name(date_string=sct_version)
         return collection_name in self.db.list_collection_names()
     
- 
+    def delete_database(self):
+        if self.data_type=="descriptions":
+            get_mongodb_client.get_mongodb_client().drop_database("descriptions_service")
+        elif self.data_type=="hst":
+            get_mongodb_client.get_mongodb_client().drop_database("hst")
+        elif self.data_type=="qt":
+            get_mongodb_client.get_mongodb_client().drop_database("qt")
+
+    
     def make_missing_collections(self):
         existence_data=self.check_whether_releases_on_ontoserver_have_collections()
         for date_string, existence in existence_data.items():

@@ -31,6 +31,9 @@ class ConceptsService():
         collection_name=self.make_collection_name(date_string=sct_version)
         return collection_name in self.db.list_collection_names()
     
+    def delete_database(self):
+        get_mongodb_client.get_mongodb_client().drop_database("concepts_service")
+    
     def make_missing_collections(self):
         existence_data=self.check_whether_releases_on_ontoserver_have_collections()
         for date_string, existence in existence_data.items():
