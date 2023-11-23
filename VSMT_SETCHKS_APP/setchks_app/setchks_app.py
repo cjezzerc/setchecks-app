@@ -276,6 +276,7 @@ def rq():
         from setchks_app.redis.rq_utils import start_rq_worker_if_none_running, kill_all_rq_workers
         kill_all_rq_workers()
         start_rq_worker_if_none_running()
+        return 'worker restarted'
     
     return f"Did not understand that: {action}"
 
