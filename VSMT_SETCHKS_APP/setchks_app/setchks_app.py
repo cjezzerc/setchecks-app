@@ -271,6 +271,11 @@ def rq():
     if action=="setchk_job_result":
         return str(job_result(job_id=job_id).__repr__())
         # return jsonify(json.loads(jsonpickle.encode(job_result(job_id=job_id), unpicklable=False)))
+
+    if action=="restart_worker":
+        from setchks_app.redis.rq_utils import start_rq_worker_if_none_running, kill_all_rq_workers
+        kill_all_rq_workers()
+        start_rq_worker_if_none_running()
     
     return f"Did not understand that: {action}"
 
