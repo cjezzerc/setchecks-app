@@ -9,6 +9,7 @@ check's long identifier
 from .setchk import Setchk
 from .individual_setchk_functions import CHK01_APPROP_SCTID
 from .individual_setchk_functions import CHK02_IDS_IN_RELEASE
+from .individual_setchk_functions import CHK03_TERM_CONGRUENCE
 from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
 from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
@@ -35,6 +36,15 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
     setchk_code='CHK02_IDS_IN_RELEASE',
     setchk_short_name='CHK02 Identifiers are in selected the SNOMED CT release.', 
     setchk_function=CHK02_IDS_IN_RELEASE.do_check,
+    setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
+    )
+
+
+setchks['CHK03_TERM_CONGRUENCE']=Setchk(
+    setchk_code='CHK03_TERM_CONGRUENCE',
+    setchk_short_name='CHK03 Legitimate Associations between Concepts and Descriptions', 
+    setchk_function=CHK03_TERM_CONGRUENCE.do_check,
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
     )

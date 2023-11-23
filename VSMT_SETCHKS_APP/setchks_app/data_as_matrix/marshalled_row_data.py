@@ -40,7 +40,7 @@ def compare_strings_csr(string1=None, string2=None, csr_SCT_code=None, csr_indic
     # no checking for illegal code or very short strings implemented
     if csr_indicator is None:
         csr_indicator=csr_indicators[csr_SCT_code]
-    print(f"string1:{string1} {csr_indicator}")
+    # print(f"string1:{string1} {csr_indicator}")
     if csr_indicator=="ci":
         return string1.lower()==string2.lower()
     elif csr_indicator=="cI":

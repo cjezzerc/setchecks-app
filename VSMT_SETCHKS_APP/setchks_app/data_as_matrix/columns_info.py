@@ -146,7 +146,7 @@ class ColumnsInfo():
 
 
 if __name__=="__main__":
-    ci=ColumnInfo(7)
+    ci=ColumnsInfo(7)
     print(ci)
     for actions in [    [3,"OTHER",True],
                         [3,"CID",True],

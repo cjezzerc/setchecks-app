@@ -1,22 +1,31 @@
-if have_dterm_column is False:
-    if C_Id_entered is None:
-        OUTCOME i
-    else:
-        OUTCOME ii
-else:
+
+# at this level and deeper can assume have either a C_Id or a D_Id
+if have_dterm_column is False: # no DTERM column
     if C_Id_entered is not None:
-        if congruence_of_C_Id_entered_and_D_Term_entered_case_insens:
-            OUTCOME iii
-        else:
-            if congruence_of_C_Id_entered_and_D_Term_entered_csr:
-                OUTCOME iv
-            else:
-                OUTCOME v
+        leaf="i" # Just C_Id given (No DTERM column)
     else:
-        if congruence_of_D_Id_entered_and_D_Term_entered_case_insens:
-            if congruence_of_D_Id_entered_and_D_Term_entered_csr:
-                OUTCOME vi
-            else:
-                OUTCOME vii
+        leaf="ii" # Just D_Id given (No DTERM column)
+else: # Have Term column
+    if D_Term_entered=="": # Term is blank
+        if C_Id_entered is not None:
+            leaf="ix" # C_Id entered, but Term is blank
         else:
-            OUTCOME viii
+            leaf="x" # D_Id entered, but Term is blank
+    else: # A Term has been entered
+        if C_Id_entered is not None: # CID and Term
+            if not congruence_of_C_Id_entered_and_D_Term_entered_case_insens:
+                leaf="iii" # Term is not one for this entered C_Id
+            else:
+                if congruence_of_C_Id_entered_and_D_Term_entered_csr:
+                    leaf="iv" # Term is close to being one for this entered_C_Id but does not pass case significance
+                else:
+                    leaf="v" # Term fully matches one for this entered C_Id, including case significance
+        else: # must be DID and Term
+            if congruence_of_D_Id_entered_and_D_Term_entered_case_insens: 
+                if congruence_of_D_Id_entered_and_D_Term_entered_csr:
+                    leaf="vi" # Term is nearly correct for this D_Id, but does not pass case significance
+                else:
+                    leaf="vii" # Term is fully correct for this D_Id, including case significance
+            else:
+                leaf="viii" # Term is incorrect for this DID
+            
