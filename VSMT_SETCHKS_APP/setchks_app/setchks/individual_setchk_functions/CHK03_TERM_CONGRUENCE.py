@@ -35,7 +35,7 @@ def do_check(setchks_session=None, setchk_results=None):
         "vii" :[          "03","04","05",     "07","08",     ],
         "viii":["01",                              "08","09",],
         "ix"  :["01",                                        ],
-        "vi"  :[     "02","03","04","05",          "08",     ],
+        "x"   :[     "02","03","04","05",          "08",     ],
     }
 
     def generate_check_item(
