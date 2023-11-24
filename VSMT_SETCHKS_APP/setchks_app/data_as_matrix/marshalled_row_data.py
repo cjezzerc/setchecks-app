@@ -64,13 +64,16 @@ class MarshalledRow():
         # could add functionality later to check against latest edition AS WELL but for now keep data specific to state of SCT at
         # selected release
         "C_Id_derived_from_D_Id_entered",   
-        "D_Term_derived_from_D_Id_entered", 
-        "D_Id_derived_from_C_Id_entered_and_D_Term_entered", 
+        "D_Term_derived_from_D_Id_entered",
+        "D_Id_derived_from_C_Id_entered_and_D_Term_entered",
+        "D_Term_Type_derived_from_D_Id_entered", 
+        "D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered", 
         #    "congruence_of_C_Id_entered_and_D_Id_entered",
         "congruence_of_C_Id_entered_and_D_Term_entered_case_insens", 
         "congruence_of_D_Id_entered_and_D_Term_entered_case_insens", 
         "congruence_of_C_Id_entered_and_D_Term_entered_csr", 
         "congruence_of_D_Id_entered_and_D_Term_entered_csr", 
+        "D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered",
         "C_Id", # this will contain either an entered C_Id or if D_Id given then the implied C_Id  
         "C_Id_source", # either "ENTERED", "DERIVED" or None  
         "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "DID_NOT_IN_RELEASE"
@@ -119,10 +122,13 @@ class MarshalledRow():
         self.C_Id_derived_from_D_Id_entered=None
         self.D_Term_derived_from_D_Id_entered=None
         self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=None
+        self.D_Term_Type_derived_from_D_Id_entered=None
+        self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=None 
         self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=None
         self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=None
         self.congruence_of_C_Id_entered_and_D_Term_entered_csr=None
         self.congruence_of_D_Id_entered_and_D_Term_entered_csr=None
+        self.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered=None
         self.C_Id=None
         self.C_Id_source=None
         self.C_Id_why_none="NOT_SET_YET"
@@ -172,6 +178,7 @@ class MarshalledRow():
                 self.C_Id_derived_from_D_Id_entered=D_Id_data["concept_id"]
                 self.D_Id_active=D_Id_data["active_status"]
                 self.D_Term_derived_from_D_Id_entered=D_Id_data["term"]
+                self.D_Term_Type_derived_from_D_Id_entered=D_Id_data["term_type"]
                 self.C_Id=self.C_Id_derived_from_D_Id_entered
                 self.C_Id_source="DERIVED"
                 self.C_Id_why_none=None
@@ -199,6 +206,7 @@ class MarshalledRow():
                         self.C_Id_derived_from_D_Id_entered=D_Id_data_latest["concept_id"]
                         self.D_Id_active=D_Id_data_latest["active_status"]
                         self.D_Term_derived_from_D_Id_entered=D_Id_data_latest["term"]
+                        self.D_Term_Type_derived_from_D_Id_entered=D_Id_data_latest["term_type"]
                         self.C_Id_via_latest_release=self.C_Id_derived_from_D_Id_entered
                         C_Id_data=ds.get_data_about_concept_id(
                             concept_id=self.C_Id_derived_from_D_Id_entered, 
@@ -211,29 +219,28 @@ class MarshalledRow():
                     else:
                         self.C_Id_why_none="DID_NISR_DID_NILR"
             
-                # return # CHECK THIS!!!!!!!!!!!!!!!!
             
         if self.C_Id_entered and self.D_Term_entered:
             C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
             self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=False
-            self.congruence_of_C_Id_entered_and_D_Term_entered_csr=False
             for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
-                # if item["term"].lower()==self.D_Term_entered.lower(): # case significance TBI
                 if compare_strings_csr(
                     string1=item["term"],
                     string2=self.D_Term_entered,
                     csr_indicator="ci",
-                    ):
+                    ): # first look for match in case insensitive way
                     self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
                     self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
-                    # propose add if statement here that now checks if it still matches using CSR and sets#
-                    # self.congruence_of_C_Id_entered_and_D_Term_entered_case_csr and similar line 5 lines up
+                    self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=item["term_type"]
                     if item["case_sig"]=="ci" or compare_strings_csr(
                         string1=item["term"],
                         string2=self.D_Term_entered,
                         csr_SCT_code=item["case_sig"],
                         ):
                         self.congruence_of_C_Id_entered_and_D_Term_entered_csr=True
+                    else:
+                        self.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered=item["term"]
+                        self.congruence_of_C_Id_entered_and_D_Term_entered_csr=False
                     break
 
     def __str__(self):

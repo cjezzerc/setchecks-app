@@ -24,7 +24,7 @@ def make_analysis_by_outcome_sheet(
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
-        ws.append(["","Row number"] + header_row_cell_contents) # ** need to create better header row
+        ws.append(["","Row specific info","Row number"] + header_row_cell_contents) # ** need to create better header row
 
     ###################################################################################################
     # first loop over all check items and build a dict so can output them grouped by setchk and outcome
@@ -63,8 +63,12 @@ def make_analysis_by_outcome_sheet(
             for i_data_row, data_row, check_item in check_items_dict[setchk_code][outcome_code]:
                 data_row_cell_contents=[x.string for x in data_row]
                 input_file_row_number=i_data_row+setchks_session.first_data_row+1
+                row_specific_message=check_item.row_specific_message
+                if row_specific_message=="None":
+                    row_specific_message=""
                 ws.append([
                     "",
+                    row_specific_message,
                     f"Row{input_file_row_number}",
                     ] 
                     + data_row_cell_contents
@@ -79,7 +83,7 @@ def make_analysis_by_outcome_sheet(
         ws.append(["----"]) 
     
     # crude cell with setting
-    cell_widths=[50,10] + [20]*10
+    cell_widths=[50,30,10] + [20]*10
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 

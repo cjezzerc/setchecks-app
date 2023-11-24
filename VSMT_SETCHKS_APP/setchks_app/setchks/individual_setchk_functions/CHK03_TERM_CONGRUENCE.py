@@ -33,9 +33,9 @@ def do_check(setchks_session=None, setchk_results=None):
         "v"   :[          "03","04","05",     "07",          ],
         "vi"  :[          "03","04","05",          "08",     ],
         "vii" :[          "03","04","05",     "07","08",     ],
-        "viii":["01",                                   "09",],
+        "viii":["01",                              "08","09",],
         "ix"  :["01",                                        ],
-        "vi"  :[     "02","03","04","05",           "08",    ],
+        "vi"  :[     "02","03","04","05",          "08",     ],
     }
 
     def generate_check_item(
@@ -45,7 +45,7 @@ def do_check(setchks_session=None, setchk_results=None):
         implied_dterm=None,
         dterm_type=None,
         description_inactive=None,
-        corrected_dterm=None,
+        csr_correct_dterm=None,
         data_entry_extract_type=None,
         ):
         if outcome_code=="CHK03-OUT-01":
@@ -108,7 +108,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 "According to its Case Significance Rule this description term should be written as -->"
                 )
             check_item.row_specific_message=(
-                f"{corrected_dterm}"
+                f"{csr_correct_dterm}"
                 )
         elif outcome_code=="CHK03-OUT-08":
             check_item=CheckItem(outcome_code=outcome_code)
@@ -121,12 +121,22 @@ def do_check(setchks_session=None, setchk_results=None):
         elif outcome_code=="CHK03-OUT-08":
             check_item=CheckItem(outcome_code=outcome_code)
             check_item.general_message=(
+                "The provided description ID corresponds to this Concept ID -->"
+                )
+            check_item.row_specific_message=(
+                f"{implied_concept_id}"
+                )  
+        elif outcome_code=="CHK03-OUT-09":
+            check_item=CheckItem(outcome_code=outcome_code)
+            check_item.general_message=(
                 "The provided description term does not correspond to the provided Description ID. "
                 "The correct description term for this Description ID is -->"
                 )
             check_item.row_specific_message=(
                 f"{implied_dterm}"
-                )  
+                ) 
+        
+        
         else:
             check_item=CheckItem(outcome_code=outcome_code)
             check_item.general_message=(
@@ -178,22 +188,48 @@ def do_check(setchks_session=None, setchk_results=None):
                                 leaf="iii" # Term is not one for this entered C_Id
                             else:
                                 if mr.congruence_of_C_Id_entered_and_D_Term_entered_csr:
-                                    leaf="iv" # Term is close to being one for this entered_C_Id but does not pass case significance
+                                    leaf="iv" # Term fully matches one for this entered C_Id, including case significance
                                 else:
-                                    leaf="v" # Term fully matches one for this entered C_Id, including case significance
+                                    leaf="v" # Term is close to being one for this entered_C_Id but does not pass case significance
                         else: # must be DID and Term
                             if mr.congruence_of_D_Id_entered_and_D_Term_entered_case_insens: 
                                 if mr.congruence_of_D_Id_entered_and_D_Term_entered_csr:
-                                    leaf="vi" # Term is nearly correct for this D_Id, but does not pass case significance
+                                    leaf="vi" # Term is fully correct for this D_Id, including case significance
                                 else:
-                                    leaf="vii" # Term is fully correct for this D_Id, including case significance
+                                    leaf="vii" # Term is nearly correct for this D_Id, but does not pass case significance
                             else:
                                 leaf="viii" # Term is incorrect for this DID
+         
                 #
-                # need to build up the items that need to pass into generate_check_item here
+                # prepare all the items needed in the call to generate_check_item
+                # even if the particular outcome_codes do not require them
+                # (easier than having requirements per outcome code)
                 #
+                if mr.D_Term_Type_derived_from_D_Id_entered is not None:
+                    dterm_type=mr.D_Term_Type_derived_from_D_Id_entered
+                elif mr.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered:
+                    dterm_type=mr.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered
+                else:
+                    dterm_type=""
+                    #dterm_type="pt" # or we report "pt" as we will be giving pt in a separate message
+                if mr.D_Term_derived_from_D_Id_entered is not None:
+                    csr_correct_dterm=mr.D_Term_derived_from_D_Id_entered 
+                elif mr.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered:
+                    csr_correct_dterm=mr.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered
+                else:
+                    csr_correct_dterm=""
                 for outcome_code_digits in outcome_codes_matrix[leaf]:
                     check_item=generate_check_item(outcome_code=f"CHK03-OUT-{outcome_code_digits}")
+                    check_item=generate_check_item(
+                        outcome_code=f"CHK03-OUT-{outcome_code_digits}",    
+                        preferred_term=concepts[mr.C_Id].pt,
+                        implied_concept_id=mr.C_Id, # only used in outcome_codes where this must be the *implied* C_Id
+                        implied_dterm=mr.D_Term_derived_from_D_Id_entered,
+                        dterm_type=dterm_type,
+                        description_inactive=mr.D_Id_active=="0",
+                        csr_correct_dterm=csr_correct_dterm,
+                        data_entry_extract_type=setchks_session.data_entry_extract_type,
+                        )
                     if check_item:
                         this_row_analysis.append(check_item)
             else:

@@ -46,7 +46,7 @@ setchks['CHK03_TERM_CONGRUENCE']=Setchk(
     setchk_short_name='CHK03 Legitimate Associations between Concepts and Descriptions', 
     setchk_function=CHK03_TERM_CONGRUENCE.do_check,
     setchk_data_entry_extract_types=["ALL"],
-    setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
 setchks['CHK04_INACTIVES_ENTRY']=Setchk(

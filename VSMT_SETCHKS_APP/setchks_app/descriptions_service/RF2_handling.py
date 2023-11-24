@@ -38,13 +38,20 @@ def create_collection_from_RF2_file(
             referenceComponentId=f[5]
             acceptabilityId=f[6].strip()
             # import pdb; pdb.set_trace()
-            if refsetId=="999001261000000100": # NHS realm lang refset (clinical part)
-                assert referenceComponentId not in acceptabilities # double check no duplicates
+            if refsetId in ["999001261000000100","999000691000001104"]: # NHS realm lang refset (clinical part + pharmacy part)
+                # # double check no duplicates
                 if acceptability_active_status=="1":
                     if acceptabilityId=="900000000000548007": # = preferred
-                        acceptabilities[referenceComponentId]="pref"
+                        acceptability_temp="preferred"
                     else:
-                        acceptabilities[referenceComponentId]="acceptable"
+                        acceptability_temp="acceptable"
+                    # check for conflicting data where duplicates exist
+                    assert (
+                        #    (referenceComponentId not in acceptabilities) or (acceptabilities[referenceComponentId]==acceptability_temp)
+                           (referenceComponentId not in acceptabilities)
+                           ), f"duplicate entry for {referenceComponentId} in lang refsets"
+                    acceptabilities[referenceComponentId]=acceptability_temp
+                  
                 else:
                     pass    # acceptabilities entry will be missing if the active status in the 
                             # lang refset is 0, which can be considered same as "is no longer in the refset"
@@ -66,13 +73,13 @@ def create_collection_from_RF2_file(
             if desc_id in acceptabilities: # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
                 acceptability=acceptabilities[desc_id]
                 if typeId=="900000000000003001": # = fsn
-                    if acceptability=="pref":
+                    if acceptability=="preferred":
                         term_type="fsn" 
                     else: # ?? can an fsn have acceptable status?
                         print(f"fsn with only acceptable status {desc_id}")
                         term_type="ignore"
                 else:
-                    if acceptability=="pref":
+                    if acceptability=="preferred":
                         term_type="pt"
                     else:
                         term_type="syn"

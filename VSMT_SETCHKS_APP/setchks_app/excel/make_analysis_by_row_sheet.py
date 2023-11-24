@@ -26,7 +26,7 @@ def make_analysis_by_row_sheet(
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
-        ws.append(["Row number", "Check", "Message","Link","Supp tab link"] + header_row_cell_contents) # ** need to create better header row
+        ws.append(["Row number", "Check", "Message","Row specific info","Link","Supp tab link"] + header_row_cell_contents) # ** need to create better header row
 
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         something_was_output=False
@@ -57,6 +57,9 @@ def make_analysis_by_row_sheet(
                             outcome_codes_count[outcome_code]+=1
                         row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
                         message=f"{outcome_code}:{check_item.general_message}" 
+                        row_specific_message=check_item.row_specific_message
+                        if row_specific_message == "None":
+                            row_specific_message=""
                         hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
                         # print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
                         if supp_tab_ws is not None:
@@ -76,6 +79,7 @@ def make_analysis_by_row_sheet(
                             i_data_row+setchks_session.first_data_row+1, 
                             setchk_short_name, 
                             message,
+                            row_specific_message,
                             hyperlink_cell_contents,
                             supp_tab_hyperlink_cell_contents,
                             ] 
@@ -88,7 +92,7 @@ def make_analysis_by_row_sheet(
             ws.append(["----"]) 
     
     # crude cell with setting
-    cell_widths=[15,30,50,5,5,25,50] + [20]*10
+    cell_widths=[15,30,50,30,5,5,25,50] + [20]*10
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
