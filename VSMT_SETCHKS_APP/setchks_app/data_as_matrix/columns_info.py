@@ -35,33 +35,42 @@ class ColumnsInfo():
         if requested_column_type==current_type:
             return(True,"SUCCESS: No change requested")
         
-        if requested_column_type=="OTHER":
-            self._column_types[icol]="OTHER"
-            if current_type in ["CID","DID","MIXED","DTERM"]:
-                self._identified_columns[current_type]=None
-            return(True, "SUCCESS: Changed to OTHER")   
+        #Now simplify all the complex code below that was written in the expectation that
+        #could have two ID columns: allow the choice with no further checks, 
+        #if something was already set to that make it "OTHER" 
+        if self._identified_columns[requested_column_type]!=None:
+            self._column_types[self._identified_columns[requested_column_type]]="OTHER"
+        self._column_types[icol]=requested_column_type
+        self._identified_columns[requested_column_type]=icol    
+        return True, "SUCCESS: Changed OK"
+
+        # if requested_column_type=="OTHER":
+        #     self._column_types[icol]="OTHER"
+        #     if current_type in ["CID","DID","MIXED","DTERM"]:
+        #         self._identified_columns[current_type]=None
+        #     return(True, "SUCCESS: Changed to OTHER")   
         
-        if self._identified_columns[requested_column_type] is not None:
-            return False,"FAIL: Another column is already identified as that type; change that one first"
+        # if self._identified_columns[requested_column_type] is not None:
+        #     return False,"FAIL: Another column is already identified as that type; change that one first"
         
-        # else, see if the combination after the change were made would be legal
-        trial_identified_columns=copy.deepcopy(self._identified_columns)
-        trial_identified_columns[current_type]=None 
-        trial_identified_columns[requested_column_type]=icol 
-        test_tuple=(trial_identified_columns["CID"]!=None, 
-                    trial_identified_columns["DID"]!=None, 
-                    trial_identified_columns["MIXED"]!=None)
-        if test_tuple in [(False,False,False),   # nothing selected
-                        #   (True ,False,False),   # just CID
-                        #   (False,True ,False),   # just DID
-                        #   (True ,True ,False),   # CID and DID
-                          (False,False,True )]:   # Just MIXED
-            self._identified_columns[current_type]=None
-            self._identified_columns[requested_column_type]=icol
-            self._column_types[icol]=requested_column_type
-            return True, "SUCCESS: Changed OK" 
-        else:
-            return False, "FAIL: The resulting set of identified columns is illegal" +str(test_tuple)
+        # # else, see if the combination after the change were made would be legal
+        # trial_identified_columns=copy.deepcopy(self._identified_columns)
+        # trial_identified_columns[current_type]=None 
+        # trial_identified_columns[requested_column_type]=icol 
+        # test_tuple=(trial_identified_columns["CID"]!=None, 
+        #             trial_identified_columns["DID"]!=None, 
+        #             trial_identified_columns["MIXED"]!=None)
+        # if test_tuple in [(False,False,False),   # nothing selected
+        #                 #   (True ,False,False),   # just CID
+        #                 #   (False,True ,False),   # just DID
+        #                 #   (True ,True ,False),   # CID and DID
+        #                   (False,False,True )]:   # Just MIXED
+        #     self._identified_columns[current_type]=None
+        #     self._identified_columns[requested_column_type]=icol
+        #     self._column_types[icol]=requested_column_type
+        #     return True, "SUCCESS: Changed OK" 
+        # else:
+        #     return False, "FAIL: The resulting set of identified columns is illegal" +str(test_tuple)
 
     @property
     def ncols(self):
