@@ -181,7 +181,7 @@ def do_check(setchks_session=None, setchk_results=None):
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 check_item={}
-                check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
+                check_item=CheckItem("CHK05-OUT-NOT_FOR_PRODUCTION")
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
@@ -189,8 +189,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
 
         else:
-            n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
-            check_item=CheckItem("CHK06-OUT-BLANK_ROW")
+            n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK05-OUT-03 oly applied before gatekeepr added
+            check_item=CheckItem("CHK05-OUT-BLANK_ROW")
             check_item.outcome_level="INFO"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
