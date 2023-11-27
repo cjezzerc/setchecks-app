@@ -117,14 +117,20 @@ def make_row_overview_sheet(
         for setchk_code in setchks_list_to_report:
             setchk_results=setchks_results[setchk_code]
             if setchk_results.row_analysis!=[]:
+                nothing_output_in_this_cell_yet=True # this makes sure only one thing put out per 
+                                                     # row for a particular setchk
+                                                     # link will be to the first one found
+                                                     # (better behaviours could be implemented some day)
                 for check_item in setchk_results.row_analysis[i_data_row]:
                     # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
-                    if check_item.outcome_level not in ["INFO","DEBUG"]:
-                        row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                        x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
-                        at_least_one_x=True
-                    else:
-                        x_cells.append("")
+                    if nothing_output_in_this_cell_yet:
+                        if check_item.outcome_level not in ["INFO","DEBUG"]:
+                            row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
+                            x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
+                            at_least_one_x=True
+                            nothing_output_in_this_cell_yet=False 
+                if nothing_output_in_this_cell_yet:
+                    x_cells.append("")
             else:
                 x_cells.append("")
         if at_least_one_x:
