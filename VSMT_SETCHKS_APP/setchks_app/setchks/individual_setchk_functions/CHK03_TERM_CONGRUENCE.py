@@ -79,8 +79,14 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message=(
                 "The description term has a term type of -->"
                 )
+            phrase_to_output={
+                "fsn": "Fully specified name",
+                "pt": "Preferred term",
+                "syn": "Acceptable synonym",
+                None: "No type",
+                }
             check_item.row_specific_message=(
-                f"{dterm_type}"
+                f"{phrase_to_output[dterm_type]}"
                 )
         elif outcome_code=="CHK03-OUT-05":
             if dterm_type=="fsn" and data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]: 

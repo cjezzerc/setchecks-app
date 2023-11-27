@@ -41,7 +41,7 @@
                     <form action="/enter_metadata" class="sct_version_mode_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("SINGLE_SCT_VERSION","Set checks"),
-                            ("DUAL_SCT_VERSIONS","Assess changes between two releases (NOT FOR USE YET)"),
+                            ("DUAL_SCT_VERSIONS","Assess changes between two releases"),
                             ] %}
                             {% if a_type[0] == setchks_session.sct_version_mode %}
                                 {% set checked_var="checked" %}

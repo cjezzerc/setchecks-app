@@ -242,6 +242,8 @@ def rq():
     action=request.args.get("action", None)
     job_id=request.args.get("job_id", None)
     
+    setchks_session=gui_setchks_session.get_setchk_session(session)
+    
     if action is None:
         output_strings=get_rq_info()
         return '<br>'.join(output_strings)
@@ -266,6 +268,13 @@ def rq():
     if action=="job_stack_trace":
         return '<pre>'+'<br>'.join(job_stack_trace(job_id=job_id))+'</pre>'
     
+    if action=="failed_jobs":
+        return_str=""
+        for job in setchks_session.setchks_jobs_manager.jobs:
+            if job.status=="failed":
+                return_str += '<br><pre>'+'<br>'.join(job_stack_trace(job_id=job.rq_job_id))+'</pre>'
+        return return_str
+
     if action=="job_result":
         return '<pre>'+str(job_result(job_id=job_id))+'</pre>'
     
