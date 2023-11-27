@@ -38,7 +38,7 @@ def make_analysis_by_outcome_sheet(
             setchk_results=setchks_results[setchk_code]
             if setchk_results.row_analysis!=[]:
                 for check_item in setchk_results.row_analysis[i_data_row]:
-                    output_OK_messages=True  # TEMPORARY while implementing
+                    # output_OK_messages=True  # TEMPORARY while implementing
                     if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
                         outcome_code=check_item.outcome_code
                         if outcome_code not in check_items_dict[setchk_code]:
