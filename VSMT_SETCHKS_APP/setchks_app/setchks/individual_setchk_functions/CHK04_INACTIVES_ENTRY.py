@@ -73,7 +73,7 @@ class SuppTabRow():
         "Supplied  ID",
         "ID type",	
         "Implied concept Id (if applicable)",
-        "Term (TBI)",	
+        "Term (preferred term for this concept - better version TBI)",	
         "Replacement Option Number",	
         "Suggested Concept ID",
         "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
@@ -90,7 +90,7 @@ class SuppTabRow():
         self.supplied_id=None
         self.id_type=None
         self.implied_concept_id="" # null string so that if not set it shows as a blank
-        self.term="TBI"
+        self.term=None
         self.replacement_option_counter=None
         self.replacement_concept_id=None
         self.replacement_concept_pt=None
@@ -205,6 +205,25 @@ def do_check(setchks_session=None, setchk_results=None):
                                 supp_tab_row.supplied_id=mr.D_Id_entered
                                 supp_tab_row.id_type="D_Id"
                                 supp_tab_row.implied_concept_id=mr.C_Id
+                            # propose set supp_tab.term via
+                            # if setchks_session.columns_info.have_dterm_column:
+                            #     if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr:
+                            #         supp_tab_row.term=mr.D_Term_entered
+                            #     else:
+                            #         supp_tab_row.term=concepts[concept_id].pt
+                            #     if mr.D_Id_entered is not None and mr.congruence_of_D_Id_entered_and_D_Term_entered_csr:
+                            #         supp_tab_row.term=mr.D_Term_entered
+                            #     else:
+                            #         supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
+                            # elif mr.D_Id_entered is not None:
+                            #     supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
+                            # else:
+                            #     supp_tab_row.term=concepts[concept_id].pt
+                            # but for familiarisation day 2 just do (as no time to test the above)
+                            supp_tab_row.term=concepts[concept_id].pt
+
+                            # if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
+                            # if mr.D_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
                             supp_tab_row.replacement_option_counter=f"{i_option+1}/{len(hst_options)}"
                             supp_tab_row.replacement_concept_id=hst_option.new_concept_id
                             supp_tab_row.replacement_concept_pt=concepts[hst_option.new_concept_id].pt
