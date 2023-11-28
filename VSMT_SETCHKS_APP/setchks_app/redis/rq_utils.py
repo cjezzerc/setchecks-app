@@ -77,17 +77,20 @@ def jobs():
     job_ids_finished = q.finished_job_registry.get_job_ids()
     job_ids_failed = q.failed_job_registry.get_job_ids()
     for job_id in job_ids_in_queue+job_ids_started+job_ids_finished+job_ids_failed:
-        job = Job.fetch(job_id, connection=redis_connection)
-        status=job.get_status()
         try:
-            func=job.func_name
-            kwargs=job.kwargs
-            enqueued_at=str(job.enqueued_at)[:16]
-            started_at=str(job.started_at)[:16]
-            ended_at=str(job.ended_at)[:16]
-            # data.append(f'{job_id} {status:10} ')
-            # data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
-            data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func}')
+            job = Job.fetch(job_id, connection=redis_connection)
+            status=job.get_status()
+            try:
+                func=job.func_name
+                kwargs=job.kwargs
+                enqueued_at=str(job.enqueued_at)[:16]
+                started_at=str(job.started_at)[:16]
+                ended_at=str(job.ended_at)[:16]
+                # data.append(f'{job_id} {status:10} ')
+                # data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func} {kwargs} ')
+                data.append(f'{job_id} {status:10} q:{enqueued_at}  s:{started_at}  e:{ended_at} {func}')
+            except:
+                data.append(f'{job_id} {status:10} no more data available ')
         except:
             data.append(f'{job_id} {status:10} no more data available ')
 

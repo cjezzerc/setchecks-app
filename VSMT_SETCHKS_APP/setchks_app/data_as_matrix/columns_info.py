@@ -38,10 +38,11 @@ class ColumnsInfo():
         #Now simplify all the complex code below that was written in the expectation that
         #could have two ID columns: allow the choice with no further checks, 
         #if something was already set to that make it "OTHER" 
-        if self._identified_columns[requested_column_type]!=None:
-            self._column_types[self._identified_columns[requested_column_type]]="OTHER"
+        if requested_column_type!="OTHER":
+            if self._identified_columns[requested_column_type]!=None:
+                self._column_types[self._identified_columns[requested_column_type]]="OTHER"
+            self._identified_columns[requested_column_type]=icol    
         self._column_types[icol]=requested_column_type
-        self._identified_columns[requested_column_type]=icol    
         return True, "SUCCESS: Changed OK"
 
         # if requested_column_type=="OTHER":
