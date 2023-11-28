@@ -117,7 +117,8 @@ def refactor_core_code(
     
     purge_poor_quality_incl_cbcs(all_incl_cbcs=all_incl_cbcs)
     
-    print("After purging poor quality cbcs, %s cbs remain %s" % (len(all_incl_cbcs), [x.concept_id for x in all_incl_cbcs]))
+    # print("After purging poor quality cbcs, %s cbs remain %s" % (len(all_incl_cbcs), [x.concept_id for x in all_incl_cbcs]))
+    print("After purging poor quality cbcs, %s cbs remain " % len(all_incl_cbcs))
 
     #########################################################################
     # purge perfect fit cbcs that are subsumed by another perfect fit cbc   #

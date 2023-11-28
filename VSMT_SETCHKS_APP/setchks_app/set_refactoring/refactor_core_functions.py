@@ -23,11 +23,11 @@ def get_set_of_incl_cbcs_based_on_all_ancestors(
     print("Step1 took (in seconds)", time.time()-start_timea)    
 
     # remove root snomedct concept
-    print(138875005 in all_inclusion_candidate_base_concept_ids)
-    print(len(all_inclusion_candidate_base_concept_ids))
-    print(all_inclusion_candidate_base_concept_ids)
+    # print(138875005 in all_inclusion_candidate_base_concept_ids)
+    # print(len(all_inclusion_candidate_base_concept_ids))
+    # print(all_inclusion_candidate_base_concept_ids)
     all_inclusion_candidate_base_concept_ids.discard(138875005)
-    print(len(all_inclusion_candidate_base_concept_ids))
+    # print(len(all_inclusion_candidate_base_concept_ids))
 
     start_timeb=time.time()
     all_incl_cbcs=set()
@@ -280,7 +280,7 @@ def add_single_concept_clauses_for_unaccounted_for_concepts(
         else:
             operator="=" # else have decendants so use "=" so do not include non members
         clause_string=operator+str(concept_id)
-        print("Adding clause", clause_string)
+        # print("Adding clause", clause_string)
         refactored_query.append(Clause(clause_string))
 
 ##################################
@@ -321,7 +321,7 @@ def get_set_of_excl_cbcs_based_on_all_ancestors(
     # print("PROBLEM_ID: Is %s in required_exclusions_set? %s" % (problem_id, problem_id in all_exclusion_candidate_base_concept_ids))
 
     print("Collated list of %s cbcs in all_exclusion_candidate_base_concept_ids" % len(all_exclusion_candidate_base_concept_ids))
-    print(all_exclusion_candidate_base_concept_ids)
+    # print(all_exclusion_candidate_base_concept_ids)
     #remove concepts that are also in ancestors lists of valset members ca. DMWB999
     n_to_remove=len(all_exclusion_candidate_base_concept_ids.intersection(all_inclusion_candidate_base_concept_ids))
     print("Discarding %s cbcs because also an inclusion ancestor" % n_to_remove)
@@ -424,7 +424,7 @@ def insert_excl_clauses_into_refactored_query(
             ):    
     total_exclusions=set()
     for cbc in all_excl_cbcs:
-        print(cbc.clause_string, cbc.concept.pt, cbc.n_desc_plus_self_in_membership ,"of", cbc.n_desc_plus_self_all)
+        # print(cbc.clause_string, cbc.concept.pt, cbc.n_desc_plus_self_in_membership ,"of", cbc.n_desc_plus_self_all)
         clause=Clause("-"+cbc.clause_string)
         refactored_query.append(clause)
         total_exclusions.update(set(ClauseMembershipAnalysis(clause=clause, concepts=concepts).members))
@@ -449,7 +449,7 @@ def add_single_concept_excl_clauses_for_unaccounted_for_exclusions(
         else:
             operator="=" # else have decendants so use "=" so do not include non members
         clause_string="-"+operator+str(concept_id)
-        print("Adding clause", clause_string)
+        # print("Adding clause", clause_string)
         refactored_query.append(Clause(clause_string))
 
 
@@ -502,10 +502,10 @@ def final_clean_up(
             # print(i_clause2,"Not purged")
             print(i_clause2, clause2.clause_type, clause2.clause_string,"Not purged")
 
-    print(f"To be purged set: {to_be_purged_set}")
+    # print(f"To be purged set: {to_be_purged_set}")
     purged_refactored_query=[]
     for clause in refactored_query:
-        print(clause.clause_string, clause in to_be_purged_set)
+        # print(clause.clause_string, clause in to_be_purged_set)
         if clause not in to_be_purged_set:
             purged_refactored_query.append(clause)
     refactored_query=purged_refactored_query
