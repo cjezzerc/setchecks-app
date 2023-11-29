@@ -83,10 +83,10 @@ class SuppTabRow():
         "Implied concept Id (if applicable)",
         "Term (preferred term for this concept - better version TBI)",	
         "Implied-inactive Option Number",	
-        "Suggested Concept ID",
+        "Implied-inactive Concept ID",
         "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
         "Ambiguity status",
-        "Is the implied_inactive concept already represented in the set",
+        "Is the implied-inactive concept already represented in the set",
         "Is it represented in the list by the same tpe of ID?",
         ]
     cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
@@ -133,7 +133,8 @@ def do_check(setchks_session=None, setchk_results=None):
         "EXTRACT"
     """
 
-    logging.info("Set Check %s called" % setchk_results.setchk_code)
+    logging.debug("Set Check %s called" % setchk_results.setchk_code)
+    print("Set Check %s called" % setchk_results.setchk_code)
 
     # dual_mode=setchks_session.sct_version_mode=="DUAL_SCT_VERSIONS"
     # if not dual_mode:
@@ -183,8 +184,8 @@ def do_check(setchks_session=None, setchk_results=None):
     for i_data_row, mr in enumerate(setchks_session.marshalled_rows):
         if mr.C_Id is not None:
             concept_id=mr.C_Id
-            print(f"concept_id: {concept_id}")
-            print(f"mr: {mr}")
+            # print(f"concept_id: {concept_id}")
+            # print(f"mr: {mr}")
             valset_members.add(concept_id)  
             active_status[concept_id]=concepts[concept_id].active
             # if dual_mode:

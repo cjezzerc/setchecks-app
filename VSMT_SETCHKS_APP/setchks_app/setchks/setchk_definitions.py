@@ -77,7 +77,7 @@ setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
 setchks['CHK08_IMPLIED_INACTIVES']=Setchk(
     setchk_code='CHK08_IMPLIED_INACTIVES', 
     setchk_short_name='CHK08 Implied inactives (limited analysis)', 
-    setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
+    setchk_function=CHK08_IMPLIED_INACTIVES.do_check,
     setchk_data_entry_extract_types=["EXTRACT"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
