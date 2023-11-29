@@ -13,6 +13,7 @@ from .individual_setchk_functions import CHK03_TERM_CONGRUENCE
 from .individual_setchk_functions import CHK04_INACTIVES_ENTRY
 from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
+from .individual_setchk_functions import CHK08_IMPLIED_INACTIVES
 from .individual_setchk_functions import CHK10_MISSING_CONCEPTS
 from .individual_setchk_functions import CHK14_MANY_CLAUSES
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
@@ -70,6 +71,14 @@ setchks['CHK06_DEF_EXCL_FILTER']=Setchk(
     setchk_short_name='CHK06 Inclusion of not recommended concepts', 
     setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
     setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
+    )
+
+setchks['CHK08_IMPLIED_INACTIVES']=Setchk(
+    setchk_code='CHK08_IMPLIED_INACTIVES', 
+    setchk_short_name='CHK08 Implied inactives (limited analysis)', 
+    setchk_function=CHK06_DEF_EXCL_FILTER.do_check,
+    setchk_data_entry_extract_types=["EXTRACT"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
