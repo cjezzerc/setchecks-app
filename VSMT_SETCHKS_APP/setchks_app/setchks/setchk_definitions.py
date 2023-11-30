@@ -15,6 +15,7 @@ from .individual_setchk_functions import CHK05_UNRECC_HIERARCH
 from .individual_setchk_functions import CHK06_DEF_EXCL_FILTER
 from .individual_setchk_functions import CHK08_IMPLIED_INACTIVES
 from .individual_setchk_functions import CHK10_MISSING_CONCEPTS
+from .individual_setchk_functions import CHK12_MIXED_TAGS
 from .individual_setchk_functions import CHK14_MANY_CLAUSES
 from .individual_setchk_functions import CHK20_INCORR_FMT_SCTID
 from .individual_setchk_functions import CHK22_DUPLICATE_REFS
@@ -90,6 +91,15 @@ setchks['CHK10_MISSING_CONCEPTS']=Setchk(
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
+
+setchks['CHK12_MIXED_TAGS']=Setchk(
+    setchk_code='CHK12_MIXED_TAGS', 
+    setchk_short_name='CHK12 Concepts with more than one type of semantic tag', 
+    setchk_function=CHK12_MIXED_TAGS.do_check,
+    setchk_data_entry_extract_types=["ALL"],
+    setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
+    )
+
 
 setchks['CHK14_MANY_CLAUSES']=Setchk(
     setchk_code='CHK14_MANY_CLAUSES',

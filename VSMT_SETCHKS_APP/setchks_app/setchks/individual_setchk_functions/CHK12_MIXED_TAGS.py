@@ -1,0 +1,174 @@
+import os, copy, re
+
+import logging
+logger=logging.getLogger()
+
+
+import setchks_app.terminology_server_module
+from setchks_app.set_refactoring.concept_module import ConceptsDict
+
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+
+from ..check_item import CheckItem
+
+
+def do_check(setchks_session=None, setchk_results=None):
+
+    """
+    This check is written on the assumption that it will not be run unless the gatekeeper controller gives the go ahead
+
+    This check is written on the assumption that it will only be called for data_entry_extract_types of:
+        "ENTRY_PRIMARY"
+        "ENTRY_OTHER"
+    """
+
+    logging.info("Set Check %s called" % setchk_results.setchk_code)
+    
+    ds=DescriptionsService()
+    concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
+
+    ##################################################################
+    ##################################################################
+    ##################################################################
+    # Analyse membership against semantic tags                       #     
+    ##################################################################
+    ##################################################################
+    ##################################################################
+   
+
+    tag_counts={} 
+    valset_members=set()
+    semantic_tags={} # will be keyed by concept_id
+    for mr in setchks_session.marshalled_rows:
+        if mr.C_Id is not None:
+            valset_members.add(mr.C_Id)  
+
+    for concept_id in valset_members:
+        # Would be more efficient to add semantic tag into the concepts database when that is built
+        # But need to get this implemented fast so calling them up on every run
+        C_Id_data=ds.get_data_about_concept_id(
+                concept_id=concept_id, 
+                sct_version=setchks_session.sct_version,
+                )
+        fsn=None
+        for item in C_Id_data:
+            if item["term_type"]=="fsn":
+                fsn=item["term"]
+                break
+        if fsn is not None:
+            mObj=re.search(r'.*\((.*?)\)$', fsn.strip())
+            if mObj:
+                semantic_tag=mObj.groups()[0]
+            else:
+                semantic_tag="NO_SEMANTIC_TAG_FOUND"
+        else:
+            semantic_tag="NO_FSN_FOUND"
+        semantic_tags[concept_id]=semantic_tag
+        if semantic_tag not in tag_counts:
+            tag_counts[semantic_tag]=0
+        tag_counts[semantic_tag]+=1
+
+    joint_majority_tag=False
+    majority_tag=None
+    majority_count=0
+    n_concepts=0 # this will be count of distinct concepts encountered in file
+    for tag, count in tag_counts.items():
+        n_concepts+=count
+        if count==majority_count:
+            joint_majority_tag=True
+        elif count>majority_count:
+            joint_majority_tag=False
+            majority_tag=tag
+            majority_count=count
+            
+    ##################################################################
+    ##################################################################
+    ##################################################################
+    #           Test concept on each row of value set                #     
+    ##################################################################
+    ##################################################################
+    ##################################################################
+    
+    n_FILE_TOTAL_ROWS=setchks_session.first_data_row
+    n_FILE_PROCESSABLE_ROWS=0
+    n_FILE_NON_PROCESSABLE_ROWS=setchks_session.first_data_row  # with gatekeeper this is just blank or header rows
+    
+    for mr in setchks_session.marshalled_rows:
+        n_FILE_TOTAL_ROWS+=1
+        this_row_analysis=[]
+        setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis is updated below, 
+                                                              # this will automatically update
+        if not mr.blank_row:
+            concept_id=mr.C_Id
+            if concept_id is not None:
+                n_FILE_PROCESSABLE_ROWS+=1
+                semantic_tag=semantic_tags[concept_id]
+                if joint_majority_tag or semantic_tag!=majority_tag:
+                    check_item=CheckItem("CHK12-OUT-02")
+                    check_item.general_message=(
+                        "The semantic tag used is not the majority tag in this value set. "
+                        "This may suggest it is an erroneous entry. "
+                        "A full analysis of semantic tags used in this value set is given in the Set Analysis tab. "
+                        "The semantic tag for this concept is -->"
+                        )
+                    check_item.row_specific_message=(
+                        f"{semantic_tag}"
+                    )
+                    this_row_analysis.append(check_item)
+                else:
+                    check_item=CheckItem("CHK12-OUT-01")
+                    check_item.general_message=(
+                        "The semantic tag used is the majority tag in this value set. "
+                        "The semantic tag for this concept is -->"
+                        )
+                    check_item.row_specific_message=(
+                        f"{semantic_tag}"
+                        )
+                    check_item.outcome_level="INFO"
+                    this_row_analysis.append(check_item)
+            else:
+                # gatekeeper should catch this. This clause allows code to run without gatekeeper
+                check_item={}
+                check_item=CheckItem("CHK12-OUT-NOT_FOR_PRODUCTION")
+                check_item.general_message=(
+                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    )
+                this_row_analysis.append(check_item)
+        else:
+            n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK12-OUT-03 oly applied before gatekeepr added
+            check_item=CheckItem("CHK12-OUT-BLANK_ROW")
+            check_item.outcome_level="INFO"
+            check_item.general_message="Blank line"
+            this_row_analysis.append(check_item)
+
+    setchk_results.set_analysis["Messages"]=[] 
+    
+    if len(tag_counts)>1:
+        msg=(
+        f"You have used concepts with more than one type of semantic tag. "  
+        f"This sometimes indicates that erroneous concepts have been included."
+        )
+        setchk_results.set_analysis["Messages"].append(msg)
+
+    if not joint_majority_tag:
+        msg=(
+            f"There are {majority_count}/{n_concepts} concepts "  
+            f"with the majority semantic tag of '{majority_tag}'. " 
+            )
+        setchk_results.set_analysis["Messages"].append(msg)    
+    
+    for tag, count in tag_counts.items():
+        if tag!=majority_tag:
+            msg=(
+                f"There are {count}/{n_concepts} concepts "  
+                f"with the semantic tag '{tag}'. " 
+                )
+            setchk_results.set_analysis["Messages"].append(msg)
+            
+    msg=(
+        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
+        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
+        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
+        ) 
+    setchk_results.set_analysis["Messages"].append(msg)
