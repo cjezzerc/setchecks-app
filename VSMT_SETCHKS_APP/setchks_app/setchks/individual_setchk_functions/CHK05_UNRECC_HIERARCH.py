@@ -68,7 +68,7 @@ def do_check(setchks_session=None, setchk_results=None):
         "Clinical finding":"ACCEPTABLE",
         "Environment or geographical location":"NOT_RECOMMENDED",
         "Event":"ACCEPTABLE",
-        "Observable entity":"NOT_RECOMMENDED",
+        "Observable entity":"ACCEPTABLE",
         "Organism":"NOT_RECOMMENDED",
         "Pharmaceutical / biologic product":"MAY_NOT_BE_APPROPRIATE",
         "Physical force":"NOT_RECOMMENDED",

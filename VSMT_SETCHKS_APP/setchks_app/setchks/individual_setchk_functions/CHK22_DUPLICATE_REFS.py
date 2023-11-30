@@ -87,23 +87,23 @@ def do_check(setchks_session=None, setchk_results=None):
                 # duplicated_did_rows[row]=rows.difference(set([row])) # set operation leaves all rows except this one
                 duplicated_did_rows[row]=rows
 
-    # cids_entered=set(rows_with_this_cid_entered.keys())
-    dids_entered=set(rows_with_this_did_entered.keys())
-    cid_entered_with_other_description_id_rows={}
-    for cid_entered, rows in rows_with_this_cid_entered.items():
-        C_Id_data=ds.get_data_about_concept_id(
-                concept_id=cid_entered, 
-                sct_version=setchks_session.sct_version,
-                )
-        valid_dids_for_this_cid_entered=set(x["desc_id"] for x in C_Id_data)
-        dids_in_file_for_this_cid_entered=(
-            dids_entered.intersection(valid_dids_for_this_cid_entered)
-            )     
-        if dids_in_file_for_this_cid_entered != set():
-            for did in dids_in_file_for_this_cid_entered:
-                if cid_entered not in cid_entered_with_other_description_id_rows:
-                    cid_entered_with_other_description_id_rows[cid_entered]=set()
-                cid_entered_with_other_description_id_rows[cid_entered].update(rows_with_this_did_entered[did])
+    # # cids_entered=set(rows_with_this_cid_entered.keys())
+    # dids_entered=set(rows_with_this_did_entered.keys())
+    # cid_entered_with_other_description_id_rows={}
+    # for cid_entered, rows in rows_with_this_cid_entered.items():
+    #     C_Id_data=ds.get_data_about_concept_id(
+    #             concept_id=cid_entered, 
+    #             sct_version=setchks_session.sct_version,
+    #             )
+    #     valid_dids_for_this_cid_entered=set(x["desc_id"] for x in C_Id_data)
+    #     dids_in_file_for_this_cid_entered=(
+    #         dids_entered.intersection(valid_dids_for_this_cid_entered)
+    #         )     
+    #     if dids_in_file_for_this_cid_entered != set():
+    #         for did in dids_in_file_for_this_cid_entered:
+    #             if cid_entered not in cid_entered_with_other_description_id_rows:
+    #                 cid_entered_with_other_description_id_rows[cid_entered]=set()
+    #             cid_entered_with_other_description_id_rows[cid_entered].update(rows_with_this_did_entered[did])
 
     ##################################################################
     ##################################################################
@@ -134,7 +134,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 did_entered=mr.D_Id_entered
                 n_FILE_PROCESSABLE_ROWS+=1
                 if cid_entered and i_data_row in duplicated_cid_rows: 
-                    check_item=CheckItem("CHK22-OUT-01")
+                    check_item=CheckItem("CHK22-OUT-02")
                     check_item.general_message=(
                         "This concept id is duplicated in this file, on row(s)-->"
                         )
@@ -143,19 +143,19 @@ def do_check(setchks_session=None, setchk_results=None):
                                     for x in duplicated_cid_rows[i_data_row])
                         )
                     this_row_analysis.append(check_item)
-                elif cid_entered and cid_entered in cid_entered_with_other_description_id_rows:
-                    check_item=CheckItem("CHK22-OUT-03")
-                    check_item.general_message=(
-                        "This Concept Id refers to the same concept as "
-                        "the Description Ids, on row(s)-->"
-                        )
-                    check_item.row_specific_message=(
-                        ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
-                                    for x in cid_entered_with_other_description_id_rows[cid_entered])
-                        )
-                    this_row_analysis.append(check_item)
-                elif did_entered and i_data_row in duplicated_did_rows: #"CHK22-OUT-04"
-                    check_item=CheckItem("CHK22-OUT-04")
+                # elif cid_entered and cid_entered in cid_entered_with_other_description_id_rows:
+                #     check_item=CheckItem("CHK22-OUT-03")
+                #     check_item.general_message=(
+                #         "This Concept Id refers to the same concept as "
+                #         "the Description Ids, on row(s)-->"
+                #         )
+                #     check_item.row_specific_message=(
+                #         ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
+                #                     for x in cid_entered_with_other_description_id_rows[cid_entered])
+                #         )
+                #     this_row_analysis.append(check_item)
+                elif did_entered and i_data_row in duplicated_did_rows: 
+                    check_item=CheckItem("CHK22-OUT-05")
                     check_item.general_message=(
                         "This description id is duplicated in this file, on row(s)-->"
                         )
@@ -167,6 +167,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 else:
                     check_item={}
                     check_item=CheckItem("CHK22-01")
+                    check_item.outcome_level="INFO"
                     check_item.general_message=(
                     "No duplication issue found"
                     )

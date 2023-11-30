@@ -371,7 +371,7 @@ def column_identities():
         ci.set_column_type(icol=1,requested_column_type="DTERM")
         setchks_session.columns_info=ci
 
-    # if reach here via click on versions pulldown
+    # if reach here via click on versions dropdown
     if len(request.form.keys())!=0:
         k, v=list(request.form.items())[0]
         # print("===>>>>", k, v)
@@ -431,7 +431,7 @@ def enter_metadata():
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
     current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections
 
-    # if reach here via click on versions pulldown
+    # if reach here via click on versions dropdown
     if 'select_sct_version' in request.form:
         # print("===>>>>", request.form['select_sct_version'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['select_sct_version'])-1]
@@ -441,7 +441,7 @@ def enter_metadata():
         # print("===>>>> pointNumber=", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
 
-       # if reach here via click on versions pulldown (b)
+       # if reach here via click on versions dropdown (b)
     if 'select_sct_version_b' in request.form:
         # print("===>>>>", request.form['select_sct_version'])
         setchks_session.sct_version_b=setchks_session.available_sct_versions[int(request.form['select_sct_version_b'])-1]

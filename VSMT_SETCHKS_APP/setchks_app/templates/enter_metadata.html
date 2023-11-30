@@ -127,9 +127,9 @@
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
-                            <li> Select the SNOMED CT release by clicking on the timeline or by using the pulldown </li>
+                            <li> Select the SNOMED CT release by clicking on the timeline or by using the dropdown </li>
                         {% else %}
-                            <li> Select the earlier SNOMED CT release by clicking on the timeline or by using the pulldown </li>
+                            <li> Select the earlier SNOMED CT release by clicking on the timeline or by using the dropdown </li>
                         {% endif %}
                         <br>
                         <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
@@ -148,7 +148,7 @@
                                     <option
                                     {% endif %} 
     
-                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
+                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
     
                                     {% if loop.index==1 %} (current) {% endif %}
                                     </option>
@@ -211,7 +211,7 @@
             <div class="card" style="height: 29vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
-                        <li> Select the later SNOMED CT release by clicking on the timeline or by using the pulldown </li>
+                        <li> Select the later SNOMED CT release by clicking on the timeline or by using the dropdown </li>
                         <br>
                         <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
                         <div id="timeline_fig_b" ></div>  <!-- div for the plotly figure -->
@@ -229,7 +229,7 @@
                                     <option
                                     {% endif %} 
     
-                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_pulldown }}
+                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
     
                                     {% if loop.index==1 %} (current) {% endif %}
                                     </option>
