@@ -195,6 +195,9 @@ def do_check(setchks_session=None, setchk_results=None):
                     new_concept_id=concept_id, 
                     sct_version=sct_version,
                     )
+                print(concept_id)
+                print(hst_data)
+                print("======================")
                 interpretation, hst_options=analyse_hst_data(hst_data=hst_data)
                 interpretations[i_data_row]=interpretation
                 # if (not dual_mode) or active_status_earlier_sct_release[concept_id] is True:
@@ -202,48 +205,52 @@ def do_check(setchks_session=None, setchk_results=None):
                 #     supp_tab_entries=[]
                 # else: 
                 supp_tab_entries=[]
-                for i_option, hst_option in enumerate(hst_options):
-                    supp_tab_row=SuppTabRow()
-                    supp_tab_row.file_row_number=setchks_session.first_data_row+i_data_row+1
-                    supp_tab_row.interpretation=hst_option.interpretation
-                    if mr.C_Id_entered is not None:
-                        supp_tab_row.supplied_id=mr.C_Id_entered
-                        supp_tab_row.id_type="C_Id"
-                    else:
-                        supp_tab_row.supplied_id=mr.D_Id_entered
-                        supp_tab_row.id_type="D_Id"
-                        supp_tab_row.implied_concept_id=mr.C_Id
-                    # propose set supp_tab.term via
-                    # if setchks_session.columns_info.have_dterm_column:
-                    #     if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr:
-                    #         supp_tab_row.term=mr.D_Term_entered
-                    #     else:
-                    #         supp_tab_row.term=concepts[concept_id].pt
-                    #     if mr.D_Id_entered is not None and mr.congruence_of_D_Id_entered_and_D_Term_entered_csr:
-                    #         supp_tab_row.term=mr.D_Term_entered
-                    #     else:
-                    #         supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
-                    # elif mr.D_Id_entered is not None:
-                    #     supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
-                    # else:
-                    #     supp_tab_row.term=concepts[concept_id].pt
-                    # but for familiarisation day 2 just do (as no time to test the above)
-                    supp_tab_row.term=concepts[concept_id].pt
+                if hst_options:
+                    for i_option, hst_option in enumerate(hst_options):
+                        supp_tab_row=SuppTabRow()
+                        supp_tab_row.file_row_number=setchks_session.first_data_row+i_data_row+1
+                        supp_tab_row.interpretation=hst_option.interpretation
+                        if mr.C_Id_entered is not None:
+                            supp_tab_row.supplied_id=mr.C_Id_entered
+                            supp_tab_row.id_type="C_Id"
+                        else:
+                            supp_tab_row.supplied_id=mr.D_Id_entered
+                            supp_tab_row.id_type="D_Id"
+                            supp_tab_row.implied_concept_id=mr.C_Id
+                        # propose set supp_tab.term via
+                        # if setchks_session.columns_info.have_dterm_column:
+                        #     if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr:
+                        #         supp_tab_row.term=mr.D_Term_entered
+                        #     else:
+                        #         supp_tab_row.term=concepts[concept_id].pt
+                        #     if mr.D_Id_entered is not None and mr.congruence_of_D_Id_entered_and_D_Term_entered_csr:
+                        #         supp_tab_row.term=mr.D_Term_entered
+                        #     else:
+                        #         supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
+                        # elif mr.D_Id_entered is not None:
+                        #     supp_tab_row.term=mr.D_Term_derived_from_D_Id_entered
+                        # else:
+                        #     supp_tab_row.term=concepts[concept_id].pt
+                        # but for familiarisation day 2 just do (as no time to test the above)
+                        supp_tab_row.term=concepts[concept_id].pt
 
-                    # if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
-                    # if mr.D_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
-                    supp_tab_row.implied_inactive_option_counter=f"{i_option+1}/{len(hst_options)}"
-                    supp_tab_row.implied_inactive_concept_id=hst_option.old_concept_id
-                    supp_tab_row.implied_inactive_concept_pt=concepts[hst_option.old_concept_id].pt
-                    supp_tab_row.ambiguity_status=hst_option.is_ambiguous
-                    supp_tab_row.is_implied_inactive_concept_in_set=supp_tab_row.implied_inactive_concept_id in valset_members
-                    if supp_tab_row.is_implied_inactive_concept_in_set is True:
-                        supp_tab_row.is_correct_representation_type_in_set=supp_tab_row.id_type in valset_representations_dict[mr.C_Id]
-                    else:
-                        supp_tab_row.is_correct_representation_type_in_set="-"
-                    supp_tab_entries.append(supp_tab_row)
-                # else: # it's inactive but also was inactive in earlier_sct_version so not reported
-                #     supp_tab_entries=None
+                        # if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
+                        # if mr.D_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
+                        supp_tab_row.implied_inactive_option_counter=f"{i_option+1}/{len(hst_options)}"
+                        supp_tab_row.implied_inactive_concept_id=hst_option.old_concept_id
+                        supp_tab_row.implied_inactive_concept_pt=concepts[hst_option.old_concept_id].pt
+                        supp_tab_row.ambiguity_status=hst_option.is_ambiguous
+                        supp_tab_row.is_implied_inactive_concept_in_set=supp_tab_row.implied_inactive_concept_id in valset_members
+                        if supp_tab_row.is_implied_inactive_concept_in_set is True:
+                            supp_tab_row.is_correct_representation_type_in_set=supp_tab_row.id_type in valset_representations_dict[mr.C_Id]
+                        else:
+                            supp_tab_row.is_correct_representation_type_in_set="-"
+                        supp_tab_entries.append(supp_tab_row)
+                    # else: # it's inactive but also was inactive in earlier_sct_version so not reported
+                    #     supp_tab_entries=None
+                else: # has no predecessors
+                    supp_tab_entries=None
+
             else: # if inactive
                 supp_tab_entries=None
         else: # if e.g. a rogue entry that should not have got past the gatekeeper (assume this only happens in dev)
