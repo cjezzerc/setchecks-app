@@ -1,13 +1,12 @@
 
 from openpyxl.utils import get_column_letter
 import setchks_app.setchks.setchk_definitions
+from . import styling
 
 def make_analysis_by_outcome_sheet(
     ws=None, 
     setchks_list_to_report=None,
     setchks_session=None,
-    color_fills=None,
-    border=None,
     output_OK_messages=None,
     ): 
 
@@ -21,11 +20,12 @@ def make_analysis_by_outcome_sheet(
                                 # structure is used so that other sheets can link to the right row on this sheet 
 
     # simple header row (but only if data matrix had one; need to do this better)
+    current_ws_row=0
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
         ws.append(["","Row specific info","Row number"] + header_row_cell_contents) # ** need to create better header row
-
+        current_ws_row+=1
     ###################################################################################################
     # first loop over all check items and build a dict so can output them grouped by setchk and outcome
     ###################################################################################################
@@ -54,12 +54,14 @@ def make_analysis_by_outcome_sheet(
     for setchk_code in check_items_dict:
         ws.append([setchks[setchk_code].setchk_short_name])
         ws.append(["----"]) 
+        current_ws_row+=1
         outcome_codes_sorted=sorted(check_items_dict[setchk_code].keys())
         for outcome_code in outcome_codes_sorted:
             analysis_by_outcomes_row_numbers_map[outcome_code]={}
             i_temp, data_row_temp, first_check_item=check_items_dict[setchk_code][outcome_code][0]
             message=f"{outcome_code}:{first_check_item.general_message}"
             ws.append([message])
+            current_ws_row+=1
             for i_data_row, data_row, check_item in check_items_dict[setchk_code][outcome_code]:
                 data_row_cell_contents=[x.string for x in data_row]
                 input_file_row_number=i_data_row+setchks_session.first_data_row+1
@@ -73,14 +75,18 @@ def make_analysis_by_outcome_sheet(
                     ] 
                     + data_row_cell_contents
                     )
+                current_ws_row+=1
                 if i_data_row not in analysis_by_outcomes_row_numbers_map[outcome_code]:
                     analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row]=[] # that this is a list is for the rare case where
                                                                                       # the same outcome code might occur more than once for the same row
                                                                                       # see comment in make_analysis_by_row_sheet.py
-                analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row].append(ws.max_row)
+                analysis_by_outcomes_row_numbers_map[outcome_code][i_data_row].append(current_ws_row)
             ws.append(["----"]) 
+            current_ws_row+=1
         ws.append(["----"]) 
-        ws.append(["----"]) 
+        current_ws_row+=1
+        ws.append(["----"])
+        current_ws_row+=1 
     
     # crude cell with setting
     cell_widths=[50,30,10] + [20]*10
@@ -92,13 +98,19 @@ def make_analysis_by_outcome_sheet(
     for row in ws.iter_rows():
         irow+=1
         divider_line=row[0].value=="----"
+        if divider_line:
+            ws.row_dimensions[irow].height = 3
         for cell in row:
-            cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
-            # if cell.column_letter in ["A","B","C"] or divider_line:
+            # cell.alignment=Alignment(wrap_text=True, vertical='top')
+            # cell.style=vsmt_style_wrap_top
+            # cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
             if divider_line:
-                cell.fill=color_fills["grey"]
-                cell.border = border  
-                ws.row_dimensions[irow].height = 3
+                cell.style=styling.vsmt_style_grey_row
+                # cell.fill=color_fills["grey"]
+                # cell.border = border
+            else:
+                cell.style=styling.vsmt_style_wrap_top 
+                
 
-    ws['A1'].hyperlink="#By_Row!C5"
+    # ws['A1'].hyperlink="#By_Row!C5"
     return analysis_by_outcomes_row_numbers_map

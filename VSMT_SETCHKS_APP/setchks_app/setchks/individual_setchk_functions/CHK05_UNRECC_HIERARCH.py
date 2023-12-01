@@ -101,13 +101,13 @@ def do_check(setchks_session=None, setchk_results=None):
     for mr in setchks_session.marshalled_rows:
         if mr.C_Id is not None:
             valset_members.add(mr.C_Id)  
-    print(f"valset_members {valset_members}")
+    # print(f"valset_members {valset_members}")
     for domain_id in domain_ids:
         domain_members=set(str(x) for x in concepts[domain_id].descendants)  # really need this done upstream!!!!
                                                                             # concepts service seems to be working in ints
-        print(domain_id, len(domain_members),list(domain_members)[:3])
+        # print(domain_id, len(domain_members),list(domain_members)[:3])
         valset_members_in_domain_dict[domain_id]=valset_members.intersection(domain_members)
-    print(f"valset_members_in_domain_dict {valset_members_in_domain_dict}")
+    # print(f"valset_members_in_domain_dict {valset_members_in_domain_dict}")
 
     ##################################################################
     ##################################################################
@@ -140,7 +140,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 for domain_id in domain_ids:
                     domain_name=id_to_full_domain_name_dict[domain_id]
-                    print(concept_id,type(concept_id), domain_id, domain_name, valset_members_in_domain_dict[domain_id])
+                    # print(concept_id,type(concept_id), domain_id, domain_name, valset_members_in_domain_dict[domain_id])
                     if concept_id in valset_members_in_domain_dict[domain_id]:
                         acceptability=acceptability_dicts_by_id[data_entry_extract_type][domain_id]
                         n_CONCEPTS_IN_DOMAIN[domain_id]+=1

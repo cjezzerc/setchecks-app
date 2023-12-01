@@ -176,8 +176,6 @@ def do_check(setchks_session=None, setchk_results=None):
     for i_data_row, mr in enumerate(setchks_session.marshalled_rows):
         if mr.C_Id is not None:
             concept_id=mr.C_Id
-            print(f"concept_id: {concept_id}")
-            print(f"mr: {mr}")
             valset_members.add(concept_id)  
             active_status[concept_id]=concepts[concept_id].active
             if dual_mode:

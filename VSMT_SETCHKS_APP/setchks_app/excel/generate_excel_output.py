@@ -1,5 +1,6 @@
 """Functions to handle Excel input and output"""
 
+import time
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Border, Side, PatternFill
@@ -18,6 +19,7 @@ logger=logging.getLogger(__name__)
 
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
+    time00=time.time()
     
     color_fills={
         "grey": PatternFill(patternType='solid', fgColor=Color('D9D9D9')),
@@ -53,6 +55,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ws=wb.worksheets[3]
     ws.title='Set analyses'
 
+    time0=time.time()
     make_set_analysis_sheet.make_set_analysis_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
@@ -60,11 +63,13 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         color_fills=color_fills,
         border=border,
         )
+    print(f"make_set_analysis_sheet took {time.time()-time0} seconds")
 
     ##################################################################
     #           Make supp tabs sheet                                 #     
     ##################################################################
 
+    time0=time.time()
     final_supp_tab_i_ws,supp_tabs_row_numbers_map=make_supp_tab_sheets.make_supp_tab_sheets(
         wb=wb,
         first_i_ws=4, 
@@ -73,11 +78,13 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         color_fills=color_fills,
         border=border,
         )
+    print(f"make_supp_tab_sheets took {time.time()-time0} seconds")
 
     ##################################################################
     #           Make chk specific sheets                             #     
     ##################################################################
 
+    time0=time.time()
     final_chk_specific_i_ws=make_chk_specific_sheets.make_chk_specific_sheets(
         wb=wb,
         first_i_ws=final_supp_tab_i_ws+1, 
@@ -86,6 +93,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         color_fills=color_fills,
         border=border,
         )
+    print(f"make_chk_specific_sheets took {time.time()-time0} seconds")
 
     ##################################################################
     #           By_Outcome sheet                                     #     
@@ -94,14 +102,14 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ws=wb.worksheets[2]
     ws.title='By_Outcome'
 
+    time0=time.time()
     analysis_by_outcome_row_numbers_map=make_analysis_by_outcome_sheet.make_analysis_by_outcome_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
         setchks_session=setchks_session,
-        color_fills=color_fills,
-        border=border,
         output_OK_messages=output_OK_messages,
         )
+    print(f"make_analysis_by_outcome_sheet took {time.time()-time0} seconds")
     
     ##################################################################
     #           By_Row sheet                                         #     
@@ -110,16 +118,16 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ws=wb.worksheets[1]
     ws.title='By_Row'
 
+    time0=time.time()
     row_analysis_row_numbers_map=make_analysis_by_row_sheet.make_analysis_by_row_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
         setchks_session=setchks_session,
-        color_fills=color_fills,
-        border=border,
         output_OK_messages=output_OK_messages,
         analysis_by_outcome_row_numbers_map=analysis_by_outcome_row_numbers_map,
         supp_tabs_row_numbers_map=supp_tabs_row_numbers_map,
         )
+    print(f"make_analysis_by_row_sheet took {time.time()-time0} seconds")
 
     ##################################################################
     #           Row_Overview sheet                                   #     
@@ -128,6 +136,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ws=wb.worksheets[0]
     ws.title='Row_Overview'
 
+    time0=time.time()
     make_row_overview_sheet.make_row_overview_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,
@@ -136,6 +145,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         row_analysis_row_numbers_map=row_analysis_row_numbers_map,
         )
+    print(f"make_row_overview_sheet took {time.time()-time0} seconds")
     
 
     
@@ -144,7 +154,10 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ##################################################################
 
     logger.debug(f"About to save file {excel_filename}")
+    time0=time.time()
     wb.save(filename=excel_filename)
+    print(f"wb.save took {time.time()-time0} seconds")
+    print(f"Total excel file generation time =  {time.time()-time00} seconds")
 
         # Aide memoire snippets
         # from openpyxl.styles import Alignment, Border, Side, PatternFill

@@ -35,14 +35,15 @@ def make_one_chk_specific_sheet(
 
     chk_specific_sheet=setchk_results.chk_specific_sheet
 
+    current_ws_row=0
     for chk_specific_row in chk_specific_sheet.rows:
         # print(chk_specific_row.row_fill, chk_specific_row.row_height, chk_specific_row.cell_contents)
         ws.append(chk_specific_row.cell_contents)
-        irow=ws.max_row
+        current_ws_row+=1
+        current_ws_row=ws.max_row
         if chk_specific_row.row_height is not None:
-            # print(f"irow={irow}")
-            ws.row_dimensions[irow].height = chk_specific_row.row_height
-        for cell in ws[irow]:
+            ws.row_dimensions[current_ws_row].height = chk_specific_row.row_height
+        for cell in ws[current_ws_row]:
             cell.alignment=cell.alignment.copy(wrap_text=True)
             if chk_specific_row.row_fill is not None:
                 cell.fill=color_fills[chk_specific_row.row_fill]

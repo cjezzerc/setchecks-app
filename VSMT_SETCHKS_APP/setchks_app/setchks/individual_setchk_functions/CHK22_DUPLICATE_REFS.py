@@ -61,12 +61,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 if did_entered not in rows_with_this_did_entered:
                     rows_with_this_did_entered[did_entered]=set()
                 rows_with_this_did_entered[did_entered].add(i_data_row)
-        print("====================")
-        print(i_data_row)
-        print(mr)
-        print(rows_with_this_cid_entered)
-        print(rows_with_this_did_entered)
-        print("====================")
+
     duplicated_cid_rows={}
     for cid_entered, rows in rows_with_this_cid_entered.items():
         if len(rows)>1:
@@ -75,9 +70,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 assert row not in duplicated_cid_rows
                 # duplicated_cid_rows[row]=rows.difference(set([row])) # set operation leaves all rows except this one
                 duplicated_cid_rows[row]=rows
-
-    
-                
+  
     duplicated_did_rows={}
     for did_entered, rows in rows_with_this_did_entered.items():
         if len(rows)>1:
