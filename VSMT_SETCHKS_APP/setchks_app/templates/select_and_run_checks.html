@@ -6,6 +6,29 @@
 
 {% block content %}
     
+<style>
+
+.run_status_blinking {
+animation: animate 1.5s linear infinite; 
+}  
+
+.run_status_static {
+animation: none; 
+}  
+
+@keyframes animate{ 
+  0%{ 
+    opacity: 0; 
+  } 
+  50%{ 
+    opacity: 0.7; 
+  } 
+  100%{ 
+    opacity: 0; 
+  } 
+} 
+</style> 
+
 
 <div class="container-fluid  mt-5 ">
     
@@ -37,12 +60,46 @@
                                 {% set setchk_run_status = setchks_session.setchks_run_status[sc] %}
                                 <tr>
                                 <td> {{ setchk.setchk_short_name }}</td>
-                                <td> {{ setchk_run_status }} </td>
+                                <td> 
+                                    <!-- {{ setchk_run_status }}  -->
+                                    {% if setchk_run_status=="started" %}
+                                        <span class="run_status_blinking"> 
+                                        <b>Running..</b> 
+                                        </span>
+                                    {% else %}
+                                        <span class="run_status_static"> 
+                                        {% if setchk_run_status=="queued" %}
+                                            Waiting in queue    
+                                        {% elif setchk_run_status=="finished" %}
+                                            <b>Completed</b>
+                                        {% elif setchk_run_status=="failed" %}
+                                            <i>Job failed</i>
+                                        {% endif %}
+                                        </span>
+                                    {% endif %}
+                                </td>
                                 </tr>
                             {% endfor %}
                             <tr>
-                                <td> Generate Excel Output</td>
-                                <td> {{setchks_session.setchks_run_status["GENERATE_EXCEL"]}}</td>
+                                <td> Create Excel Output</td>
+                                <td>
+                                {% set generate_run_status = setchks_session.setchks_run_status["GENERATE_EXCEL"] %}
+                                {% if generate_run_status=="started" %}
+                                    <span class="run_status_blinking"> 
+                                    <b>Creating..</b> 
+                                    </span>
+                                {% else %}
+                                    <span class="run_status_static"> 
+                                    {% if generate_run_status=="queued" %}
+                                        Waiting in queue    
+                                    {% elif generate_run_status=="finished" %}
+                                        <b>Ready</b>
+                                    {% elif generate_run_status=="failed" %}
+                                        <i>Job failed</i>
+                                    {% endif %}
+                                    </span>
+                            {% endif %}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -102,16 +159,16 @@
                         {% endif %}
                         {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
                             results_available and (not setchks_session.excel_file_available) %}
-                            <a href="/select_and_run_checks?generate_report=True" id="generate_excel_button" class="btn setchks-btn-green">Generate Excel Report</a>
+                            <a href="/select_and_run_checks?generate_report=True" id="generate_excel_button" class="btn setchks-btn-green">Create Report</a>
                             <script>
                                 setTimeout(function() { window.location=$('#generate_excel_button').attr("href"); }, 1000);
                             </script>
                             {% endif %}
                         {% if setchks_session.excel_file_available %}
                             <a href="/select_and_run_checks?download_report=True" id="download_report_button" class="btn setchks-btn-green">Download Excel Report</a>
-                            <script>
+                            <!-- <script>
                                 setTimeout(function() { window.location=$('#download_report_button').attr("href"); }, 1000);
-                            </script>
+                            </script> -->
                             {% endif %}
 
                     </ul>
