@@ -92,18 +92,27 @@
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                            <a href="/select_and_run_checks" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
-                        <br>Please do not navigate away from this page while jobs are running (safeguards TBI)
+                            <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
+                            <script>
+                                setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
+                            </script>
+                            <br>Please do not navigate away from this page while jobs are running (safeguards TBI)
                         {% elif not setchks_session.all_CHKXX_finished %}
                             <a href="/select_and_run_checks?run_checks=True"  class="btn setchks-btn">Run checks</a>
                         {% endif %}
                         {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
                             results_available and (not setchks_session.excel_file_available) %}
-                            <a href="/select_and_run_checks?generate_report=True" class="btn setchks-btn-green">Generate Excel Report</a>
-                        {% endif %}
+                            <a href="/select_and_run_checks?generate_report=True" id="generate_excel_button" class="btn setchks-btn-green">Generate Excel Report</a>
+                            <script>
+                                setTimeout(function() { window.location=$('#generate_excel_button').attr("href"); }, 1000);
+                            </script>
+                            {% endif %}
                         {% if setchks_session.excel_file_available %}
-                            <a href="/select_and_run_checks?download_report=True" class="btn setchks-btn-green">Download Excel Report</a>
-                        {% endif %}
+                            <a href="/select_and_run_checks?download_report=True" id="download_report_button" class="btn setchks-btn-green">Download Excel Report</a>
+                            <script>
+                                setTimeout(function() { window.location=$('#download_report_button').attr("href"); }, 1000);
+                            </script>
+                            {% endif %}
 
                     </ul>
                 </div>
