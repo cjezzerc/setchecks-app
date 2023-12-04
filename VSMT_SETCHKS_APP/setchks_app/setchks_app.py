@@ -423,10 +423,19 @@ def enter_metadata():
     print("REQUEST:",request.args.keys())
     print(request.files)
 
+
     setchks_session=gui_setchks_session.get_setchk_session(session)
  
     if setchks_session.available_sct_versions is None:
-        setchks_session.available_sct_versions=get_sct_versions.get_sct_versions()
+        all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
+        setchks_session.available_sct_versions=[]
+        ds=DescriptionsService(data_type="hst")
+        hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
+        for sct_version, hst_exists in hst_dict.items():
+            if hst_exists: # only make sct_version available if has an HST 
+                setchks_session.available_sct_versions.append(all_available_sct_versions[sct_version])
+
+
         setchks_session.sct_version=setchks_session.available_sct_versions[0]
         setchks_session.sct_version_b=setchks_session.available_sct_versions[0]
 

@@ -1,5 +1,6 @@
 
 from openpyxl.utils import get_column_letter
+from . import styling
 
 def make_supp_tab_sheets(
     wb=None,
@@ -72,9 +73,9 @@ def make_one_supp_tab_sheet(
                     # cell.alignment=cell.alignment.copy(wrap_text=True)
                     # cell.border = border  
                     if banded_row:
-                        cell.style=styling.Tlbg
+                        cell.style=styling.vsmt_style_Tlbg
                     else:
-                        cell.style=styling.Tlb
+                        cell.style=styling.vsmt_style_Tlb
                 if first_row_of_block:
                     supp_tab_row_numbers_map.append(current_ws_row)
                     first_row_of_block=False
