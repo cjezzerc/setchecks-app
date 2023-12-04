@@ -55,6 +55,8 @@ class SetchksSession():
                "all_CHKXX_finished",
                "excel_filename",
                "excel_file_available",
+               "excel_file_generation_failed",
+               "timings",
                "app_version",
                )
 
@@ -85,8 +87,9 @@ class SetchksSession():
         self.all_CHKXX_finished=False
         self.excel_filename=None
         self.excel_file_available=False
+        self.excel_file_generation_failed=False
+        self.timings={} # arbitrary entries can be put in this dict for debug purposes
         self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
-    
     def __repr__(self):
         repr_strings=[]
         # for k,v in self.__dict__.items():
@@ -113,7 +116,7 @@ class SetchksSession():
                                 separator=separator)
 
     def generate_excel_output(self, setchks_to_include="ALL"):
-        generate_excel_output.generate_excel_output(
+        return generate_excel_output.generate_excel_output(
             setchks_session=self, 
             excel_filename=self.excel_filename, 
             setchks_to_include=setchks_to_include
@@ -127,4 +130,5 @@ class SetchksSession():
         self.setchks_run_status={}
         self.setchks_jobs_manager=None
         self.excel_file_available=False
+        self.excel_file_generation_failed=False
         self.all_CHKXX_finished=False

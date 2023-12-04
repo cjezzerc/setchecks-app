@@ -164,7 +164,7 @@ animation: none;
                                 setTimeout(function() { window.location=$('#generate_excel_button').attr("href"); }, 1000);
                             </script>
                             {% endif %}
-                        {% if setchks_session.excel_file_available %}
+                        {% if setchks_session.excel_file_available and not setchks_session.excel_file_generation_failed %}
                             <a href="/select_and_run_checks?download_report=True" id="download_report_button" class="btn setchks-btn-green">Download Excel Report</a>
                             <!-- <script>
                                 setTimeout(function() { window.location=$('#download_report_button').attr("href"); }, 1000);

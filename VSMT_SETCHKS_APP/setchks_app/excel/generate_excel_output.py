@@ -17,8 +17,13 @@ from . import (
 import logging
 logger=logging.getLogger(__name__)
 
+timings={}
+
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
+    
+    # raise Exception("Forcing generate excel to fail")
+
     time00=time.time()
     
     color_fills={
@@ -64,6 +69,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         )
     print(f"make_set_analysis_sheet took {time.time()-time0} seconds")
+    timings["set analysis sheet"]=f"{(time.time()-time0):0.6f} s" 
 
     ##################################################################
     #           Make supp tabs sheet                                 #     
@@ -79,6 +85,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         )
     print(f"make_supp_tab_sheets took {time.time()-time0} seconds")
+    timings["supp tab sheets"]=f"{(time.time()-time0):0.6f} s" 
 
     ##################################################################
     #           Make chk specific sheets                             #     
@@ -94,6 +101,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         border=border,
         )
     print(f"make_chk_specific_sheets took {time.time()-time0} seconds")
+    timings["check specific sheets"]=f"{(time.time()-time0):0.6f} s" 
 
     ##################################################################
     #           By_Outcome sheet                                     #     
@@ -110,6 +118,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         output_OK_messages=output_OK_messages,
         )
     print(f"make_analysis_by_outcome_sheet took {time.time()-time0} seconds")
+    timings["analysis by outcome sheet"]=f"{(time.time()-time0):0.6f} s" 
     
     ##################################################################
     #           By_Row sheet                                         #     
@@ -128,6 +137,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         supp_tabs_row_numbers_map=supp_tabs_row_numbers_map,
         )
     print(f"make_analysis_by_row_sheet took {time.time()-time0} seconds")
+    timings["analysis by row sheet"]=f"{(time.time()-time0):0.6f} s" 
 
     ##################################################################
     #           Row_Overview sheet                                   #     
@@ -146,6 +156,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         row_analysis_row_numbers_map=row_analysis_row_numbers_map,
         )
     print(f"make_row_overview_sheet took {time.time()-time0} seconds")
+    timings["row overview sheet"]=f"{(time.time()-time0):.6f} s" 
     
 
     
@@ -157,7 +168,12 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     time0=time.time()
     wb.save(filename=excel_filename)
     print(f"wb.save took {time.time()-time0} seconds")
+    timings["wb save"]=f"{(time.time()-time0):0.6f} s" 
     print(f"Total excel file generation time =  {time.time()-time00} seconds")
+    timings["total excel file generation"]=f"{(time.time()-time00):0.6f} s" 
+
+    print(timings)
+    return timings
 
         # Aide memoire snippets
         # from openpyxl.styles import Alignment, Border, Side, PatternFill

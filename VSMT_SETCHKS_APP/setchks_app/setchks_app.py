@@ -559,25 +559,32 @@ def select_and_run_checks():
 
     if "generate_report" in request.args:
         logger.debug("Report requested")
-        user_tmp_folder="/tmp/"+setchks_session.uuid
-        os.system("mkdir -p " + user_tmp_folder)
-        excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
-        setchks_session.excel_filename=excel_filename
-        run_in_rq=True
-        if run_in_rq:
-            setchks_jobs_manager.launch_job(
-                generate_excel=True,
-                setchks_session=setchks_session,
-                )
-            job_status_report=setchks_jobs_manager.update_job_statuses()
-            logger.debug("\n".join(job_status_report))
-        else:
-            logger.debug("Generating excel ..: " + excel_filename)
-            setchks_session.generate_excel_output()
-        
+        if not setchks_session.excel_file_generation_failed:
+            user_tmp_folder="/tmp/"+setchks_session.uuid
+            os.system("mkdir -p " + user_tmp_folder)
+            excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
+            setchks_session.excel_filename=excel_filename
+            run_in_rq=True
+            if run_in_rq:
+                setchks_jobs_manager.launch_job(
+                    generate_excel=True,
+                    setchks_session=setchks_session,
+                    )
+                job_status_report=setchks_jobs_manager.update_job_statuses()
+                logger.debug("\n".join(job_status_report))
+            else:
+                logger.debug("Generating excel ..: " + excel_filename)
+                setchks_session.generate_excel_output()
+        else: # quick and dirty way to stop the generate report autoclick generating endless loop
+              # if excel file generation fails.
+            setchks_session.excel_file_available=True # even though it isn't..
+            
     
     if "download_report" in request.args:
-        return send_file(setchks_session.excel_filename)
+        if setchks_session.excel_file_generation_failed:
+            pass
+        else:
+            return send_file(setchks_session.excel_filename)
 
     # results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
     results_available=setchks_session.all_CHKXX_finished

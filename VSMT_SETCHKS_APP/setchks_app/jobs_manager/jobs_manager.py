@@ -46,9 +46,15 @@ class SetchksJobsManager():
                             self.setchks_session.setchks_results[setchks_job.associated_task]=rq_job.result
                             setchks_job.results_fetched=True
                         if setchks_job.associated_task=="GENERATE_EXCEL":
+                            timings=rq_job.result
+                            for k,v in timings.items():
+                                self.setchks_session.timings[k]=v
                             self.setchks_session.excel_file_available=True
                     elif rq_status=="failed":
-                        pass # no specific action but setchks_job_status will pick this up     
+                        if setchks_job.associated_task=="GENERATE_EXCEL":
+                            self.setchks_session.excel_file_generation_failed=True
+                        else:
+                            pass # no specific action for setchks but setchks_job_status will pick this up
                     else: # still running or queued
                         self.jobs_running=True
                         if setchks_job.associated_task[:3]=="CHK":
