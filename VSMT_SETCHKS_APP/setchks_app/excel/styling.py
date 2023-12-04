@@ -1,5 +1,7 @@
 from openpyxl.styles import Alignment, Border, Side, PatternFill, NamedStyle
 from openpyxl.styles.colors import Color
+from openpyxl.styles import numbers
+
 
 color_fills={
         "grey": PatternFill(patternType='solid', fgColor=Color('D9D9D9')),
@@ -16,23 +18,29 @@ border = Border(left=Side(style='thin'),
 
 vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
 vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
+vsmt_style_wrap_top.number_format = numbers.FORMAT_TEXT
 
 vsmt_style_grey_row=NamedStyle(name="vsmt_style_grey_row")
 vsmt_style_grey_row.fill=color_fills["grey"]
 vsmt_style_grey_row.border=border
+vsmt_style_grey_row.number_format = numbers.FORMAT_TEXT
 
 vsmt_style_Fcb=NamedStyle(name="vsmt_style_Fcb")
 vsmt_style_Fcb.alignment=Alignment(vertical='bottom', horizontal='center')
+vsmt_style_Fcb.number_format = numbers.FORMAT_TEXT
 
 vsmt_style_Fcbg=NamedStyle(name="vsmt_style_Fcbg")
 vsmt_style_Fcbg.alignment=Alignment(vertical='bottom', horizontal='center')
 vsmt_style_Fcbg.fill=color_fills["grey"]
 vsmt_style_Fcbg.border=border
+vsmt_style_Fcbg.number_format = numbers.FORMAT_TEXT
 
 vsmt_style_Tlb=NamedStyle(name="vsmt_style_Tlb")
 vsmt_style_Tlb.alignment=Alignment(vertical='top', horizontal='left')
+vsmt_style_Tlb.number_format = numbers.FORMAT_TEXT
 
 vsmt_style_Tlbg=NamedStyle(name="vsmt_style_Tlbg")
 vsmt_style_Tlbg.alignment=Alignment(vertical='top', horizontal='left')
 vsmt_style_Tlbg.fill=color_fills["grey"]
 vsmt_style_Tlbg.border=border
+vsmt_style_Tlbg.number_format = numbers.FORMAT_TEXT

@@ -43,6 +43,7 @@ def make_one_supp_tab_sheet(
                                     # so that other sheets can link to the right row on this sheet 
     headers_output=False
     banded_row=False
+    current_ws_row=0
     for i_data_row, supp_tab_entries in enumerate(setchk_results.supp_tab_blocks):
         if supp_tab_entries not in [None, []]:
             banded_row=not banded_row
@@ -56,6 +57,7 @@ def make_one_supp_tab_sheet(
                 if not headers_output:
                     ws.append(supp_tab_row.headers) # this is a class level attribute. 
                                                     # Just pull it the first time fine a not "None" entry
+                    current_ws_row+=1
                     for i, width in enumerate(supp_tab_row.cell_widths):
                         ws.column_dimensions[get_column_letter(i+1)].width=width
                     for cell in ws[ws.max_row]:
@@ -64,13 +66,17 @@ def make_one_supp_tab_sheet(
                 #                                            #
                 ##############################################
                 ws.append(supp_tab_row.format_as_list())
-                for cell in ws[ws.max_row]:
-                    cell.alignment=cell.alignment.copy(wrap_text=True)
-                    cell.border = border  
+                current_ws_row+=1
+
+                for cell in ws[current_ws_row]:
+                    # cell.alignment=cell.alignment.copy(wrap_text=True)
+                    # cell.border = border  
                     if banded_row:
-                        cell.fill=color_fills["light_grey_band"]
+                        cell.style=styling.Tlbg
+                    else:
+                        cell.style=styling.Tlb
                 if first_row_of_block:
-                    supp_tab_row_numbers_map.append(ws.max_row)
+                    supp_tab_row_numbers_map.append(current_ws_row)
                     first_row_of_block=False
         else:
             supp_tab_row_numbers_map.append(None)
