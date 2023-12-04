@@ -170,6 +170,11 @@ animation: none;
                                 setTimeout(function() { window.location=$('#download_report_button').attr("href"); }, 1000);
                             </script> -->
                             {% endif %}
+                        {% if not setchks_session.passes_gatekeeper %}
+                        <br> <b> It has been detected that the value set contains entries in the MIXED column that are not found in the selected release.
+                        <br> CHK02 and CHK20 will be run to provide information on the problematic entries. 
+                        <br> No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
+                        {% endif %}
 
                     </ul>
                 </div>

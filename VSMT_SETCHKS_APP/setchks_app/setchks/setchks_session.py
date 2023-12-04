@@ -40,6 +40,7 @@ class SetchksSession():
                "columns_info",
                "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
+               "passes_gatekeeper",
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
                "refactored_form",
                "terminology_server",
@@ -72,6 +73,7 @@ class SetchksSession():
         self.columns_info=None
         self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
+        self.passes_gatekeeper=None
         self.setchks_results={}
         self.refactored_form=None
         self.terminology_server=None

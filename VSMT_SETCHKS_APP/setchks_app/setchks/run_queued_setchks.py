@@ -18,12 +18,13 @@ def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
     # queue up (or directly run) the setchks
     for setchk in setchks_list:
         if run_in_rq:
-            setchks_jobs_manager.launch_job(
-                setchk=setchk,
-                setchks_session=setchks_session,
-                )
-            job_status_report=setchks_jobs_manager.update_job_statuses()
-            logger.debug("\n".join(job_status_report))
+            if setchks_session.passes_gatekeeper or setchk.setchk_code in ["CHK02_IDS_IN_RELEASE", "CHK20_INCORR_FMT_SCTID"]:
+                setchks_jobs_manager.launch_job(
+                    setchk=setchk,
+                    setchks_session=setchks_session,
+                    )
+                job_status_report=setchks_jobs_manager.update_job_statuses()
+                logger.debug("\n".join(job_status_report))
         else:
             logger.debug("Running ..: " + str(setchk.setchk_code))
             setchk.run_check(setchks_session=setchks_session)

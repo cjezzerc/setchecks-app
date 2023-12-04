@@ -549,8 +549,12 @@ def select_and_run_checks():
         if setchks_session.setchks_results=={}: # Missing results means either 
                                                 # marshalled rows never calculated, 
                                                 # or sct_release or column_identities have changed
+            setchks_session.passes_gatekeeper=True
             for mr in setchks_session.marshalled_rows:
                 mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
+                if setchks_session.passes_gatekeeper and mr.C_Id is None and not mr.blank_row:
+                    setchks_session.passes_gatekeeper=False
+            
         
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
             setchks_list=setchks_session.selected_setchks, 
