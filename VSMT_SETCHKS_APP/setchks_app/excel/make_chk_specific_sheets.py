@@ -1,5 +1,7 @@
 
 from openpyxl.utils import get_column_letter
+from . import styling
+
 
 def make_chk_specific_sheets(
     wb=None,
@@ -40,13 +42,16 @@ def make_one_chk_specific_sheet(
         # print(chk_specific_row.row_fill, chk_specific_row.row_height, chk_specific_row.cell_contents)
         ws.append(chk_specific_row.cell_contents)
         current_ws_row+=1
-        current_ws_row=ws.max_row
         if chk_specific_row.row_height is not None:
+            pass
             ws.row_dimensions[current_ws_row].height = chk_specific_row.row_height
         for cell in ws[current_ws_row]:
-            cell.alignment=cell.alignment.copy(wrap_text=True)
+            # cell.alignment=cell.alignment.copy(wrap_text=True)
             if chk_specific_row.row_fill is not None:
-                cell.fill=color_fills[chk_specific_row.row_fill]
+                cell.style=styling.vsmt_style_grey_row # only grey available as stopgap measure
+                # cell.fill=color_fills[chk_specific_row.row_fill]
+            else:
+                cell.style=styling.vsmt_style_wrap_top 
 
     for i, width in enumerate(chk_specific_sheet.col_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     

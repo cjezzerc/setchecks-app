@@ -15,6 +15,8 @@ from openpyxl.styles.colors import Color
 
 import setchks_app.setchks.setchk_definitions
 
+from . import styling
+
 
 
 
@@ -31,6 +33,7 @@ def make_row_overview_sheet(
     setchks_results=setchks_session.setchks_results
 
     current_row=0
+    current_ws_row=0
 
     #############################################################
     # row with the slanted setchk description column headers etc 
@@ -53,6 +56,7 @@ def make_row_overview_sheet(
     row_cell_contents+=header_cell_contents
     
     ws.append(row_cell_contents)
+    current_ws_row+=1
 
     cell_widths=[13.33]+[3.5]*(len(setchks_list_to_report)+1)+[25]*(1+len(setchks_session.data_as_matrix[0]))
     for i, width in enumerate(cell_widths):
@@ -91,6 +95,7 @@ def make_row_overview_sheet(
 
     current_row+=1 # to account for the filter row
     ws.append([])  # ditto
+    current_ws_row+=1
 
     ##########################
     # row of check numbers 
@@ -103,6 +108,7 @@ def make_row_overview_sheet(
         row_cell_contents.append(setchk_code[3:5])
     
     ws.append(row_cell_contents)
+    current_ws_row+=1
 
 
     ################
@@ -145,28 +151,56 @@ def make_row_overview_sheet(
         row_cell_contents+=user_notes
         row_cell_contents+=data_row_cell_contents
         ws.append(row_cell_contents)
+        current_ws_row+=1
 
         for i_col, cell in enumerate(ws[current_row]):
+            # if i_col<=len(x_cells)+1:
+            #     wrap_text=False
+            #     horizontal='center'
+            #     vertical='bottom'
+            # else:
+            #     wrap_text=True
+            #     horizontal='left' 
+            #     vertical='bottom'
+            # cell.alignment=cell.alignment.copy(
+            #     wrap_text=wrap_text, 
+            #     horizontal=horizontal,
+            #     vertical=vertical,
+            #     )
+            # if i_col==len(x_cells):
+            #     cell.fill=color_fills["findings_identified"]
+            # if i_col==len(x_cells)+1:
+            #     cell.fill=color_fills["user_notes"]
+            # if at_least_one_x:
+            #     cell.fill=color_fills["apricot"]
+            # cell.border = border 
             if i_col<=len(x_cells)+1:
-                wrap_text=False
-                horizontal='center'
-                vertical='bottom'
+                # wrap_text=False
+                # horizontal='center'
+                # vertical='bottom'
+                style="vsmt_style_Fcb"
             else:
-                wrap_text=True
-                horizontal='left' 
-                vertical='bottom'
-            cell.alignment=cell.alignment.copy(
-                wrap_text=wrap_text, 
-                horizontal=horizontal,
-                vertical=vertical,
-                )
+                # wrap_text=True
+                # horizontal='left' 
+                # vertical='bottom'
+                style="vsmt_style_Tlb"
+            # cell.alignment=cell.alignment.copy(
+            #     wrap_text=wrap_text, 
+            #     horizontal=horizontal,
+            #     vertical=vertical,
+            #     )
+            colour=""
             if i_col==len(x_cells):
-                cell.fill=color_fills["findings_identified"]
+                # cell.fill=color_fills["findings_identified"]
+                colour="g"
             if i_col==len(x_cells)+1:
-                cell.fill=color_fills["user_notes"]
+                # cell.fill=color_fills["user_notes"]
+                colour="g"
             if at_least_one_x:
-                cell.fill=color_fills["apricot"]
-            cell.border = border  
+                # cell.fill=color_fills["apricot"]
+                colour="g"
+            # cell.border = border 
+            cell.style=getattr(styling,style+colour)  
     
     # # crude cell with setting
     # cell_widths=[15,30,50,25,50] + [20]*10

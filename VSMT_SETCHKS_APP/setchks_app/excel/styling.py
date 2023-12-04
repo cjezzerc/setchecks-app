@@ -20,3 +20,19 @@ vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
 vsmt_style_grey_row=NamedStyle(name="vsmt_style_grey_row")
 vsmt_style_grey_row.fill=color_fills["grey"]
 vsmt_style_grey_row.border=border
+
+vsmt_style_Fcb=NamedStyle(name="vsmt_style_Fcb")
+vsmt_style_Fcb.alignment=Alignment(vertical='bottom', horizontal='center')
+
+vsmt_style_Fcbg=NamedStyle(name="vsmt_style_Fcbg")
+vsmt_style_Fcbg.alignment=Alignment(vertical='bottom', horizontal='center')
+vsmt_style_Fcbg.fill=color_fills["grey"]
+vsmt_style_Fcbg.border=border
+
+vsmt_style_Tlb=NamedStyle(name="vsmt_style_Tlb")
+vsmt_style_Tlb.alignment=Alignment(vertical='top', horizontal='left')
+
+vsmt_style_Tlbg=NamedStyle(name="vsmt_style_Tlbg")
+vsmt_style_Tlbg.alignment=Alignment(vertical='top', horizontal='left')
+vsmt_style_Tlbg.fill=color_fills["grey"]
+vsmt_style_Tlbg.border=border
