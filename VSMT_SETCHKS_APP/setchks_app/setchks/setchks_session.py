@@ -133,4 +133,5 @@ class SetchksSession():
         self.setchks_jobs_manager=None
         self.excel_file_available=False
         self.excel_file_generation_failed=False
+        self.passes_gatekeeper=None
         self.all_CHKXX_finished=False
