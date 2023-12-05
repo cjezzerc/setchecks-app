@@ -36,3 +36,7 @@ if action=="make_missing":
 
 if action=="delete_database": # dangerous! do with intention!
     cs.delete_database()
+
+if action=="make_one":
+    date_string=sys.argv[2]
+    cs.create_collection_from_ontoserver(sct_version=date_string)
