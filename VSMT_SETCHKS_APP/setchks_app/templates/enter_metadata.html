@@ -7,7 +7,7 @@
 {% block content %}
     
 
-<div class="container-fluid  mt-5 ">
+<div class="container-fluid  mt-0 ">
     
     <div class="row">    
 
@@ -17,7 +17,7 @@
 
         <div class="col-6 ">
             
-            <div class="card" style="height: 20vh">
+            <!-- <div class="card" style="height: 10vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     On this screen please
                     <ul> 
@@ -25,17 +25,29 @@
                         <li> Enter descriptive metadata ...</li>
                     </ul>             
                 </div>
-            </div>
+            </div> -->
 
-            <div class="card" style="height: 10vh; margin-top:1vh;">
+            <div class="card" style="height: 33vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> You will enter name and purpose here (TBI) </li>
+                        <form action="#">
+                            <div class="form-group" style="margin-top:1vh;">
+                                <label for="vs_name">Name of value set</label>
+                                <input class="form-control" id="vs_name">
+                            </div>
+                            <div class="form-group" style="margin-top:1vh;">
+                                <label for="vs_purpose">Purpose of value set</label>
+                                <textarea class="form-control" id="vs_purpose" rows="1"></textarea>
+                            </div>
+                            <div style="margin-top:1vh;">
+                                <input type="submit" value="Save name and purpose">
+                            </div>
+                        </form>
                     </ul>
                 </div>
             </div>
 
-            <div class="card" style="height: 28vh; margin-top:1vh;">
+            <div class="card" style="height: 33vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <span> Mode: </span>
                     <form action="/enter_metadata" class="sct_version_mode_buttons" method="post" enctype="multipart/form-data">
@@ -123,7 +135,7 @@
             #    Start of block for first sct_version - "sct_version"    #
             ############################################################## -->
 
-            <div class="card" style="height: 29vh; margin-top:1vh;">
+            <div class="card" style="height: 33vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
@@ -134,28 +146,29 @@
                         <br>
                         <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
                         <div id="timeline_fig" ></div>  <!-- div for the plotly figure -->
-                        <div> <p id="timeline_hover_info"> <br> </p> </p></div>  <!-- div for the hover info -->
+                        <div> <p id="timeline_hover_info"> <br> </p></div>  <!-- div for the hover info -->
                         
-                        <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
-                            <select name="select_sct_version" class="form-select" 
-                                onchange="$('.sct_version_selection_form').submit();" 
-                                style="margin-top: 0.5em;"
-                                >
-                                {% for available_sct_version in setchks_session.available_sct_versions %} 
-                                    {% if available_sct_version == setchks_session.sct_version %}
-                                    <option selected
-                                    {% else %}
-                                    <option
-                                    {% endif %} 
-    
-                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
-    
-                                    {% if loop.index==1 %} (current) {% endif %}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </form>
-
+                        <div style="margin-top:0">
+                            <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
+                                    <select name="select_sct_version" class="form-select" 
+                                        onchange="$('.sct_version_selection_form').submit();" 
+                                        style="margin-top: 0.5em;"
+                                        >
+                                        {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                            {% if available_sct_version == setchks_session.sct_version %}
+                                            <option selected
+                                            {% else %}
+                                            <option
+                                            {% endif %} 
+            
+                                            value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
+            
+                                            {% if loop.index==1 %} (current) {% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                        </div>  
                     </ul>
                 </div>
             </div>
@@ -208,7 +221,7 @@
             #   This is a like for like copy with _b tagged on as appropriate #
             ################################################################### -->
             
-            <div class="card" style="height: 29vh; margin-top:1vh;">
+            <div class="card" style="height: 33vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         <li> Select the later SNOMED CT release by clicking on the timeline or by using the dropdown </li>
@@ -313,11 +326,11 @@
                 border-style: solid;
                 }
         </style>
-         <div class="col-9"> 
+         <div class="col-8"> 
             <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a>
             <a href="/data_upload"  class="btn setchks-btn">Data upload</a>
         </div>
-        <div class="col-3">
+        <div class="col-4">
             <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Column identities)</a>
             {% if setchks_session.sct_version == None %}
                 <a href="/select_and_run_checks"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> (Select and run checks)</a>

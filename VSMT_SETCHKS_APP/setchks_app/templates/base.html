@@ -20,15 +20,16 @@
     <!-- Not using Frutiger as seem to be license issues; Arial is acceptable fallback   <style> * { font-family:"Frutiger W01", "Arial" ; } </style> -->
     <style> * { font-family:"Arial" ; } </style>
     <style> body {background-color: #f0f4f5;} </style>
+    <style> body {font-size: 0.8em } ;</style>
 </head>
 
 <body>
     
-    <nav class="navbar navbar-light " style="background-color: #005eb8;">
+    <nav class="navbar navbar-light " style="background-color: #005eb8; height:fit-content; margin-bottom: 0em;">
         <div class="container-fluid">
             <!-- <a class="navbar-brand" href="#"> -->
-            <p style="font-size: 1.5em; color: white">
-            <img src="../static/svg/nhs_logo.svg" alt="" width="200" height="50">
+            <p style="font-size: 1em; color: white">
+            <img src="../static/svg/nhs_logo.svg" alt="" width="200" height="30">
             Value Set Management Tool: Set Checks (Prototype) [uuid:{{setchks_session.uuid}}] [commit:{{config["VERSION"]}}]
             <!-- </a> -->
           </p>
@@ -40,7 +41,7 @@
         .setchks-breadcrumb-weak {font-weight: normal; color:#4c6272}
     </style>
     <!-- <nav style="--bs-breadcrumb-divider: '>>>>'; font-size:1.5em; margin-left:1em; margin-top:0.2em;" aria-label="breadcrumb"> -->
-    <nav style="--bs-breadcrumb-divider: '&rarr;'; font-size:1.5em; margin-left:1em; margin-top:0.2em;" aria-label="breadcrumb">
+    <nav style="--bs-breadcrumb-divider: '&rarr;'; font-size:1em; margin-left:1em; margin-top:0.2em;" aria-label="breadcrumb">
         <ol class="breadcrumb breadcrumb-responsive">
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> Data Upload </li>
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["confirm_upload"] }}"> Confirm Upload </li>

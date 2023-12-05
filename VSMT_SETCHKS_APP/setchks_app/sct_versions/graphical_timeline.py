@@ -36,8 +36,10 @@ def create_graphical_timeline(
     fig.update_layout(
         # title="SCT timeline",
         paper_bgcolor='rgb(200,200,200)',
-        height=100,
-        width=700,
+        height=80,
+        width=630,
+        # height=100,
+        # width=700,
         margin=dict(
             l=2,
             r=2,
