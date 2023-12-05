@@ -45,6 +45,8 @@ class SetchksSession():
                "refactored_form",
                "terminology_server",
                "available_sct_versions", 
+               "vs_name",
+               "vs_purpose",
                "sct_version",
                "sct_version_b",
                "sct_version_mode",
@@ -78,6 +80,8 @@ class SetchksSession():
         self.refactored_form=None
         self.terminology_server=None
         self.available_sct_versions=None 
+        self.vs_name=""
+        self.vs_purpose=""
         self.sct_version=None
         self.sct_version_b=None
         self.sct_version_mode="SINGLE_SCT_VERSION"

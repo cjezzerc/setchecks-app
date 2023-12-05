@@ -69,7 +69,7 @@ animation: none;
                                     {% else %}
                                         <span class="run_status_static"> 
                                         {% if setchk_run_status=="queued" %}
-                                            Waiting in queue    
+                                            In queue    
                                         {% elif setchk_run_status=="finished" %}
                                             <b>Completed</b>
                                         {% elif setchk_run_status=="failed" %}
@@ -91,7 +91,7 @@ animation: none;
                                 {% else %}
                                     <span class="run_status_static"> 
                                     {% if generate_run_status=="queued" %}
-                                        Waiting in queue    
+                                        In queue 
                                     {% elif generate_run_status=="finished" %}
                                         <b>Ready</b>
                                     {% elif generate_run_status=="failed" %}

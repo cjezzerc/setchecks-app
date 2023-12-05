@@ -442,6 +442,12 @@ def enter_metadata():
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
     current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections
 
+    # if reach here via click on save name and purpose button
+    if 'vs_name' in request.form:
+        setchks_session.vs_name=request.form['vs_name']
+        setchks_session.vs_purpose=request.form['vs_purpose']
+    
+
     # if reach here via click on versions dropdown
     if 'select_sct_version' in request.form:
         # print("===>>>>", request.form['select_sct_version'])
