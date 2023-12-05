@@ -88,7 +88,7 @@
                     <div  class="upload-methods">   
                         <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
                         <div>       
-                            <form action="/confirm_upload" class="data-browse-form" method="post" enctype="multipart/form-data">
+                            <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> Browse for a file
                                 </label>
@@ -127,7 +127,7 @@
         </div>
         <div class="col-2">
             {% if setchks_session.data_as_matrix != [] %}
-            <a href="/confirm_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Confirm upload)</a>
+            <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Column Identities)</a>
             {% endif %}
         </div>
     
