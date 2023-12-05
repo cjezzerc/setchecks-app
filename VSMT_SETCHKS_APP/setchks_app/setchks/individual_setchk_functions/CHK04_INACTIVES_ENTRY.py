@@ -7,6 +7,7 @@ logger=logging.getLogger()
 import setchks_app.terminology_server_module
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 from ..check_item import CheckItem
 
@@ -104,10 +105,12 @@ class SuppTabRow():
             self.interpretation,
             self.supplied_id,
             self.id_type,
-            self.implied_concept_id,
+            # self.implied_concept_id,
+            termbrowser_hyperlink(sctid=self.implied_concept_id),
             self.term,
             self.replacement_option_counter,
-            self.replacement_concept_id,
+            # self.replacement_concept_id,
+            termbrowser_hyperlink(sctid=self.replacement_concept_id),
             self.replacement_concept_pt,
             self.ambiguity_status,
             self.is_replacement_concept_in_set,

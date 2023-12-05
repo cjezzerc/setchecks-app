@@ -366,6 +366,14 @@ def column_identities():
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
 
+    # if reach here via file upload, load the data into matrix
+    if 'uploaded_file' in request.files:
+        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
+        setchks_session.reset_analysis() # throw away all old results
+        setchks_session.marshalled_rows=[]
+        # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
+
+
     # set column_info if nor already set OR data has changed number of columns (allows simple reload to leave it unchanged) 
     if (setchks_session.columns_info==None) or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0])):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
@@ -373,7 +381,7 @@ def column_identities():
         ci.set_column_type(icol=1,requested_column_type="DTERM")
         setchks_session.columns_info=ci
 
-    # if reach here via click on versions dropdown
+    # if reach here via click on a column identity dropdown
     if len(request.form.keys())!=0:
         k, v=list(request.form.items())[0]
         # print("===>>>>", k, v)

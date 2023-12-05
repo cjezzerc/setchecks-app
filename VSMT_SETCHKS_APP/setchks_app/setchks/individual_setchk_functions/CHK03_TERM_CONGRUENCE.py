@@ -6,6 +6,7 @@ logger=logging.getLogger()
 
 import setchks_app.terminology_server_module
 from setchks_app.set_refactoring.concept_module import ConceptsDict
+from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 
 
@@ -122,7 +123,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 "The provided description ID corresponds to this Concept ID -->"
                 )
             check_item.row_specific_message=(
-                f"{implied_concept_id}"
+                # f"{implied_concept_id}"
+                termbrowser_hyperlink(sctid=implied_concept_id)
                 )
         elif outcome_code=="CHK03-OUT-08":
             check_item=CheckItem(outcome_code=outcome_code)
