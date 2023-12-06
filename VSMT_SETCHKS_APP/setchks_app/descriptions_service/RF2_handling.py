@@ -70,20 +70,23 @@ def create_collection_from_RF2_file(
             term=f[7]
             case_sig=f[8]
 
-            if desc_id in acceptabilities: # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
-                acceptability=acceptabilities[desc_id]
-                if typeId=="900000000000003001": # = fsn
-                    if acceptability=="preferred":
-                        term_type="fsn" 
-                    else: # ?? can an fsn have acceptable status?
-                        print(f"fsn with only acceptable status {desc_id}")
-                        term_type="ignore"
-                else:
-                    if acceptability=="preferred":
-                        term_type="pt"
+            if desc_id in acceptabilities or active_status=="0": # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
+                if desc_id in acceptabilities:
+                    acceptability=acceptabilities[desc_id]
+                    if typeId=="900000000000003001": # = fsn
+                        if acceptability=="preferred":
+                            term_type="fsn" 
+                        else: # ?? can an fsn have acceptable status?
+                            print(f"fsn with only acceptable status {desc_id}")
+                            term_type="ignore"
                     else:
-                        term_type="syn"
-                # print(acceptability, desc_id, typeId, term_type)
+                        if acceptability=="preferred":
+                            term_type="pt"
+                        else:
+                            term_type="syn"
+                    # print(acceptability, desc_id, typeId, term_type)
+                else:
+                    term_type="inactive_desc"
                 document={
                     "desc_id":desc_id,
                     "active_status":active_status,

@@ -34,6 +34,28 @@ if action=="check_coverage":
 if action=="make_missing":
     hst.make_missing_collections()
 
-if action=="delete_database": # dangerous! do with intention!
+if action=="delete_whole_database": # dangerous! do with intention!
     hst.delete_database()
+
+if action=="delete_one_collection":
+    date_string=sys.argv[2]
+    hst.delete_one_collection(sct_version=date_string)
+
+if action=="make_one_collection":
+    date_string=sys.argv[2]
+    hst.pull_release_from_trud(date_string=date_string)
+
+if action=="list_collections":
+    for collection_name in hst.get_collection_names():
+        print(collection_name)
+
+if action=="show_one_collection_size":
+    date_string=sys.argv[2]
+    print(hst.get_collection_size(sct_version=date_string))
+
+if action=="show_all_collection_sizes":
+    for collection_name in hst.get_collection_names():
+        # print(collection_name)
+        date_string=collection_name[-8:]
+        print(date_string, hst.get_collection_size(sct_version=date_string))
 

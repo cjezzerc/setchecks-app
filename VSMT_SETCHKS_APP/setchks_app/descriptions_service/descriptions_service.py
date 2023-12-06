@@ -47,6 +47,17 @@ class DescriptionsService():
             )
         return success_flag, message
     
+    def delete_one_collection(self, sct_version=None):
+        collection_name=self.make_collection_name(date_string=sct_version)
+        self.db.drop_collection(collection_name)
+
+    def get_collection_names(self):
+        return sorted(list(self.db.list_collection_names()), reverse=True)
+    
+    def get_collection_size(self, sct_version=None):
+        collection_name=self.make_collection_name(date_string=sct_version)
+        return self.db[collection_name].count_documents({})
+    
     def get_list_of_releases_on_ontoserver(self):
         return [x.date_string for x in get_sct_versions.get_sct_versions()]
     

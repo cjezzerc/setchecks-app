@@ -84,6 +84,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 "fsn": "Fully specified name",
                 "pt": "Preferred term",
                 "syn": "Acceptable synonym",
+                "inactive_desc": "Inactive description",
                 None: "No type",
                 }
             check_item.row_specific_message=(
