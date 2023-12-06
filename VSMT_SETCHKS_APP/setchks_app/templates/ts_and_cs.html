@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Set Checks{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+    
+
+<div class="container-fluid  mt-0 " >
+    
+    <div class="row" style="height: 60vh">    
+
+        {#                  #}
+        {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-6 ">
+            
+            <div class="card" style="height: 60vh; overflow:auto">
+                This is a load of small print
+            </div>
+        </div>
+
+        <div class="col-6">
+
+            <!-- <div class="card" style="height: 60vh;  background-color: #f0f4f5;" > -->
+            <div class="card border-0" style="height: 60vh;  background-color: #f0f4f5;">
+                
+                
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:1em; height: 20vh">
+        
+        <style>
+            .setchks-btn {
+                background-color:white;
+                color: black;
+                border-style: solid;
+                border-color:#005eb8;
+                border-width :3px; 
+                }
+            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn-inactive {
+                background-color: lightgray;
+                color: lightslategray;
+                border-style: solid;
+                }
+        </style>
+         <div class="col-10"> 
+            <a href="/ts_and_cs?accept"  class="btn setchks-btn">Accept</a>
+        </div>
+        
+    
+    </div>
+</div>
+
+  
+{% endblock %}

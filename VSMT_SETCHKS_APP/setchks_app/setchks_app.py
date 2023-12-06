@@ -21,6 +21,8 @@ import setchks_app.setchks.setchks_session
 import setchks_app.setchks.setchk_definitions 
 import setchks_app.setchks.run_queued_setchks
 
+from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
+
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
@@ -301,6 +303,7 @@ def rq():
 
 @bp.route('/', methods=['GET'])
 @bp.route('/data_upload', methods=['GET','POST'])
+@accept_ts_and_cs_required
 def data_upload():
     print(request.form.keys())
     print("REQUEST:",request.args.keys())
@@ -650,6 +653,27 @@ def reset_setchks_session():
 
 #############################################
 #############################################
+##     ts_and_cs endpoint                  ##
+#############################################
+#############################################
+
+@bp.route('/ts_and_cs', methods=['GET'])
+def ts_and_cs():
+    if "accept" in request.args.keys():
+        session["ts_and_cs_accepted"]=True
+        return redirect("/data_upload")
+    else:
+        setchks_session=gui_setchks_session.get_setchk_session(session)
+        bc=Breadcrumbs()
+        bc.set_current_page("data_upload")
+        return render_template(
+            "ts_and_cs.html",
+            breadcrumbs_styles=bc.breadcrumbs_styles,
+            setchks_session=setchks_session,
+            )
+
+#############################################
+#############################################
 ##     report refactored form  endpoint    ##
 #############################################
 #############################################
@@ -721,3 +745,4 @@ def path_validator():
     return render_template('path_validator.html',
                             data_to_show=data_to_show
                             )
+
