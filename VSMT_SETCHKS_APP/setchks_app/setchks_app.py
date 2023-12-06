@@ -11,12 +11,6 @@ from flask import jsonify
 import logging
 logger=logging.getLogger(__name__)
 
-location=os.path.abspath(os.getcwd())
-print(location)
-sys.path.append(location+"/../VSMT_UPROT_APP/")
-
-from fhir.resources.valueset import ValueSet
-
 import setchks_app.setchks.setchks_session
 import setchks_app.setchks.setchk_definitions 
 import setchks_app.setchks.run_queued_setchks
@@ -33,7 +27,17 @@ from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
-from setchks_app.redis.rq_utils import get_rq_info, launch_sleep_job, jobs, job_result, job_stack_trace, report_on_env_vars, launch_report_on_env_vars
+from setchks_app.redis.rq_utils import (
+    get_rq_info, 
+    launch_sleep_job, 
+    jobs, 
+    job_result, 
+    job_stack_trace, 
+    report_on_env_vars, 
+    launch_report_on_env_vars,
+    start_rq_worker_if_none_running, 
+    kill_all_rq_workers,
+    )
 from rq import Queue
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
@@ -61,16 +65,6 @@ available_setchks=[
     'CHK51_SUGGESTS_DUAL_SCT',
     ]
 
-# from pymongo import MongoClient
-
-# if "VSMT_DOCKER_COMPOSE" in os.environ: # this env var must be set in docker-compose.yaml
-#     print("Configuring mongodb to connect to mongo-server docker")
-#     client=MongoClient('mongo-server',27017)
-# else:
-#     print("Configuring mongodb to connect to localhost")
-#     client=MongoClient()
-
-# mongodb_db=client['setchks_app']
 
 ################################
 ################################
@@ -285,13 +279,15 @@ def rq():
     
     if action=="setchk_job_result":
         return str(job_result(job_id=job_id).__repr__())
-        # return jsonify(json.loads(jsonpickle.encode(job_result(job_id=job_id), unpicklable=False)))
 
     if action=="restart_worker":
-        from setchks_app.redis.rq_utils import start_rq_worker_if_none_running, kill_all_rq_workers
         kill_all_rq_workers()
         start_rq_worker_if_none_running()
         return 'worker restarted'
+    
+    if action=="kill_all_workers":
+        kill_all_rq_workers()
+        return 'all worker processes killed'
     
     return f"Did not understand that: {action}"
 
@@ -567,7 +563,7 @@ def select_and_run_checks():
              )
         ):
 
-        # trialling reset results to {}
+        start_rq_worker_if_none_running()
         setchks_session.setchks_results={}  
         setchks_session.setchks_run_status={}
 

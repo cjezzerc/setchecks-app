@@ -41,12 +41,12 @@ animation: none;
         <div class="col-6 ">
             
             <div class="card" style="height: 60vh">
-                <div class="panel" style="overflow:auto; style="font-size: 1em;"">
+                <div class="panel" style="overflow:auto; font-size: 1em;">
                 
                 <!-- <div class="card-body" style="font-size: 1em;"> -->
                     The following checks will be run (selectability and nicer set-check titles etc TBI):
 
-                    <table class="table table-bordered">
+                    <table class="table-sm table-bordered">
                         <thead>
                             <!-- add the row of column titles -->
                             <tr>
@@ -54,11 +54,11 @@ animation: none;
                                 <th scope="col">Run Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="font-size: 0.8em;">
                             {% for setchk in setchks_session.selected_setchks %}
                                 {% set sc=setchk.setchk_code %}
                                 {% set setchk_run_status = setchks_session.setchks_run_status[sc] %}
-                                <tr>
+                                <tr style="margin-top: 0em;">
                                 <td> {{ setchk.setchk_short_name }}</td>
                                 <td> 
                                     <!-- {{ setchk_run_status }}  -->
