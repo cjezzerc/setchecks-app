@@ -196,10 +196,13 @@ class DescriptionsService():
  
         logging.debug("%s : %s" % (success_flag,message))
 
-    def get_data_about_description_id(self, description_id=None, sct_version=None):
+    def get_data_about_description_id(self, description_id=None, date_string=None, sct_version=None):
         """ returns the information associated with a particular description id in a particular release"""
         # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
-        collection_name=self.make_collection_name(date_string=sct_version.date_string)
+        if date_string is None:
+            date_string=sct_version.date_string
+        
+        collection_name=self.make_collection_name(date_string=date_string)
 
         data_found=list(self.db[collection_name].find({"desc_id":str(description_id)}))
         if data_found==[]:
@@ -208,10 +211,12 @@ class DescriptionsService():
             assert(len(data_found)==1)
             return data_found[0]
         
-    def get_data_about_concept_id(self, concept_id=None, sct_version=None):
+    def get_data_about_concept_id(self, concept_id=None, date_string=None, sct_version=None):
         """ returns the information associated with a particular concept id in a particular release"""
         # collection_name="sct2_Description_MONOSnapshot-en_GB_%s" % sct_version.date_string
-        collection_name=self.make_collection_name(date_string=sct_version.date_string)
+        if date_string is None:
+            date_string=sct_version.date_string
+        collection_name=self.make_collection_name(date_string=date_string)
         data_found=list(self.db[collection_name].find({"concept_id":str(concept_id)}))
         return data_found
     
