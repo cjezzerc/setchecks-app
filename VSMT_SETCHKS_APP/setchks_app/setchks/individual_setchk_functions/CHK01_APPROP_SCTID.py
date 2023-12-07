@@ -37,20 +37,24 @@ def do_check(setchks_session=None, setchk_results=None):
                 this_row_analysis.append(check_item)
             elif mr.D_Id_entered is not None: 
                 n_DID_ROWS+=1
-                check_item=CheckItem("CHK01-OUT-02")
-                check_item.general_message=(
-                    "A Description Id value has been detected in the MIXED column. "
-                    "It is recommended that value set members should be identified by Concept Ids. "
-                    "Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids."
-                    )
-                this_row_analysis.append(check_item)
-            else: # with gatekeeper this should never be reached
-                check_item=CheckItem("CHK01-OUT-NOT_FOR_PRODUCTION")
-                check_item.general_message=(
-                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
-                    )
-                this_row_analysis.append(check_item)
+                if setchks_session.data_entry_extract_type in ["EXTRACT"]:
+                    check_item=CheckItem("CHK01-OUT-03")
+                    check_item.general_message=(
+                        "A Description Id value has been detected in the MIXED column of this "
+                        "data extract value set. "
+                        "Description Ids should NEVER be used in data extract value sets"
+                        )
+                    this_row_analysis.append(check_item)
+                else:
+                    check_item=CheckItem("CHK01-OUT-02")
+                    check_item.general_message=(
+                        "A Description Id value has been detected in the MIXED column. "
+                        "It is recommended that value set members should be identified by Concept Ids. "
+                        "Consider using a single column identifier of Concept Ids instead of a single column of Mixed Ids."
+                        )
+                    this_row_analysis.append(check_item)
+            else: 
+                pass
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
             check_item=CheckItem("CHK01-OUT-BLANK_ROW")
@@ -63,22 +67,37 @@ def do_check(setchks_session=None, setchk_results=None):
     ##################################################################
 
     setchk_results.set_analysis["Messages"]=[] 
-    msg_format="There are %s rows containing %s in the MIXED column, of your input file of %s rows"
     
-    msg=msg_format % (n_CID_ROWS, 'Concept IDs', n_FILE_TOTAL_ROWS)
+    msg=f"There are {n_CID_ROWS} rows containing Concept Ids in the MIXED column of your input file"
     setchk_results.set_analysis["Messages"].append(msg)
     
-    msg=msg_format % (n_DID_ROWS, 'Description IDs', n_FILE_TOTAL_ROWS)
+    msg=f"There are {n_DID_ROWS} rows containing Description Ids in the MIXED column of your input file"
     setchk_results.set_analysis["Messages"].append(msg)
 
-    if (n_CID_ROWS!=0) and (n_DID_ROWS!=0):
-        msg=("A mixture of Concept Ids and Descriptions Ids has been detected "
-            "in the MIXED column for this value set, which should be avoided. "
-            "It is recommended that value set members shold be identified by "
-            "Concept rather than Description Ids"
+    # Issue varying levels of admonition if any Description Ids have been used
+    if n_DID_ROWS!=0:
+        if setchks_session.data_entry_extract_type in ["EXTRACT"]:
+            msg=("At least one Description Id has been detected "
+            "in the MIXED column for this data extraction value set. "
+            "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
             )
-        setchk_results.set_analysis["Messages"].append(msg)
-
+            setchk_results.set_analysis["Messages"].append(msg)
+        else:
+            if (n_CID_ROWS!=0): 
+                msg=("A mixture of Concept Ids and Description Ids has been detected "
+                    "in the MIXED column for this value set. This situation should be avoided. "
+                    "Unless it is vital for your use case, we strongly recommend replacing the Description Ids with " 
+                    "the corresponding Concept Ids"
+                    )
+                setchk_results.set_analysis["Messages"].append(msg)
+            else:            
+                msg=("Your data entry value set contains exclusively Description Ids "
+                    "in the MIXED column for this value set."
+                    "Unless it is vital for your use case, we recommend replacing all the Ids with "
+                    "the corresponding Concept Ids"
+                    )
+                setchk_results.set_analysis["Messages"].append(msg)
+    
     msg=(
         f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
         f"The system has assessed that {n_FILE_NON_PROCESSABLE_ROWS} rows could not be processed for this Set Check.\n"

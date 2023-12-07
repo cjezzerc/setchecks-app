@@ -31,7 +31,7 @@ setchks['CHK01_APPROP_SCTID']=Setchk(
     setchk_code='CHK01_APPROP_SCTID',
     setchk_short_name='CHK01 Appropriate SNOMED CT identifiers for value set members', 
     setchk_function=CHK01_APPROP_SCTID.do_check,
-    setchk_data_entry_extract_types=["ENTRY_PRIMARY", "ENTRY_OTHER"],
+    setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
     )
 
