@@ -29,6 +29,18 @@ def do_check(setchks_session=None, setchk_results=None):
     n_DID_NILR=0
     n_DID_ILR=0
 
+    #The cases to handle are
+    # "CID_NISR_CID_NILR" (01)
+    # "CID_NISR_SRIL" (09 NEW)
+    # "CID_NISR_CID_ILR" (02)
+    # "DID_NISR_DID_NILR" (04)
+    # "DID_NISR_SRIL" (10 NEW)
+    # "DID_NISR_DID_ILR_CID_ISR" (05)
+    # "DID_NISR_DID_ILR_CID_NISR" (05)
+    # OK = (03)
+    # INVALID_SCTID = (07)
+    # BLANK_ENTRY = (08)
+
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
         this_row_analysis=[]
@@ -36,7 +48,7 @@ def do_check(setchks_session=None, setchk_results=None):
                                                               # this will automatically update
         if not mr.blank_row:
             n_FILE_PROCESSABLE_ROWS+=1
-            if mr.C_Id_why_none in ["CID_NISR_CID_NILR","CID_NISR_SRIL"]: # CHK02-OUT-01 
+            if mr.C_Id_why_none in ["CID_NISR_CID_NILR"]: 
                 n_CID_NISR+=1
                 n_CID_NILR+=1
                 check_item=CheckItem("CHK02-OUT-01")
@@ -47,7 +59,17 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"or the most recent SNOMED release {latest_sct_version}."
                     )
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none=="CID_NISR_CID_ILR": # CHK02-OUT-02 
+            elif mr.C_Id_why_none in ["CID_NISR_SRIL"]: 
+                n_CID_NISR+=1
+                n_CID_NILR+=1
+                check_item=CheckItem("CHK02-OUT-09")
+                check_item.general_message=(
+                    "The Concept Id in the MIXED column " 
+                    "is not an identifiable concept in the "
+                    f"selected SNOMED CT release {selected_sct_version} "
+                    )
+                this_row_analysis.append(check_item)
+            elif mr.C_Id_why_none=="CID_NISR_CID_ILR": 
                 n_CID_NISR+=1
                 n_CID_ILR+=1
                 check_item=CheckItem("CHK02-OUT-02")
@@ -60,13 +82,13 @@ def do_check(setchks_session=None, setchk_results=None):
                     "the selected SNOMED release; consider removing the concept or selecting a later SNOMED release."
                     )
                 this_row_analysis.append(check_item)
-            elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": # CHK02-OUT-03
+            elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": 
                 n_CID_ISR+=1
                 check_item=CheckItem("CHK02-OUT-03")
                 check_item.outcome_level="INFO"
                 check_item.general_message="OK"
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none in ["DID_NISR_DID_NILR", "DID_NISR_SRIL"]: # CHK02-OUT-04 
+            elif mr.C_Id_why_none in ["DID_NISR_DID_NILR"]: 
                 n_DID_NISR+=1
                 n_DID_NILR+=1
                 check_item=CheckItem("CHK02-OUT-04")
@@ -75,6 +97,16 @@ def do_check(setchks_session=None, setchk_results=None):
                     "is not an identifiable description in either "
                     f"the selected SNOMED CT release {selected_sct_version} "
                     f"or the most recent SNOMED release {latest_sct_version}."
+                    )
+                this_row_analysis.append(check_item)
+            elif mr.C_Id_why_none in ["DID_NISR_SRIL"]:
+                n_DID_NISR+=1
+                n_DID_NILR+=1
+                check_item=CheckItem("CHK02-OUT-10")
+                check_item.general_message=(
+                    "The Description Id in the MIXED column " 
+                    "is not an identifiable description in "
+                    f"the selected SNOMED CT release {selected_sct_version} "
                     )
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["DID_NISR_DID_ILR_CID_ISR", "DID_NISR_DID_ILR_CID_NISR"]: # CHK02-OUT-05 
