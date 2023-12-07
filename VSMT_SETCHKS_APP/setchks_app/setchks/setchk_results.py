@@ -17,6 +17,7 @@ class SetchkResults():
     __slots__=(
         "row_analysis", 
         "set_analysis", 
+        "set_level_table_rows",
         "concept_analysis", 
         "setchk_code", 
         "meta_data",
@@ -29,6 +30,7 @@ class SetchkResults():
 
         self.row_analysis=[]
         self.set_analysis={}
+        self.set_level_table_rows=[]
         self.concept_analysis={}
         self.setchk_code={}
         self.meta_data={}

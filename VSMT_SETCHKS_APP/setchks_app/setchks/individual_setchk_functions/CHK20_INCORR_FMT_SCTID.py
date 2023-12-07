@@ -1,6 +1,7 @@
 import os
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
 from setchks_app.excel.termbrowser import termbrowser_hyperlink
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
@@ -123,6 +124,13 @@ def do_check(setchks_session=None, setchk_results=None):
     msg=msg_format % (n_NO_OUTCOME_ROWS, 'correctly', n_FILE_TOTAL_ROWS)
     setchk_results.set_analysis["Messages"].append(msg)
 
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor="Number of rows containing incorrectly formatted SNOMED CT identifiers",
+            value=n_OUTCOME_ROWS,
+            )
+        )
+    
     msg=(
         f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
         f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
