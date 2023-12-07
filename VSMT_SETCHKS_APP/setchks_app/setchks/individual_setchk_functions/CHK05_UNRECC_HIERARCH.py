@@ -165,10 +165,12 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_NOT_RECOMMENDED+=1
                             check_item=CheckItem("CHK05-OUT-04")
                             check_item.general_message=(
-                                f"The Concept Id is a subtype of the {domain_name} hierarchy in SNOMED CT." 
+                                f"The Concept Id is a subtype of a hierarchy in SNOMED CT." 
                                 f"The hierarchy has been categorised as ‘not recommended’ for the "
-                                f"{data_entry_extract_type} data entry type assigned to this value set."
+                                f"{data_entry_extract_type} data entry type assigned to this value set. "
+                                f"The hierarchy is -->"
                                 )
+                            check_item.row_specific_message=f"{domain_name}"
                             this_row_analysis.append(check_item)
                         else:
                             check_item={}
