@@ -1,6 +1,7 @@
 """class to hold the important data from a row in a standard fashion"""
 
 from setchks_app.descriptions_service import descriptions_service
+from setchks_app.sctid.restore_corrupted_id import detect_corruption_and_restore_id
 
 """
 For details of the different cases inferring C_Id or C_Id_via_latest_release etc see https://nhsd-jira.digital.nhs.uk/browse/SIV-500
@@ -14,7 +15,7 @@ ISR 	In Selected Release
 NISR 	Not In Selected Release
 ILR 	(but) In Latest Release
 NILR 	(and) Not IN Latest Release
-SILR 	Selected (release) Is Latest Release
+SRIL 	Selected (release) Is Latest Release
 
 The last code here covers cases where the selected release is the latest release so cannot do the two separate checks.
 This part of the code is required for CHK02 SNOMED CT Identifiers are in selected SNOMED CT release
@@ -80,6 +81,9 @@ class MarshalledRow():
         "C_Id_via_latest_release", # This is C_Id obtained by looking in latest release; if derived from a D_Id in latest release then *may* also be in selected release
         "C_Id_active", # TBI possibly
         "D_Id_active",
+        "excel_corruption_suspected",
+        "possible_reconstructed_C_Id",
+        "possible_reconstructed_D_Id",
         "row_processable",
         "row_processable_message",
         ]
@@ -135,113 +139,131 @@ class MarshalledRow():
         self.C_Id_via_latest_release=None
         self.C_Id_active=None #TBI possibly
         self.D_Id_active=None
+        self.excel_corruption_suspected=None
+        self.possible_reconstructed_C_Id=None
+        self.possible_reconstructed_D_Id=None
         ci=setchks_session.columns_info
         
+        valid_SCTID=True
         if self.sctid_cell.blank:
             self.C_Id_why_none="BLANK_ENTRY"
-            return
+            valid_SCTID=False
         
         if not self.sctid_cell.valid:
             self.C_Id_why_none="INVALID_SCTID"
-            return
+            valid_SCTID=False
 
-        if self.C_Id_entered is not None:
-            C_Id_data=ds.get_data_about_concept_id(
-                concept_id=self.C_Id_entered, 
-                sct_version=setchks_session.sct_version,
-                )
-            if C_Id_data!=[]: # so C_Id_entered exists in selected release
-                self.C_Id=self.C_Id_entered
-                self.C_Id_source="ENTERED"
-            else:   # C_Id_entered is not in selected release
-                if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
-                    self.C_Id_why_none="CID_NISR_SRIL"
-                else: # look in latest release
-                    C_Id_data_latest=ds.get_data_about_concept_id(
-                        concept_id=self.C_Id_entered, 
-                        sct_version=setchks_session.available_sct_versions[0],
-                        )
-                    # print("==>>>", C_Id_data_latest)
-                    if C_Id_data_latest!=[]: # C_Id_entered is in latest release
-                        self.C_Id_why_none="CID_NISR_CID_ILR"
-                        self.C_Id_via_latest_release=self.C_Id_entered
-                    else:                    # C_Id_entered is not in lateset release either
-                        self.C_Id_why_none="CID_NISR_CID_NILR"
-
-        else: 
-            assert(self.D_Id_entered is not None)
-            D_Id_data=ds.get_data_about_description_id(
-                description_id=self.D_Id_entered, 
-                sct_version=setchks_session.sct_version
-                )
-            if D_Id_data is not None: # D_Id_data is a single dict (as can have only one associated concept)
-                self.C_Id_derived_from_D_Id_entered=D_Id_data["concept_id"]
-                self.D_Id_active=D_Id_data["active_status"]
-                self.D_Term_derived_from_D_Id_entered=D_Id_data["term"]
-                self.D_Term_Type_derived_from_D_Id_entered=D_Id_data["term_type"]
-                self.C_Id=self.C_Id_derived_from_D_Id_entered
-                self.C_Id_source="DERIVED"
-                self.C_Id_why_none=None
-                if self.D_Term_entered:
-                    # self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
-                    self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=compare_strings_csr(
-                        string1=D_Id_data["term"],
-                        string2=self.D_Term_entered,
-                        csr_indicator="ci"
-                        )
-                    self.congruence_of_D_Id_entered_and_D_Term_entered_csr=compare_strings_csr(
-                        string1=D_Id_data["term"],
-                        string2=self.D_Term_entered,
-                        csr_SCT_code=D_Id_data["case_sig"]
-                        )
-            else: 
-                if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
-                    self.C_Id_why_none="DID_NISR_SRIL"
-                else: # look in latest release
-                    D_Id_data_latest=ds.get_data_about_description_id(
-                        description_id=self.D_Id_entered, 
-                        sct_version=setchks_session.available_sct_versions[0],
-                        )
-                    if D_Id_data_latest is not None:
-                        self.C_Id_derived_from_D_Id_entered=D_Id_data_latest["concept_id"]
-                        self.D_Id_active=D_Id_data_latest["active_status"]
-                        self.D_Term_derived_from_D_Id_entered=D_Id_data_latest["term"]
-                        self.D_Term_Type_derived_from_D_Id_entered=D_Id_data_latest["term_type"]
-                        self.C_Id_via_latest_release=self.C_Id_derived_from_D_Id_entered
-                        C_Id_data=ds.get_data_about_concept_id(
-                            concept_id=self.C_Id_derived_from_D_Id_entered, 
-                            sct_version=setchks_session.sct_version,
+        if valid_SCTID:
+            if self.C_Id_entered is not None:
+                C_Id_data=ds.get_data_about_concept_id(
+                    concept_id=self.C_Id_entered, 
+                    sct_version=setchks_session.sct_version,
+                    )
+                if C_Id_data!=[]: # so C_Id_entered exists in selected release
+                    self.C_Id=self.C_Id_entered
+                    self.C_Id_source="ENTERED"
+                else:   # C_Id_entered is not in selected release
+                    if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
+                        self.C_Id_why_none="CID_NISR_SRIL"
+                    else: # look in latest release
+                        C_Id_data_latest=ds.get_data_about_concept_id(
+                            concept_id=self.C_Id_entered, 
+                            sct_version=setchks_session.available_sct_versions[0],
                             )
-                        if C_Id_data!=[]:
-                            self.C_Id_why_none="DID_NISR_DID_ILR_CID_ISR"
+                        # print("==>>>", C_Id_data_latest)
+                        if C_Id_data_latest!=[]: # C_Id_entered is in latest release
+                            self.C_Id_why_none="CID_NISR_CID_ILR"
+                            self.C_Id_via_latest_release=self.C_Id_entered
+                        else:                    # C_Id_entered is not in lateset release either
+                            self.C_Id_why_none="CID_NISR_CID_NILR"
+
+            else: 
+                assert(self.D_Id_entered is not None)
+                D_Id_data=ds.get_data_about_description_id(
+                    description_id=self.D_Id_entered, 
+                    sct_version=setchks_session.sct_version
+                    )
+                if D_Id_data is not None: # D_Id_data is a single dict (as can have only one associated concept)
+                    self.C_Id_derived_from_D_Id_entered=D_Id_data["concept_id"]
+                    self.D_Id_active=D_Id_data["active_status"]
+                    self.D_Term_derived_from_D_Id_entered=D_Id_data["term"]
+                    self.D_Term_Type_derived_from_D_Id_entered=D_Id_data["term_type"]
+                    self.C_Id=self.C_Id_derived_from_D_Id_entered
+                    self.C_Id_source="DERIVED"
+                    self.C_Id_why_none=None
+                    if self.D_Term_entered:
+                        # self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=(D_Id_data["term"].lower()==self.D_Term_entered.lower())
+                        self.congruence_of_D_Id_entered_and_D_Term_entered_case_insens=compare_strings_csr(
+                            string1=D_Id_data["term"],
+                            string2=self.D_Term_entered,
+                            csr_indicator="ci"
+                            )
+                        self.congruence_of_D_Id_entered_and_D_Term_entered_csr=compare_strings_csr(
+                            string1=D_Id_data["term"],
+                            string2=self.D_Term_entered,
+                            csr_SCT_code=D_Id_data["case_sig"]
+                            )
+                else: 
+                    if setchks_session.sct_version==setchks_session.available_sct_versions[0]: # if selected release is latest release
+                        self.C_Id_why_none="DID_NISR_SRIL"
+                    else: # look in latest release
+                        D_Id_data_latest=ds.get_data_about_description_id(
+                            description_id=self.D_Id_entered, 
+                            sct_version=setchks_session.available_sct_versions[0],
+                            )
+                        if D_Id_data_latest is not None:
+                            self.C_Id_derived_from_D_Id_entered=D_Id_data_latest["concept_id"]
+                            self.D_Id_active=D_Id_data_latest["active_status"]
+                            self.D_Term_derived_from_D_Id_entered=D_Id_data_latest["term"]
+                            self.D_Term_Type_derived_from_D_Id_entered=D_Id_data_latest["term_type"]
+                            self.C_Id_via_latest_release=self.C_Id_derived_from_D_Id_entered
+                            C_Id_data=ds.get_data_about_concept_id(
+                                concept_id=self.C_Id_derived_from_D_Id_entered, 
+                                sct_version=setchks_session.sct_version,
+                                )
+                            if C_Id_data!=[]:
+                                self.C_Id_why_none="DID_NISR_DID_ILR_CID_ISR"
+                            else:
+                                self.C_Id_why_none="DID_NISR_DID_ILR_CID_NISR"
                         else:
-                            self.C_Id_why_none="DID_NISR_DID_ILR_CID_NISR"
-                    else:
-                        self.C_Id_why_none="DID_NISR_DID_NILR"
-            
-            
-        if self.C_Id_entered and self.D_Term_entered:
-            C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
-            self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=False
-            for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
-                if compare_strings_csr(
-                    string1=item["term"],
-                    string2=self.D_Term_entered,
-                    csr_indicator="ci",
-                    ): # first look for match in case insensitive way
-                    self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
-                    self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
-                    self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=item["term_type"]
-                    if item["case_sig"]=="ci" or compare_strings_csr(
+                            self.C_Id_why_none="DID_NISR_DID_NILR"
+                
+                
+            if self.C_Id_entered and self.D_Term_entered:
+                C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
+                self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=False
+                for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
+                    if compare_strings_csr(
                         string1=item["term"],
                         string2=self.D_Term_entered,
-                        csr_SCT_code=item["case_sig"],
-                        ):
-                        self.congruence_of_C_Id_entered_and_D_Term_entered_csr=True
-                    else:
-                        self.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered=item["term"]
-                        self.congruence_of_C_Id_entered_and_D_Term_entered_csr=False
-                    break
+                        csr_indicator="ci",
+                        ): # first look for match in case insensitive way
+                        self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
+                        self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
+                        self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=item["term_type"]
+                        if item["case_sig"]=="ci" or compare_strings_csr(
+                            string1=item["term"],
+                            string2=self.D_Term_entered,
+                            csr_SCT_code=item["case_sig"],
+                            ):
+                            self.congruence_of_C_Id_entered_and_D_Term_entered_csr=True
+                        else:
+                            self.D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered=item["term"]
+                            self.congruence_of_C_Id_entered_and_D_Term_entered_csr=False
+                        break
+        
+        # test for Excel corruption
+        if self.C_Id is None and self.C_Id_why_none != "BLANK_ENTRY":     
+            flag, RC, RD, RC_in_release, RD_in_release=detect_corruption_and_restore_id(
+                sctid=self.sctid_cell.string,
+                ds=ds, 
+                sct_version=setchks_session.sct_version.date_string
+                )
+            self.excel_corruption_suspected=flag
+            if self.excel_corruption_suspected and RC_in_release:
+                self.possible_reconstructed_C_Id=RC
+            if self.excel_corruption_suspected and RD_in_release:
+                self.possible_reconstructed_D_Id=RD
 
     def __str__(self):
         output_str="\n"

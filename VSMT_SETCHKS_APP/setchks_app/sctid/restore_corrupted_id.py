@@ -53,7 +53,7 @@ def detect_corruption_and_restore_id(sctid=None, ds=None, sct_version=None):
     # reconstruct as concept_id (RC) or description_id(RD)
     if n_digits==16:
         temp=sctid[:-1]
-        RC=temp + str(checkdigit.verhoeff_compute(temp + "0"))
+        RC=temp + str(checkdigit.verhoeff_compute(temp))
         RD=None
     elif n_digits==17 or (n_digits==18 and sctid[:6]=="900000"): # 17 digit or 18 digit "short form" that all seem to start 900000
         temp=sctid[:-2]

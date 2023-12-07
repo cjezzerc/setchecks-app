@@ -12,6 +12,121 @@ from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 from ..check_item import CheckItem
 
+def generate_check_item(
+    outcome_code=None,    
+    preferred_term=None,
+    implied_concept_id=None,
+    implied_dterm=None,
+    dterm_type=None,
+    description_inactive=None,
+    csr_correct_dterm=None,
+    data_entry_extract_type=None,
+    ):
+    if outcome_code=="CHK03-OUT-01":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The preferred term for this concept is -->"
+            )
+        check_item.row_specific_message=(
+            f"{preferred_term}"
+            )
+    elif outcome_code=="CHK03-OUT-02":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The provided description ID corresponds to the description term -->"
+            )
+        check_item.row_specific_message=(
+            f"{implied_dterm}"
+            )
+    elif outcome_code=="CHK03-OUT-03":
+        if description_inactive==True:
+            check_item=CheckItem(outcome_code=outcome_code)
+            check_item.general_message=(
+                "This description term is inactive. " 
+                "You should consider selecting an active term " 
+                "for the corresponding concept (See tab TBI)"
+                )
+        else:
+            check_item=None
+    elif outcome_code=="CHK03-OUT-04":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The description term has a term type of -->"
+            )
+        phrase_to_output={
+            "fsn": "Fully specified name",
+            "pt": "Preferred term",
+            "syn": "Acceptable synonym",
+            "inactive_desc": "Inactive description",
+            None: "No type",
+            }
+        check_item.row_specific_message=(
+            f"{phrase_to_output[dterm_type]}"
+            )
+    elif outcome_code=="CHK03-OUT-05":
+        if dterm_type=="fsn" and data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]: 
+            check_item=CheckItem(outcome_code=outcome_code)
+            check_item.general_message=(
+                "The description term type is a Fully Specified Name (FSN) "
+                "which should not be presented for Data Entry purposes. "  
+                "You should choose another term for the corresponding concept (See tab TBI)"
+                )
+        else:
+            check_item=None
+    elif outcome_code=="CHK03-OUT-06":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The term given does not correspond to this concept ID. "
+            "Please select either the preferred term or a synonym for this Concept ID. "
+            "(See tab TBI)"
+            )
+    elif outcome_code=="CHK03-OUT-07":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "This term has the correct wording, but does not conform to the capitalisation rule "
+            "that has been specified for this particular term. " 
+            "In some cases using incorrect capitalisation can lead to significant Clinical Risk."
+            "According to its Case Significance Rule this description term should be written as -->"
+            )
+        check_item.row_specific_message=(
+            f"{csr_correct_dterm}"
+            )
+    elif outcome_code=="CHK03-OUT-08":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The provided description ID corresponds to this Concept ID -->"
+            )
+        check_item.row_specific_message=(
+            # f"{implied_concept_id}"
+            termbrowser_hyperlink(sctid=implied_concept_id)
+            )
+    elif outcome_code=="CHK03-OUT-08":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The provided description ID corresponds to this Concept ID -->"
+            )
+        check_item.row_specific_message=(
+            f"{implied_concept_id}"
+            )  
+    elif outcome_code=="CHK03-OUT-09":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "The provided description term does not correspond to the provided Description ID. "
+            "The correct description term for this Description ID is -->"
+            )
+        check_item.row_specific_message=(
+            f"{implied_dterm}"
+            ) 
+    
+    
+    else:
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.general_message=(
+            "Unrecognized outcome code"
+            )
+    
+    return check_item
+
 def do_check(setchks_session=None, setchk_results=None):
 
     """
@@ -39,120 +154,7 @@ def do_check(setchks_session=None, setchk_results=None):
         "x"   :[     "02","03","04","05",          "08",     ],
     }
 
-    def generate_check_item(
-        outcome_code=None,    
-        preferred_term=None,
-        implied_concept_id=None,
-        implied_dterm=None,
-        dterm_type=None,
-        description_inactive=None,
-        csr_correct_dterm=None,
-        data_entry_extract_type=None,
-        ):
-        if outcome_code=="CHK03-OUT-01":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The preferred term for this concept is -->"
-                )
-            check_item.row_specific_message=(
-                f"{preferred_term}"
-                )
-        elif outcome_code=="CHK03-OUT-02":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The provided description ID corresponds to the description term -->"
-                )
-            check_item.row_specific_message=(
-                f"{implied_dterm}"
-                )
-        elif outcome_code=="CHK03-OUT-03":
-            if description_inactive==True:
-                check_item=CheckItem(outcome_code=outcome_code)
-                check_item.general_message=(
-                    "This description term is inactive. " 
-                    "You should consider selecting an active term " 
-                    "for the corresponding concept (See tab TBI)"
-                    )
-            else:
-                check_item=None
-        elif outcome_code=="CHK03-OUT-04":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The description term has a term type of -->"
-                )
-            phrase_to_output={
-                "fsn": "Fully specified name",
-                "pt": "Preferred term",
-                "syn": "Acceptable synonym",
-                "inactive_desc": "Inactive description",
-                None: "No type",
-                }
-            check_item.row_specific_message=(
-                f"{phrase_to_output[dterm_type]}"
-                )
-        elif outcome_code=="CHK03-OUT-05":
-            if dterm_type=="fsn" and data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]: 
-                check_item=CheckItem(outcome_code=outcome_code)
-                check_item.general_message=(
-                    "The description term type is a Fully Specified Name (FSN) "
-                    "which should not be presented for Data Entry purposes. "  
-                    "You should choose another term for the corresponding concept (See tab TBI)"
-                    )
-            else:
-                check_item=None
-        elif outcome_code=="CHK03-OUT-06":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The term given does not correspond to this concept ID. "
-                "Please select either the preferred term or a synonym for this Concept ID. "
-                "(See tab TBI)"
-                )
-        elif outcome_code=="CHK03-OUT-07":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "This term has the correct wording, but does not conform to the capitalisation rule "
-                "that has been specified for this particular term. " 
-                "In some cases using incorrect capitalisation can lead to significant Clinical Risk."
-                "According to its Case Significance Rule this description term should be written as -->"
-                )
-            check_item.row_specific_message=(
-                f"{csr_correct_dterm}"
-                )
-        elif outcome_code=="CHK03-OUT-08":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The provided description ID corresponds to this Concept ID -->"
-                )
-            check_item.row_specific_message=(
-                # f"{implied_concept_id}"
-                termbrowser_hyperlink(sctid=implied_concept_id)
-                )
-        elif outcome_code=="CHK03-OUT-08":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The provided description ID corresponds to this Concept ID -->"
-                )
-            check_item.row_specific_message=(
-                f"{implied_concept_id}"
-                )  
-        elif outcome_code=="CHK03-OUT-09":
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "The provided description term does not correspond to the provided Description ID. "
-                "The correct description term for this Description ID is -->"
-                )
-            check_item.row_specific_message=(
-                f"{implied_dterm}"
-                ) 
-        
-        
-        else:
-            check_item=CheckItem(outcome_code=outcome_code)
-            check_item.general_message=(
-                "Unrecognized outcome code"
-                )
-        
-        return check_item
+
     ##################################################################
     ##################################################################
     ##################################################################

@@ -1,6 +1,10 @@
 import os
 
 from ..check_item import CheckItem
+from setchks_app.excel.termbrowser import termbrowser_hyperlink
+from setchks_app.set_refactoring.concept_module import ConceptsDict
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -10,6 +14,9 @@ def do_check(setchks_session=None, setchk_results=None):
 
     print("Set Check %s called" % setchk_results.setchk_code)
 
+    ds=DescriptionsService()
+    concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
+    
     ##################################################################
     #           Test concept on each row of value set                #     
     ##################################################################
@@ -61,7 +68,48 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-        # setchk_results.row_analysis.append([check_item])
+        if mr.excel_corruption_suspected and mr.possible_reconstructed_C_Id is not None:
+            
+            check_item=CheckItem("CHK20-OUT-04")
+            check_item.general_message=(
+                f"It appears that this ID could have been corrupted by Excel, and if "
+                f"so could be reconstructed as the Concept ID -->"
+            )
+            check_item.row_specific_message=(termbrowser_hyperlink(mr.possible_reconstructed_C_Id))
+            this_row_analysis.append(check_item)
+
+            check_item=CheckItem("CHK20-OUT-05")
+            check_item.general_message=(
+                f"The preferred term for this reconstructed Concept Id is --> "
+            )
+            check_item.row_specific_message=concepts[mr.possible_reconstructed_C_Id].pt
+            this_row_analysis.append(check_item)
+
+        if mr.excel_corruption_suspected and mr.possible_reconstructed_D_Id is not None:
+            
+            check_item=CheckItem("CHK20-OUT-06")
+            check_item.general_message=(
+                f"It appears that this ID could have been corrupted by Excel, and if "
+                f"so could be reconstructed as the Concept ID -->"
+            )
+            check_item.row_specific_message=(termbrowser_hyperlink(mr.possible_reconstructed_D_Id))
+            this_row_analysis.append(check_item)
+
+            D_Id_data=ds.get_data_about_description_id(
+                    description_id=mr.possible_reconstructed_D_Id, 
+                    sct_version=setchks_session.sct_version
+                    )
+            if D_Id_data is not None: 
+                term=D_Id_data["term"]
+            else:
+                term="Not found"
+            check_item=CheckItem("CHK20-OUT-07")
+            check_item.general_message=(
+                f"The term for this reconstructed Description Id is --> "
+            )
+            check_item.row_specific_message=(term)
+            this_row_analysis.append(check_item)            
+           
     
     ##################################################################
     #     Generate set(file) level analysis                          #     
