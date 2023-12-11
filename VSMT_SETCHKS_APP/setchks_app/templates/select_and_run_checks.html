@@ -73,7 +73,7 @@ animation: none;
                                         {% elif setchk_run_status=="finished" %}
                                             <b>Completed</b>
                                         {% elif setchk_run_status=="failed" %}
-                                            <i>Job failed</i>
+                                            <i><a href="rq?action=failed_jobs">Job failed</a></i>
                                         {% endif %}
                                         </span>
                                     {% endif %}

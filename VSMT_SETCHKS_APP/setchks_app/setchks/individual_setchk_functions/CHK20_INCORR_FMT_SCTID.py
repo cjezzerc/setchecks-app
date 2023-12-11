@@ -32,10 +32,11 @@ def do_check(setchks_session=None, setchk_results=None):
 
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
-        n_FILE_PROCESSABLE_ROWS+=1
+        
         this_row_analysis=[]
         setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis updated below, 
         if not mr.blank_row:
+            n_FILE_PROCESSABLE_ROWS+=1
             if mr.C_Id_why_none=="INVALID_SCTID":
                 n_OUTCOME_ROWS+=1
                 check_item=CheckItem("CHK20-OUT-01")
@@ -117,25 +118,63 @@ def do_check(setchks_session=None, setchk_results=None):
     ##################################################################
 
     setchk_results.set_analysis["Messages"]=[] 
-    msg_format="There are %s rows containing %s formatted SNOMED CT identifiers in input file of %s rows"
-    
-    msg=msg_format % (n_OUTCOME_ROWS, 'incorrectly', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
-    msg=msg_format % (n_NO_OUTCOME_ROWS, 'correctly', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
 
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
-            descriptor="Number of rows containing incorrectly formatted SNOMED CT identifiers",
-            value=n_OUTCOME_ROWS,
+            descriptor="Number of rows in input file",
+            value=n_FILE_TOTAL_ROWS,
             )
         )
     
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor="Number of rows NOT assessed in input file (header rows or entirely blank rows)",
+            value=n_FILE_NON_PROCESSABLE_ROWS,
+            )
+        )
+    
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor="Number of rows assessed in input file",
+            value=n_FILE_PROCESSABLE_ROWS,
+            )
+        )
+    
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor="",
+            value="",
+            )
+        )
+    
+    if n_OUTCOME_ROWS!=0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    f"This check has found issues that must be corrected "
+                    f"for the full set of Set Checks to be performed."
+                    ),
+                )
+            )        
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor="Number of rows containing correctly formatted entries in the Identifier Column",
+                value=n_NO_OUTCOME_ROWS,
+                )
+            )
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor="Number of rows containing incorrectly formatted entries in the Identifier column",
+                value=n_OUTCOME_ROWS,
+                )
+            )
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    f"This check has found no issues that must be corrected."
+                    ),
+                )
+            )
 
 

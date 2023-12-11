@@ -28,11 +28,14 @@ def make_set_analysis_sheet(
             # cell=ws[ws.max_row][0]
             # cell=ws[ws.max_row][1]
         for set_level_table_row in setchks_results[setchk_code].set_level_table_rows:
-            ws.append([setchk_short_name, "", set_level_table_row.descriptor, set_level_table_row.value])
+            if set_level_table_row.simple_message is not None:
+                ws.append([setchk_short_name, set_level_table_row.simple_message])
+            else:
+                ws.append([setchk_short_name, "", set_level_table_row.descriptor, set_level_table_row.value])
         ws.append(["----"]) 
     
     # crude cell with setting
-    cell_widths=[30,100,100,30]
+    cell_widths=[30,60,60,5]
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
