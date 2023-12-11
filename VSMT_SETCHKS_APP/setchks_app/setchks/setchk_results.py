@@ -30,6 +30,7 @@ class SetchkResults():
 
         self.row_analysis=[]
         self.set_analysis={}
+        self.set_analysis["Messages"]=[] # this can be removed once eradicate this type of message
         self.set_level_table_rows=[]
         self.concept_analysis={}
         self.setchk_code={}

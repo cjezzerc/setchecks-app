@@ -1,6 +1,7 @@
 import os
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -68,38 +69,62 @@ def do_check(setchks_session=None, setchk_results=None):
 
     setchk_results.set_analysis["Messages"]=[] 
     
-    msg=f"There are {n_CID_ROWS} rows containing Concept Ids in the MIXED column of your input file"
-    setchk_results.set_analysis["Messages"].append(msg)
+    setchk_results.set_level_table_rows=[]
     
-    msg=f"There are {n_DID_ROWS} rows containing Description Ids in the MIXED column of your input file"
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    # Issue varying levels of admonition if any Description Ids have been used
-    if n_DID_ROWS!=0:
+    if n_DID_ROWS==0:
+        pass
+    else: # Issue varying levels of admonition if any Description Ids have been used
         if setchks_session.data_entry_extract_type in ["EXTRACT"]:
-            msg=("At least one Description Id has been detected "
-            "in the MIXED column for this data extraction value set. "
-            "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
-            )
-            setchk_results.set_analysis["Messages"].append(msg)
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                        "At least one Description Id has been detected "
+                        "in the MIXED column for this data extraction value set. "
+                        "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
+                        ),
+                    )
+                )
+
         else:
-            if (n_CID_ROWS!=0): 
-                msg=("A mixture of Concept Ids and Description Ids has been detected "
-                    "in the MIXED column for this value set. This situation should be avoided. "
-                    "Unless it is vital for your use case, we strongly recommend replacing the Description Ids with " 
-                    "the corresponding Concept Ids"
+            if n_CID_ROWS!=0: 
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        simple_message=(
+                            "A mixture of Concept Ids and Description Ids has been detected "
+                            "in the MIXED column for this value set. This situation should be avoided. "
+                            "Unless it is vital for your use case, we strongly recommend replacing the Description Ids with " 
+                            "the corresponding Concept Ids"
+                            ),
+                        )
                     )
-                setchk_results.set_analysis["Messages"].append(msg)
             else:            
-                msg=("Your data entry value set contains exclusively Description Ids "
-                    "in the MIXED column for this value set."
-                    "Unless it is vital for your use case, we recommend replacing all the Ids with "
-                    "the corresponding Concept Ids"
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        simple_message=(
+                            "Your data entry value set contains exclusively Description Ids "
+                            "in the MIXED column for this value set."
+                            "Unless it is vital for your use case, we recommend replacing all the Ids with "
+                            "the corresponding Concept Ids"
+                            ),
+                        )
                     )
-                setchk_results.set_analysis["Messages"].append(msg)
+ 
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    f"Number of rows containing Concept Ids in the MIXED column of your input file " 
+                    ),
+                value=f"{n_CID_ROWS}",
+                )
+        )
+
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    f"Number of rows containing Description Ids in the MIXED column of your input file " 
+                    ),
+                value=f"{n_DID_ROWS}",
+                )
+        )
+
     
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has assessed that {n_FILE_NON_PROCESSABLE_ROWS} rows could not be processed for this Set Check.\n"
-        f"The system has processed {n_FILE_PROCESSABLE_ROWS} rows for this Set Check.")
-    setchk_results.set_analysis["Messages"].append(msg)

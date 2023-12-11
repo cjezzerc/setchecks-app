@@ -8,6 +8,8 @@ from flask import current_app
 import setchks_app.terminology_server_module
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -102,15 +104,34 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-    setchk_results.set_analysis["Messages"]=[] 
-    
-    msg_format="There are %s rows where the concept was assessed %s for use as part of this value set, in your input file of  %s rows"
-    msg=msg_format % (n_OUTCOME_IN_EXCL_REF_SET, 'as not recommended', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
-    msg=msg_format % (n_NO_OUTCOME_EXCL_REF_SET, 'as permissible', n_FILE_TOTAL_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg="""Your input file contains a total of %s rows.
-The system has assessed that %s rows could not be processed for this Set Check (blank or header rows).
-The system has assessed %s rows for this Set Check.""" % (n_FILE_TOTAL_ROWS, n_FILE_NON_PROCESSABLE_ROWS, n_FILE_PROCESSABLE_ROWS)
-    setchk_results.set_analysis["Messages"].append(msg)
+    setchk_results.set_level_table_rows=[] 
+    if n_OUTCOME_IN_EXCL_REF_SET==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    f"This check found no issues in the value set relating to the default exclusion reference set." 
+                    ),
+                )
+            )
+    else:   
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "This value set contains Concepts that are found in the "
+                    "UK Default Exclusion Filter Reference Set, "
+                    "which contains Concepts that have been assessed as being "
+                    "not recommended for use within a patient record, "
+                    "i.e., not recommended for clinical data entry. "
+                    "Such Concepts should be removed or replaced (even if data extract..?)"
+                    ),
+                )
+            )
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows where the Concept is in the Default Exclusion Reference Set"
+                    ),
+                value=f"{n_OUTCOME_IN_EXCL_REF_SET}"
+                )
+            )
+   

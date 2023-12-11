@@ -57,7 +57,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           Set_analysis sheet                               #     
     ##################################################################
 
-    ws=wb.worksheets[3]
+    ws=wb.worksheets[0]
     ws.title='Set analyses'
 
     time0=time.time()
@@ -107,7 +107,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           By_Outcome sheet                                     #     
     ##################################################################
 
-    ws=wb.worksheets[2]
+    ws=wb.worksheets[3]
     ws.title='By_Outcome'
 
     time0=time.time()
@@ -124,7 +124,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           By_Row sheet                                         #     
     ##################################################################
 
-    ws=wb.worksheets[1]
+    ws=wb.worksheets[2]
     ws.title='By_Row'
 
     time0=time.time()
@@ -143,7 +143,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           Row_Overview sheet                                   #     
     ##################################################################
 
-    ws=wb.worksheets[0]
+    ws=wb.worksheets[1]
     ws.title='Row_Overview'
 
     time0=time.time()
