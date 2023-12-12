@@ -20,7 +20,8 @@ def make_supp_tab_sheets(
         if setchk_results.supp_tab_blocks is not None:
             i_ws+=1
             ws=wb.worksheets[i_ws]
-            ws.title=f"{setchk_code}_supp"
+            short_code=setchk_code.split("_")[0]
+            ws.title=f"{short_code}_suppl"
             supp_tab_row_numbers_map=make_one_supp_tab_sheet(
                 ws=ws,
                 setchk_code=setchk_code,

@@ -18,7 +18,7 @@ def make_chk_specific_sheets(
         if setchk_results.chk_specific_sheet is not None:
             i_ws+=1
             ws=wb.worksheets[i_ws]
-            ws.title=f"{setchk_code}_s"
+            ws.title=setchk_results.chk_specific_sheet.sheet_name # sf"{setchk_code}_s"
             make_one_chk_specific_sheet(
                 ws=ws,
                 setchk_code=setchk_code,

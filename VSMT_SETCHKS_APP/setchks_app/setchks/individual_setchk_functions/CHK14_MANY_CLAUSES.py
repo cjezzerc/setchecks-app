@@ -11,6 +11,7 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 from ..set_level_table_row import SetLevelTableRow
+from ..chk_specific_sheet import ChkSpecificSheet
 
 
 
@@ -59,6 +60,19 @@ def do_check(setchks_session=None, setchk_results=None):
 
     n_INCLUDE_CLAUSES=0
     n_EXCLUDE_CLAUSES=0
+
+    chk_specific_sheet=ChkSpecificSheet(sheet_name="Refactored")
+    setchk_results.chk_specific_sheet=chk_specific_sheet
+    chk_specific_sheet.col_widths=[30,200]
+
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+        "include/exclude",
+        "ECL",
+        ]
+    ECL_clauses={}
+    ECL_clauses["include"]=[]
+    ECL_clauses["exclude"]=[]
     for clause in refactored_valset.clause_based_rule.clauses:
         clause_base_concept_id=str(clause.clause_base_concept_id)
         clause_type=clause.clause_type
@@ -70,15 +84,29 @@ def do_check(setchks_session=None, setchk_results=None):
         if clause_operator[0]=="=":
             clause_operator=clause_operator[1:]
         pt=concepts[clause_base_concept_id].pt
-        msg=(
-            f"{clause_type} {clause_operator:2} {clause_base_concept_id:20} {pt}"
-            )
-        setchk_results.set_analysis["Messages"].append(msg)     
-        
+        ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
+        ECL_clauses[clause_type].append(ECL_clause)
+        row=chk_specific_sheet.new_row()
+        row.cell_contents=[
+        clause_type,
+        ECL_clause,
+        ]
+    include_ECL = "(" + " OR ".join(ECL_clauses["include"]) + ")"
+    exclude_ECL = "(" + " OR ".join(ECL_clauses["exclude"]) + ")"
+    full_ECL=include_ECL
+    if ECL_clauses["exclude"]!=[]:
+        full_ECL+= " MINUS " + exclude_ECL
+    chk_specific_sheet.new_row() # blank row 
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+    "Full ECL expression:",
+    full_ECL,
+    ]
+    
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             simple_message=(
-                "[NEUTRAL] A refactored form of your value set can be found in the CHK14-specific sheet"
+                "[NEUTRAL] A refactored form of your value set can be found in the 'Refactored' tab'."
                 ),
             )
         ) 

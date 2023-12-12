@@ -88,7 +88,7 @@ def do_check(setchks_session=None, setchk_results=None):
     ###########################################
     #    output sheet header rows             #
     ###########################################
-    chk_specific_sheet=ChkSpecificSheet()
+    chk_specific_sheet=ChkSpecificSheet(sheet_name="CHK10_suppl")
     setchk_results.chk_specific_sheet=chk_specific_sheet
     chk_specific_sheet.col_widths=[20,40,20,40,20,40,20]
 

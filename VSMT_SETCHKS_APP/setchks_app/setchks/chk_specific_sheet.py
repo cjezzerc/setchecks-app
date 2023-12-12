@@ -1,11 +1,13 @@
 class ChkSpecificSheet():
     __slots__=[
         "rows",
-        "col_widths"
+        "col_widths",
+        "sheet_name",
         ]
-    def __init__(self):
+    def __init__(self, sheet_name=None):
         self.rows=[]
         self.col_widths=[]
+        self.sheet_name=sheet_name
 
     def new_row(self): # add a row and return that row to caller
         row=ChkSpecificSheetRow()

@@ -50,7 +50,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
             setchks_list_to_report.append(setchk_code)
 
     wb=openpyxl.Workbook()
-    for i in range(0,5):
+    for i in range(0,6):
         ws=wb.create_sheet()
 
     ##################################################################
