@@ -10,7 +10,8 @@ from setchks_app.set_refactoring import refactor_core_code
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.set_refactoring.valset_module import ClauseMembershipAnalysis, ValsetMembershipAnalysis
 
-from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 from ..chk_specific_sheet import ChkSpecificSheet, ChkSpecificSheetRow
 
 
@@ -242,22 +243,38 @@ def do_check(setchks_session=None, setchk_results=None):
                 row.row_fill="grey"
                 row.row_height=16
 
-    setchk_results.set_analysis["Messages"]=[]
-
-    msg=(   
-        f"This analysis identifies {len(whole_vs_concept_ids_only_in_earlier)} "
-        "concepts that should be considered for removal from the value set" 
+    if (len(whole_vs_concept_ids_only_in_earlier) + len (whole_vs_concept_ids_only_in_later))==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] Our algorithm has not made any suggestions for concepts that "
+                    "you may wish to add to the value set due to the change in content of the release"
+                    ),
+                )
+            ) 
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[AMBER] Our algorithm has made suggestions for concepts that "
+                    "you may wish to remove from the value set due to the change in content of the release"
+                    ),
+                )
+            )
+        setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Number of suggestions for concepts that should be considered for removal from the value set"
+                ),
+            value=f"{len(whole_vs_concept_ids_only_in_earlier)}"
+            )
         )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(   
-        f"This analysis identifies {len(whole_vs_concept_ids_only_in_later)} "
-        "concepts that should be considered for addition to the value set" 
+        setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Number of suggestions for concepts that should be considered for addition to the value set"
+                ),
+            value=f"{len(whole_vs_concept_ids_only_in_later)}"
+            )
         )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(   
-        f"For more details see CHK51 specific sheet" 
-        )
-    setchk_results.set_analysis["Messages"].append(msg)
-
+        
