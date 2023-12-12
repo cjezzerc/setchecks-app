@@ -277,7 +277,6 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-    setchk_results.set_analysis["Messages"]=[] 
     
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION
@@ -348,7 +347,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 value=f"{n_TERM_DID_MISMATCH}"
                 )
             )
-            
+
         if n_CAPITALISATION_ISSUE!=0:
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(

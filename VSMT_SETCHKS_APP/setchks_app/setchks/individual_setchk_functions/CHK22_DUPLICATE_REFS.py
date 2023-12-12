@@ -9,6 +9,8 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 
 ds=DescriptionsService()
         
@@ -181,22 +183,39 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.outcome_level="INFO"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
+ 
+    if (n_DUPLICATE_CIDS+n_DUPLICATE_DIDS)==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] This check has detected no issues"
+                    ),
+                )
+            )
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[AMBER] The value set contains duplicate Identifiers"
+                    ),
+                )
+            )
 
-    setchk_results.set_analysis["Messages"]=[] 
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of duplicate Concept Ids"
+                    ),
+                value=f"{n_DUPLICATE_CIDS}"
+                )
+            )
+        
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of duplicate Description Ids"
+                    ),
+                value=f"{n_DUPLICATE_DIDS}"
+                )
+            )
             
-    msg=(
-    f"There are {n_DUPLICATE_CIDS} duplicated CIDs in the value set" 
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-    f"There are {n_DUPLICATE_DIDS} duplicated DIDs in the value set "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
