@@ -38,11 +38,29 @@ class ColumnsInfo():
         #Now simplify all the complex code below that was written in the expectation that
         #could have two ID columns: allow the choice with no further checks, 
         #if something was already set to that make it "OTHER" 
-        if self._identified_columns[requested_column_type]!=None:
+        
+        # if self._identified_columns[requested_column_type]!=None:
+        #     self._column_types[self._identified_columns[requested_column_type]]="OTHER"
+        # self._column_types[icol]=requested_column_type
+        # self._identified_columns[requested_column_type]=icol    
+        # return True, "SUCCESS: Changed OK"
+        
+        # if changing an existing "identified column type" column, "forget" that identification
+        if current_type in self.identified_columns:
+            self.identified_columns[current_type]=None
+        # if changing new column to an existing "identfied column type" then set the current 
+        # column that holds that type to "OTHER"
+        if requested_column_type in self.identified_columns and self._identified_columns[requested_column_type]!=None:
             self._column_types[self._identified_columns[requested_column_type]]="OTHER"
+        # make the type change
         self._column_types[icol]=requested_column_type
-        self._identified_columns[requested_column_type]=icol    
+        # if it is an "identified column type" note the new identified column
+        if requested_column_type!="OTHER":
+            self._identified_columns[requested_column_type]=icol 
+           
         return True, "SUCCESS: Changed OK"
+
+
 
         # if requested_column_type=="OTHER":
         #     self._column_types[icol]="OTHER"
