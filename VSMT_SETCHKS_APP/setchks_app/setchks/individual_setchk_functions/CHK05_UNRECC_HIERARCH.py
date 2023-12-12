@@ -10,6 +10,8 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -197,34 +199,57 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-    setchk_results.set_analysis["Messages"]=[] 
     
-    for domain_id in domain_ids:
-        domain_name=id_to_full_domain_name_dict[domain_id]
-        if n_CONCEPTS_IN_DOMAIN[domain_id]!=0:
-            msg=(
-            f"There are {n_CONCEPTS_IN_DOMAIN[domain_id]} concepts "  
-            f"that are subtypes of the {domain_name} hierarchy. " 
-            )
-            setchk_results.set_analysis["Messages"].append(msg)
-            
-    msg=(
-    f"There are {n_CONCEPTS_NOT_RECOMMENDED} concepts "  
-    f"in the value set that are categorised as ‘not recommended’ for the "
-    f"{data_entry_extract_type} data entry type assigned to this value set."
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-    f"There are {n_CONCEPTS_MAY_NOT_BE_APPROPRIATE} concepts "  
-    f"in the value set that are categorised as ‘may not be appropriate’ for the "
-    f"{data_entry_extract_type} data entry type assigned to this value set."
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
 
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+    setchk_results.set_level_table_rows=[] 
+   
+    if (n_CONCEPTS_NOT_RECOMMENDED+n_CONCEPTS_MAY_NOT_BE_APPROPRIATE)==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] The concepts in the value set are all subtypes of acceptable top level hierarchies"
+                    ),
+                )
+            )     
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[RED] Some concepts in the value set are subtypes of top level hierarchies that are "
+                    "either are not recommended or may not be acceptable. You should check these concepts"
+                    ),
+                )
+            )
+        
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    f"Number of Concepts that are categorised as ‘not recommended’ for the "
+                    f"{data_entry_extract_type} data entry type assigned to this value set." 
+                    ),
+                value=f"{n_CONCEPTS_NOT_RECOMMENDED}"  
+                )
+            )     
+        
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    f"Number of Concepts that are categorised as ‘may not be appropriate’ for the "
+                    f"{data_entry_extract_type} data entry type assigned to this value set." 
+                    ),
+                value=f"{n_CONCEPTS_MAY_NOT_BE_APPROPRIATE}"  
+                )
+            )     
+        
+        for domain_id in domain_ids:
+            domain_name=id_to_full_domain_name_dict[domain_id]
+            if n_CONCEPTS_IN_DOMAIN[domain_id]!=0:
+                    acceptability=acceptability_dicts_by_id[data_entry_extract_type][domain_id]
+                    setchk_results.set_level_table_rows.append(
+                        SetLevelTableRow(
+                            descriptor=(
+                                f"Number of Concepts that are subtypes of - {acceptability} {domain_name}"  
+                                ),
+                            value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}"  
+                            )
+                        )   

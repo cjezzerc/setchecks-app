@@ -151,7 +151,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"This check has found issues that must be corrected "
+                    f"[RED] This check has found issues that must be corrected "
                     f"for the full set of Set Checks to be performed."
                     ),
                 )
@@ -172,7 +172,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"This check has found no issues that must be corrected."
+                    f"[GREEN] This check has found no issues that must be corrected."
                     ),
                 )
             )

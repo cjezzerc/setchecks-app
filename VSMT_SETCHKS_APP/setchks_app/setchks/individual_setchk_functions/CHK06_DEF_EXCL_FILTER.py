@@ -104,12 +104,14 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
+    
+    
     setchk_results.set_level_table_rows=[] 
     if n_OUTCOME_IN_EXCL_REF_SET==0:
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"This check found no issues in the value set relating to the default exclusion reference set." 
+                    f"[GREEN] This check found no issues in the value set relating to the default exclusion reference set." 
                     ),
                 )
             )
@@ -117,7 +119,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "This value set contains Concepts that are found in the "
+                    "[RED] This value set contains Concepts that are found in the "
                     "UK Default Exclusion Filter Reference Set, "
                     "which contains Concepts that have been assessed as being "
                     "not recommended for use within a patient record, "

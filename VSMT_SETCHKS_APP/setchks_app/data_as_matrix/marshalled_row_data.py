@@ -3,6 +3,9 @@
 from setchks_app.descriptions_service import descriptions_service
 from setchks_app.sctid.restore_corrupted_id import detect_corruption_and_restore_id
 
+import logging
+logger=logging.getLogger(__name__)
+
 """
 For details of the different cases inferring C_Id or C_Id_via_latest_release etc see https://nhsd-jira.digital.nhs.uk/browse/SIV-500
 In particular for meanings of all codes like:
@@ -240,6 +243,19 @@ class MarshalledRow():
                         ): # first look for match in case insensitive way
                         self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
                         self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
+                        
+                        D_Id_data=ds.get_data_about_description_id(
+                            description_id=self.D_Id_derived_from_C_Id_entered_and_D_Term_entered,
+                            sct_version=setchks_session.sct_version
+                            )
+                        if D_Id_data is not None: # it shouldn't be but have had problems with inactive D_Ids
+                            self.D_Id_active=D_Id_data["active_status"]
+                        else:
+                            logging.error(
+                                f"Could not get descriptions data for D_Id" 
+                                "{self.D_Id_derived_from_C_Id_entered_and_D_Term_entered}"
+                                )
+                        
                         self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=item["term_type"]
                         if item["case_sig"]=="ci" or compare_strings_csr(
                             string1=item["term"],

@@ -11,6 +11,7 @@ from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
 
 def generate_check_item(
     outcome_code=None,    
@@ -97,17 +98,9 @@ def generate_check_item(
             "The provided description ID corresponds to this Concept ID -->"
             )
         check_item.row_specific_message=(
-            # f"{implied_concept_id}"
             termbrowser_hyperlink(sctid=implied_concept_id)
             )
-    elif outcome_code=="CHK03-OUT-08":
-        check_item=CheckItem(outcome_code=outcome_code)
-        check_item.general_message=(
-            "The provided description ID corresponds to this Concept ID -->"
-            )
-        check_item.row_specific_message=(
-            f"{implied_concept_id}"
-            )  
+
     elif outcome_code=="CHK03-OUT-09":
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.general_message=(
@@ -167,10 +160,13 @@ def do_check(setchks_session=None, setchk_results=None):
     n_FILE_PROCESSABLE_ROWS=0
     n_FILE_NON_PROCESSABLE_ROWS=setchks_session.first_data_row  # with gatekeeper this is just blank or header rows
     
-    n_CONCEPTS_ACCEPTABLE=0
+    n_INACTIVE_DESCRIPTION=0
+    n_FSN_FOR_DATA_ENTRY=0
+    n_TERM_CONCEPT_MISMATCH=0
+    n_CAPITALISATION_ISSUE=0
+    n_TERM_DID_MISMATCH=0
+    n_MISSING_TERM=0
 
-    data_entry_extract_type=setchks_session.data_entry_extract_type
-    
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
         this_row_analysis=[]
@@ -191,8 +187,10 @@ def do_check(setchks_session=None, setchk_results=None):
                     if mr.D_Term_entered=="": # Term is blank
                         if mr.C_Id_entered is not None:
                             leaf="ix" # C_Id entered, but Term is blank
+                            n_MISSING_TERM+=1
                         else:
                             leaf="x" # D_Id entered, but Term is blank
+                            n_MISSING_TERM+=1
                     else: # A Term has been entered
                         if mr.C_Id_entered is not None: # CID and Term
                             if not mr.congruence_of_C_Id_entered_and_D_Term_entered_case_insens:
@@ -250,6 +248,19 @@ def do_check(setchks_session=None, setchk_results=None):
                         )
                     if check_item:
                         this_row_analysis.append(check_item)
+                    if outcome_code_digits=="03" and mr.D_Id_active=="0":
+                        n_INACTIVE_DESCRIPTION+=1
+                    elif outcome_code_digits=="05":
+                        if (dterm_type=="fsn" 
+                            and setchks_session.data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]):
+                            n_FSN_FOR_DATA_ENTRY+=1
+                    elif outcome_code_digits=="06":
+                        n_TERM_CONCEPT_MISMATCH+=1
+                    elif outcome_code_digits=="07":
+                        n_CAPITALISATION_ISSUE+=1
+                    elif outcome_code_digits=="09":
+                        n_TERM_DID_MISMATCH+=1
+
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 check_item=CheckItem("CHK03-OUT-NOT_FOR_PRODUCTION")
@@ -268,16 +279,101 @@ def do_check(setchks_session=None, setchk_results=None):
 
     setchk_results.set_analysis["Messages"]=[] 
     
-    # msg=(
-    # f"There are {n_CONCEPTS_NOT_RECOMMENDED} concepts "  
-    # f"in the value set that are categorised as ‘not recommended’ for the "
-    # f"{data_entry_extract_type} data entry type assigned to this value set."
-    # )
-    # setchk_results.set_analysis["Messages"].append(msg)
+    n_ISSUES=( 
+          n_INACTIVE_DESCRIPTION
+        + n_FSN_FOR_DATA_ENTRY
+        + n_TERM_CONCEPT_MISMATCH
+        + n_CAPITALISATION_ISSUE
+        + n_TERM_DID_MISMATCH
+        + n_MISSING_TERM    # possibly should treat missing term separately
+                            # as an AMBER issue and pssibly report two levels in 
+                            # this check
+        )
     
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+    if n_ISSUES==0 and n_MISSING_TERM==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] This check has detected no issues"
+                    ),
+                )
+            )     
+    
+
+
+    if n_ISSUES!=0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[RED] This check has detected errors that need to be fixed"
+                    ),
+                )
+            )
+
+        if n_INACTIVE_DESCRIPTION!=0:
+            setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows with inactive descriptions"
+                    ),
+                value=f"{n_INACTIVE_DESCRIPTION}"
+                )
+            )
+        if n_FSN_FOR_DATA_ENTRY!=0:
+            setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows using a Fully Specified Name in this data "
+                    "entry value set"
+                    ),
+                value=f"{n_FSN_FOR_DATA_ENTRY}"
+                )
+            )
+        if n_TERM_CONCEPT_MISMATCH!=0:
+            setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows where the Term does not match the Concept"
+                    ),
+                value=f"{n_TERM_CONCEPT_MISMATCH}"
+                )
+            )
+
+        if n_TERM_DID_MISMATCH!=0:
+            setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows where the Term does not match the Description ID"
+                    ),
+                value=f"{n_TERM_DID_MISMATCH}"
+                )
+            )
+            
+        if n_CAPITALISATION_ISSUE!=0:
+            setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows where there is a capitalisation issue"
+                    ),
+                value=f"{n_CAPITALISATION_ISSUE}"
+                )
+            )
+
+    if n_MISSING_TERM!=0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[AMBER] Some Terms are missing. You may wish to correct this."
+                    ),
+                )
+            )
+             
+        setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+                "Number of rows where the Term is missing"
+                ),
+            value=f"{n_MISSING_TERM}"
+            )
+        )
+

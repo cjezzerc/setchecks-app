@@ -165,7 +165,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"All the identifiers were found in the selected release " 
+                    f"[GREEN] All the identifiers were found in the selected release " 
                     ),
                 )
             )
@@ -175,8 +175,8 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        f"There are Identifiers in this value set that do not appear in the selected release. " 
-                        f"These must be removed or corrected before the full set of Set Checks can be processed"
+                        f"[RED] There are Identifiers in this value set that do not appear in the selected release. " 
+                        f"These must be removed or corrected for the full set of Set Checks to be performed."
                         ),
                     )
                 )
@@ -185,7 +185,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 SetLevelTableRow(
                     simple_message=(
                         f"There are Identifiers in this value set that do not appear in the selected release. " 
-                        f"These must be removed or corrected before the full set of Set Checks can be processed. "
+                        f"These must be removed or corrected for the full set of Set Checks to be performed. "
                         f"Some of these Identifiers appear in the latest release which suggests that the value set may "
                         f"correspond to a later release than the one that you have selected."
                         ),
@@ -196,7 +196,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 SetLevelTableRow(
                     simple_message=(
                         f"There are Identifiers in this value set that do not appear in the selected release. " 
-                        f"These must be removed or corrected before the full set of Set Checks can be processed. "
+                        f"These must be removed or corrected for the full set of Set Checks to be performed. "
                         f"None of these Identifiers appear in any releases of SNOMED later than the one that you have selected"
                         ),
                     )

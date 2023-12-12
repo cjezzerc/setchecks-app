@@ -10,7 +10,7 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 from ..check_item import CheckItem
-
+from ..set_level_table_row import SetLevelTableRow
 
 def do_check(setchks_session=None, setchk_results=None):
 
@@ -142,33 +142,62 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-    setchk_results.set_analysis["Messages"]=[] 
-    
-    if len(tag_counts)>1:
-        msg=(
-        f"You have used concepts with more than one type of semantic tag. "  
-        f"This sometimes indicates that erroneous concepts have been included."
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
-
-    if not joint_majority_tag:
-        msg=(
-            f"There are {majority_count}/{n_concepts} concepts "  
-            f"with the majority semantic tag of '{majority_tag}'. " 
-            )
-        setchk_results.set_analysis["Messages"].append(msg)    
-    
-    for tag, count in tag_counts.items():
-        if tag!=majority_tag:
-            msg=(
-                f"There are {count}/{n_concepts} concepts "  
-                f"with the semantic tag '{tag}'. " 
+    setchk_results.set_level_table_rows=[] 
+   
+        # setchk_results.set_level_table_rows.append(
+        #     SetLevelTableRow(
+        #         simple_message=(
+        #             "The concepts in the value set are all subtypes of acceptable top level hierarchies"
+        #             ),
+        #         )
+        #     )     
+        # setchk_results.set_level_table_rows.append(
+        #     SetLevelTableRow(
+        #         descriptor=(
+        #             f"Number of Concepts that are categorised as ‘not recommended’ for the "
+        #             f"{data_entry_extract_type} data entry type assigned to this value set." 
+        #             ),
+        #         value=f"{n_CONCEPTS_NOT_RECOMMENDED}"  
+        #         )
+        #     )     
+        
+    if len(tag_counts)==1:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] All the concepts have the same semantic tag"
+                    ),
                 )
-            setchk_results.set_analysis["Messages"].append(msg)
-            
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+            )     
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[AMBER] You have used concepts with more than one type of semantic tag. "  
+                    "This sometimes indicates that erroneous concepts have been included."
+                    ),
+                )
+            )     
+        
+        
+        if not joint_majority_tag:
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    descriptor=(
+                        f"Number of concepts with the most frequently "
+                        f"found semantic tag '({majority_tag})'. " 
+                        ),
+                    value=f"{majority_count}/{n_concepts}"  
+                    )
+                )     
+        
+        for tag, count in tag_counts.items():
+            if tag!=majority_tag:
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        descriptor=(
+                            f"Number of concepts with the semantic tag '({tag})'. " 
+                            ),
+                        value=f"{count}/{n_concepts}"  
+                        )
+                    )

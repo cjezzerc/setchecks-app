@@ -72,13 +72,20 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows=[]
     
     if n_DID_ROWS==0:
-        pass
+        setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                        "[GREEN] No issues have been detected "
+                        ),
+                    )
+                )
+
     else: # Issue varying levels of admonition if any Description Ids have been used
         if setchks_session.data_entry_extract_type in ["EXTRACT"]:
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        "At least one Description Id has been detected "
+                        "[RED] At least one Description Id has been detected "
                         "in the MIXED column for this data extraction value set. "
                         "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
                         ),
@@ -90,7 +97,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         simple_message=(
-                            "A mixture of Concept Ids and Description Ids has been detected "
+                            "[AMBER] A mixture of Concept Ids and Description Ids has been detected "
                             "in the MIXED column for this value set. This situation should be avoided. "
                             "Unless it is vital for your use case, we strongly recommend replacing the Description Ids with " 
                             "the corresponding Concept Ids"
@@ -101,7 +108,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         simple_message=(
-                            "Your data entry value set contains exclusively Description Ids "
+                            "[AMBER] Your data entry value set contains exclusively Description Ids "
                             "in the MIXED column for this value set."
                             "Unless it is vital for your use case, we recommend replacing all the Ids with "
                             "the corresponding Concept Ids"
