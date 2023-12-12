@@ -377,7 +377,8 @@ def column_identities():
     if (setchks_session.columns_info==None) or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0])):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
         ci.set_column_type(icol=0,requested_column_type="MIXED")
-        ci.set_column_type(icol=1,requested_column_type="DTERM")
+        if ci.ncols>1:
+            ci.set_column_type(icol=1,requested_column_type="DTERM")
         setchks_session.columns_info=ci
 
     # if reach here via click on a column identity dropdown
