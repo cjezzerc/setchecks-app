@@ -10,7 +10,8 @@ from setchks_app.set_refactoring import refactor_core_code
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
-from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 
 
        
@@ -74,29 +75,47 @@ def do_check(setchks_session=None, setchk_results=None):
             )
         setchk_results.set_analysis["Messages"].append(msg)     
         
-    
-    msg=(
-    f"There are {n_INCLUDE_CLAUSES} include clauses in the refactored form "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            simple_message=(
+                "[NEUTRAL] A refactored form of your value set can be found in the CHK14-specific sheet"
+                ),
+            )
+        ) 
 
-
-    msg=(
-    f"There are {n_EXCLUDE_CLAUSES} exclude clauses in the refactored form "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
     n_CLAUSES=n_INCLUDE_CLAUSES+n_EXCLUDE_CLAUSES
-    msg=(
-    f"There are {n_CLAUSES} clauses in total in the refactored form "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
     if n_CLAUSES>30:
-        msg=(
-        "There are more than 30 clauses in the refactored form. "
-        "This suggests that either you have a very scattered set of clauses, or "
-        "that you are trying to cover too large a scope with one value set"
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                "[AMBER] There are more than 30 clauses in the refactored form. "
+                "This suggests that either you have a very scattered set of clauses, or "
+                "that you are trying to cover too large a scope with one value set"
+                    ),
+                )
+            )
     
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Number of include clauses in the refactored form. "
+                ),
+            value=f"{n_INCLUDE_CLAUSES}"
+            )
+        )
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Number of exclude clauses in the refactored form. "
+                ),
+            value=f"{n_EXCLUDE_CLAUSES}"
+            )
+        )
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Total number of clauses in the refactored form. "
+                ),
+            value=f"{n_CLAUSES}"
+            )
+        )

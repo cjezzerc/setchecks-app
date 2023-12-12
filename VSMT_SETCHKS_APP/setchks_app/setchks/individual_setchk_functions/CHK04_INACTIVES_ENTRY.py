@@ -10,6 +10,8 @@ from setchks_app.descriptions_service.descriptions_service import DescriptionsSe
 from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
+
 
 class HstOption():
     __slots__={
@@ -372,52 +374,126 @@ def do_check(setchks_session=None, setchk_results=None):
             this_row_analysis.append(check_item)
 
     setchk_results.set_analysis["Messages"]=[] 
-            
-    msg=(
-    f"There are {n_CONCEPTS_ACTIVE} active concepts in the value set" 
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-    f"There are {n_CONCEPTS_INACTIVE} inactive concepts in the value set "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    if dual_mode:
-        msg=(
-        f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION} concepts in the value set have been newly inactivated since the earlier SCT version" 
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
-        
-        msg=(
-        f"{n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION} inactive concepts in the value set that were also inactive in the earlier SCT version"  
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
 
     if not dual_mode:
-        msg=(
-        f"{n_CONCEPTS_NO_REPLACEMENT} inactive concepts in the value set have no replacement"  
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
+        if n_CONCEPTS_INACTIVE==0:
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                simple_message=(
+                    "[GREEN]No inactive concepts have been detected"
+                    ),
+                )
+            )
+        else:
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                simple_message=(
+                    "[RED] This value set includes inactive concepts. "
+                    "According to your settings, this is a data entry value set. "
+                    "All inactive Concepts should be removed, and replaced where possible."
+                    ),
+                )
+            )
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    "Number of inactive Concepts "
+                    ),
+                value=f"{n_CONCEPTS_INACTIVE}"
+                )
+            )
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    "Number of inactive Concepts with at least one replacement "
+                    ),
+                value=f"{n_CONCEPTS_WITH_REPLACEMENTS}"
+                )
+            )
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    "Number of inactive Concepts with no replacement "
+                    ),
+                value=f"{n_CONCEPTS_NO_REPLACEMENT}"
+                )
+            )
+            
+    else: # dual mode
+        if n_CONCEPTS_INACTIVE==0:
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                simple_message=(
+                    "[GREEN]No inactive concepts have been detected using the later release"
+                    ),
+                )
+            )
+        else:
+            if n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION>0:
+                setchk_results.set_level_table_rows.append(
+                        SetLevelTableRow(
+                        simple_message=(
+                            "[RED] This value set includes Concepts that are inactive in the later release, " 
+                            "and that were inactivated since the ealier release."
+                            "According to your settings, this is a data entry value set. "
+                            "All inactive Concepts should be removed, and replaced where possible."
+                            ),
+                        )
+                    )
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    descriptor=(
+                        "Number of Concepts inactivated since the earlier release"
+                        ),
+                    value=f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION}"
+                    )
+                )
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    descriptor=(
+                        "Number of Concepts inactivated since the earlier release"
+                        ),
+                    value=f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION}"
+                    )
+                )
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    descriptor=(
+                        "Number of newly inactivated Concepts with at least one replacement "
+                        ),
+                    value=f"{n_CONCEPTS_WITH_REPLACEMENTS}"
+                    )
+                )
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    descriptor=(
+                        "Number of newly inactivated Concepts with no replacement "
+                        ),
+                    value=f"{n_CONCEPTS_NO_REPLACEMENT}"
+                    )
+                )
 
-        msg=(
-        f"{n_CONCEPTS_WITH_REPLACEMENTS} inactive concepts in the value set have at least one replacement"  
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
-    else:
-        msg=(
-        f"{n_CONCEPTS_NO_REPLACEMENT} newly inactivated concepts in the value set have no replacement"  
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
-
-        msg=(
-        f"{n_CONCEPTS_WITH_REPLACEMENTS} newly inactivated concepts in the value set have at least one replacement"  
-        )
-        setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
-        ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+            if n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION>0:
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    simple_message=(
+                        "[RED] When running in Dual Release mode the checks are focussed primarily on "
+                        "changes that have occurred between the two releases."
+                        "This value set contains Concepts that are inactive in "
+                        "both the earlier and later releases. For such Concepts, " 
+                        "this report will only provide basic information, "
+                        "and does not suggest possible replacements."
+                        "It is recommended that you should run your value set in Single Release mode "
+                        "using the earlier release and act on the information provided. " 
+                        "Then re-run the updated value set in Dual Release mode."
+                        ),
+                    )
+                )
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                    descriptor=(
+                        "Number of inactive Concepts that were also inactive in the earlier release"
+                        ),
+                    value=f"{n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION}"
+                    )
+                )

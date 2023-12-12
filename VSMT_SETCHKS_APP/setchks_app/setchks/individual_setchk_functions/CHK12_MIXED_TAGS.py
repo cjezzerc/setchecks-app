@@ -198,6 +198,6 @@ def do_check(setchks_session=None, setchk_results=None):
                         descriptor=(
                             f"Number of concepts with the semantic tag '({tag})'. " 
                             ),
-                        value=f"{count}/{n_concepts}"  
+                        value=f"{count}"  
                         )
                     )

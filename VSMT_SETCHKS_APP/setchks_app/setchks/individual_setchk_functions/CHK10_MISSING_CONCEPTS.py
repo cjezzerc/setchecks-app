@@ -10,7 +10,7 @@ from setchks_app.set_refactoring import refactor_core_code
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.set_refactoring.valset_module import ClauseMembershipAnalysis
 
-from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
 from ..chk_specific_sheet import ChkSpecificSheet, ChkSpecificSheetRow
 
 
@@ -117,6 +117,7 @@ def do_check(setchks_session=None, setchk_results=None):
     # analyse and report on each include clause #
     #############################################
 
+    n_SUGGESTED_NEW_MEMBERS=0
     for sorting_flag in ["ONLY_NON_ZERO", "ONLY_ZERO"]: # sorting_flag float include clauses with some 
                                                         # "interacting" exclude clauses to the top
         for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
@@ -126,6 +127,8 @@ def do_check(setchks_session=None, setchk_results=None):
             n=len(members_excluded_from_this_clause)
             do_output_this_loop=( (n==0 and sorting_flag=="ONLY_ZERO") or (n>1 and sorting_flag=="ONLY_NON_ZERO") )
             if do_output_this_loop:
+                if sorting_flag=="ONLY_NON_ZERO":
+                    n_SUGGESTED_NEW_MEMBERS+=n
                 n_members_of_clause=len(include_members)
                 n_members_of_clause_in_vs=len(members_in_vs_from_this_clause)
                 n_members_of_clause_excluded=len(members_excluded_from_this_clause)
@@ -182,10 +185,32 @@ def do_check(setchks_session=None, setchk_results=None):
                 row.row_fill="grey"
                 row.row_height=16
 
-    setchk_results.set_analysis["Messages"]=[]
-    msg=(   
-        f"See CHK10 specific sheet" 
-        )
-    setchk_results.set_analysis["Messages"].append(msg)
 
+    if n_SUGGESTED_NEW_MEMBERS==0:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] Our algorithm has not made any suggestions for concepts that "
+                    "you may wish to include"
+                    ),
+                )
+            ) 
+    else:
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[AMBER] Our algorithm has made suggestions for concepts that "
+                    "you may wish to include"
+                    ),
+                )
+            )
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of suggestions made"
+                    ),
+                value=f"{n_SUGGESTED_NEW_MEMBERS}"
+                )
+            )
+        
     

@@ -9,6 +9,7 @@ from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
 from ..check_item import CheckItem
+from ..set_level_table_row import SetLevelTableRow
 
 #
 # This was cloned from CHK04 and as few changes as possible were made
@@ -234,8 +235,6 @@ def do_check(setchks_session=None, setchk_results=None):
                         # but for familiarisation day 2 just do (as no time to test the above)
                         supp_tab_row.term=concepts[concept_id].pt
 
-                        # if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
-                        # if mr.D_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
                         supp_tab_row.implied_inactive_option_counter=f"{i_option+1}/{len(hst_options)}"
                         supp_tab_row.implied_inactive_concept_id=hst_option.old_concept_id
                         supp_tab_row.implied_inactive_concept_pt=concepts[hst_option.old_concept_id].pt
@@ -246,8 +245,6 @@ def do_check(setchks_session=None, setchk_results=None):
                         else:
                             supp_tab_row.is_correct_representation_type_in_set="-"
                         supp_tab_entries.append(supp_tab_row)
-                    # else: # it's inactive but also was inactive in earlier_sct_version so not reported
-                    #     supp_tab_entries=None
                 else: # has no predecessors
                     supp_tab_entries=None
 
@@ -274,9 +271,6 @@ def do_check(setchks_session=None, setchk_results=None):
     
     n_CONCEPTS_ACTIVE=0
     n_CONCEPTS_INACTIVE=0
-    # if dual_mode:
-    #     n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION=0
-    #     n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION=0
     n_CONCEPTS_NO_IMPLIED_INACTIVES=0
     n_CONCEPTS_WITH_IMPLIED_INACTIVES=0
 
@@ -290,8 +284,7 @@ def do_check(setchks_session=None, setchk_results=None):
             concept_id=mr.C_Id
             if concept_id is not None:
                 n_FILE_PROCESSABLE_ROWS+=1
-                # if setchk_results.supp_tab_blocks[i_data_row] is None: #"CHK08-OUT-i"
-                if active_status[concept_id] is False: #"CHK08-OUT-i"
+                if active_status[concept_id] is False: 
                     n_CONCEPTS_INACTIVE+=1
                     check_item=CheckItem("CHK08-OUT-vi")
                     check_item.outcome_level="INFO"
@@ -299,9 +292,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "Concept is inactive"
                         )
                     this_row_analysis.append(check_item)
-                # elif setchk_results.supp_tab_blocks[i_data_row]==[]: #"CHK08-OUT-ii"
-                elif interpretations[i_data_row]=="NO_IMPLIED_INACTIVES": #"CHK08-OUT-ii"
-                    # if not dual_mode:
+                elif interpretations[i_data_row]=="NO_IMPLIED_INACTIVES": 
                     n_CONCEPTS_ACTIVE+=1
                     n_CONCEPTS_NO_IMPLIED_INACTIVES+=1
                     check_item=CheckItem("CHK08-OUT-i")
@@ -310,31 +301,9 @@ def do_check(setchks_session=None, setchk_results=None):
                         )
                     check_item.outcome_level="INFO"
                     this_row_analysis.append(check_item)
-                    # else:
-                    #     if active_status_earlier_sct_release[concept_id] is True:
-                    #         n_CONCEPTS_INACTIVE+=1
-                    #         n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION+=1
-                    #         n_CONCEPTS_NO_REPLACEMENT+=1
-                    #         check_item=CheckItem("CHK08-OUT-ii-b")
-                    #         check_item.general_message=(
-                    #             f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
-                    #             f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
-                    #             "There is no suggested replacement for this concept."
-                    #             )
-                    #         this_row_analysis.append(check_item)
-                    #     else:
-                    #         n_CONCEPTS_INACTIVE+=1
-                    #         n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
-                    #         check_item=CheckItem("CHK08-OUT-ii-c") 
-                    #         check_item.general_message=(
-                    #             f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
-                    #             f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                    #             "There is no suggested replacement for this concept - "
-                    #             "this issue should be resolved via running CHK08 in single version mode"
-                    #             )
-                    #         this_row_analysis.append(check_item)
-                else: #"CHK08-OUT-v"
-                    # if not dual_mode:
+                
+                else: 
+                    
                     n_CONCEPTS_ACTIVE+=1
                     n_CONCEPTS_WITH_IMPLIED_INACTIVES+=1
                     check_item=CheckItem("CHK08-OUT-vii")
@@ -344,30 +313,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "See supplementary tab for details"
                         )
                     this_row_analysis.append(check_item)
-                    # else:
-                    #     if active_status_earlier_sct_release[concept_id] is True:
-                    #         n_CONCEPTS_INACTIVE+=1
-                    #         n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION+=1
-                    #         n_CONCEPTS_WITH_REPLACEMENTS+=1
-                    #         check_item=CheckItem("CHK08-OUT-v-b")
-                    #         check_item.general_message=(
-                    #             f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
-                    #             f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
-                    #             "There is at least one suggested replacement for this concept. "
-                    #             "See supplementary tab for details"
-                    #             )
-                    #         this_row_analysis.append(check_item)
-                    #     else:
-                    #         n_CONCEPTS_INACTIVE+=1
-                    #         n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
-                    #         check_item=CheckItem("CHK08-OUT-v-c") 
-                    #         check_item.general_message=(
-                    #             f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
-                    #             f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                    #             "There is at least one suggested replacement for this concept - "
-                    #             "this issue should be resolved via running CHK08 in single version mode "
-                    #             )
-                    #         this_row_analysis.append(check_item)
+                 
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 check_item={}
@@ -385,53 +331,42 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
 
-    setchk_results.set_analysis["Messages"]=[] 
-            
-    msg=(
-    f"There are {n_CONCEPTS_ACTIVE} active concepts in the value set" 
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-    f"There are {n_CONCEPTS_INACTIVE} inactive concepts in the value set "  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
 
-    # if dual_mode:
-    #     msg=(
-    #     f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION} concepts in the value set have been newly inactivated since the earlier SCT version" 
-    #     )
-    #     setchk_results.set_analysis["Messages"].append(msg)
-        
-    #     msg=(
-    #     f"{n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION} inactive concepts in the value set that were also inactive in the earlier SCT version"  
-    #     )
-    #     setchk_results.set_analysis["Messages"].append(msg)
 
-    # if not dual_mode:
-    msg=(
-    f"{n_CONCEPTS_NO_IMPLIED_INACTIVES} active concepts in the value set have no implied-inactives"  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-
-    msg=(
-    f"{n_CONCEPTS_WITH_IMPLIED_INACTIVES} active concepts in the value set have at least one implied-inactive"  
-    )
-    setchk_results.set_analysis["Messages"].append(msg)
-    # else:
-    #     msg=(
-    #     f"{n_CONCEPTS_NO_REPLACEMENT} newly inactivated concepts in the value set have no replacement"  
-    #     )
-    #     setchk_results.set_analysis["Messages"].append(msg)
-
-    #     msg=(
-    #     f"{n_CONCEPTS_WITH_REPLACEMENTS} newly inactivated concepts in the value set have at least one replacement"  
-    #     )
-    #     setchk_results.set_analysis["Messages"].append(msg)
-    
-    msg=(
-        f"Your input file contains a total of {n_FILE_TOTAL_ROWS} rows.\n"
-        f"The system has not assessed {n_FILE_NON_PROCESSABLE_ROWS} rows for this Set Check (blank or header rows).\n"
-        f"The system has assessed {n_FILE_PROCESSABLE_ROWS} rows"
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            simple_message=(
+                "[AMBER] You should study the information provided about implied inactives. "
+                "Having as many firmly identified implied inactives in the Value Set as possible "
+                "will improve the quality of data extraction. Currently this tool does not "
+                "attempt to assess the coverage of implied inactives already in the "
+                "value set. We welcome feedback on the utility of this check"
+                ),
+            )
         ) 
-    setchk_results.set_analysis["Messages"].append(msg)
+    
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+                "Number of active concepts that have no implied-inactives"
+                ),
+            value=f"{n_CONCEPTS_NO_IMPLIED_INACTIVES}"
+            )
+        ) 
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+                "Number of active concepts that have at least one possible implied-inactive"
+                ),
+            value=f"{n_CONCEPTS_WITH_IMPLIED_INACTIVES}"
+            )
+        )
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+                "Number of inactive concepts"
+                ),
+            value=f"{n_CONCEPTS_INACTIVE}"
+            )
+        )  
+     
