@@ -23,36 +23,47 @@ def generate_check_item(
     csr_correct_dterm=None,
     data_entry_extract_type=None,
     ):
+    #<check_item>
     if outcome_code=="CHK03-OUT-01":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The preferred term for this concept is -->"
+            "The preferred term for this Concept, as identified by the Concept ID, is -->"
             )
         check_item.row_specific_message=(
             f"{preferred_term}"
             )
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-02":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The provided description ID corresponds to the description term -->"
+            "The provided Description ID corresponds to the Term -->"
             )
         check_item.row_specific_message=(
             f"{implied_dterm}"
             )
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-03":
         if description_inactive==True:
             check_item=CheckItem(outcome_code=outcome_code)
+            check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                "This description term is inactive. " 
+                "The provided Term is inactive. " 
                 "You should consider selecting an active term " 
-                "for the corresponding concept (See tab TBI)"
+                "for the corresponding Concept."
                 )
         else:
             check_item=None
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-04":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="Conditional: FACT/DEBUG" # DEBUG unless n_FSN_FOR_DATA_ENTRY>0
         check_item.general_message=(
-            "The description term has a term type of -->"
+            "The provided Description Id/Term has a Description Type of -->"
             )
         phrase_to_output={
             "fsn": "Fully specified name",
@@ -64,56 +75,69 @@ def generate_check_item(
         check_item.row_specific_message=(
             f"{phrase_to_output[dterm_type]}"
             )
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-05":
         if dterm_type=="fsn" and data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]: 
             check_item=CheckItem(outcome_code=outcome_code)
+            check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                "The description term type is a Fully Specified Name (FSN) "
-                "which should not be presented for Data Entry purposes. "  
-                "You should choose another term for the corresponding concept (See tab TBI)"
+                "The Description Type of the provided Description Id/Term is Fully Specified Name (FSN). "
+                "According to your settings, this is a data extract value set. FSNs should not be presented for Data Entry purposes. "  
+                "You should choose another Term for the corresponding Concept."
                 )
         else:
             check_item=None
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-06":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
         check_item.general_message=(
-            "The term given does not correspond to this concept ID. "
-            "Please select either the preferred term or a synonym for this Concept ID. "
-            "(See tab TBI)"
+            "The provided Term given does not correspond to the Concept identified by the Concept ID. "
+            "Please select a valid Term for this Concept ID."
             )
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-07":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
         check_item.general_message=(
-            "This term has the correct wording, but does not conform to the capitalisation rule "
-            "that has been specified for this particular term. " 
-            "In some cases using incorrect capitalisation can lead to significant Clinical Risk."
-            "According to its Case Significance Rule this description term should be written as -->"
+            "The provided Term does not conform to the capitalisation rule "
+            "for this particular term. " 
+            "According to its capitalisation rule this description term should be written as -->"
             )
         check_item.row_specific_message=(
             f"{csr_correct_dterm}"
             )
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-08":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The provided description ID corresponds to this Concept ID -->"
+            "The provided Description Id corresponds to the Concept identified by the Concept ID -->"
             )
         check_item.row_specific_message=(
             termbrowser_hyperlink(sctid=implied_concept_id)
             )
 
+    #</check_item>
+    #<check_item>
     elif outcome_code=="CHK03-OUT-09":
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
         check_item.general_message=(
-            "The provided description term does not correspond to the provided Description ID. "
-            "The correct description term for this Description ID is -->"
+            "The provided Term does not correspond to the provided Description ID. "
+            "The Term for this Description Id is -->"
             )
         check_item.row_specific_message=(
             f"{implied_dterm}"
             ) 
-    
-    
-    else:
+    #</check_item>
+    else: # this is just a fall through in case of an unaccounted for code
         check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
         check_item.general_message=(
             "Unrecognized outcome code"
             )
@@ -272,11 +296,22 @@ def do_check(setchks_session=None, setchk_results=None):
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
+            #<check_item>
             check_item=CheckItem("CHK03-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
+            #</check_item>
             this_row_analysis.append(check_item)
 
+
+    # assign CHK-OUT-04 type check items depending on whether have see FSN misuse
+    # in which case useful to see what all the other term types are
+    for check_item in this_row_analysis:
+        if check_item.outcome_code=="CHK03-OUT-04":
+            if n_FSN_FOR_DATA_ENTRY>0:
+                check_item.outcome_level="FACT"
+            else:
+                check_item.outcome_level="DEBUG"
     
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION
@@ -290,89 +325,117 @@ def do_check(setchks_session=None, setchk_results=None):
         )
     
     if n_ISSUES==0 and n_MISSING_TERM==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[GREEN] This check has detected no issues"
                     ),
+                outcome_code="CHK03-OUT-XXX",
                 )
             )     
+        #</set_level_message>
+        
     
 
 
     if n_ISSUES!=0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[RED] This check has detected errors that need to be fixed"
                     ),
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+        #</set_level_message>
 
         if n_INACTIVE_DESCRIPTION!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    "Number of rows with inactive descriptions"
+                    "Number of rows with inactive Descriptions"
                     ),
-                value=f"{n_INACTIVE_DESCRIPTION}"
+                value=f"{n_INACTIVE_DESCRIPTION}",
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+            #</set_level_count>
         if n_FSN_FOR_DATA_ENTRY!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of rows using a Fully Specified Name in this data "
                     "entry value set"
                     ),
-                value=f"{n_FSN_FOR_DATA_ENTRY}"
+                value=f"{n_FSN_FOR_DATA_ENTRY}",
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+            #</set_level_count>
         if n_TERM_CONCEPT_MISMATCH!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of rows where the Term does not match the Concept"
                     ),
-                value=f"{n_TERM_CONCEPT_MISMATCH}"
+                value=f"{n_TERM_CONCEPT_MISMATCH}",
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+            #</set_level_count>
 
         if n_TERM_DID_MISMATCH!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    "Number of rows where the Term does not match the Description ID"
+                    "Number of rows where the Term does not match the Description Id"
                     ),
-                value=f"{n_TERM_DID_MISMATCH}"
+                value=f"{n_TERM_DID_MISMATCH}",
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+            #</set_level_count>
 
         if n_CAPITALISATION_ISSUE!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of rows where there is a capitalisation issue"
                     ),
-                value=f"{n_CAPITALISATION_ISSUE}"
+                value=f"{n_CAPITALISATION_ISSUE}",
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+            #</set_level_count>
 
     if n_MISSING_TERM!=0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] Some Terms are missing. You may wish to correct this."
+                    "[AMBER] Some entries are missing in the Term column. You may wish to correct this."
                     ),
+                outcome_code="CHK03-OUT-XXX",
                 )
             )
+        #</set_level_message>
              
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-                "Number of rows where the Term is missing"
-                ),
-            value=f"{n_MISSING_TERM}"
-            )
+            SetLevelTableRow(
+                descriptor=(
+                    "Number of rows where the Term is missing"
+                    ),
+                value=f"{n_MISSING_TERM}",
+                    outcome_code="CHK03-OUT-XXX",
+                )
         )
+        #</set_level_count>
 

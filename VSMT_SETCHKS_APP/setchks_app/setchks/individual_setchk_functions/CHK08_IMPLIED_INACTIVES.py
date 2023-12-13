@@ -286,54 +286,76 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 if active_status[concept_id] is False: 
                     n_CONCEPTS_INACTIVE+=1
-                    check_item=CheckItem("CHK08-OUT-vi")
+                    #<check_item>
+                    check_item=CheckItem("CHK08-OUT-01") # formerly vi
                     check_item.outcome_level="INFO"
                     check_item.general_message=(
-                        "Concept is inactive"
+                        "This Concept is inactive"
                         )
+                    #</check_item>
                     this_row_analysis.append(check_item)
                 elif interpretations[i_data_row]=="NO_IMPLIED_INACTIVES": 
                     n_CONCEPTS_ACTIVE+=1
                     n_CONCEPTS_NO_IMPLIED_INACTIVES+=1
-                    check_item=CheckItem("CHK08-OUT-i")
+                    #<check_item>
+                    check_item=CheckItem("CHK08-OUT-02") # formerly i
                     check_item.general_message=(
-                        "This concept is active and has no inactive predecessors. "
+                        "This active Concept has no inactive predecessors. "
                         )
                     check_item.outcome_level="INFO"
+                    #</check_item>
                     this_row_analysis.append(check_item)
                 
                 else: 
                     
                     n_CONCEPTS_ACTIVE+=1
                     n_CONCEPTS_WITH_IMPLIED_INACTIVES+=1
-                    check_item=CheckItem("CHK08-OUT-vii")
+                    #<check_item>
+                    check_item=CheckItem("CHK08-OUT-03") # formerly vii
                     check_item.general_message=(
-                        "This active concept has inactive predecessors that should be considered for inclusion "
-                        "since this is a data extraction context"
-                        "See supplementary tab for details"
+                        "This active Concept has possible inactive predecessors that should be considered for inclusion "
+                        "since, according to your settings, this is a data extraction context. "
+                        "See 'CHK08_suppl' tab for details"
                         )
+                    #</check_item>
                     this_row_analysis.append(check_item)
                  
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
-                check_item={}
+                #<check_item>
                 check_item=CheckItem("CHK08-OUT-NOT_FOR_PRODUCTION")
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
+            #<check_item>
             check_item=CheckItem("CHK08-OUT-BLANK_ROW")
             check_item.outcome_level="INFO"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
+            #</check_item>
 
 
 
-    setchk_results.set_level_table_rows.append(
+    if n_CONCEPTS_WITH_IMPLIED_INACTIVES==0:
+        #<set_level_message>
+       setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            simple_message=(
+                "[GREEN] This check has detected no issues."
+                ),
+            outcome_code="CHK08-OUT-08",
+            )
+        ) 
+        #</set_level_message>
+    else:
+        #<set_level_message>
+       setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             simple_message=(
                 "[AMBER] You should study the information provided about implied inactives. "
@@ -342,31 +364,41 @@ def do_check(setchks_session=None, setchk_results=None):
                 "attempt to assess the coverage of implied inactives already in the "
                 "value set. We welcome feedback on the utility of this check"
                 ),
+            outcome_code="CHK08-OUT-04",
             )
         ) 
     
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-                "Number of active concepts that have no implied-inactives"
+                "Number of rows with an active Concept that has no inactive predecessors"
                 ),
-            value=f"{n_CONCEPTS_NO_IMPLIED_INACTIVES}"
+            value=f"{n_CONCEPTS_NO_IMPLIED_INACTIVES}",
+            outcome_code="CHK08-OUT-06",
             )
         ) 
+    #</set_level_count>
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-                "Number of active concepts that have at least one possible implied-inactive"
+                "Number of rows with an active Concept that has at least one possible inactive predecessor"
                 ),
-            value=f"{n_CONCEPTS_WITH_IMPLIED_INACTIVES}"
+            value=f"{n_CONCEPTS_WITH_IMPLIED_INACTIVES}",
+            outcome_code="CHK08-OUT-07",
             )
         )
+    #</set_level_count>
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-                "Number of inactive concepts"
+                "Number of rows with an inactive Concept"
                 ),
-            value=f"{n_CONCEPTS_INACTIVE}"
+            value=f"{n_CONCEPTS_INACTIVE}",
+            outcome_code="CHK08-OUT-05"
             )
         )  
+    #</set_level_count>
      

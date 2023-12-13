@@ -50,107 +50,139 @@ def do_check(setchks_session=None, setchk_results=None):
         if not mr.blank_row:
             if mr.C_Id_why_none in ["CID_NISR_CID_NILR"]: 
                 n_CID_NISR_CID_NILR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-01")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Concept Id in the MIXED column " 
-                    "is not an identifiable concept in either "
-                    f"the selected SNOMED CT release {selected_sct_version} "
-                    f"or the most recent SNOMED release {latest_sct_version}."
+                    "The provided Concept Id does not appear, "
+                    "as an active or inactive Concept, "
+                    f"in the selected release {selected_sct_version}. "
+                    f"Neither does it appear in the most recent release {latest_sct_version}."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["CID_NISR_SRIL"]: 
                 n_CID_NISR_SRIL+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-09")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Concept Id in the MIXED column " 
-                    "is not an identifiable concept in the "
-                    f"selected SNOMED CT release {selected_sct_version} "
+                    "The provided Concept Id does not appear, "
+                    "as an active or inactive Concept, "
+                    "in the selected release."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="CID_NISR_CID_ILR": 
                 n_CID_NISR_CID_ILR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-02")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Concept Id in the MIXED column" 
-                    "is not an identifiable concept in "
-                    f"the selected SNOMED CT release {selected_sct_version} "
-                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}."
-                    "\nThis suggests the concept has been introduced after "
-                    "the selected SNOMED release; consider removing the concept or selecting a later SNOMED release."
+                    "The provided Concept Id does not appear, "
+                    "as an active or inactive Concept, "
+                    f"in the selected release {selected_sct_version}, "
+                    f"but it does appear in the most recent release {latest_sct_version}."
+                    "This suggests the Concept has been introduced after the selected SNOMED release. " 
+                    "Consider removing the Concept or selecting a later release."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="ENTERED": 
                 n_CID_ISR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-03")
-                check_item.outcome_level="INFO"
+                check_item.outcome_level="DEBUG"
                 check_item.general_message="OK"
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["DID_NISR_DID_NILR"]: 
                 n_DID_NISR_DID_NILR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-04")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Description Id in the MIXED column " 
-                    "is not an identifiable description in either "
-                    f"the selected SNOMED CT release {selected_sct_version} "
-                    f"or the most recent SNOMED release {latest_sct_version}."
+                    "The provided Description Id does not appear, "
+                    "as an active or inactive Description, "
+                    f"in the selected release {selected_sct_version}. "
+                    f"Neither does it appear in the most recent release {latest_sct_version}."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["DID_NISR_SRIL"]:
                 n_DID_NISR_SRIL+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-10")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Description Id in the MIXED column " 
-                    "is not an identifiable description in "
-                    f"the selected SNOMED CT release {selected_sct_version} "
+                    "The provided Description Id does not appear, "
+                    "as an active or inactive Description, "
+                    "in the selected release."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none in ["DID_NISR_DID_ILR_CID_ISR", "DID_NISR_DID_ILR_CID_NISR"]: # CHK02-OUT-05 
                 n_DID_NISR_DID_ILR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-05")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The Description Id in the MIXED column " 
-                    "is not an identifiable concept in "
-                    f"the selected SNOMED CT release {selected_sct_version} "
-                    f"but is an identifiable concept in the most recent SNOMED release {latest_sct_version}."
-                    "\nThis suggests the description has been introduced after "
-                    "the selected SNOMED release; consider removing the description or selecting a later SNOMED release."
+                    "The provided Description Id does not appear, "
+                    "as an active or inactive Description, "
+                    f"in the selected release {selected_sct_version}, "
+                    f"but it does appear in the most recent release {latest_sct_version}."
+                    "This suggests the Description has been introduced after the selected SNOMED release. " 
+                    "Consider removing the Description or selecting a later release."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id is not None and mr.C_Id_source=="DERIVED": # CHK02-OUT-06
                 n_DID_ISR+=1
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-06")
                 check_item.outcome_level="DEBUG"
                 check_item.general_message="OK"
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="INVALID_SCTID": # CHK02-OUT-07
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-06")
-                check_item.outcome_level="FACT"
+                check_item.outcome_level="DEBUG"
                 check_item.general_message=(
                     "The unexpected value in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK02-OUT-08 
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-08")
+                check_item.outcome_level="DEBUG"
                 check_item.general_message=(
                     "The blank in the MIXED column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             else:
+                #<check_item>
                 check_item=CheckItem("CHK02-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
         else:
+            #<check_item>
             check_item=CheckItem("CHK01-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
+            #</check_item>
 
 
     setchk_results.set_analysis["Messages"]=[] 
@@ -162,25 +194,32 @@ def do_check(setchks_session=None, setchk_results=None):
     n_NISR      = n_NISR_ILR + n_NISR_NILR + n_NISR_SRIL
 
     if n_NISR==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     f"[GREEN] All the identifiers were found in the selected release " 
                     ),
+                outcome_code="CHK02-OUT-XXX",
                 )
             )
+        #</set_level_message>
     else:
     
         if n_NISR_SRIL!=0:
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
                         f"[RED] There are Identifiers in this value set that do not appear in the selected release. " 
                         f"These must be removed or corrected for the full set of Set Checks to be performed."
                         ),
+                    outcome_code="CHK02-OUT-XXX",
                     )
                 )
+            #</set_level_message>
         elif n_NISR_ILR!=0:
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
@@ -189,9 +228,12 @@ def do_check(setchks_session=None, setchk_results=None):
                         f"Some of these Identifiers appear in the latest release which suggests that the value set may "
                         f"correspond to a later release than the one that you have selected."
                         ),
+                    outcome_code="CHK02-OUT-XXX",
                     )
                 )
+            #</set_level_message>
         else:
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
@@ -199,9 +241,12 @@ def do_check(setchks_session=None, setchk_results=None):
                         f"These must be removed or corrected for the full set of Set Checks to be performed. "
                         f"None of these Identifiers appear in any releases of SNOMED later than the one that you have selected"
                         ),
+                    outcome_code="CHK02-OUT-XXX",
                     )
                 )
+            #</set_level_message>
 
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
@@ -209,9 +254,12 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"in the selected release"
                     ),
                 value=n_ISR,
+                outcome_code="CHK02-OUT-11",
                 )
             )
+        #</set_level_count>
         
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
@@ -219,10 +267,13 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"in the selected release"
                     ),
                 value=n_NISR,
+                outcome_code="CHK02-OUT-XXX",
                 )
             )
+        #</set_level_count>
         
         if n_NISR_ILR!=0:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     descriptor=(
@@ -230,8 +281,11 @@ def do_check(setchks_session=None, setchk_results=None):
                         f"in the selected release but that DO appear in the latest release"
                         ),
                     value=n_NISR_ILR,
+                    outcome_code="CHK02-OUT-12",
                     )
             )
+            #</set_level_count>
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     descriptor=(
@@ -239,7 +293,9 @@ def do_check(setchks_session=None, setchk_results=None):
                         f"in the selected release and that also DO NOT appear in the latest release"
                         ),
                     value=n_NISR_NILR,
+                    outcome_code="CHK02-OUT-13",
                     )
             )
+            #</set_level_count>
 
         
