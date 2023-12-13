@@ -49,7 +49,6 @@
 
             <script> 
             $("#name_and_purpose_form").dirty({preventLeaving: true}); 
-            $("#name_and_purpose_form").dirty({leavingMessage: "Bye"}); 
             </script>
             
             <div class="card" style="height: 33vh; margin-top:1vh; overflow:auto">
@@ -112,18 +111,35 @@
                         {% endfor %}
                         
                     </form>
+                    
+                    <span> Verbosity of Excel output: </span>
+                    <form action="/enter_metadata" class="output_full_or_compact_buttons" method="post" enctype="multipart/form-data">
+                        {% for a_type in [
+                            ("FULL_OUTPUT","More information output"),
+                            ("COMPACT_OUTPUT","Less information output"),
+                            ] %}
+                            {% if a_type[0] == setchks_session.output_full_or_compact %}
+                                {% set checked_var="checked" %}
+                            {% else %}
+                                {% set checked_var="" %}
+                            {% endif %}
 
-
-
-
-
-
-
-
-
-                    <!-- <ul>
-                        <li> You will choose "data entry" etc here (TBI) </li>
-                    </ul> -->
+                            <div class="form-check">
+                                <input  class="form-check-input" 
+                                        type="radio" 
+                                        name="output_full_or_compact" 
+                                        {{ checked_var}} 
+                                        value="{{ a_type[0] }}" 
+                                        id={{ a_type[0] }} 
+                                        onchange="$('.output_full_or_compact_buttons').submit();"
+                                        >
+                                <label class="form-check-label" for={{ a_type[0] }}>
+                                {{ a_type[1]}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                        
+                    </form>
                 </div>
             </div>
 

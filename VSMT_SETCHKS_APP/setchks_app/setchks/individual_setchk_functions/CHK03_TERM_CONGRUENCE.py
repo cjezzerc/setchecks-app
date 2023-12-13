@@ -253,7 +253,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     csr_correct_dterm=""
                 
                 check_item=CheckItem("CHK03-OUT-LEAF")
-                # check_item.outcome_level="INFO"
+                check_item.outcome_level="FACT"
                 check_item.general_message="In the flowchart, this row reached leaf -->"
                 check_item.row_specific_message=f"leaf {leaf}"
                 this_row_analysis.append(check_item)
@@ -306,13 +306,20 @@ def do_check(setchks_session=None, setchk_results=None):
 
     # assign CHK-OUT-04 type check items depending on whether have see FSN misuse
     # in which case useful to see what all the other term types are
-    for check_item in this_row_analysis:
-        if check_item.outcome_code=="CHK03-OUT-04":
-            if n_FSN_FOR_DATA_ENTRY>0:
-                check_item.outcome_level="FACT"
-            else:
-                check_item.outcome_level="DEBUG"
-    
+    print("======================")
+    for this_row_analysis in setchk_results.row_analysis:
+        for check_item in this_row_analysis:
+            print(check_item.outcome_code)
+            if check_item.outcome_code=="CHK03-OUT-04":
+                print(check_item.outcome_level)
+                if n_FSN_FOR_DATA_ENTRY>0:
+                    check_item.outcome_level="FACT"
+                    print("F")
+                else:
+                    check_item.outcome_level="DEBUG"
+                    print("D")
+                print(check_item.outcome_level)
+        
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION
         + n_FSN_FOR_DATA_ENTRY

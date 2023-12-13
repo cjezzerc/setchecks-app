@@ -125,7 +125,10 @@ def do_check(setchks_session=None, setchk_results=None):
             members_in_vs_from_this_clause=include_members.difference(all_excluded_concepts)
             members_excluded_from_this_clause=include_members.intersection(all_excluded_concepts)
             n=len(members_excluded_from_this_clause)
-            do_output_this_loop=( (n==0 and sorting_flag=="ONLY_ZERO") or (n>1 and sorting_flag=="ONLY_NON_ZERO") )
+            do_output_this_loop=( 
+                (n==0 and sorting_flag=="ONLY_ZERO" and setchks_session.output_full_or_compact=="FULL_OUTPUT") or 
+                (n>1 and sorting_flag=="ONLY_NON_ZERO") 
+                )
             if do_output_this_loop:
                 if sorting_flag=="ONLY_NON_ZERO":
                     n_SUGGESTED_NEW_MEMBERS+=n

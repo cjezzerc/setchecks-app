@@ -130,7 +130,7 @@ def make_row_overview_sheet(
                 for check_item in setchk_results.row_analysis[i_data_row]:
                     # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
                     if nothing_output_in_this_cell_yet:
-                        if check_item.outcome_level not in ["INFO","DEBUG"]:
+                        if check_item.outcome_level not in ["FACT","INFO","DEBUG"]:
                             row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
                             x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
                             at_least_one_x=True

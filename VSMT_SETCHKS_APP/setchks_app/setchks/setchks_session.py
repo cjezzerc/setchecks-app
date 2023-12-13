@@ -56,6 +56,7 @@ class SetchksSession():
                "setchks_jobs_manager",
                "setchks_run_status",
                "all_CHKXX_finished",
+               "output_full_or_compact",
                "excel_filename",
                "excel_file_available",
                "excel_file_generation_failed",
@@ -91,6 +92,7 @@ class SetchksSession():
         self.setchks_jobs_manager=None
         self.setchks_run_status={}
         self.all_CHKXX_finished=False
+        self.output_full_or_compact="COMPACT_OUTPUT"
         self.excel_filename=None
         self.excel_file_available=False
         self.excel_file_generation_failed=False

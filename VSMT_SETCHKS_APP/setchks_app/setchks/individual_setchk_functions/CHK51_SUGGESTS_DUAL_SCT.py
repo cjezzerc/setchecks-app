@@ -189,7 +189,10 @@ def do_check(setchks_session=None, setchk_results=None):
             # n_members_of_clause_excluded=len(members_excluded_from_this_clause)
 
             n=n_members_of_clause_in_vs_only_earlier+n_members_of_clause_in_vs_only_later
-            do_output_this_loop=( (n==0 and sorting_flag=="ONLY_ZERO") or (n>1 and sorting_flag=="ONLY_NON_ZERO") )
+            do_output_this_loop=( 
+                (n==0 and sorting_flag=="ONLY_ZERO" and setchks_session.output_full_or_compact=="FULL_OUTPUT") or 
+                (n>1 and sorting_flag=="ONLY_NON_ZERO") 
+                )
             if do_output_this_loop:
                 include_cbc_id=str(include_clause.clause_base_concept_id)
                 include_cbc_pt=concepts_earlier[include_cbc_id].pt

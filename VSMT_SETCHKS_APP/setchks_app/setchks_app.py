@@ -480,6 +480,9 @@ def enter_metadata():
         setchks_session.data_entry_extract_type=request.form['data_entry_extract_type']
         setchks_session.reset_analysis() # throw away all old results
 
+    if 'output_full_or_compact' in request.form:
+        setchks_session.output_full_or_compact=request.form['output_full_or_compact']
+
     if 'sct_version_mode' in request.form:   
         setchks_session.sct_version_mode=request.form['sct_version_mode']
         setchks_session.reset_analysis() # throw away all old results
