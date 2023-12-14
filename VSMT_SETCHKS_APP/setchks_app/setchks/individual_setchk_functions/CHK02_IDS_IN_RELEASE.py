@@ -212,7 +212,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 SetLevelTableRow(
                     simple_message=(
                         f"[RED] There are Identifiers in this value set that do not appear in the selected release. " 
-                        f"These must be removed or corrected for the full set of Set Checks to be performed."
+                        f"These must be removed or corrected for the full complement of Set Checks to be performed."
                         ),
                     outcome_code="CHK02-OUT-XXX",
                     )

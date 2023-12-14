@@ -288,7 +288,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     n_CONCEPTS_INACTIVE+=1
                     #<check_item>
                     check_item=CheckItem("CHK08-OUT-01") # formerly vi
-                    check_item.outcome_level="INFO"
+                    check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                         "This Concept is inactive"
                         )
@@ -299,10 +299,10 @@ def do_check(setchks_session=None, setchk_results=None):
                     n_CONCEPTS_NO_IMPLIED_INACTIVES+=1
                     #<check_item>
                     check_item=CheckItem("CHK08-OUT-02") # formerly i
+                    check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                         "This active Concept has no inactive predecessors. "
                         )
-                    check_item.outcome_level="INFO"
                     #</check_item>
                     this_row_analysis.append(check_item)
                 
@@ -312,6 +312,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     n_CONCEPTS_WITH_IMPLIED_INACTIVES+=1
                     #<check_item>
                     check_item=CheckItem("CHK08-OUT-03") # formerly vii
+                    check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "This active Concept has possible inactive predecessors that should be considered for inclusion "
                         "since, according to your settings, this is a data extraction context. "
@@ -324,6 +325,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 #<check_item>
                 check_item=CheckItem("CHK08-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
@@ -335,7 +337,7 @@ def do_check(setchks_session=None, setchk_results=None):
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
             #<check_item>
             check_item=CheckItem("CHK08-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
             #</check_item>
@@ -367,6 +369,8 @@ def do_check(setchks_session=None, setchk_results=None):
             outcome_code="CHK08-OUT-04",
             )
         ) 
+        #</set_level_message>
+       
     
     #<set_level_count>
     setchk_results.set_level_table_rows.append(
@@ -397,7 +401,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 "Number of rows with an inactive Concept"
                 ),
             value=f"{n_CONCEPTS_INACTIVE}",
-            outcome_code="CHK08-OUT-05"
+            outcome_code="CHK08-OUT-05",
             )
         )  
     #</set_level_count>

@@ -73,49 +73,62 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 if concept_id in refset_concept_ids:
                     n_OUTCOME_IN_EXCL_REF_SET+=1
+                    #<check_item>
                     check_item=CheckItem("CHK06-OUT-01")
+                    check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "This concept is not recommended for use within a patient record, "
                         "i.e., is not recommended for clinical data entry. Please replace this concept. "
                         "We recommend you visit termbrowser.nhs.uk to identify a more suitable term"
                         )
+                    #</check_item>
                     this_row_analysis.append(check_item)
                 else: 
                     n_NO_OUTCOME_EXCL_REF_SET+=1
+                    #<check_item>
                     check_item=CheckItem("CHK06-OUT-02")
-                    check_item.outcome_level="INFO"
+                    check_item.outcome_level="DEBUG"
                     check_item.general_message="OK"
+                    #</check_item>
                     this_row_analysis.append(check_item)
 
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
-                check_item={}
+                #<check_item>
                 check_item=CheckItem("CHK06-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
+            #<check_item>
             check_item=CheckItem("CHK06-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
+            #</check_item>
             this_row_analysis.append(check_item)
 
     
     
     setchk_results.set_level_table_rows=[] 
     if n_OUTCOME_IN_EXCL_REF_SET==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"[GREEN] This check found no issues in the value set relating to the default exclusion reference set." 
+                    f"[GREEN] This check has detected no issues." 
                     ),
+                outcome_code="CHK06-OUT-07",
                 )
             )
+        #</set_level_message>
     else:   
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
@@ -126,14 +139,19 @@ def do_check(setchks_session=None, setchk_results=None):
                     "i.e., not recommended for clinical data entry. "
                     "Such Concepts should be removed or replaced (even if data extract..?)"
                     ),
+                outcome_code="CHK06-OUT-06",
                 )
             )
+        #</set_level_message>
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of rows where the Concept is in the Default Exclusion Reference Set"
                     ),
-                value=f"{n_OUTCOME_IN_EXCL_REF_SET}"
+                value=f"{n_OUTCOME_IN_EXCL_REF_SET}",
+                outcome_code="CHK06-OUT-05",
                 )
             )
+        #</set_level_count>
    

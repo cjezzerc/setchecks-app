@@ -283,7 +283,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     n_CONCEPTS_ACTIVE+=1
                     #<check_item>
                     check_item=CheckItem("CHK04-OUT-i")
-                    check_item.outcome_level="INFO"
+                    check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                         "Concept is active"
                         )
@@ -296,6 +296,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         n_CONCEPTS_NO_REPLACEMENT+=1
                         #<check_item>
                         check_item=CheckItem("CHK04-OUT-ii-a")
+                        check_item.outcome_level="ISSUE"
                         check_item.general_message=(
                             "This concept is inactive and should be removed. "
                             "There is no suggested replacement for this concept."
@@ -309,6 +310,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_NO_REPLACEMENT+=1
                             #<check_item>
                             check_item=CheckItem("CHK04-OUT-ii-b")
+                            check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
@@ -321,6 +323,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
                             #<check_item>
                             check_item=CheckItem("CHK04-OUT-ii-c") 
+                            check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
@@ -335,6 +338,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         n_CONCEPTS_WITH_REPLACEMENTS+=1
                         #<check_item>
                         check_item=CheckItem("CHK04-OUT-v-c")
+                        check_item.outcome_level="ISSUE"
                         check_item.general_message=(
                             "This concept is inactive and should be removed. "
                             "There is at least one suggested replacement for this concept. "
@@ -349,6 +353,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_WITH_REPLACEMENTS+=1
                             #<check_item>
                             check_item=CheckItem("CHK04-OUT-v-b")
+                            check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
@@ -362,6 +367,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
                             #<check_item>
                             check_item=CheckItem("CHK04-OUT-v-c") 
+                            check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
@@ -374,6 +380,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 #<check_item>
                 check_item=CheckItem("CHK04-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
@@ -385,7 +392,7 @@ def do_check(setchks_session=None, setchk_results=None):
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
             #<check_item>
             check_item=CheckItem("CHK04-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
             #</check_item>
@@ -400,6 +407,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN]No inactive concepts have been detected"
                     ),
+                outcome_code="CHK04-OUT-19"
                 )
             )
             #</set_level_table_row>
@@ -412,6 +420,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "According to your settings, this is a data entry value set. "
                     "All inactive Concepts should be removed, and replaced where possible."
                     ),
+                outcome_code="CHK04-OUT-16",
                 )
             )
             #</set_level_message>
@@ -422,7 +431,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 descriptor=(
                     "Number of inactive Concepts "
                     ),
-                value=f"{n_CONCEPTS_INACTIVE}"
+                value=f"{n_CONCEPTS_INACTIVE}",
+                outcome_code="CHK04-OUT-09",
                 )
             )
             #</set_level_count>
@@ -432,7 +442,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 descriptor=(
                     "Number of inactive Concepts with at least one replacement "
                     ),
-                value=f"{n_CONCEPTS_WITH_REPLACEMENTS}"
+                value=f"{n_CONCEPTS_WITH_REPLACEMENTS}",
+                outcome_code="CHK04-OUT-12",
                 )
             )
             #</set_level_count>
@@ -442,7 +453,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 descriptor=(
                     "Number of inactive Concepts with no replacement "
                     ),
-                value=f"{n_CONCEPTS_NO_REPLACEMENT}"
+                value=f"{n_CONCEPTS_NO_REPLACEMENT}",
+                outcome_code="CHK04-OUT-11",
                 )
             )
             #</set_level_count>
@@ -455,6 +467,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN]No inactive concepts have been detected using the later release"
                     ),
+                outcome_code="CHK04-OUT-XXX",
                 )
             )
             #</set_level_message>
@@ -469,6 +482,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             "According to your settings, this is a data entry value set. "
                             "All inactive Concepts should be removed, and replaced where possible."
                             ),
+                        outcome_code="CHK04-OUT-XXX",
                         )
                     )
                 #</set_level_message>
@@ -478,17 +492,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     descriptor=(
                         "Number of Concepts inactivated since the earlier release"
                         ),
-                    value=f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION}"
-                    )
-                )
-                #</set_level_count>
-                #<set_level_count>
-                setchk_results.set_level_table_rows.append(
-                    SetLevelTableRow(
-                    descriptor=(
-                        "Number of Concepts inactivated since the earlier release"
-                        ),
-                    value=f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION}"
+                    value=f"{n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION}",
+                    outcome_code="CHK04-OUT-14",
                     )
                 )
                 #</set_level_count>
@@ -498,7 +503,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     descriptor=(
                         "Number of newly inactivated Concepts with at least one replacement "
                         ),
-                    value=f"{n_CONCEPTS_WITH_REPLACEMENTS}"
+                    value=f"{n_CONCEPTS_WITH_REPLACEMENTS}",
+                    outcome_code="CHK04-OUT-XXX",
                     )
                 )
                 #</set_level_count>
@@ -508,7 +514,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     descriptor=(
                         "Number of newly inactivated Concepts with no replacement "
                         ),
-                    value=f"{n_CONCEPTS_NO_REPLACEMENT}"
+                    value=f"{n_CONCEPTS_NO_REPLACEMENT}",
+                    outcome_code="CHK04-OUT-XXX",
                     )
                 )
                 #</set_level_count>
@@ -528,6 +535,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "using the earlier release and act on the information provided. " 
                         "Then re-run the updated value set in Dual Release mode."
                         ),
+                    output_code="CHK04-OUT-17"
                     )
                 )
                 #</set_level_message>
@@ -537,7 +545,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     descriptor=(
                         "Number of inactive Concepts that were also inactive in the earlier release"
                         ),
-                    value=f"{n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION}"
+                    value=f"{n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION}",
+                    outcome_code="CHK04-OUT-15",
                     )
                 )
                 #</set_level_count>

@@ -190,30 +190,39 @@ def do_check(setchks_session=None, setchk_results=None):
 
 
     if n_SUGGESTED_NEW_MEMBERS==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[GREEN] Our algorithm has not made any suggestions for concepts that "
                     "you may wish to include"
                     ),
+                outcome_code="CHK10-OUT-02",
                 )
             ) 
+        #</set_level_message>
     else:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[AMBER] Our algorithm has made suggestions for concepts that "
-                    "you may wish to include"
+                    "you may wish to include. See 'CHK10_suppl' tab for more information"
                     ),
+                outcome_code="CHK10-OUT-01",
                 )
             )
+        #</set_level_message>
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of suggestions made"
                     ),
-                value=f"{n_SUGGESTED_NEW_MEMBERS}"
+                value=f"{n_SUGGESTED_NEW_MEMBERS}",
+                outcome_code="CHK10-OUT-XXX",
                 )
             )
+        #</set_level_count>
         
     
