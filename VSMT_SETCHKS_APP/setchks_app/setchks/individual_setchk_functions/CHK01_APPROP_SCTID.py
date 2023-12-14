@@ -35,13 +35,13 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item=CheckItem("CHK01-OUT-01")
                 check_item.general_message="OK"
                 check_item.outcome_level="DEBUG"
-                this_row_analysis.append(check_item)
                 #</check_item>
+                this_row_analysis.append(check_item)
             elif mr.D_Id_entered is not None: 
                 n_DID_ROWS+=1
                 if setchks_session.data_entry_extract_type in ["EXTRACT"]:
-                    check_item=CheckItem("CHK01-OUT-03")
                     #<check_item>
+                    check_item=CheckItem("CHK01-OUT-03")
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "A Description Id value has been provided. "
@@ -83,7 +83,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] No issues have been detected "
+                    "[GREEN] This check has detected no issues."
                     ),
                 outcome_code="CHK01-OUT-XXX",
                 )

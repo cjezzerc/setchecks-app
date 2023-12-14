@@ -251,7 +251,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] This check has detected no issues"
+                    "[GREEN] This check has detected no issues."
                     ),
                 outcome_code="CHK51-OUT-XXX",
                 )

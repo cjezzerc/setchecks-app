@@ -133,8 +133,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     this_row_analysis.append(check_item)
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
-                #</check_item>
-                check_item={}
+                #<check_item>
                 check_item=CheckItem("CHK12-OUT-NOT_FOR_PRODUCTION")
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
@@ -157,7 +156,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] This check has detected no issues"
+                    "[GREEN] This check has detected no issues."
                     ),
                 outcome_code="CHK12-OUT-06"
                 )

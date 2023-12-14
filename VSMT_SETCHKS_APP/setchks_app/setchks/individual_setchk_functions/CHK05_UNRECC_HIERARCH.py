@@ -179,7 +179,9 @@ def do_check(setchks_session=None, setchk_results=None):
                                 f"{data_entry_extract_type} data entry type assigned to this value set. "
                                 f"The hierarchy is -->"
                                 )
-                            check_item.row_specific_message=f"{domain_name}"
+                            check_item.row_specific_message=(
+                                f"{domain_name}"
+                                )
                             #</check_item>
                             this_row_analysis.append(check_item)
                         else:
@@ -222,7 +224,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] This check has detected no issues"
+                    "[GREEN] This check has detected no issues."
                     ),
                 ),
                 outcome_code="CHK-05-XXX",

@@ -401,18 +401,18 @@ def do_check(setchks_session=None, setchk_results=None):
 
     if not dual_mode:
         if n_CONCEPTS_INACTIVE==0:
-            #<set_level_table_row>
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                 simple_message=(
-                    "[GREEN]No inactive concepts have been detected"
+                    "[GREEN] This check has detected no issues."
                     ),
                 outcome_code="CHK04-OUT-19"
                 )
             )
-            #</set_level_table_row>
+            #</set_level_message>
         else:
-            #<set_level_table_row>
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                 simple_message=(

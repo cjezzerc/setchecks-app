@@ -194,8 +194,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] Our algorithm has not made any suggestions for concepts that "
-                    "you may wish to include"
+                    "This check has detected no issues."
                     ),
                 outcome_code="CHK10-OUT-02",
                 )

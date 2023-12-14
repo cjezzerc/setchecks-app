@@ -198,7 +198,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"[GREEN] All the identifiers were found in the selected release " 
+                    f"[GREEN] This check has detected no issues." 
                     ),
                 outcome_code="CHK02-OUT-XXX",
                 )
