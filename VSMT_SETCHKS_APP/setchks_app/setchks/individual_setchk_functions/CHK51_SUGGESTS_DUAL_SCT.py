@@ -247,37 +247,50 @@ def do_check(setchks_session=None, setchk_results=None):
                 row.row_height=16
 
     if (len(whole_vs_concept_ids_only_in_earlier) + len (whole_vs_concept_ids_only_in_later))==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] Our algorithm has not made any suggestions for concepts that "
-                    "you may wish to add to the value set due to the change in content of the release"
+                    "[GREEN] This check has detected no issues"
                     ),
+                outcome_code="CHK51-OUT-XXX",
                 )
             ) 
+        #</set_level_message>
     else:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] Our algorithm has made suggestions for concepts that "
+                    "[AMBER] Our algorithm has made suggestions for Concepts that "
                     "you may wish to remove from the value set due to the change in content of the release"
                     ),
+                outcome_code="CHK51-OUT-XXX",
                 )
             )
+        #</set_level_message>
+        
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Number of suggestions for concepts that should be considered for removal from the value set"
-                ),
-            value=f"{len(whole_vs_concept_ids_only_in_earlier)}"
+            SetLevelTableRow(
+                descriptor=(
+                "Number of suggestions for Concepts that should be considered for removal from the value set"
+                    ),
+                value=f"{len(whole_vs_concept_ids_only_in_earlier)}",
+                outcome_code="CHK51-OUT-02",
+                )
             )
-        )
+        #</set_level_count>
+        
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Number of suggestions for concepts that should be considered for addition to the value set"
-                ),
-            value=f"{len(whole_vs_concept_ids_only_in_later)}"
+            SetLevelTableRow(
+                descriptor=(
+                "Number of suggestions for Concepts that should be considered for addition to the value set"
+                    ),
+                value=f"{len(whole_vs_concept_ids_only_in_later)}",
+                outcome_code="CHK51-OUT-03",
+                )
             )
-        )
+        #</set_level_count>
         

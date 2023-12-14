@@ -39,62 +39,77 @@ def do_check(setchks_session=None, setchk_results=None):
             n_FILE_PROCESSABLE_ROWS+=1
             if mr.C_Id_why_none=="INVALID_SCTID":
                 n_OUTCOME_ROWS+=1
+                #<check_item>
                 check_item=CheckItem("CHK20-OUT-01")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The identifier in the MIXED column does not meet the definition for a SNOMED identifier. "
-                    "It should not be used for recording information in a patient record. "
-                    "It can never be extracted from a patient record "
-                    "(as it should never be recorded in the first place)." 
-                    "We strongly recommend that you amend your value set to replace (or remove) "
-                    "this malformed SNOMED identifier from your value set."
+                    "The entry in the identifier column does not meet the definition for a SNOMED Identifier. "
+                    "This entry must be removed or corrected for the full set of Set Checks to be performed."
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
             elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK20-OUT-O2 (blank cell)
                 n_OUTCOME_ROWS+=1
+                #<check_item>
                 check_item=CheckItem("CHK20-OUT-03")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The identifier in the MIXED column was not checked against the definition " 
-                    "for a SNOMED identifier as no value was provided."
+                    "The identifier column is blank and is treated as an incorrectly formatted entry. "
+                    "The entry must be populated or the row removed. "
                     ) 
+                #</check_item>
                 this_row_analysis.append(check_item)
             else: # CHK20-OUT-01 (Valid SCTID)
                 n_NO_OUTCOME_ROWS+=1
+                #<check_item>
                 check_item=CheckItem("CHK20-OUT-02")
-                check_item.outcome_level="INFO"
+                check_item.outcome_level="DEBUG"
                 check_item.general_message="OK"
+                #</check_item>
                 this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
+            #<check_item>
             check_item=CheckItem("CHK20-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
+            #</check_item>
             this_row_analysis.append(check_item)
 
         if mr.excel_corruption_suspected and mr.possible_reconstructed_C_Id is not None:
             
+            #<check_item>
             check_item=CheckItem("CHK20-OUT-04")
+            check_item.outcome_level="ISSUE"
             check_item.general_message=(
                 f"It appears that this ID could have been corrupted by Excel, and if "
-                f"so could be reconstructed as the Concept ID -->"
+                f"so could be reconstructed as the Concept Id -->"
             )
             check_item.row_specific_message=(termbrowser_hyperlink(mr.possible_reconstructed_C_Id))
+            #</check_item>
             this_row_analysis.append(check_item)
 
+            #<check_item>
             check_item=CheckItem("CHK20-OUT-05")
+            check_item.outcome_level="FACT"
             check_item.general_message=(
-                f"The preferred term for this reconstructed Concept Id is --> "
+                f"The Preferred Term for this reconstructed Concept Id is --> "
             )
             check_item.row_specific_message=concepts[mr.possible_reconstructed_C_Id].pt
+            #</check_item>
             this_row_analysis.append(check_item)
 
         if mr.excel_corruption_suspected and mr.possible_reconstructed_D_Id is not None:
             
+            #<check_item>
             check_item=CheckItem("CHK20-OUT-06")
+            check_item.outcome_level="ISSUE"
             check_item.general_message=(
                 f"It appears that this ID could have been corrupted by Excel, and if "
-                f"so could be reconstructed as the Concept ID -->"
+                f"so could be reconstructed as the Description Id -->"
             )
             check_item.row_specific_message=(termbrowser_hyperlink(mr.possible_reconstructed_D_Id))
+            #</check_item>
             this_row_analysis.append(check_item)
 
             D_Id_data=ds.get_data_about_description_id(
@@ -105,11 +120,14 @@ def do_check(setchks_session=None, setchk_results=None):
                 term=D_Id_data["term"]
             else:
                 term="Not found"
+            #<check_item>
             check_item=CheckItem("CHK20-OUT-07")
+            check_item.outcome_level="FACT"
             check_item.general_message=(
-                f"The term for this reconstructed Description Id is --> "
+                f"The Term for this reconstructed Description Id is --> "
             )
             check_item.row_specific_message=(term)
+            #</check_item>
             this_row_analysis.append(check_item)            
            
     
@@ -119,62 +137,87 @@ def do_check(setchks_session=None, setchk_results=None):
 
     setchk_results.set_analysis["Messages"]=[] 
 
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor="Number of rows in input file",
             value=n_FILE_TOTAL_ROWS,
+            outcome_code="CHK20-OUT-XXX"
             )
         )
+    #</set_level_count>
     
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor="Number of rows NOT assessed in input file (header rows or entirely blank rows)",
             value=n_FILE_NON_PROCESSABLE_ROWS,
+            outcome_code="CHK20-OUT-XXX"
             )
         )
+    #</set_level_count>
     
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor="Number of rows assessed in input file",
             value=n_FILE_PROCESSABLE_ROWS,
+            outcome_code="CHK20-OUT-XXX"
             )
         )
+    #</set_level_count>
     
+    #<set_level_count>
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor="",
             value="",
+            outcome_code="CHK20-OUT-DIVIDER"
             )
         )
+    #</set_level_count>
     
     if n_OUTCOME_ROWS!=0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     f"[RED] This check has found issues that must be corrected "
-                    f"for the full set of Set Checks to be performed."
+                    f"for the full complement of Set Checks to be performed."
                     ),
+                outcome_code="CHK20-OUT-07",
                 )
             )        
+        #</set_level_message>
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor="Number of rows containing correctly formatted entries in the Identifier Column",
                 value=n_NO_OUTCOME_ROWS,
+                outcome_code="CHK20-OUT-05",
                 )
             )
+        #</set_level_count>
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor="Number of rows containing incorrectly formatted entries in the Identifier column",
                 value=n_OUTCOME_ROWS,
+                outcome_code="CHK20-OUT-04",
                 )
             )
+        #</set_level_count>
+        
     else:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"[GREEN] This check has found no issues that must be corrected."
+                    f"[GREEN] This check has detected no issues."
                     ),
+                outcome_code="CHK20-OUT-08",
                 )
             )
+        #</set_level_message>
 
 

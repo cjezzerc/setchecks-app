@@ -104,100 +104,103 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 semantic_tag=semantic_tags[concept_id]
                 if joint_majority_tag or semantic_tag!=majority_tag:
+                    #<check_item>
                     check_item=CheckItem("CHK12-OUT-02")
+                    check_item.outcome_level="ISSUE"
                     check_item.general_message=(
-                        "The semantic tag used is not the majority tag in this value set. "
+                        "The Semantic Tag for this Concept is not the most frequently found tag in this value set. "
                         "This may suggest it is an erroneous entry. "
-                        "A full analysis of semantic tags used in this value set is given in the Set Analysis tab. "
-                        "The semantic tag for this concept is -->"
+                        "A full analysis of Semantic Tags used in this value set is given in the Set Analysis tab. "
+                        "The Semantic Tag for this Concept is -->"
                         )
                     check_item.row_specific_message=(
                         f"{semantic_tag}"
                     )
                     this_row_analysis.append(check_item)
+                    #</check_item>
                 else:
+                    #<check_item>
                     check_item=CheckItem("CHK12-OUT-01")
+                    check_item.outcome_level="Conditional: FACT/DEBUG"
                     check_item.general_message=(
-                        "The semantic tag used is the majority tag in this value set. "
-                        "The semantic tag for this concept is -->"
+                        "The Semantic Tag for this Concept is the most frequently found tag in this value set. "
+                        "The Semantic Tag for this Concept is -->"
                         )
                     check_item.row_specific_message=(
                         f"{semantic_tag}"
                         )
-                    check_item.outcome_level="INFO"
+                    #</check_item>
                     this_row_analysis.append(check_item)
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
+                #</check_item>
                 check_item={}
                 check_item=CheckItem("CHK12-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK12-OUT-03 oly applied before gatekeepr added
+            #<check_item>
             check_item=CheckItem("CHK12-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
+            #</check_item>
             this_row_analysis.append(check_item)
 
-    setchk_results.set_level_table_rows=[] 
-   
-        # setchk_results.set_level_table_rows.append(
-        #     SetLevelTableRow(
-        #         simple_message=(
-        #             "The concepts in the value set are all subtypes of acceptable top level hierarchies"
-        #             ),
-        #         )
-        #     )     
-        # setchk_results.set_level_table_rows.append(
-        #     SetLevelTableRow(
-        #         descriptor=(
-        #             f"Number of Concepts that are categorised as ‘not recommended’ for the "
-        #             f"{data_entry_extract_type} data entry type assigned to this value set." 
-        #             ),
-        #         value=f"{n_CONCEPTS_NOT_RECOMMENDED}"  
-        #         )
-        #     )     
-        
     if len(tag_counts)==1:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[GREEN] All the concepts have the same semantic tag"
+                    "[GREEN] This check has detected no issues"
                     ),
+                outcome_code="CHK12-OUT-06"
                 )
             )     
+        #</set_level_message>
     else:
         setchk_results.set_level_table_rows.append(
+            #<set_level_message>
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] You have used concepts with more than one type of semantic tag. "  
+                    "[AMBER] You have used Concepts with more than one type of Semantic Tag. "  
                     "This sometimes indicates that erroneous concepts have been included."
                     ),
+                    outcome_code="CHK12-OUT-03",
                 )
             )     
+            #</set_level_message>
         
         
         if not joint_majority_tag:
+            #<set_level_count>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     descriptor=(
-                        f"Number of concepts with the most frequently "
-                        f"found semantic tag '({majority_tag})'. " 
+                        f"Number of Concepts with the most frequently "
+                        f"found Semantic Tag '({majority_tag})'. " 
                         ),
-                    value=f"{majority_count}/{n_concepts}"  
+                    value=f"{majority_count}", 
+                    outcome_code="CHK12-OUT-04",
                     )
                 )     
-        
+            #</set_level_count>
+
         for tag, count in tag_counts.items():
             if tag!=majority_tag:
+                #<set_level_count>
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         descriptor=(
-                            f"Number of concepts with the semantic tag '({tag})'. " 
+                            f"Number of Concepts with the Semantic Tag '({tag})'. " 
                             ),
-                        value=f"{count}"  
+                        value=f"{count}",
+                        outcome_code="CHK12-OUT-05",
                         )
                     )
+                #</set_level_count>

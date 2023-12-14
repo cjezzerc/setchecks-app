@@ -129,7 +129,9 @@ def do_check(setchks_session=None, setchk_results=None):
                 did_entered=mr.D_Id_entered
                 n_FILE_PROCESSABLE_ROWS+=1
                 if cid_entered and i_data_row in duplicated_cid_rows: 
+                    #<check_item>
                     check_item=CheckItem("CHK22-OUT-02")
+                    check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "This concept id is duplicated in this file, on row(s)-->"
                         )
@@ -137,20 +139,12 @@ def do_check(setchks_session=None, setchk_results=None):
                         ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
                                     for x in duplicated_cid_rows[i_data_row])
                         )
+                    #</check_item>
                     this_row_analysis.append(check_item)
-                # elif cid_entered and cid_entered in cid_entered_with_other_description_id_rows:
-                #     check_item=CheckItem("CHK22-OUT-03")
-                #     check_item.general_message=(
-                #         "This Concept Id refers to the same concept as "
-                #         "the Description Ids, on row(s)-->"
-                #         )
-                #     check_item.row_specific_message=(
-                #         ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
-                #                     for x in cid_entered_with_other_description_id_rows[cid_entered])
-                #         )
-                #     this_row_analysis.append(check_item)
                 elif did_entered and i_data_row in duplicated_did_rows: 
+                    #<check_item>
                     check_item=CheckItem("CHK22-OUT-05")
+                    check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "This description id is duplicated in this file, on row(s)-->"
                         )
@@ -158,64 +152,82 @@ def do_check(setchks_session=None, setchk_results=None):
                         ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
                                     for x in duplicated_did_rows[i_data_row])
                         )
+                    #</check_item>
                     this_row_analysis.append(check_item)
                 else:
-                    check_item={}
+                    #<check_item>
                     check_item=CheckItem("CHK22-01")
-                    check_item.outcome_level="INFO"
+                    check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                     "No duplication issue found"
                     )
+                    #</check_item>
                     this_row_analysis.append(check_item)
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
-                check_item={}
+                #<check_item>
                 check_item=CheckItem("CHK22-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
 
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed NB CHK06-OUT-03 oly applied before gatekeepr added
+            #<check_item>
             check_item=CheckItem("CHK22-OUT-BLANK_ROW")
-            check_item.outcome_level="INFO"
+            check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)
+            #</check_item>
  
     if (n_DUPLICATE_CIDS+n_DUPLICATE_DIDS)==0:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[GREEN] This check has detected no issues"
                     ),
+                outcome_code="CHK22-OUT-XXX",
                 )
             )
+        #</set_level_message>
     else:
+        #<set_level_message>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
                     "[AMBER] The value set contains duplicate Identifiers"
                     ),
+                outcome_code="CHK22-OUT-XXX",
                 )
             )
+        #</set_level_message>
 
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of duplicate Concept Ids"
                     ),
-                value=f"{n_DUPLICATE_CIDS}"
+                value=f"{n_DUPLICATE_CIDS}",
+                outcome_code="CHK22-OUT-XXX",
                 )
             )
+        #</set_level_count>
         
+        #<set_level_count>
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
                     "Number of duplicate Description Ids"
                     ),
-                value=f"{n_DUPLICATE_DIDS}"
+                value=f"{n_DUPLICATE_DIDS}",
+                outcome_code="CHK22-OUT-XXX",
                 )
             )
+        #</set_level_count>
             
