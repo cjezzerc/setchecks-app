@@ -82,7 +82,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-04")
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                f"It appears that this ID could have been corrupted by Excel, and if "
+                f"It appears that this Id could have been corrupted by Excel, and if "
                 f"so could be reconstructed as the Concept Id -->"
             )
             check_item.row_specific_message=(
@@ -109,7 +109,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-06")
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                f"It appears that this ID could have been corrupted by Excel, and if "
+                f"It appears that this Id could have been corrupted by Excel, and if "
                 f"so could be reconstructed as the Description Id -->"
             )
             check_item.row_specific_message=(

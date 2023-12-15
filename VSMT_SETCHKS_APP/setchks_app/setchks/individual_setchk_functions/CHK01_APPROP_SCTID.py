@@ -62,7 +62,15 @@ def do_check(setchks_session=None, setchk_results=None):
                     #</check_item>
                     this_row_analysis.append(check_item)
             else: 
-                pass
+                #<check_item>
+                check_item=CheckItem("CHK01-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="DEBUG"
+                check_item.general_message=(
+                    "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
+                    )
+                #</check_item>
+                this_row_analysis.append(check_item)
         else:
             n_FILE_NON_PROCESSABLE_ROWS+=1 # These are blank rows; no message needed
             #<check_item>
@@ -85,7 +93,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN] This check has detected no issues."
                     ),
-                outcome_code="CHK01-OUT-XXX",
+                outcome_code="CHK01-OUT-09",
                 )
             )
         #</set_level_message>
@@ -97,11 +105,14 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        "[RED] At least one Description Id has been detected "
-                        "in the MIXED column for this data extraction value set. "
+                        "[RED] According to your settings, this is a data entry value set. "
+                        "At least one Description Id has been detected "
+                        "in the Identifier column for this data extraction value set. "
                         "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
+                        "All Description Ids must be removed or replaced with the corresponding Concept Ids," 
+                        "for the full complement of Set Checks to be performed."
                         ),
-                    outcome_code="CHK01-OUT-XXX",
+                    outcome_code="CHK01-OUT-08",
                     )
                 )
             #</set_level_message>
@@ -112,7 +123,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         simple_message=(
-                            "[AMBER] A mixture of Concept Ids and Description Ids have been provided. "
+                            "[AMBER] A mixture of Concept Ids and Description Ids has been provided. "
                             "This situation should be avoided. "
                             "Unless it is vital for your use case, we strongly recommend replacing "
                             "the Description Ids with the corresponding Concept Ids."
@@ -130,7 +141,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             "Unless it is vital for your use case, we recommend replacing all the Ids with "
                             "the corresponding Concept Ids"
                             ),
-                        outcome_code="CHK01-OUT-XXX",
+                        outcome_code="CHK01-OUT-11",
                         )
                     )
                 #</set_level_message>
@@ -139,7 +150,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    f"Number of rows containing Concept Ids " 
+                    f"Number of rows where Concept Ids have been provided" 
                     ),
                 value=f"{n_CID_ROWS}",
                 outcome_code="CHK01-OUT-06",
@@ -152,7 +163,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    f"Number of rows containing Description Ids " 
+                    f"Number of rows where Description Ids have been provided" 
                     ),
                 value=f"{n_DID_ROWS}",
                 outcome_code="CHK01-OUT-07",

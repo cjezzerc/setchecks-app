@@ -82,7 +82,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "The provided Concept Id does not appear, "
                     "as an active or inactive Concept, "
                     f"in the selected release {selected_sct_version}, "
-                    f"but it does appear in the most recent release {latest_sct_version}."
+                    f"but it does appear in the most recent release {latest_sct_version}. "
                     "This suggests the Concept has been introduced after the selected SNOMED release. " 
                     "Consider removing the Concept or selecting a later release."
                     )
@@ -130,7 +130,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "The provided Description Id does not appear, "
                     "as an active or inactive Description, "
                     f"in the selected release {selected_sct_version}, "
-                    f"but it does appear in the most recent release {latest_sct_version}."
+                    f"but it does appear in the most recent release {latest_sct_version}. "
                     "This suggests the Description has been introduced after the selected SNOMED release. " 
                     "Consider removing the Description or selecting a later release."
                     )
@@ -144,9 +144,9 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.general_message="OK"
                 #</check_item>
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none=="INVALID_SCTID": # CHK02-OUT-07
+            elif mr.C_Id_why_none=="INVALID_SCTID": 
                 #<check_item>
-                check_item=CheckItem("CHK02-OUT-06")
+                check_item=CheckItem("CHK02-OUT-07")
                 check_item.outcome_level="DEBUG"
                 check_item.general_message=(
                     "The unexpected value in the MIXED column " 
@@ -155,7 +155,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK02-OUT-08 
+            elif mr.C_Id_why_none=="BLANK_ENTRY": 
                 #<check_item>
                 check_item=CheckItem("CHK02-OUT-08")
                 check_item.outcome_level="DEBUG"
@@ -169,7 +169,7 @@ def do_check(setchks_session=None, setchk_results=None):
             else:
                 #<check_item>
                 check_item=CheckItem("CHK02-OUT-NOT_FOR_PRODUCTION")
-                check_item.outcome_level="ISSUE"
+                check_item.outcome_level="DEBUG"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
@@ -200,7 +200,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     f"[GREEN] This check has detected no issues." 
                     ),
-                outcome_code="CHK02-OUT-XXX",
+                outcome_code="CHK02-OUT-18",
                 )
             )
         #</set_level_message>
@@ -214,7 +214,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         f"[RED] There are Identifiers in this value set that do not appear in the selected release. " 
                         f"These must be removed or corrected for the full complement of Set Checks to be performed."
                         ),
-                    outcome_code="CHK02-OUT-XXX",
+                    outcome_code="CHK02-OUT-21",
                     )
                 )
             #</set_level_message>
@@ -223,12 +223,13 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        f"There are Identifiers in this value set that do not appear in the selected release. " 
+                        f"[RED] There are Identifiers in this value set that do not appear, "
+                         "as active or inactive concepts, in the selected release. " 
                         f"These must be removed or corrected for the full set of Set Checks to be performed. "
                         f"Some of these Identifiers appear in the latest release which suggests that the value set may "
-                        f"correspond to a later release than the one that you have selected."
+                        f"correspond to a later release than your selected release."
                         ),
-                    outcome_code="CHK02-OUT-XXX",
+                    outcome_code="CHK02-OUT-19",
                     )
                 )
             #</set_level_message>
@@ -237,11 +238,12 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        f"There are Identifiers in this value set that do not appear in the selected release. " 
+                        f"[RED] There are Identifiers in this value set that do not appear, "
+                         "as active or inactive concepts, in the selected release. "
                         f"These must be removed or corrected for the full set of Set Checks to be performed. "
-                        f"None of these Identifiers appear in any releases of SNOMED later than the one that you have selected"
+                        f"None of these Identifiers appear in any releases later than your selected release."
                         ),
-                    outcome_code="CHK02-OUT-XXX",
+                    outcome_code="CHK02-OUT-17",
                     )
                 )
             #</set_level_message>
@@ -250,7 +252,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    f"Number of rows containing containing Identifiers that appear " 
+                    f"Number of rows containing Identifiers that DO appear " 
                     f"in the selected release"
                     ),
                 value=n_ISR,
@@ -263,11 +265,11 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    f"Number of rows containing containing Identifiers that DO NOT appear " 
+                    f"Number of rows containing Identifiers that DO NOT appear " 
                     f"in the selected release"
                     ),
                 value=n_NISR,
-                outcome_code="CHK02-OUT-XXX",
+                outcome_code="CHK02-OUT-20",
                 )
             )
         #</set_level_count>

@@ -79,16 +79,16 @@ class SuppTabRow():
     headers=[
         "Input row number",
         "Interpretation",
-        "Supplied  ID",
-        "ID type",	
+        "Supplied  Id",
+        "Id type",	
         "Implied concept Id (if applicable)",
         "Term (preferred term for this concept - better version TBI)",	
         "Implied-inactive Option Number",	
-        "Implied-inactive Concept ID",
+        "Implied-inactive Concept Id",
         "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
         "Ambiguity status",
         "Is the implied-inactive concept already represented in the set",
-        "Is it represented in the list by the same tpe of ID?",
+        "Is it represented in the list by the same tpe of Id?",
         ]
     cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
 

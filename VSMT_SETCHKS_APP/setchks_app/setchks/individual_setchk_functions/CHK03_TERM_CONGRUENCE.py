@@ -28,7 +28,7 @@ def generate_check_item(
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The preferred term for this Concept, as identified by the Concept ID, is -->"
+            "The Preferred Term for this Concept, as identified by the Concept Id, is -->"
             )
         check_item.row_specific_message=(
             f"{preferred_term}"
@@ -39,7 +39,7 @@ def generate_check_item(
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The provided Description ID corresponds to the Term -->"
+            "The provided Description Id corresponds to the Term -->"
             )
         check_item.row_specific_message=(
             f"{implied_dterm}"
@@ -51,8 +51,8 @@ def generate_check_item(
             check_item=CheckItem(outcome_code=outcome_code)
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                "The provided Term is inactive. " 
-                "You should consider selecting an active term " 
+                "The provided Description Id/Term is inactive. " 
+                "You should consider selecting an active Description ID/Term " 
                 "for the corresponding Concept."
                 )
         else:
@@ -66,10 +66,10 @@ def generate_check_item(
             "The provided Description Id/Term has a Description Type of -->"
             )
         phrase_to_output={
-            "fsn": "Fully specified name",
-            "pt": "Preferred term",
-            "syn": "Acceptable synonym",
-            "inactive_desc": "Inactive description",
+            "fsn": "Fully Specified Name",
+            "pt": "Preferred Term",
+            "syn": "Acceptable Synonym",
+            "inactive_desc": "Inactive Description",
             None: "No type",
             }
         check_item.row_specific_message=(
@@ -83,7 +83,7 @@ def generate_check_item(
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
                 "The Description Type of the provided Description Id/Term is Fully Specified Name (FSN). "
-                "According to your settings, this is a data extract value set. FSNs should not be presented for Data Entry purposes. "  
+                "According to your settings, this is a data extract value set. FSNs should not be presented for data entry purposes. "  
                 "You should choose another Term for the corresponding Concept."
                 )
         else:
@@ -94,8 +94,8 @@ def generate_check_item(
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="ISSUE"
         check_item.general_message=(
-            "The provided Term given does not correspond to the Concept identified by the Concept ID. "
-            "Please select a valid Term for this Concept ID."
+            "The provided Term given does not correspond to the Concept identified by the provided Concept Id. "
+            "Please select a valid Term for this Concept Id."
             )
     #</check_item>
     #<check_item>
@@ -104,7 +104,7 @@ def generate_check_item(
         check_item.outcome_level="ISSUE"
         check_item.general_message=(
             "The provided Term does not conform to the capitalisation rule "
-            "for this particular term. " 
+            "for this particular Term. " 
             "According to its capitalisation rule this description term should be written as -->"
             )
         check_item.row_specific_message=(
@@ -116,7 +116,7 @@ def generate_check_item(
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="FACT"
         check_item.general_message=(
-            "The provided Description Id corresponds to the Concept identified by the Concept ID -->"
+            "The provided Description Id corresponds to the Concept identified by the Concept Id -->"
             )
         check_item.row_specific_message=(
             termbrowser_hyperlink(sctid=implied_concept_id)
@@ -128,13 +128,37 @@ def generate_check_item(
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="ISSUE"
         check_item.general_message=(
-            "The provided Term does not correspond to the provided Description ID. "
+            "The provided Term does not correspond to the provided Description Id. "
             "The Term for this Description Id is -->"
             )
         check_item.row_specific_message=(
             f"{implied_dterm}"
             ) 
     #</check_item>
+    #<check_item>
+    elif outcome_code=="CHK03-OUT-10":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
+        check_item.general_message=(
+            "The entry in the Term column is blank. "
+            "The Preferred Term for this Concept Id is -->"
+            )
+        check_item.row_specific_message=(
+            f"{preferred_term}"
+            ) 
+    #</check_item>
+    #<check_item>
+    elif outcome_code=="CHK03-OUT-20":
+        check_item=CheckItem(outcome_code=outcome_code)
+        check_item.outcome_level="ISSUE"
+        check_item.general_message=(
+            "The entry in the Term column is blank. "
+            "The Term for this Description Id is -->"
+            )
+        check_item.row_specific_message=(
+            f"{implied_dterm}"
+            ) 
+    #</check_item>    
     else: # this is just a fall through in case of an unaccounted for code
         check_item=CheckItem(outcome_code=outcome_code)
         check_item.outcome_level="ISSUE"
@@ -159,16 +183,16 @@ def do_check(setchks_session=None, setchk_results=None):
     concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
 
     outcome_codes_matrix={
-        "i"   :["01"                                         ],
-        "ii"  :[     "02","03","04","05",          "08"      ],
-        "iii" :[                         "06"                ],
-        "iv"  :[          "03","04","05",                    ],
-        "v"   :[          "03","04","05",     "07",          ],
-        "vi"  :[          "03","04","05",          "08",     ],
-        "vii" :[          "03","04","05",     "07","08",     ],
-        "viii":["01",                              "08","09",],
-        "ix"  :["01",                                        ],
-        "x"   :[     "02","03","04","05",          "08",     ],
+        "i"   :["01",                                                  ],
+        "ii"  :[     "02","03","04","05",          "08",               ],
+        "iii" :[                         "06",                         ],
+        "iv"  :[          "03","04","05",                              ],
+        "v"   :[          "03","04","05",     "07",                    ],
+        "vi"  :[          "03","04","05",          "08",               ],
+        "vii" :[          "03","04","05",     "07","08",               ],
+        "viii":["01",                              "08","09",          ],
+        "ix"  :[                                             "10",     ],
+        "x"   :[          "03","04","05",          "08",          "20",],
     }
 
 
@@ -289,11 +313,14 @@ def do_check(setchks_session=None, setchk_results=None):
 
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
+                #<check_item>
                 check_item=CheckItem("CHK03-OUT-NOT_FOR_PRODUCTION")
+                check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
                     f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
+                #</check_item>
                 this_row_analysis.append(check_item)
 
         else:
@@ -340,7 +367,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN] This check has detected no issues."
                     ),
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-12",
                 )
             )     
         #</set_level_message>
@@ -355,7 +382,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[RED] This check has detected errors that need to be fixed"
                     ),
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-19",
                 )
             )
         #</set_level_message>
@@ -368,7 +395,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of rows with inactive Descriptions"
                     ),
                 value=f"{n_INACTIVE_DESCRIPTION}",
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-13",
                 )
             )
             #</set_level_count>
@@ -381,7 +408,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "entry value set"
                     ),
                 value=f"{n_FSN_FOR_DATA_ENTRY}",
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-14",
                 )
             )
             #</set_level_count>
@@ -393,7 +420,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of rows where the Term does not match the Concept"
                     ),
                 value=f"{n_TERM_CONCEPT_MISMATCH}",
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-15",
                 )
             )
             #</set_level_count>
@@ -406,7 +433,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of rows where the Term does not match the Description Id"
                     ),
                 value=f"{n_TERM_DID_MISMATCH}",
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-16",
                 )
             )
             #</set_level_count>
@@ -419,7 +446,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of rows where there is a capitalisation issue"
                     ),
                 value=f"{n_CAPITALISATION_ISSUE}",
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-17",
                 )
             )
             #</set_level_count>
@@ -431,7 +458,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[AMBER] Some entries are missing in the Term column. You may wish to correct this."
                     ),
-                outcome_code="CHK03-OUT-XXX",
+                outcome_code="CHK03-OUT-11",
                 )
             )
         #</set_level_message>
@@ -443,7 +470,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of rows where the Term is missing"
                     ),
                 value=f"{n_MISSING_TERM}",
-                    outcome_code="CHK03-OUT-XXX",
+                    outcome_code="CHK03-OUT-18",
                 )
         )
         #</set_level_count>

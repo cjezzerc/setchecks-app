@@ -11,6 +11,7 @@ def parse_block(
         "check": filename[:-3],
         "output_type":output_type,
         "outcome_code":"",
+        "check_item.outcome_level":"",
         "check_item.general_message": "",
         "check_item.row_specific_message": "",
         "simple_message":"",
@@ -27,6 +28,7 @@ def parse_block(
                           "descriptor",
                           "check_item.general_message",
                           "check_item.row_specific_message",
+                          
                           ]:
             assembling=True
             what_assembling=f[0]
@@ -39,13 +41,23 @@ def parse_block(
             parsed_block[what_assembling]=message
         if assembling:
             strings_list.append(stripped_line)
-        if ff and ff[0] in ["if outcome_code", "elif outcome_code"]:
+        if ff and ff[0] in [
+            "if outcome_code", 
+            "elif outcome_code"
+            ]:
             parsed_block["outcome_code"]=ff[1][1:-1]
         if f and f[0] =="check_item":
-            if f[1] not in ["CheckItem(outcome_code","None"]:
+            if f[1] not in [
+                "CheckItem(outcome_code",
+                "None",
+                ]:
                 mObj=re.search(r'"(.*)"', f[1])
                 parsed_block["outcome_code"]=mObj.groups(0)[0]
-        if f and f[0] in["value","outcome_code"]:
+        if f and f[0] in[
+            "value",
+            "outcome_code",
+            "check_item.outcome_level",
+            ]:
             thing=re.sub('f"','',f[1])
             thing=re.sub('"','',thing)
             if thing[-1]==",":
@@ -118,6 +130,7 @@ row_headers=[
     "check",
     "type",
     "code",	
+    "row outcome level",
     "row level general message",	
     "row specific message",
     "set level message",	
@@ -148,3 +161,5 @@ for filename_plus_path in filenames_plus_path:
             output_types_list=output_types_list,
             output_tsv=output_tsv
             )
+    if output_tsv:
+        print("\t".join(["-------"]*8))

@@ -107,9 +107,9 @@ def do_check(setchks_session=None, setchk_results=None):
     row.cell_contents=[
         "Group",
         "(Preferred Term)",
-        "Concept ID",
+        "Concept Id",
         "Preferred Term",
-        "Concept_Id",
+        "Concept Id",
         "Preferred Term",
         "Common nature"
         ]

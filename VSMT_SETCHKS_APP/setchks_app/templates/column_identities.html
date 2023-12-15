@@ -21,7 +21,7 @@
                     <ul>
                         <li> Please identify the column containing SNOMED CT IDs </li>
                         <li> You can optionally identify one column as SNOMED CT Terms</li>
-                        <li> Rows with grey background fail "correct format ID in MIXED column" test </li>
+                        <li> Rows with grey background fail "correct format Id in MIXED column" test </li>
                         <li> Data was loaded from file <b>{{ filename }}</b> </li>
                         <li> Data is assumed to have a header (other options TBI) </li>
                         <li> Data is assumed to have tab delimiters (other options TBI) </li>
@@ -36,7 +36,7 @@
                         {% if setchks_session.columns_info.identification_sufficient ==True %}
                         
                         {% else %}
-                        <li> <b>You need to identify at least one column as an ID column</b> </li>
+                        <li> <b>You need to identify at least one column as an Id column</b> </li>
                         {% endif %}              
                     </ul>
                 </div>
