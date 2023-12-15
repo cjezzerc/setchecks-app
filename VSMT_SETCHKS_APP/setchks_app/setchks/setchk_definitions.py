@@ -54,9 +54,9 @@ setchks['CHK03_TERM_CONGRUENCE']=Setchk(
 
 setchks['CHK04_INACTIVES_ENTRY']=Setchk(
     setchk_code='CHK04_INACTIVES_ENTRY',
-    setchk_short_name='CHK04 Inactive content in sets for data entry', 
+    setchk_short_name='CHK04 Inactive content', 
     setchk_function=CHK04_INACTIVES_ENTRY.do_check,
-    setchk_data_entry_extract_types=["ENTRY_PRIMARY","ENTRY_OTHER"],
+    setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION", "DUAL_SCT_VERSIONS"],
     )
 

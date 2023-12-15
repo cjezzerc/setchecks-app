@@ -268,6 +268,16 @@ def do_check(setchks_session=None, setchk_results=None):
     n_CONCEPTS_NO_REPLACEMENT=0
     n_CONCEPTS_WITH_REPLACEMENTS=0
 
+    if setchks_session.data_entry_extract_type !="EXTRACT":
+        retain_and_or_replace_advice_message=(
+            "According to your settings, this is a data entry value set. " 
+            "All inactive Concepts should be removed, and replaced where possible."
+            )
+    else:
+        retain_and_or_replace_advice_message=(
+            "According to your settings, this is a data extraction value set. " 
+            "All inactive Concepts should be retained, and active replacement Concepts added where possible."
+            )
 
     for i_data_row,mr in enumerate(setchks_session.marshalled_rows):
         n_FILE_TOTAL_ROWS+=1
@@ -298,7 +308,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         check_item=CheckItem("CHK04-OUT-ii-a")
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
-                            "This concept is inactive and should be removed. "
+                            f"This concept is inactive. {retain_and_or_replace_advice_message} "
                             "There is no suggested replacement for this concept."
                             )
                         #</check_item>
@@ -312,7 +322,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-ii-b")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
+                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
                                 "There is no suggested replacement for this concept."
                                 )
@@ -325,7 +335,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-ii-c") 
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
+                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
                                 "There is no suggested replacement for this concept - "
                                 "this issue should be resolved via running CHK04 in single version mode"
@@ -340,7 +350,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         check_item=CheckItem("CHK04-OUT-v-c")
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
-                            "This concept is inactive and should be removed. "
+                            f"This concept is inactive. {retain_and_or_replace_advice_message} "
                             "There is at least one suggested replacement for this concept. "
                             "See supplementary tab for details"
                             )
@@ -355,7 +365,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-v-b")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
+                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
                                 "There is at least one suggested replacement for this concept. "
                                 "See supplementary tab for details"
@@ -369,7 +379,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-v-c") 
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release and should be removed. "
+                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
                                 "There is at least one suggested replacement for this concept - "
                                 "this issue should be resolved via running CHK04 in single version mode "
@@ -417,8 +427,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 SetLevelTableRow(
                 simple_message=(
                     "[RED] This value set includes inactive concepts. "
-                    "According to your settings, this is a data entry value set. "
-                    "All inactive Concepts should be removed, and replaced where possible."
+                    f"{retain_and_or_replace_advice_message}"
                     ),
                 outcome_code="CHK04-OUT-16",
                 )
@@ -479,8 +488,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         simple_message=(
                             "[RED] This value set includes Concepts that are inactive in the later release, " 
                             "and that were inactivated since the ealier release."
-                            "According to your settings, this is a data entry value set. "
-                            "All inactive Concepts should be removed, and replaced where possible."
+                            f"{retain_and_or_replace_advice_message}"
                             ),
                         outcome_code="CHK04-OUT-XXX",
                         )
