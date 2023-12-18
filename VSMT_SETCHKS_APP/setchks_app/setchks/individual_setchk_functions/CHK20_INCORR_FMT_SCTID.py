@@ -43,23 +43,23 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item=CheckItem("CHK20-OUT-01")
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The entry in the identifier column does not meet the definition for a SNOMED Identifier. "
-                    "This entry must be removed or corrected for the full set of Set Checks to be performed."
+                    "The entry in the Identifier column does not conform to the SCTID data type. "
+                    "This entry must be removed or corrected for the full suite of Set Checks to be performed."
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
-            elif mr.C_Id_why_none=="BLANK_ENTRY": # CHK20-OUT-O2 (blank cell)
+            elif mr.C_Id_why_none=="BLANK_ENTRY": 
                 n_OUTCOME_ROWS+=1
                 #<check_item>
                 check_item=CheckItem("CHK20-OUT-03")
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
-                    "The identifier column is blank and is treated as an incorrectly formatted entry. "
+                    "The Identifier column is blank. "
                     "The entry must be populated or the row removed. "
                     ) 
                 #</check_item>
                 this_row_analysis.append(check_item)
-            else: # CHK20-OUT-01 (Valid SCTID)
+            else: 
                 n_NO_OUTCOME_ROWS+=1
                 #<check_item>
                 check_item=CheckItem("CHK20-OUT-02")
@@ -82,8 +82,8 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-04")
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                f"It appears that this Id could have been corrupted by Excel, and if "
-                f"so could be reconstructed as the Concept Id -->"
+                f"It appears that the your entry in the Identifier column may have been previously corrupted by Excel. If "
+                f"so, this check suggests that the original intent was to include Concept Id -->"
             )
             check_item.row_specific_message=(
                 termbrowser_hyperlink(mr.possible_reconstructed_C_Id)
@@ -95,7 +95,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-05")
             check_item.outcome_level="FACT"
             check_item.general_message=(
-                f"The Preferred Term for this reconstructed Concept Id is --> "
+                f"The Preferred Term for the suggested Concept Id is --> "
             )
             check_item.row_specific_message=(
                 concepts[mr.possible_reconstructed_C_Id].pt
@@ -109,8 +109,8 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-06")
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                f"It appears that this Id could have been corrupted by Excel, and if "
-                f"so could be reconstructed as the Description Id -->"
+                f"It appears that your entry in the Identifier column may have been previously corrupted by Excel. If "
+                f"so, this check suggests that the original intent was to include Description Id -->"
             )
             check_item.row_specific_message=(
                 termbrowser_hyperlink(mr.possible_reconstructed_D_Id)
@@ -130,7 +130,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-07")
             check_item.outcome_level="FACT"
             check_item.general_message=(
-                f"The Term for this reconstructed Description Id is --> "
+                f"The Term for the suggested Description Id is --> "
             )
             check_item.row_specific_message=(
                 term
@@ -149,10 +149,10 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-            "Number of rows in input file"
+            "Total number of rows in the input file"
             ),
             value=n_FILE_TOTAL_ROWS,
-            outcome_code="CHK20-OUT-XXX"
+            outcome_code="CHK20-OUT-10"
             )
         )
     #</set_level_count>
@@ -161,11 +161,11 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-                "Number of rows NOT assessed in input file "
+                "Number of rows NOT assessed in the input file "
                 "(header rows or entirely blank rows)"
                 ),
             value=n_FILE_NON_PROCESSABLE_ROWS,
-            outcome_code="CHK20-OUT-XXX"
+            outcome_code="CHK20-OUT-11"
             )
         )
     #</set_level_count>
@@ -174,10 +174,10 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-                "Number of rows assessed in input file"
+                "Number of rows assessed in the input file"
                 ),
             value=n_FILE_PROCESSABLE_ROWS,
-            outcome_code="CHK20-OUT-XXX"
+            outcome_code="CHK20-OUT-12"
             )
         )
     #</set_level_count>
@@ -203,7 +203,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "These entries that must be corrected "
                     "for the full suite of Set Checks to be performed."
                     ),
-                outcome_code="CHK20-OUT-07",
+                outcome_code="CHK20-OUT-09",
                 )
             )        
         #</set_level_message>
@@ -211,11 +211,10 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    "Number of rows containing correctly formatted entries "
-                    "in the Identifier Column"
+                    "Number of conforming rows"
                     ),
                 value=n_NO_OUTCOME_ROWS,
-                outcome_code="CHK20-OUT-05",
+                outcome_code="CHK20-OUT-13",
                 )
             )
         #</set_level_count>
@@ -223,11 +222,10 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    "Number of rows containing incorrectly formatted entries "
-                    "in the Identifier column"
+                    "Number of non-conforming rows"
                     ),
                 value=n_OUTCOME_ROWS,
-                outcome_code="CHK20-OUT-04",
+                outcome_code="CHK20-OUT-14",
                 )
             )
         #</set_level_count>

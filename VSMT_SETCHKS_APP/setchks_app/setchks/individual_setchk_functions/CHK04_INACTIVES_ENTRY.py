@@ -292,20 +292,20 @@ def do_check(setchks_session=None, setchk_results=None):
                 if active_status[concept_id] is True: #"CHK04-OUT-i"
                     n_CONCEPTS_ACTIVE+=1
                     #<check_item>
-                    check_item=CheckItem("CHK04-OUT-i")
+                    check_item=CheckItem("CHK04-OUT-23") # was CHK04-OUT-i
                     check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                         "Concept is active"
                         )
                     #</check_item>
                     this_row_analysis.append(check_item)
-                # elif setchk_results.supp_tab_blocks[i_data_row]==[]: #"CHK04-OUT-ii"
-                elif interpretations[i_data_row]=="NO_REPLACEMENT": #"CHK04-OUT-ii"
+                # elif setchk_results.supp_tab_blocks[i_data_row]==[]: 
+                elif interpretations[i_data_row]=="NO_REPLACEMENT": 
                     if not dual_mode:
                         n_CONCEPTS_INACTIVE+=1
                         n_CONCEPTS_NO_REPLACEMENT+=1
                         #<check_item>
-                        check_item=CheckItem("CHK04-OUT-ii-a")
+                        check_item=CheckItem("CHK04-OUT-24") # was CHK04-OUT-ii-a
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
                             f"This Concept is inactive. {retain_and_or_replace_advice_message} "
@@ -319,7 +319,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION+=1
                             n_CONCEPTS_NO_REPLACEMENT+=1
                             #<check_item>
-                            check_item=CheckItem("CHK04-OUT-ii-b")
+                            check_item=CheckItem("CHK04-OUT-25") # was CHK04-OUT-ii-b
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
@@ -332,7 +332,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_INACTIVE+=1
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
                             #<check_item>
-                            check_item=CheckItem("CHK04-OUT-ii-c") 
+                            check_item=CheckItem("CHK04-OUT-26") # was CHK04-OUT-ii-c
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
@@ -347,7 +347,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         n_CONCEPTS_INACTIVE+=1
                         n_CONCEPTS_WITH_REPLACEMENTS+=1
                         #<check_item>
-                        check_item=CheckItem("CHK04-OUT-v-c")
+                        check_item=CheckItem("CHK04-OUT-27") # was CHK04-OUT-v-a
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
                             f"This Concept is inactive. {retain_and_or_replace_advice_message} "
@@ -362,7 +362,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_INACTIVATED_SINCE_EARLIER_SCT_VERSION+=1
                             n_CONCEPTS_WITH_REPLACEMENTS+=1
                             #<check_item>
-                            check_item=CheckItem("CHK04-OUT-v-b")
+                            check_item=CheckItem("CHK04-OUT-28") # was CHK04-OUT-v-b
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
@@ -376,7 +376,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             n_CONCEPTS_INACTIVE+=1
                             n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION+=1
                             #<check_item>
-                            check_item=CheckItem("CHK04-OUT-v-c") 
+                            check_item=CheckItem("CHK04-OUT-29") # was CHK04-OUT-v-c
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
@@ -393,7 +393,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
@@ -512,7 +512,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "Number of newly inactivated Concepts with at least one replacement "
                         ),
                     value=f"{n_CONCEPTS_WITH_REPLACEMENTS}",
-                    outcome_code="CHK04-OUT-XXX",
+                    outcome_code="CHK04-OUT-21",
                     )
                 )
                 #</set_level_count>
@@ -523,7 +523,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "Number of newly inactivated Concepts with no replacement "
                         ),
                     value=f"{n_CONCEPTS_NO_REPLACEMENT}",
-                    outcome_code="CHK04-OUT-XXX",
+                    outcome_code="CHK04-OUT-22",
                     )
                 )
                 #</set_level_count>

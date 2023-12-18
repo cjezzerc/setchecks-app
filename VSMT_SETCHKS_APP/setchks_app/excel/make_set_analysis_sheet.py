@@ -15,7 +15,7 @@ def make_set_analysis_sheet(
     setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
 
-    ws.title='Set analyses'
+    ws.title='Set_Analysis'
 
     # simple header row
     ws.append(["Check", "Message"])

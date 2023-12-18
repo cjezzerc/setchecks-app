@@ -315,7 +315,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
                         "This active Concept has possible inactive predecessors that should be considered for inclusion "
-                        "since, according to your settings, this is a data extraction context. "
+                        "since, according to your settings, this is a data extraction value set. "
                         "See 'CHK08_suppl' tab for details"
                         )
                     #</check_item>
@@ -328,7 +328,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)

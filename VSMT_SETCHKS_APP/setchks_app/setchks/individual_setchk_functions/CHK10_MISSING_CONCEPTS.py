@@ -219,7 +219,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of suggestions made"
                     ),
                 value=f"{n_SUGGESTED_NEW_MEMBERS}",
-                outcome_code="CHK10-OUT-XXX",
+                outcome_code="CHK10-OUT-03",
                 )
             )
         #</set_level_count>

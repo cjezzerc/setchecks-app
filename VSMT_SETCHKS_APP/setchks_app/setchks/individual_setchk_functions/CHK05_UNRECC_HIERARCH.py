@@ -91,6 +91,16 @@ def do_check(setchks_session=None, setchk_results=None):
     acceptability_dicts_by_full_domain_name["ENTRY_OTHER"]["Pharmaceutical / biologic product"]="ACCEPTABLE"
     acceptability_dicts_by_full_domain_name["ENTRY_OTHER"]["Qualifier value"]="ACCEPTABLE"
 
+    nicer_words={
+        "ENTRY_PRIMARY":"data entry value set for Primary Care purposes",
+        "ENTRY_OTHER":"data entry value set for non-Primary Care purposes",
+        "EXTRACT":"data extraction value set",
+    }
+    
+    data_entry_extract_type=setchks_session.data_entry_extract_type
+    data_entry_extract_words=nicer_words[data_entry_extract_type]
+
+    data_entry_extract_type
     acceptability_dicts_by_id={}
     for data_entry_extract_type in ["ENTRY_PRIMARY", "ENTRY_OTHER"]:
         acceptability_dicts_by_id[data_entry_extract_type]={}
@@ -107,6 +117,7 @@ def do_check(setchks_session=None, setchk_results=None):
     for domain_id in domain_ids:
         domain_members=set(str(x) for x in concepts[domain_id].descendants)  # really need this done upstream!!!!
                                                                             # concepts service seems to be working in ints
+        domain_members.add(domain_id)
         # print(domain_id, len(domain_members),list(domain_members)[:3])
         valset_members_in_domain_dict[domain_id]=valset_members.intersection(domain_members)
     # print(f"valset_members_in_domain_dict {valset_members_in_domain_dict}")
@@ -130,7 +141,6 @@ def do_check(setchks_session=None, setchk_results=None):
     n_CONCEPTS_MAY_NOT_BE_APPROPRIATE=0
     n_CONCEPTS_ACCEPTABLE=0
 
-    data_entry_extract_type=setchks_session.data_entry_extract_type
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
         this_row_analysis=[]
@@ -162,9 +172,9 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-03")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"The Concept is a subtype of " 
-                                f"a hierarchy that has been categorised as ‘may not be appropriate’ for the "
-                                f"{data_entry_extract_type} data entry type assigned to this value set."
+                                f"According to your settings this is a {data_entry_extract_words}."
+                                f"The Concept is from " 
+                                f"a hierarchy that has been categorised as ‘may not be appropriate’ in this context. "
                                 f"The hierarchy is -->"
                                 )
                             check_item.row_specific_message=(
@@ -178,9 +188,9 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-04")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"The Concept is a subtype of " 
-                                f"a hierarchy that has been categorised as ‘not recommended’ for the "
-                                f"{data_entry_extract_type} data entry type assigned to this value set. "
+                                f"According to your settings this is a {data_entry_extract_words}."
+                                f"The Concept is from " 
+                                f"a hierarchy that has been categorised as ‘not recommended’ in this context. "
                                 f"The hierarchy is -->"
                                 )
                             check_item.row_specific_message=(
@@ -194,7 +204,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
                                 "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                                f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (unrecognised acceptabiliy)"
+                                f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -205,7 +215,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
@@ -239,52 +249,82 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] Some Concepts in the value set are subtypes of hierarchies that are categorised as "
-                    "either 'not recommended' or 'may not be acceptable'. You should check these Concepts."
+                    f"[AMBER] According to your settings this is a {data_entry_extract_words}." 
+                    "Some Concepts in the value set are from hierarchies that are categorised as "
+                    "either 'not recommended' or 'may not be acceptable' in this context. "
+                    "You should check these Concepts."
                     ),
                 outcome_code="CHK05-OUT-07", 
                 )
             )
         #</set_level_message>
-        
-        #<set_level_count>
-        setchk_results.set_level_table_rows.append(
-            SetLevelTableRow(
-                descriptor=(
-                    f"Number of Concepts that are categorised as ‘not recommended’ for the "
-                    f"{data_entry_extract_type} data entry type assigned to this value set." 
-                    ),
-                value=f"{n_CONCEPTS_NOT_RECOMMENDED}",  
-                outcome_code="CHK05-OUT-08",
-                )
-            )     
-        #</set_level_count>
-        
-        #<set_level_count>
-        setchk_results.set_level_table_rows.append(
-            SetLevelTableRow(
-                descriptor=(
-                    f"Number of Concepts that are categorised as ‘may not be appropriate’ for the "
-                    f"{data_entry_extract_type} data entry type assigned to this value set." 
-                    ),
-                value=f"{n_CONCEPTS_MAY_NOT_BE_APPROPRIATE}",  
-                outcome_code="CHK05-OUT-09",
-                )
-            )     
-        #</set_level_count>
-        
-        for domain_id in domain_ids:
-            domain_name=id_to_full_domain_name_dict[domain_id]
-            if n_CONCEPTS_IN_DOMAIN[domain_id]!=0:
-                    acceptability=acceptability_dicts_by_id[data_entry_extract_type][domain_id]
-                    #<set_level_count>
-                    setchk_results.set_level_table_rows.append(
-                        SetLevelTableRow(
-                            descriptor=(
-                                f"Number of Concepts that are subtypes of - {acceptability} {domain_name}"  
-                                ),
-                            value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}",  
-                            outcome_code="CHK05-OUT-05",
-                            )
-                        )   
-                    #</set_level_count>
+
+        nicer_acceptabilities={
+            "ACCEPTABLE":"acceptable",
+            "NOT_RECOMMENDED":"not recommended",
+            "MAY_NOT_BE_APPROPRIATE":"may not be appropriate",
+        }
+
+        for acceptability_to_show in ["ACCEPTABLE", "NOT_RECOMMENDED", "MAY_NOT_BE_APPROPRIATE"]:
+
+
+            if acceptability_to_show=="ACCEPTABLE":
+                #<set_level_count>
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        descriptor=(
+                            f"Number of Concepts that are from hierarchies that are categorised as ‘acceptable’" 
+                            ),
+                        value=f"{n_CONCEPTS_ACCEPTABLE}",  
+                        outcome_code="CHK05-OUT-08bbbb",
+                        )
+                    )     
+                #</set_level_count>
+            elif acceptability_to_show=="MAY_NOT_BE_APPROPRIATE":
+
+                #<set_level_count>
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        descriptor=(
+                            f"Number of Concepts that are from hierarchies that are categorised as ‘may not be appropriate’"
+                            ),
+                        value=f"{n_CONCEPTS_MAY_NOT_BE_APPROPRIATE}",  
+                        outcome_code="CHK05-OUT-09",
+                        )
+                    )     
+                #</set_level_count>   
+            else:
+                #<set_level_count>
+                setchk_results.set_level_table_rows.append(
+                    SetLevelTableRow(
+                        descriptor=(
+                            f"Number of Concepts that are from hierarchies that are categorised as ‘not recommended’" 
+                            ),
+                        value=f"{n_CONCEPTS_NOT_RECOMMENDED}",  
+                        outcome_code="CHK05-OUT-08",
+                        )
+                    )     
+                #</set_level_count>
+     
+
+
+
+            for domain_id in domain_ids:
+                domain_name=id_to_full_domain_name_dict[domain_id]
+                if n_CONCEPTS_IN_DOMAIN[domain_id]!=0:
+                        acceptability=acceptability_dicts_by_id[data_entry_extract_type][domain_id]
+                        if acceptability==acceptability_to_show: 
+                            acceptability_words=nicer_acceptabilities[acceptability]
+                            #<set_level_count>
+                            setchk_results.set_level_table_rows.append(
+                                SetLevelTableRow(
+                                    descriptor=(
+                                        f" {domain_name} ({acceptability_words})"  
+                                        # f"Number of Concepts that are from the hierarchy {domain_name} ({acceptability_words})"  
+                                        # f"({acceptability_words}) Number of Concepts that are from the hierarchy {domain_name} ({acceptability_words})"  
+                                        ),
+                                    value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}",  
+                                    outcome_code="CHK05-OUT-05",
+                                    )
+                                )   
+                            #</set_level_count>

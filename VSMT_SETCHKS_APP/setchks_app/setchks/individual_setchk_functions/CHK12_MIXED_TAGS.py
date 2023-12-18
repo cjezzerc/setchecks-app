@@ -110,7 +110,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     check_item.general_message=(
                         "The Semantic Tag for this Concept is not the most frequently found tag in this value set. "
                         "This may suggest it is an erroneous entry. "
-                        "A full analysis of Semantic Tags used in this value set is given in the Set Analysis tab. "
+                        "A full analysis of Semantic Tags used in this value set is given in the 'Set_Analysis' tab. "
                         "The Semantic Tag for this Concept is -->"
                         )
                     check_item.row_specific_message=(
@@ -138,7 +138,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
@@ -182,7 +182,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 SetLevelTableRow(
                     descriptor=(
                         f"Number of Concepts with the most frequently "
-                        f"found Semantic Tag '({majority_tag})'. " 
+                        f"found Semantic Tag '({majority_tag})'" 
                         ),
                     value=f"{majority_count}", 
                     outcome_code="CHK12-OUT-04",
@@ -190,13 +190,16 @@ def do_check(setchks_session=None, setchk_results=None):
                 )     
             #</set_level_count>
 
+        #propose
+        # tags_list= [ x for x in tag_counts].sorted()
+        
         for tag, count in tag_counts.items():
             if tag!=majority_tag:
                 #<set_level_count>
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         descriptor=(
-                            f"Number of Concepts with the Semantic Tag '({tag})'. " 
+                            f"Number of Concepts with the Semantic Tag '({tag})'" 
                             ),
                         value=f"{count}",
                         outcome_code="CHK12-OUT-05",

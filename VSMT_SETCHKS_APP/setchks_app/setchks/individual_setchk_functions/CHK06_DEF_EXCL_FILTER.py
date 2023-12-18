@@ -77,9 +77,8 @@ def do_check(setchks_session=None, setchk_results=None):
                     check_item=CheckItem("CHK06-OUT-01")
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
-                        "This concept is not recommended for use within a patient record, "
-                        "i.e., is not recommended for clinical data entry. Please replace this concept. "
-                        "We recommend you visit termbrowser.nhs.uk to identify a more suitable term"
+                        "This Concept is not recommended for use within a patient record, "
+                        "i.e., is not recommended for clinical data entry. Please remove or replace this Concept."
                         )
                     #</check_item>
                     this_row_analysis.append(check_item)
@@ -147,7 +146,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                    "Number of rows where the Concept is in the Default Exclusion Reference Set"
+                    "Number of rows where the Concept is in the UK Default Exclusion Reference Set"
                     ),
                 value=f"{n_OUTCOME_IN_EXCL_REF_SET}",
                 outcome_code="CHK06-OUT-05",

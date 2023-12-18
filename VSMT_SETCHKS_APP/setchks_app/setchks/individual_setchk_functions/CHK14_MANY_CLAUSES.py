@@ -122,7 +122,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                 "[AMBER] There are more than 30 clauses in the refactored form. "
                 "This suggests that either you have a very scattered set of clauses, or "
-                "that you are trying to cover too large a scope with one value set"
+                "that you are trying to cover too large a scope with one value set."
                     ),
                 outcome_code="CHK14-OUT-01",
                 )
@@ -133,7 +133,19 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-            "Number of include clauses in the refactored form. "
+            "Total number of clauses in the refactored form"
+                ),
+            value=f"{n_CLAUSES}",
+            outcome_code="CHK14-OUT-02",
+            )
+        )
+    #</set_level_count>
+    
+    #<set_level_count>
+    setchk_results.set_level_table_rows.append(
+        SetLevelTableRow(
+            descriptor=(
+            "Number of include clauses in the refactored form"
                 ),
             value=f"{n_INCLUDE_CLAUSES}",
             outcome_code="CHK14-OUT-03",
@@ -145,7 +157,7 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             descriptor=(
-            "Number of exclude clauses in the refactored form. "
+            "Number of exclude clauses in the refactored form"
                 ),
             value=f"{n_EXCLUDE_CLAUSES}",
             outcome_code="CHK14-OUT-04",
@@ -153,14 +165,3 @@ def do_check(setchks_session=None, setchk_results=None):
         )
     #</set_level_count>
 
-    #<set_level_count>
-    setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Total number of clauses in the refactored form. "
-                ),
-            value=f"{n_CLAUSES}",
-            outcome_code="CHK14-OUT-02",
-            )
-        )
-    #</set_level_count>

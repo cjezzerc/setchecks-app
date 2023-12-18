@@ -129,34 +129,40 @@ def do_check(setchks_session=None, setchk_results=None):
                 did_entered=mr.D_Id_entered
                 n_FILE_PROCESSABLE_ROWS+=1
                 if cid_entered and i_data_row in duplicated_cid_rows: 
+                    row_specific_message=", ".join(f"Row {x+1+setchks_session.first_data_row}" 
+                                                    for x in duplicated_cid_rows[i_data_row])
+                    if len(row_specific_message)>120:
+                        row_specific_message="Too many rows to output"
                     #<check_item>
                     check_item=CheckItem("CHK22-OUT-02")
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
-                        "This concept id is duplicated in this file, on row(s)-->"
+                        "This Concept Id is duplicated in this input file, on row(s)-->"
                         )
                     check_item.row_specific_message=(
-                        ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
-                                    for x in duplicated_cid_rows[i_data_row])
+                        f"{row_specific_message}"
                         )
                     #</check_item>
                     this_row_analysis.append(check_item)
                 elif did_entered and i_data_row in duplicated_did_rows: 
+                    row_specific_message=", ".join(f"Row {x+1+setchks_session.first_data_row}" 
+                                                    for x in duplicated_did_rows[i_data_row])
+                    if len(row_specific_message)>120:
+                        row_specific_message="Too many rows to output"
                     #<check_item>
                     check_item=CheckItem("CHK22-OUT-05")
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
-                        "This description id is duplicated in this file, on row(s)-->"
+                        "This Description Id is duplicated in this input file, on row(s)-->"
                         )
                     check_item.row_specific_message=(
-                        ", ".join(f"Row {x+1+setchks_session.first_data_row}" 
-                                    for x in duplicated_did_rows[i_data_row])
+                        f"{row_specific_message}"
                         )
                     #</check_item>
                     this_row_analysis.append(check_item)
                 else:
                     #<check_item>
-                    check_item=CheckItem("CHK22-01")
+                    check_item=CheckItem("CHK22-OUT-01")
                     check_item.outcome_level="DEBUG"
                     check_item.general_message=(
                     "No duplication issue found"
@@ -170,7 +176,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="ISSUE"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (mr.C_Id is None)"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
@@ -191,7 +197,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN] This check has detected no issues."
                     ),
-                outcome_code="CHK22-OUT-XXX",
+                outcome_code="CHK22-OUT-03",
                 )
             )
         #</set_level_message>
@@ -202,7 +208,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[AMBER] Your value set contains duplicate Identifiers."
                     ),
-                outcome_code="CHK22-OUT-XXX",
+                outcome_code="CHK22-OUT-04",
                 )
             )
         #</set_level_message>
@@ -214,7 +220,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of duplicate Concept Ids"
                     ),
                 value=f"{n_DUPLICATE_CIDS}",
-                outcome_code="CHK22-OUT-XXX",
+                outcome_code="CHK22-OUT-06",
                 )
             )
         #</set_level_count>
@@ -226,7 +232,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "Number of duplicate Description Ids"
                     ),
                 value=f"{n_DUPLICATE_DIDS}",
-                outcome_code="CHK22-OUT-XXX",
+                outcome_code="CHK22-OUT-07",
                 )
             )
         #</set_level_count>

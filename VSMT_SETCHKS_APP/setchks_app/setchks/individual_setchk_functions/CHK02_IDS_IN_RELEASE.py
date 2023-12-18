@@ -172,13 +172,13 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item.outcome_level="DEBUG"
                 check_item.general_message=(
                     "THIS RESULT SHOULD NOT OCCUR IN PRODUCTION: "
-                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS (C_Id_why_none={mr.C_Id_why_none})"
+                    f"PLEASE REPORT TO THE SOFTWARE DEVELOPERS"
                     )
                 #</check_item>
                 this_row_analysis.append(check_item)
         else:
             #<check_item>
-            check_item=CheckItem("CHK01-OUT-BLANK_ROW")
+            check_item=CheckItem("CHK02-OUT-BLANK_ROW")
             check_item.outcome_level="DEBUG"
             check_item.general_message="Blank line"
             this_row_analysis.append(check_item)

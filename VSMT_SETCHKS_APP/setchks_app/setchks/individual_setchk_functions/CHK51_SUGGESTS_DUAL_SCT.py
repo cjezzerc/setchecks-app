@@ -253,7 +253,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN] This check has detected no issues."
                     ),
-                outcome_code="CHK51-OUT-XXX",
+                outcome_code="CHK51-OUT-01",
                 )
             ) 
         #</set_level_message>
@@ -265,7 +265,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "[AMBER] This check has made suggestions for Concepts that "
                     "you may wish to add or remove from the value set due to the change in content of the release"
                     ),
-                outcome_code="CHK51-OUT-XXX",
+                outcome_code="CHK51-OUT-04",
                 )
             )
         #</set_level_message>
@@ -274,7 +274,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                "Number of suggestions for Concepts that should be considered for removal from the value set"
+                "Number of suggestions for Concepts to consider for removal from the value set"
                     ),
                 value=f"{len(whole_vs_concept_ids_only_in_earlier)}",
                 outcome_code="CHK51-OUT-02",
@@ -286,7 +286,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 descriptor=(
-                "Number of suggestions for Concepts that should be considered for addition to the value set"
+                "Number of suggestions for Concepts to consider for addition to the value set"
                     ),
                 value=f"{len(whole_vs_concept_ids_only_in_later)}",
                 outcome_code="CHK51-OUT-03",
