@@ -200,7 +200,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] The value set contains duplicate Identifiers"
+                    "[AMBER] Your value set contains duplicate Identifiers."
                     ),
                 outcome_code="CHK22-OUT-XXX",
                 )

@@ -44,9 +44,10 @@ def make_row_overview_sheet(
     row_cell_contents=["Input Value Set Row"]
 
     for setchk_code in setchks_list_to_report:
-        row_cell_contents.append(setchk_code)
+        # row_cell_contents.append(setchk_code)
+        row_cell_contents.append(setchks[setchk_code].setchk_short_name)
     
-    row_cell_contents.append("Findings Identified")
+    row_cell_contents.append("Issues Identified")
     row_cell_contents.append("User Notes")
 
     if setchks_session.table_has_header:
@@ -63,7 +64,7 @@ def make_row_overview_sheet(
         ws.column_dimensions[get_column_letter(i+1)].width=width     
         ws.column_dimensions[get_column_letter(i+1)].width=width     
     ws.row_dimensions[current_row].height=136.8
-    text_rotations=[0]+[90]*(len(setchks_list_to_report)+1)+[0]*(1+len(setchks_session.data_as_matrix[0]))
+    text_rotations=[0]+[45]*(len(setchks_list_to_report)+1)+[0]*(1+len(setchks_session.data_as_matrix[0]))
     filters = ws.auto_filter
     rightmost_column=get_column_letter(len(cell_widths))
     filters.ref = f"A{current_row+1}:{rightmost_column}{current_row+100000}" # the "current row+1" puts the filter on the row below the labels
@@ -85,7 +86,7 @@ def make_row_overview_sheet(
             horizontal=horizontal,
             vertical=vertical,
             )
-        if cell.value=="Findings Identified":
+        if cell.value=="Issues Identified":
             cell.fill=color_fills["findings_identified"]
         cell.border = border  
 

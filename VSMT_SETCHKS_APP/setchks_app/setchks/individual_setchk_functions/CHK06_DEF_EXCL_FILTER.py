@@ -137,7 +137,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "which contains Concepts that have been assessed as being "
                     "not recommended for use within a patient record, "
                     "i.e., not recommended for clinical data entry. "
-                    "Such Concepts should be removed or replaced (even if data extract..?)"
+                    "Such Concepts should be removed or replaced."
                     ),
                 outcome_code="CHK06-OUT-06",
                 )

@@ -308,8 +308,8 @@ def do_check(setchks_session=None, setchk_results=None):
                         check_item=CheckItem("CHK04-OUT-ii-a")
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
-                            f"This concept is inactive. {retain_and_or_replace_advice_message} "
-                            "There is no suggested replacement for this concept."
+                            f"This Concept is inactive. {retain_and_or_replace_advice_message} "
+                            "There is no suggested replacement for this Concept."
                             )
                         #</check_item>
                         this_row_analysis.append(check_item)
@@ -322,9 +322,9 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-ii-b")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
+                                f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
-                                "There is no suggested replacement for this concept."
+                                "There is no suggested replacement for this Concept."
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -335,10 +335,10 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-ii-c") 
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
+                                f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                                "There is no suggested replacement for this concept - "
-                                "this issue should be resolved via running CHK04 in single version mode"
+                                "There is no suggested replacement for this Concept - "
+                                "this issue should be resolved by running CHK04 in Single Release mode."
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -350,9 +350,9 @@ def do_check(setchks_session=None, setchk_results=None):
                         check_item=CheckItem("CHK04-OUT-v-c")
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
-                            f"This concept is inactive. {retain_and_or_replace_advice_message} "
-                            "There is at least one suggested replacement for this concept. "
-                            "See supplementary tab for details"
+                            f"This Concept is inactive. {retain_and_or_replace_advice_message} "
+                            "There is at least one suggested replacement for this Concept. "
+                            "See 'CHK04_suppl' tab for details."
                             )
                         #</check_item>
                         this_row_analysis.append(check_item)
@@ -365,10 +365,10 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-v-b")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
+                                f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was inactivated since the earlier {earlier_sct_version.date_string} release. "
                                 "There is at least one suggested replacement for this concept. "
-                                "See supplementary tab for details"
+                                "See 'CHK04_suppl' tab for details."
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -379,10 +379,10 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK04-OUT-v-c") 
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"This concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
+                                f"This Concept is inactive in the {sct_version.date_string} release. {retain_and_or_replace_advice_message} "
                                 f"It was already inactive in the earlier {earlier_sct_version.date_string} release. "
-                                "There is at least one suggested replacement for this concept - "
-                                "this issue should be resolved via running CHK04 in single version mode "
+                                "There is at least one suggested replacement for this Concept - "
+                                "this issue should be resolved by running CHK04 in Single Release mode."
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -426,7 +426,7 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                 simple_message=(
-                    "[RED] This value set includes inactive concepts. "
+                    "[RED] This value set includes inactive Concepts. "
                     f"{retain_and_or_replace_advice_message}"
                     ),
                 outcome_code="CHK04-OUT-16",
@@ -476,7 +476,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN]No inactive concepts have been detected using the later release"
                     ),
-                outcome_code="CHK04-OUT-XXX",
+                outcome_code="CHK04-OUT-20",
                 )
             )
             #</set_level_message>
@@ -487,10 +487,10 @@ def do_check(setchks_session=None, setchk_results=None):
                         SetLevelTableRow(
                         simple_message=(
                             "[RED] This value set includes Concepts that are inactive in the later release, " 
-                            "and that were inactivated since the ealier release."
+                            "and that were inactivated since the earlier release."
                             f"{retain_and_or_replace_advice_message}"
                             ),
-                        outcome_code="CHK04-OUT-XXX",
+                        outcome_code="CHK04-OUT-18",
                         )
                     )
                 #</set_level_message>
@@ -543,7 +543,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         "using the earlier release and act on the information provided. " 
                         "Then re-run the updated value set in Dual Release mode."
                         ),
-                    output_code="CHK04-OUT-17"
+                    outcome_code="CHK04-OUT-17"
                     )
                 )
                 #</set_level_message>

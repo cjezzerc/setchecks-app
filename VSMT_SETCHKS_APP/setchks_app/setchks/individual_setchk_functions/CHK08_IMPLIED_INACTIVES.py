@@ -360,11 +360,11 @@ def do_check(setchks_session=None, setchk_results=None):
        setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             simple_message=(
-                "[AMBER] You should study the information provided about implied inactives. "
-                "Having as many firmly identified implied inactives in the Value Set as possible "
+                "[AMBER] You should study the information provided about possible inactive predecessors. "
+                "Having the fullest set of firmly identified inactive predecessors for each active concept "
                 "will improve the quality of data extraction. Currently this tool does not "
                 "attempt to assess the coverage of implied inactives already in the "
-                "value set. We welcome feedback on the utility of this check"
+                "value set."
                 ),
             outcome_code="CHK08-OUT-04",
             )

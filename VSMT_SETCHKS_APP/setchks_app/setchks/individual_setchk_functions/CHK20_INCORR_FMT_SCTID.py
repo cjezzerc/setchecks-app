@@ -199,8 +199,9 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"[RED] This check has found issues that must be corrected "
-                    f"for the full complement of Set Checks to be performed."
+                    "[RED] Your value set contains entries that do not conform to the SCTID data type. " 
+                    "These entries that must be corrected "
+                    "for the full suite of Set Checks to be performed."
                     ),
                 outcome_code="CHK20-OUT-07",
                 )

@@ -162,9 +162,13 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-03")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"The Concept Id is a subtype of the {domain_name} hierarchy in SNOMED CT." 
-                                f"The hierarchy has been categorised as ‘may not be appropriate’ for the "
+                                f"The Concept is a subtype of " 
+                                f"a hierarchy that has been categorised as ‘may not be appropriate’ for the "
                                 f"{data_entry_extract_type} data entry type assigned to this value set."
+                                f"The hierarchy is -->"
+                                )
+                            check_item.row_specific_message=(
+                                f"{domain_name}"
                                 )
                             #</check_item>
                             this_row_analysis.append(check_item)
@@ -174,8 +178,8 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-04")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"The Concept Id is a subtype of a hierarchy in SNOMED CT." 
-                                f"The hierarchy has been categorised as ‘not recommended’ for the "
+                                f"The Concept is a subtype of " 
+                                f"a hierarchy that has been categorised as ‘not recommended’ for the "
                                 f"{data_entry_extract_type} data entry type assigned to this value set. "
                                 f"The hierarchy is -->"
                                 )
@@ -227,7 +231,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     "[GREEN] This check has detected no issues."
                     ),
                 ),
-                outcome_code="CHK-05-XXX",
+                outcome_code="CHK05-OUT-06",
             )     
         #</set_level_message>
     else:
@@ -235,10 +239,10 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[RED] Some concepts in the value set are subtypes of top level hierarchies that are "
-                    "either are not recommended or may not be acceptable. You should check these concepts"
+                    "[AMBER] Some Concepts in the value set are subtypes of hierarchies that are categorised as "
+                    "either 'not recommended' or 'may not be acceptable'. You should check these Concepts."
                     ),
-                outcome_code="CHK-05-XXX", 
+                outcome_code="CHK05-OUT-07", 
                 )
             )
         #</set_level_message>
@@ -251,7 +255,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"{data_entry_extract_type} data entry type assigned to this value set." 
                     ),
                 value=f"{n_CONCEPTS_NOT_RECOMMENDED}",  
-                outcome_code="CHK-05-24",
+                outcome_code="CHK05-OUT-08",
                 )
             )     
         #</set_level_count>
@@ -264,7 +268,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     f"{data_entry_extract_type} data entry type assigned to this value set." 
                     ),
                 value=f"{n_CONCEPTS_MAY_NOT_BE_APPROPRIATE}",  
-                outcome_code="CHK-05-25",
+                outcome_code="CHK05-OUT-09",
                 )
             )     
         #</set_level_count>
@@ -280,7 +284,7 @@ def do_check(setchks_session=None, setchk_results=None):
                                 f"Number of Concepts that are subtypes of - {acceptability} {domain_name}"  
                                 ),
                             value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}",  
-                            outcome_code="CHK-05-XXX", # make this OUT-05?
+                            outcome_code="CHK05-OUT-05",
                             )
                         )   
                     #</set_level_count>

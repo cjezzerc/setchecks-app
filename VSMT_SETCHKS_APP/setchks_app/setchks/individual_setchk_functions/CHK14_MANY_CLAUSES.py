@@ -107,7 +107,7 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.set_level_table_rows.append(
         SetLevelTableRow(
             simple_message=(
-                "[NEUTRAL] A refactored form of your value set can be found in the 'Refactored' tab'."
+                "[GREEN] This check has detected no issues."
                 ),
             outcome_code="CHK14-OUT-06",
             )

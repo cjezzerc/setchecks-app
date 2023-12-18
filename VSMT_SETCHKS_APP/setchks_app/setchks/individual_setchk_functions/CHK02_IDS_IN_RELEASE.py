@@ -149,7 +149,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item=CheckItem("CHK02-OUT-07")
                 check_item.outcome_level="DEBUG"
                 check_item.general_message=(
-                    "The unexpected value in the MIXED column " 
+                    "The unexpected value in the Identifier column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
@@ -160,7 +160,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 check_item=CheckItem("CHK02-OUT-08")
                 check_item.outcome_level="DEBUG"
                 check_item.general_message=(
-                    "The blank in the MIXED column " 
+                    "The blank in the Identifier column " 
                     "has not been checked against " 
                     f"the selected SNOMED CT release {selected_sct_version}."
                     )
@@ -211,8 +211,9 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
-                        f"[RED] There are Identifiers in this value set that do not appear in the selected release. " 
-                        f"These must be removed or corrected for the full complement of Set Checks to be performed."
+                        f"[RED] There are Identifiers in this value set that do not appear, "
+                         "as active or inactive concepts, in the selected release. " 
+                        f"These must be removed or corrected for the full suite of Set Checks to be performed."
                         ),
                     outcome_code="CHK02-OUT-21",
                     )
@@ -225,7 +226,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     simple_message=(
                         f"[RED] There are Identifiers in this value set that do not appear, "
                          "as active or inactive concepts, in the selected release. " 
-                        f"These must be removed or corrected for the full set of Set Checks to be performed. "
+                        f"These must be removed or corrected for the full suite of Set Checks to be performed. "
                         f"Some of these Identifiers appear in the latest release which suggests that the value set may "
                         f"correspond to a later release than your selected release."
                         ),
@@ -240,7 +241,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     simple_message=(
                         f"[RED] There are Identifiers in this value set that do not appear, "
                          "as active or inactive concepts, in the selected release. "
-                        f"These must be removed or corrected for the full set of Set Checks to be performed. "
+                        f"These must be removed or corrected for the full suite of Set Checks to be performed. "
                         f"None of these Identifiers appear in any releases later than your selected release."
                         ),
                     outcome_code="CHK02-OUT-17",

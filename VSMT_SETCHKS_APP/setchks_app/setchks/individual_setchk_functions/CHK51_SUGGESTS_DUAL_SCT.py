@@ -262,8 +262,8 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[AMBER] Our algorithm has made suggestions for Concepts that "
-                    "you may wish to remove from the value set due to the change in content of the release"
+                    "[AMBER] This check has made suggestions for Concepts that "
+                    "you may wish to add or remove from the value set due to the change in content of the release"
                     ),
                 outcome_code="CHK51-OUT-XXX",
                 )

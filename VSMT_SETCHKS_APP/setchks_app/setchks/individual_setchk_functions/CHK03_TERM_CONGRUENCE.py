@@ -105,7 +105,7 @@ def generate_check_item(
         check_item.general_message=(
             "The provided Term does not conform to the capitalisation rule "
             "for this particular Term. " 
-            "According to its capitalisation rule this description term should be written as -->"
+            "According to its capitalisation rule this Term should be written as -->"
             )
         check_item.row_specific_message=(
             f"{csr_correct_dterm}"
@@ -141,7 +141,7 @@ def generate_check_item(
         check_item.outcome_level="ISSUE"
         check_item.general_message=(
             "The entry in the Term column is blank. "
-            "The Preferred Term for this Concept Id is -->"
+            "The Preferred Term for this Concept is -->"
             )
         check_item.row_specific_message=(
             f"{preferred_term}"
@@ -380,7 +380,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    "[RED] This check has detected errors that need to be fixed"
+                    "[RED] This check has detected errors that need to be fixed."
                     ),
                 outcome_code="CHK03-OUT-19",
                 )
