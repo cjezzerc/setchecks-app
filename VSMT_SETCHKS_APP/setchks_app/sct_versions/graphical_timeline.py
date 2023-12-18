@@ -16,7 +16,7 @@ def create_graphical_timeline(
     selected_flags=[(x==selected_sct_date) for x in available_sct_dates]
     
     year0=2022
-    month0=1
+    month0=3
     day0=1
 
     x_list=[]
@@ -54,7 +54,7 @@ def create_graphical_timeline(
         visible=False,
         dtick=1,
         showgrid=False,
-        range=[0.0,25.0],
+        range=[0.0,27.0],
         tickfont={'size':5,},
         # domain=[0.0,1.0],
         )

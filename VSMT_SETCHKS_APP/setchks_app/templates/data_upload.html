@@ -54,19 +54,19 @@
                     .custom-file-upload {
                        
                         display: inline-block;
-                        padding: 6px 12px;
                         cursor: pointer;
-                        width: 60vw; 
-                        max-width: 400px; 
+                        /* width: 30vw;  */
+                        width: 400px; 
+                        height: 130px;
                         margin: 5 auto; 
                         border-style: solid;
-                        border-width: 5px;
+                        border-width: 3px;
                         border-color: #005eb8;
                         background-color: white; 
                         border-radius: 20px; 
                         font-size: 2em; 
                         line-height: 2em; 
-                        padding: 10px; 
+                        padding: 20px 20px; 
                         text-align: center; 
                         /* color: */
                     }
@@ -87,10 +87,13 @@
                     
                     <div  class="upload-methods">   
                         <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
+                        {% if setchks_session.data_as_matrix == [] %}
                         <div>       
                             <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input" class="custom-file-upload">
-                                    <i class="bi bi-cloud-upload-fill"></i> Browse for a file
+                                    <i class="bi bi-cloud-upload-fill"></i> 
+                                    Browse for a file 
+                                    
                                 </label>
                                 <input id="data-browse-input" 
                                     type="file" 
@@ -99,7 +102,43 @@
                                     onchange="$('.data-browse-form').submit();" 
                                     />
                             </form>
+                        {% else %}
+                        <div>       
+                            <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
+                                <label for="data-browse-input" class="custom-file-upload">
+                                    <i class="bi bi-cloud-upload-fill"></i> 
+                                    Load a new version of file 
+                                    <div style="font-size: .6em; line-height: 1.3em;"> 
+                                        Retain items previously entered such as name, purpose, SNOMED CT version etc
+                                    </div>
+                                </label>
+                                <input id="data-browse-input" 
+                                    type="file" 
+                                    name="uploaded_file"
+                                    accept=".txt,.tsv,.xlsx" 
+                                    onchange="$('.data-browse-form').submit();" 
+                                    />
+                            </form>
+                            <div style="height:20px;"></div>
+
+                            <form action="/column_identities" class="data-browse-form-default-settings" method="post" enctype="multipart/form-data">
+                                <label for="data-browse-input-default-settings" class="custom-file-upload">
+                                    <i class="bi bi-cloud-upload-fill"></i> 
+                                    Browse for a new file 
+                                    <div style="font-size: .6em; line-height: 0.8em;"> 
+                                        Revert to default settings 
+                                    </div>
+                                </label>
+                                <input id="data-browse-input-default-settings" 
+                                    type="file" 
+                                    name="uploaded_file_default_settings"
+                                    accept=".txt,.tsv,.xlsx" 
+                                    onchange="$('.data-browse-form-default-settings').submit();" 
+                                    />
+                            </form>
                         </div>
+                        {% endif %}
+
                     </div> 
                 </div>
             </div>
@@ -123,7 +162,7 @@
                 }
         </style>
          <div class="col-10"> 
-            <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a>
+            <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
         </div>
         <div class="col-2">
             {% if setchks_session.data_as_matrix != [] %}

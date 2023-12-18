@@ -348,15 +348,15 @@
                 }
         </style>
          <div class="col-8"> 
-            <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a>
-            <a href="/data_upload"  class="btn setchks-btn">Data upload</a>
+            <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
+            <a href="/data_upload"  class="btn setchks-btn">Home</a>
         </div>
         <div class="col-4">
-            <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> (Column identities)</a>
+            <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (Column identities)</a>
             {% if setchks_session.sct_version == None %}
-                <a href="/select_and_run_checks"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> (Select and run checks)</a>
+                <a href="/select_and_run_checks"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
             {% else %}
-                <a href="/select_and_run_checks"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> (Select and run checks)</a>
+                <a href="/select_and_run_checks"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
             {% endif %}
         </div>
     

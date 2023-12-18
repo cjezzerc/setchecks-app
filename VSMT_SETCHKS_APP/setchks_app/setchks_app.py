@@ -329,33 +329,35 @@ def data_upload():
 #####################################
 
 
-@bp.route('/confirm_upload', methods=['GET','POST'])
-def confirm_upload():
-    print(request.form.keys())
-    print("REQUEST:",request.args.keys())
-    print(request.files)
+# @bp.route('/confirm_upload', methods=['GET','POST'])
+# def confirm_upload():
+#     print(request.form.keys())
+#     print("REQUEST:",request.args.keys())
+#     print(request.files)
 
-    setchks_session=gui_setchks_session.get_setchk_session(session)
+#     setchks_session=gui_setchks_session.get_setchk_session(session)
 
-    # if reach here via file upload, load the data into matrix
-    if 'uploaded_file' in request.files:
-        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
-        setchks_session.reset_analysis() # throw away all old results
-        setchks_session.marshalled_rows=[]
-        # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
+#     # if reach here via file upload, load the data into matrix
+#     if 'uploaded_file' in request.files:
+#         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
+#         setchks_session.reset_analysis() # throw away all old results
+#         setchks_session.marshalled_rows=[]
+#         # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
-    else:
-        pass
+    
+    
+#     else:
+#         pass
 
-    bc=Breadcrumbs()
-    bc.set_current_page(current_page_name="confirm_upload")
+#     bc=Breadcrumbs()
+#     bc.set_current_page(current_page_name="confirm_upload")
 
-    return render_template('confirm_upload.html',
-                           setchks_session=setchks_session,
-                           file_data=setchks_session.data_as_matrix,
-                           filename=setchks_session.filename,
-                           breadcrumbs_styles=bc.breadcrumbs_styles,
-                            )
+#     return render_template('confirm_upload.html',
+#                            setchks_session=setchks_session,
+#                            file_data=setchks_session.data_as_matrix,
+#                            filename=setchks_session.filename,
+#                            breadcrumbs_styles=bc.breadcrumbs_styles,
+#                             )
 
 #####################################
 #####################################
@@ -378,7 +380,12 @@ def column_identities():
         setchks_session.marshalled_rows=[]
         # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
-
+    if 'uploaded_file_default_settings' in request.files:
+        session['setchks_session']=None
+        setchks_session=gui_setchks_session.get_setchk_session(session)
+        setchks_session.load_data_into_matrix(data=request.files['uploaded_file_default_settings'], upload_method='from_file', table_has_header=True)
+        # setchks_session.reset_analysis() # throw away all old results
+        setchks_session.marshalled_rows=[]
     # set column_info if nor already set OR data has changed number of columns (allows simple reload to leave it unchanged) 
     if (setchks_session.columns_info==None) or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0])):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))

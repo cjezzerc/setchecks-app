@@ -26,11 +26,12 @@
 
 <body>
     
-    <nav class="navbar navbar-light " style="background-color: #005eb8; height:fit-content; margin-bottom: 0em;">
+    <nav class="navbar navbar-light " style="background-color: #005eb8; height:fit-content; margin-bottom: 0em; padding-left: 0.5em;">
         <div class="container-fluid">
             <p style="font-size: 1em; color: white">
-            <img src="../static/svg/nhs_logo.svg" alt="" width="200" height="30">
-            Value Set Management Tool: Set Checks (Prototype) 
+            <!-- <img src="../static/svg/nhs_logo.svg" alt="" width="300" height="30"> -->
+            <img src="../static/images/VSMT_banner.jpg" alt="" width="650">
+            <!-- Value Set Management Tool: Set Checks (Prototype)  -->
             <span style="font-size: 0.6em;"> 
                 [commit:{{config["VERSION"]}}]
             </span>
@@ -46,13 +47,13 @@
         .setchks-breadcrumb-weak {font-weight: normal; color:#4c6272}
     </style>
     <!-- <nav style="--bs-breadcrumb-divider: '>>>>'; font-size:1.5em; margin-left:1em; margin-top:0.2em;" aria-label="breadcrumb"> -->
-    <nav style="--bs-breadcrumb-divider: '&rarr;'; font-size:1em; margin-left:1em; margin-top:0.2em;" aria-label="breadcrumb">
+    <nav style="--bs-breadcrumb-divider: '&rarr;'; padding-left: 1em;background-color:lightgray; font-size:2em; margin-left:0em; margin-top:0em;" aria-label="breadcrumb">
         <ol class="breadcrumb breadcrumb-responsive">
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> Data Upload </li>
+            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> Home </li>
             <!-- <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["confirm_upload"] }}"> Confirm Upload </li> -->
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["column_identities"] }}"> Column Identities</li>
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Enter Metadata </li>
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Select and Run Checks</li>  
+            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Settings </li>
+            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Checks</li>  
         </ol>
     </nav>
 
