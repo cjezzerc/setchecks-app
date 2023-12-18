@@ -16,7 +16,12 @@ logger=logging.getLogger(__name__)
 from redis import from_url
 
 from setchks_app.redis.get_redis_client import get_redis_string
-
+from setchks_app.redis.rq_utils import (
+    start_rq_worker_if_none_running, 
+    kill_all_rq_workers,
+    start_specific_rq_worker,
+    )
+    
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
@@ -84,9 +89,11 @@ def create_app():
             print("Configuring mongodb to connect to localhost")
             app.config['SESSION_MONGODB']=MongoClient()
 
-    from setchks_app.redis.rq_utils import start_rq_worker_if_none_running, kill_all_rq_workers
+    
     kill_all_rq_workers()
-    start_rq_worker_if_none_running()
+    # start_rq_worker_if_none_running()
+    start_specific_rq_worker(worker_name="worker_long_jobs")
+    start_specific_rq_worker(worker_name="worker_short_jobs")
 
     server_session = flask_session.Session(app) # resets session variable behaviour so uses redis
     

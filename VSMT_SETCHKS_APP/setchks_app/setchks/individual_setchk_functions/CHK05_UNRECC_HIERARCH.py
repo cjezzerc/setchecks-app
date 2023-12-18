@@ -230,8 +230,8 @@ def do_check(setchks_session=None, setchk_results=None):
                 simple_message=(
                     "[GREEN] This check has detected no issues."
                     ),
-                ),
                 outcome_code="CHK05-OUT-06",
+                ),
             )     
         #</set_level_message>
     else:

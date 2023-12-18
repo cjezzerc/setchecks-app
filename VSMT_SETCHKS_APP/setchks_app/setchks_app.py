@@ -37,6 +37,7 @@ from setchks_app.redis.rq_utils import (
     launch_report_on_env_vars,
     start_rq_worker_if_none_running, 
     kill_all_rq_workers,
+    start_specific_rq_worker,
     )
 from rq import Queue
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
@@ -240,6 +241,7 @@ def rq():
     logger.debug(list(request.args.items()))
     action=request.args.get("action", None)
     job_id=request.args.get("job_id", None)
+    worker_name=request.args.get("worker_name", None)
     
     setchks_session=gui_setchks_session.get_setchk_session(session)
     
@@ -284,6 +286,10 @@ def rq():
         kill_all_rq_workers()
         start_rq_worker_if_none_running()
         return 'worker restarted'
+    
+    if action=="start_specific_worker":
+        message=start_specific_rq_worker(worker_name=worker_name)
+        return message
     
     if action=="kill_all_workers":
         kill_all_rq_workers()
@@ -567,7 +573,9 @@ def select_and_run_checks():
              )
         ):
 
-        start_rq_worker_if_none_running()
+        # start_rq_worker_if_none_running()
+        start_specific_rq_worker(worker_name="worker_long_jobs")
+        start_specific_rq_worker(worker_name="worker_short_jobs")
         setchks_session.setchks_results={}  
         setchks_session.setchks_run_status={}
 

@@ -9,6 +9,7 @@ logging.basicConfig(
     level=logging.DEBUG,
 )
 
+import redis
 from rq import Queue
 from rq.job import Job
 from rq.command import send_shutdown_command
@@ -23,6 +24,32 @@ def start_rq_worker():
     logger.debug("Started rq worker")
     response=os.popen("rq info").readlines()
     logger.debug(f"response from rq info is {response}")
+
+def start_specific_rq_worker(worker_name=None):
+    if worker_name not in ["worker_short_jobs", "worker_long_jobs"]:
+        logger.error(f"Unrecognised worker: {worker_name}")
+        return f"Unrecognised worker: {worker_name}"
+
+    redis_string=get_redis_string()
+    redis_client=redis.from_url(redis_string)
+    ws=Worker.all(connection=redis_client)
+    worker_names=[w.name for w in ws]
+
+    if worker_name in worker_names:
+        logger.debug(f"Worker already running: {worker_name}")
+        return (f"Worker already running: {worker_name}")
+    
+    logger.debug("About to start rq worker {worker_name}")
+    if worker_name=="worker_short_jobs":
+        os.system(f"rq worker --name worker_short_jobs --url '{redis_string}' short_jobs_queue &")
+    else:
+        os.system(f"rq worker --name worker_long_jobs --url '{redis_string}' long_jobs_queue &")
+
+    logger.debug("(Re)started rq worker {worker_name}")
+    response=os.popen("rq info --raw short_jobs_queue long_jobs_queue").readlines()
+    logger.debug(f"response from rq info is {response}")
+    return response
+
 
 def count_running_rq_workers():
     redis_string=get_redis_string()

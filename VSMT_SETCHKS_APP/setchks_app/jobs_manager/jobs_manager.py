@@ -21,7 +21,16 @@ class SetchksJobsManager():
         self.setchks_session=setchks_session
         
     def launch_job(self, setchk=None, setchks_session=None, generate_excel=False):
-        q = rq.Queue(connection=redis.from_url(self.redis_connection_string))
+        
+        if len(setchks_session.marshalled_rows)>200:
+            queue_name="long_jobs_queue"
+        else:
+            queue_name="short_jobs_queue"
+
+        q = rq.Queue(
+            queue_name,
+            connection=redis.from_url(self.redis_connection_string),
+            )
         if generate_excel:
             rq_job = q.enqueue(setchks_session.generate_excel_output)
             self.jobs.append(SetchksJob(rq_job=rq_job, associated_task="GENERATE_EXCEL"))
