@@ -4,6 +4,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import NamedStyle, Alignment
 import setchks_app.setchks.setchk_definitions
 from . import styling
+from .termbrowser import termbrowser_hyperlink
  
 def make_analysis_by_row_sheet(
     ws=None, 
@@ -43,8 +44,26 @@ def make_analysis_by_row_sheet(
     total_dt_inner_loop=0
     max_dt_inner_loop=0
     min_dt_inner_loop=9999999
+    mixed_column=setchks_session.columns_info.mixed_column
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
-        data_row_cell_contents=[x.string for x in data_row]
+        # data_row_cell_contents=[x.string for x in data_row]
+        cid=setchks_session.marshalled_rows[i_data_row].C_Id
+        cid_entered=setchks_session.marshalled_rows[i_data_row].C_Id_entered
+        data_row_cell_contents=[]
+        for i_col, cell_content in enumerate(data_row): 
+            if i_col==mixed_column and cid is not None and cid_entered is not None: # don't hyperlink D_Id
+                                                                                    # or non-SCTID
+                                                                                    # hyperlink D_Id is confusing and the implied C_Id is given nearby
+                data_row_cell_contents.append(
+                    termbrowser_hyperlink(
+                        sctid=cell_content.string, 
+                        destination_sctid=cid,
+                        )
+                    )
+            else:
+                data_row_cell_contents.append(cell_content.string)
+
+        
         something_was_output=False
         row_analysis_row_numbers_map.append({})
         current_row_map=row_analysis_row_numbers_map[-1] 
@@ -147,7 +166,12 @@ def make_analysis_by_row_sheet(
                 # cell.fill=color_fills["grey"]
                 # cell.border = border
             else:
-                cell.style=styling.vsmt_style_wrap_top 
-                
-
+                strval=str(cell.value)
+                if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+                    cell.style=styling.vsmt_style_wrap_top_hyperlink
+                elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+                    cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+                else:
+                    cell.style=styling.vsmt_style_wrap_top
+            
     return row_analysis_row_numbers_map

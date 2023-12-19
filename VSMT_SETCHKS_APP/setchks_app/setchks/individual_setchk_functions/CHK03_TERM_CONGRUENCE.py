@@ -276,13 +276,13 @@ def do_check(setchks_session=None, setchk_results=None):
                 else:
                     csr_correct_dterm=""
                 
-                check_item=CheckItem("CHK03-OUT-LEAF")
-                check_item.outcome_level="FACT"
-                check_item.general_message="In the flowchart, this row reached leaf -->"
-                check_item.row_specific_message=(
-                    f"leaf {leaf}"
-                    )
-                this_row_analysis.append(check_item)
+                # check_item=CheckItem("CHK03-OUT-LEAF")
+                # check_item.outcome_level="FACT"
+                # check_item.general_message="In the flowchart, this row reached leaf -->"
+                # check_item.row_specific_message=(
+                #     f"leaf {leaf}"
+                #     )
+                # this_row_analysis.append(check_item)
                 
                 for outcome_code_digits in outcome_codes_matrix[leaf]:
                     check_item=generate_check_item(outcome_code=f"CHK03-OUT-{outcome_code_digits}")

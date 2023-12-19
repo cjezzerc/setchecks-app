@@ -591,6 +591,7 @@ def select_and_run_checks():
         setchks_session.setchks_run_status={}
 
         # not convinced why would not always recalculate mr when run checks
+        time0_for_mr=time.time()
         if setchks_session.setchks_results=={}: # Missing results means either 
                                                 # marshalled rows never calculated, 
                                                 # or sct_release or column_identities have changed
@@ -602,7 +603,7 @@ def select_and_run_checks():
                         setchks_session.passes_gatekeeper=False
                     elif setchks_session.data_entry_extract_type=="EXTRACT" and mr.D_Id_entered is not None:
                         setchks_session.passes_gatekeeper=False
-            
+        logger.debug(f"Time for doing all the mr.do_things_dependent_on_SCT_release = {time.time()-time0_for_mr}")
         
         setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
             setchks_list=setchks_session.selected_setchks, 

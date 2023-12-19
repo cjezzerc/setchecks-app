@@ -2,6 +2,7 @@
 from openpyxl.utils import get_column_letter
 import setchks_app.setchks.setchk_definitions
 from . import styling
+from .termbrowser import termbrowser_hyperlink
 
 def make_analysis_by_outcome_sheet(
     ws=None, 
@@ -62,8 +63,24 @@ def make_analysis_by_outcome_sheet(
             message=f"{outcome_code}:{first_check_item.general_message}"
             ws.append([message])
             current_ws_row+=1
+            mixed_column=setchks_session.columns_info.mixed_column
             for i_data_row, data_row, check_item in check_items_dict[setchk_code][outcome_code]:
-                data_row_cell_contents=[x.string for x in data_row]
+                # data_row_cell_contents=[x.string for x in data_row]
+                cid=setchks_session.marshalled_rows[i_data_row].C_Id
+                cid_entered=setchks_session.marshalled_rows[i_data_row].C_Id_entered
+                data_row_cell_contents=[]
+                for i_col, cell_content in enumerate(data_row): 
+                    if i_col==mixed_column and cid is not None and cid_entered is not None: # don't hyperlink D_Id
+                                                                                            # or non-SCTID
+                                                                                            # hyperlink D_Id is confusing and the implied C_Id is given nearby
+                        data_row_cell_contents.append(
+                            termbrowser_hyperlink(
+                                sctid=cell_content.string, 
+                                destination_sctid=cid,
+                                )
+                            )
+                    else:
+                        data_row_cell_contents.append(cell_content.string)
                 input_file_row_number=i_data_row+setchks_session.first_data_row+1
                 row_specific_message=check_item.row_specific_message
                 if row_specific_message=="None":
@@ -104,13 +121,27 @@ def make_analysis_by_outcome_sheet(
             # cell.alignment=Alignment(wrap_text=True, vertical='top')
             # cell.style=vsmt_style_wrap_top
             # cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
+            # if divider_line:
+            #     cell.style=styling.vsmt_style_grey_row
+            #     # cell.fill=color_fills["grey"]
+            #     # cell.border = border
+            # else:
+            #     cell.style=styling.vsmt_style_wrap_top 
+
             if divider_line:
                 cell.style=styling.vsmt_style_grey_row
                 # cell.fill=color_fills["grey"]
                 # cell.border = border
             else:
-                cell.style=styling.vsmt_style_wrap_top 
-                
+                strval=str(cell.value)
+                if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+                    cell.style=styling.vsmt_style_wrap_top_hyperlink
+                elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+                    cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+                else:
+                    cell.style=styling.vsmt_style_wrap_top
+
+
 
     # ws['A1'].hyperlink="#By_Row!C5"
     return analysis_by_outcomes_row_numbers_map

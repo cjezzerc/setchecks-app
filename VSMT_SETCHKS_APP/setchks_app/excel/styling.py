@@ -1,4 +1,4 @@
-from openpyxl.styles import Alignment, Border, Side, PatternFill, NamedStyle
+from openpyxl.styles import Alignment, Border, Side, PatternFill, NamedStyle, Font
 from openpyxl.styles.colors import Color
 from openpyxl.styles import numbers
 
@@ -19,6 +19,32 @@ border = Border(left=Side(style='thin'),
 vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
 vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
 vsmt_style_wrap_top.number_format = numbers.FORMAT_TEXT
+
+
+vsmt_style_wrap_top_hyperlink=NamedStyle(name="vsmt_style_wrap_top_hyperlink")
+vsmt_style_wrap_top_hyperlink.alignment=Alignment(wrap_text=True, vertical='top')
+vsmt_style_wrap_top_hyperlink.number_format = numbers.FORMAT_TEXT
+vsmt_style_wrap_top_hyperlink.font = Font(name='Calibri',
+            size=11,
+            bold=True,
+            italic=False,
+            vertAlign=None,
+            underline='single',
+            strike=False,
+            color='FF0000EE')
+
+vsmt_style_wrap_top_double_hyperlink=NamedStyle(name="vsmt_style_wrap_top_double_hyperlink")
+vsmt_style_wrap_top_double_hyperlink.alignment=Alignment(wrap_text=True, vertical='top')
+vsmt_style_wrap_top_double_hyperlink.number_format = numbers.FORMAT_TEXT
+vsmt_style_wrap_top_double_hyperlink.font = Font(name='Calibri',
+            size=11,
+            bold=True,
+            italic=False,
+            vertAlign=None,
+            underline='double',
+            strike=False,
+            color='FF0000EE')
+
 
 vsmt_style_grey_row=NamedStyle(name="vsmt_style_grey_row")
 vsmt_style_grey_row.fill=color_fills["grey"]

@@ -28,9 +28,9 @@ def do_check(setchks_session=None, setchk_results=None):
     concepts=ConceptsDict(sct_version=setchks_session.sct_version.date_string)
 
     plain_english_operators_fmts={
-        "=":"Just %s ",
-        "<":"All the descendants of %s (but not including itself)",
-        "<<":"All the descendants of %s (including itself)",
+        "=":"Just %s | %s |",
+        "<":"All the descendants of %s | %s | (but not including itself)",
+        "<<":"All the descendants of %s | %s | (including itself)",
         }
     
     ##################################################################
@@ -90,15 +90,14 @@ def do_check(setchks_session=None, setchk_results=None):
     ###########################################
     chk_specific_sheet=ChkSpecificSheet(sheet_name="CHK10_suppl")
     setchk_results.chk_specific_sheet=chk_specific_sheet
-    chk_specific_sheet.col_widths=[20,40,20,40,20,40,20]
+    chk_specific_sheet.col_widths=[60,20,40,20,40,20]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "",
+        "Current Members",
         "",
-        "CURRENT CONTENT",
-        "",
-        "SUGGESTED EXTRA CONTENT",
+        "Suggested Additional Members",
         "",
         ]
 
@@ -106,7 +105,6 @@ def do_check(setchks_session=None, setchk_results=None):
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "Group",
-        "(Preferred Term)",
         "Concept Id",
         "Preferred Term",
         "Concept Id",
@@ -137,11 +135,13 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_members_of_clause_excluded=len(members_excluded_from_this_clause)
                 include_cbc_id=str(include_clause.clause_base_concept_id)
                 include_cbc_pt=concepts[include_cbc_id].pt
-                plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+                plain_english_formatted_clause=(
+                    plain_english_operators_fmts[include_clause.clause_operator] % 
+                    (include_cbc_id, include_cbc_pt)
+                    )
                 row=chk_specific_sheet.new_row()
                 row.cell_contents=[
                 plain_english_formatted_clause,
-                include_cbc_pt,
                 f"{n_members_of_clause_in_vs}/{n_members_of_clause}",
                 "",
                 f"{n_members_of_clause_excluded}/{n_members_of_clause}",
@@ -152,19 +152,30 @@ def do_check(setchks_session=None, setchk_results=None):
                 for ei_clause, e_clause_and_members_tuple in enumerate(exclude_clauses_and_memberships):
                     exclude_clause, exclude_members=e_clause_and_members_tuple
                     members_of_include_that_this_exclude_removes=members_excluded_from_this_clause.intersection(exclude_members)
-                    exclude_cbc_id=str(exclude_clause.clause_base_concept_id)
-                    exclude_cbc_pt=concepts[exclude_cbc_id].pt
-                    plain_english_formatted_clause=plain_english_operators_fmts[exclude_clause.clause_operator] % exclude_cbc_id
+                    
                     if members_of_include_that_this_exclude_removes != set():
+                        if len(members_of_include_that_this_exclude_removes)>1:
+                            exclude_cbc_id=str(exclude_clause.clause_base_concept_id)
+                            exclude_cbc_pt=concepts[exclude_cbc_id].pt
+                            plain_english_formatted_clause=(
+                                plain_english_operators_fmts[exclude_clause.clause_operator] % 
+                                (exclude_cbc_id, exclude_cbc_pt)
+                                )
+                        else: # don't output clause if is just one concept
+                            plain_english_formatted_clause=""
                         n_removed=len(members_of_include_that_this_exclude_removes)
                         n_in_exclude=len(exclude_members)
-                        for member in members_of_include_that_this_exclude_removes:
+                        for i_member, member in enumerate(members_of_include_that_this_exclude_removes):
+                            if i_member==0:
+                                common_nature=plain_english_formatted_clause
+                            else:
+                                common_nature="see above"
                             row=chk_specific_sheet.new_row()
                             row.cell_contents=[
-                            "","","","",
+                            "","","",
                             str(member.concept_id),
                             member.pt,
-                            plain_english_formatted_clause,
+                            common_nature,
                             ]
                         row=chk_specific_sheet.new_row()
                         row.row_fill="grey"
@@ -178,7 +189,6 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "",
                         "",
                         str(member.concept_id),
                         member.pt
