@@ -335,19 +335,19 @@ def do_check(setchks_session=None, setchk_results=None):
 
     # assign CHK-OUT-04 type check items depending on whether have see FSN misuse
     # in which case useful to see what all the other term types are
-    print("======================")
+    # print("======================")
     for this_row_analysis in setchk_results.row_analysis:
         for check_item in this_row_analysis:
-            print(check_item.outcome_code)
+            # print(check_item.outcome_code)
             if check_item.outcome_code=="CHK03-OUT-04":
-                print(check_item.outcome_level)
+                # print(check_item.outcome_level)
                 if n_FSN_FOR_DATA_ENTRY>0:
                     check_item.outcome_level="FACT"
-                    print("F")
+                    # print("F")
                 else:
                     check_item.outcome_level="DEBUG"
-                    print("D")
-                print(check_item.outcome_level)
+                    # print("D")
+                # print(check_item.outcome_level)
         
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION

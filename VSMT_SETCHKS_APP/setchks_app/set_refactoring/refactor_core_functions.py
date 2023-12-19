@@ -6,6 +6,10 @@ from setchks_app.set_refactoring.candidate_base_concept import CandidateBaseConc
 from setchks_app.set_refactoring.valset_module import Clause
 from setchks_app.set_refactoring.valset_module import ClauseMembershipAnalysis
 
+def debug_print(*args):
+    debug=False
+    if debug:
+        print(" ".join([str(x) for x in args]))
 ##########################################
 # get_set_of_cbcs_based_on_all_ancestors #
 ##########################################
@@ -19,23 +23,23 @@ def get_set_of_incl_cbcs_based_on_all_ancestors(
     all_inclusion_candidate_base_concept_ids=set()
     for concept_id in trimmed_valset_members_set:
         all_inclusion_candidate_base_concept_ids.update(concepts[concept_id].ancestors)
-    # print("Initially:",all_candidate_base_concept_ids)
-    print("Step1 took (in seconds)", time.time()-start_timea)    
+    # debug_print("Initially:",all_candidate_base_concept_ids)
+    debug_print("Step1 took (in seconds)", time.time()-start_timea)    
 
     # remove root snomedct concept
-    # print(138875005 in all_inclusion_candidate_base_concept_ids)
-    # print(len(all_inclusion_candidate_base_concept_ids))
-    # print(all_inclusion_candidate_base_concept_ids)
+    # debug_print(138875005 in all_inclusion_candidate_base_concept_ids)
+    # debug_print(len(all_inclusion_candidate_base_concept_ids))
+    # debug_print(all_inclusion_candidate_base_concept_ids)
     all_inclusion_candidate_base_concept_ids.discard(138875005)
-    # print(len(all_inclusion_candidate_base_concept_ids))
+    # debug_print(len(all_inclusion_candidate_base_concept_ids))
 
     start_timeb=time.time()
     all_incl_cbcs=set()
     for i_cbc, concept_id in enumerate(all_inclusion_candidate_base_concept_ids):
-        print("Getting cbc %s ( %s of %s )" % ( concept_id, i_cbc, len(all_inclusion_candidate_base_concept_ids)))
+        debug_print("Getting cbc %s ( %s of %s )" % ( concept_id, i_cbc, len(all_inclusion_candidate_base_concept_ids)))
         cbc=CandidateBaseConcept(concept_id=concept_id, concepts=concepts, target_members=valset_membership_analysis.final_inclusion_list)
         all_incl_cbcs.add(cbc)
-    print("Step2 took (in seconds)", time.time()-start_timeb)   
+    debug_print("Step2 took (in seconds)", time.time()-start_timeb)   
     return all_inclusion_candidate_base_concept_ids, all_incl_cbcs 
 
 ################################
@@ -45,7 +49,7 @@ def get_set_of_incl_cbcs_based_on_all_ancestors(
 def purge_poor_quality_incl_cbcs(all_incl_cbcs=None):
     to_be_purged_set=set()
     for cbc in all_incl_cbcs:
-        # print(cbc)
+        # debug_print(cbc)
         to_be_purged_reason=""
         if cbc.n_desc_plus_self_in_membership<2:
             to_be_purged_reason+="reason1 "
@@ -56,19 +60,19 @@ def purge_poor_quality_incl_cbcs(all_incl_cbcs=None):
         if ((float(cbc.n_children_in_membership)/cbc.n_children_all)<0.6) and (cbc.n_children_all>9):
             to_be_purged_reason+="reason4 "
         if cbc.concept_id==996581000000109:
-            print(f"PROBLEM ID DATA nc:{cbc.n_children_all} ncm:{cbc.n_children_in_membership}")
+            debug_print(f"PROBLEM ID DATA nc:{cbc.n_children_all} ncm:{cbc.n_children_in_membership}")
         if to_be_purged_reason != "":
             # if cbc.concept_id==problem_incl_id:
-            #     print("PURGING %s reason: %s" % (problem_incl_id, to_be_purged_reason))
-            # print("PURGED-REASON:", to_be_purged_reason)
+            #     debug_print("PURGING %s reason: %s" % (problem_incl_id, to_be_purged_reason))
+            # debug_print("PURGED-REASON:", to_be_purged_reason)
             to_be_purged_set.add(cbc)
         else:
             # if cbc.concept_id==problem_incl_id:
-            #     print("NOT PURGING %s : n_in_memb %s | is_perfect_fit %s | n_all %s " % (problem_incl_id, cbc.n_desc_plus_self_in_membership, cbc.is_perfect_fit, cbc.n_desc_plus_self_all))
+            #     debug_print("NOT PURGING %s : n_in_memb %s | is_perfect_fit %s | n_all %s " % (problem_incl_id, cbc.n_desc_plus_self_in_membership, cbc.is_perfect_fit, cbc.n_desc_plus_self_all))
             pass
-            # print("NOT_PURGED")
-        # print(to_be_purged_reason)
-        # print("========================")
+            # debug_print("NOT_PURGED")
+        # debug_print(to_be_purged_reason)
+        # debug_print("========================")
     all_incl_cbcs.difference_update(to_be_purged_set)
 
 
@@ -77,19 +81,19 @@ def purge_poor_quality_incl_cbcs(all_incl_cbcs=None):
 ##############################################################
 
 def purge_perfect_fit_incl_cbcs_subsumed_by_another_perfect_fit_cbc(all_incl_cbcs=None):
-    print("Entering reconstructed (less) time consuming loop")
+    debug_print("Entering reconstructed (less) time consuming loop")
     start_time2=time.time()
     to_be_purged_set=set()
     concepts_ids={cbc.concept_id for cbc in all_incl_cbcs if cbc.is_perfect_fit}
     for cbc in all_incl_cbcs:
         if cbc.is_perfect_fit and (cbc.concept.ancestors.isdisjoint(concepts_ids) is False):
             to_be_purged_set.add(cbc)
-    print("Purging %s candidate base concepts that are perfectly subsumed by an ancestor" % len(to_be_purged_set))
+    debug_print("Purging %s candidate base concepts that are perfectly subsumed by an ancestor" % len(to_be_purged_set))
     t2=time.time()-start_time2
-    print("Purging redundant prefect fit clauses took (in seconds)", time.time()-start_time2)    
+    debug_print("Purging redundant prefect fit clauses took (in seconds)", time.time()-start_time2)    
 
     all_incl_cbcs.difference_update(to_be_purged_set)
-    print("That took (in seconds)", time.time()-start_time2)
+    debug_print("That took (in seconds)", time.time()-start_time2)
 
 ##############################################################
 # separate_cbcs_into_perfect_and_imperfect_fit_sets          #
@@ -128,7 +132,7 @@ def trim_the_working_set(
         concepts_captured_by_refactored_query.update(concepts_captured_by_clause)
     n_members_captured_by_concepts=len(trimmed_valset_members_set.intersection(concepts_captured_by_refactored_query))
     trimmed_valset_members_set.difference_update(concepts_captured_by_refactored_query)
-    print("Refactored query captures %s members" % n_members_captured_by_concepts)
+    debug_print("Refactored query captures %s members" % n_members_captured_by_concepts)
 
 #####################################################
 # iterate_to_find_best_imperfect_fit_clauses_to_add #
@@ -165,7 +169,7 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
     while not terminate_condition_reached:
         iteration+=1
         list_size=len(trimmed_valset_members_set)
-        print("\n\nIteration %s :  LSize=%s Fit=%s Z=%s" % (iteration, list_size, fit_threshold, zoom))
+        debug_print("\n\nIteration %s :  LSize=%s Fit=%s Z=%s" % (iteration, list_size, fit_threshold, zoom))
 
         scores=[]
         #Update scores of all remaining cbcs
@@ -174,7 +178,7 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
             scores.append((cbc.score, cbc))
             problem_incl_id=143571000237105
             if cbc.concept_id==problem_incl_id:
-                print("PROBLEM_INCL SCORE %s %s" % (problem_incl_id, cbc.score))
+                debug_print("PROBLEM_INCL SCORE %s %s" % (problem_incl_id, cbc.score))
 
         #Find the cbc with highest score
         cbcs_sorted_by_score=sorted(imperfect_fit_incl_cbcs, key= lambda cbc: cbc.score, reverse=True)
@@ -187,14 +191,14 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
 
         if cbcs_list_not_empty and winner_cbc.score >= fit_threshold-0.001: # 0.001 is to allow for rounding error; on first pass 0.899999999999 can occur
             winner_exists_at_current_zoom=True
-            print("Winner is %s with score %s" % (winner_base_concept.concept_id, winner_cbc.score))
+            debug_print("Winner is %s with score %s" % (winner_base_concept.concept_id, winner_cbc.score))
             if len(cbcs_sorted_by_score)>1:
-                print("Secondplace is %s with score %s" % (cbcs_sorted_by_score[1].concept_id , cbcs_sorted_by_score[1].score))
+                debug_print("Secondplace is %s with score %s" % (cbcs_sorted_by_score[1].concept_id , cbcs_sorted_by_score[1].score))
             else:
-                print("Secondplace: there are no more cbcs in list")
+                debug_print("Secondplace: there are no more cbcs in list")
             #Add new clause based on winner to refactored_query and find what concepts it captures
             clause=Clause(winner_cbc.clause_string)
-            print(winner_cbc.clause_string)
+            debug_print(winner_cbc.clause_string)
             refactored_query.append(clause)
             n_clauses_added+=1
             concepts_captured_by_clause=ClauseMembershipAnalysis(clause=clause, concepts=concepts).members
@@ -213,14 +217,14 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
                 if cbc.concept_id in winner_base_concept.descendants or cbc==winner_cbc:
                     to_be_purged_set.add(cbc)
             imperfect_fit_incl_cbcs.difference_update(to_be_purged_set)
-            print("Purged %s cbcs as descendants of winner or the winner itself" % len(to_be_purged_set))
+            debug_print("Purged %s cbcs as descendants of winner or the winner itself" % len(to_be_purged_set))
             
             #Look to see if although found a winner things are being found in clauses that are too small (not convinced by logic here)
             fold_left=float(n_in_valset)/(n_records_to_be_removed_from_trimmed_set+1) # I am not convinced by this section ? intended definition of ClauseCoverage in original code
             if fold_left>1000:
                 new_fit_threshold=round(fit_threshold*0.9,3)
                 if (new_fit_threshold>min_fit_threshold) and (new_fit_threshold<fit_threshold):
-                    print("Winning clause too small (%s of remaining records covered removed) - detuning" % n_records_to_be_removed_from_trimmed_set)
+                    debug_print("Winning clause too small (%s of remaining records covered removed) - detuning" % n_records_to_be_removed_from_trimmed_set)
                     fit_threshold = new_fit_threshold
                     zoom = ideal_clause_count
         else:
@@ -241,7 +245,7 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
                         else:
                             #this is where there never has been ANY winner (e.g. enters loop with empty set of cbcs)
                             new_fit_threshold=-999 # this will casue termination of loop
-                        print("INCLUSION FIT THRESHOLD VALUE RECALIBRATION")
+                        debug_print("INCLUSION FIT THRESHOLD VALUE RECALIBRATION")
                 else:
                     # 'If a winner HAS previously been found at SOME zoom level and with the prevailing FitThreshold
                     # 'then propose a less drastically lowered FitThreshold
@@ -259,11 +263,11 @@ def iterate_to_find_best_imperfect_fit_clauses_to_add(
                     winner_exists_at_current_zoom=False
                 else:
                     # 'Otherwise we've hit the buffers: the weighting function can't be (de)tuned any further
-                    print("TERMINATING: Can't detune inclusion weighting function any further")
-                    print("Next best fitting candidate has score of ", new_fit_threshold)
-                    print("Minimum fit threshold is ", min_fit_threshold)
+                    debug_print("TERMINATING: Can't detune inclusion weighting function any further")
+                    debug_print("Next best fitting candidate has score of ", new_fit_threshold)
+                    debug_print("Minimum fit threshold is ", min_fit_threshold)
                     terminate_condition_reached = True
-    print("\nIn loop added %s extra clauses" % n_clauses_added)
+    debug_print("\nIn loop added %s extra clauses" % n_clauses_added)
 
 ###########################################################
 # add_single_concept_clauses_for_unaccounted_for_concepts #
@@ -280,7 +284,7 @@ def add_single_concept_clauses_for_unaccounted_for_concepts(
         else:
             operator="=" # else have decendants so use "=" so do not include non members
         clause_string=operator+str(concept_id)
-        # print("Adding clause", clause_string)
+        # debug_print("Adding clause", clause_string)
         refactored_query.append(Clause(clause_string))
 
 ##################################
@@ -297,9 +301,9 @@ def assert_everything_now_included(
         total_inclusions.update(set(ClauseMembershipAnalysis(clause=clause, concepts=concepts).members))
     unaccounted_for=full_valset_members_set.difference(total_inclusions)
     inclusion_check=unaccounted_for==set()
-    print("INCLUSION_CHECK:", inclusion_check)
+    debug_print("INCLUSION_CHECK:", inclusion_check)
     if not inclusion_check:
-        print("ERROR: Exiting as refactored_query does not account for everything")
+        debug_print("ERROR: Exiting as refactored_query does not account for everything")
         sys.exit()
 
 ###############################################
@@ -318,16 +322,16 @@ def get_set_of_excl_cbcs_based_on_all_ancestors(
     for concept_id in required_exclusions_set:
         all_exclusion_candidate_base_concept_ids.update(concepts[concept_id].ancestors)
 
-    # print("PROBLEM_ID: Is %s in required_exclusions_set? %s" % (problem_id, problem_id in all_exclusion_candidate_base_concept_ids))
+    # debug_print("PROBLEM_ID: Is %s in required_exclusions_set? %s" % (problem_id, problem_id in all_exclusion_candidate_base_concept_ids))
 
-    print("Collated list of %s cbcs in all_exclusion_candidate_base_concept_ids" % len(all_exclusion_candidate_base_concept_ids))
-    # print(all_exclusion_candidate_base_concept_ids)
+    debug_print("Collated list of %s cbcs in all_exclusion_candidate_base_concept_ids" % len(all_exclusion_candidate_base_concept_ids))
+    # debug_print(all_exclusion_candidate_base_concept_ids)
     #remove concepts that are also in ancestors lists of valset members ca. DMWB999
     n_to_remove=len(all_exclusion_candidate_base_concept_ids.intersection(all_inclusion_candidate_base_concept_ids))
-    print("Discarding %s cbcs because also an inclusion ancestor" % n_to_remove)
+    debug_print("Discarding %s cbcs because also an inclusion ancestor" % n_to_remove)
     all_exclusion_candidate_base_concept_ids.difference_update(all_inclusion_candidate_base_concept_ids)
-    print("Now have list of %s cbcs in all_exclusion_candidate_base_concept_ids" % len(all_exclusion_candidate_base_concept_ids))
-    # print("PROBLEM_ID: Is %s STILL1 in required_exclusions_set? %s" % (problem_id, problem_id in all_exclusion_candidate_base_concept_ids))
+    debug_print("Now have list of %s cbcs in all_exclusion_candidate_base_concept_ids" % len(all_exclusion_candidate_base_concept_ids))
+    # debug_print("PROBLEM_ID: Is %s STILL1 in required_exclusions_set? %s" % (problem_id, problem_id in all_exclusion_candidate_base_concept_ids))
 
 
     #Now build the all_excl_cbcs
@@ -336,7 +340,7 @@ def get_set_of_excl_cbcs_based_on_all_ancestors(
         #NOT SURE ABOUT MUST_AVOID_SET logic
         cbc=CandidateBaseConcept(concept_id=concept_id, concepts=concepts, target_members=required_exclusions_set, must_avoid_set=full_valset_members_set)
         all_excl_cbcs.add(cbc)
-        # print(cbc)
+        # debug_print(cbc)
 
     return all_excl_cbcs
 
@@ -365,7 +369,7 @@ def purge_poor_quality_excl_cbcs(all_excl_cbcs=None):
         if (cbc.n_desc_plus_self_not_in_membership==1 and cbc.is_in_membership==True and cbc.n_children_all==1): # line DMWB1037
             to_be_purged_reason+="reason4 "
         if to_be_purged_reason != "":
-            # print("PURGED-REASON:", to_be_purged_reason)
+            # debug_print("PURGED-REASON:", to_be_purged_reason)
             to_be_purged_set.add(cbc)
        
     all_excl_cbcs.difference_update(to_be_purged_set)
@@ -376,7 +380,7 @@ def purge_poor_quality_excl_cbcs(all_excl_cbcs=None):
 ########################################
 
 def purge_excl_cbcs_subsumed_by_excl_cbc(all_excl_cbcs=None):
-    print("Entering time consuming loop")
+    debug_print("Entering time consuming loop")
     start_time3=time.time()
     to_be_purged_set=set()
     for cbc1 in all_excl_cbcs:
@@ -385,11 +389,11 @@ def purge_excl_cbcs_subsumed_by_excl_cbc(all_excl_cbcs=None):
                 if cbc2.n_desc_plus_self_not_in_membership==0: #"a.TRUENEG=0"
                     if cbc1!=cbc2 and (cbc2.concept_id in cbc1.concept.descendants):
                         to_be_purged_set.add(cbc2)
-    print("Purging %s excl_cbcs that are perfectly subsumed by an ancestor" % len(to_be_purged_set))
+    debug_print("Purging %s excl_cbcs that are perfectly subsumed by an ancestor" % len(to_be_purged_set))
 
     all_excl_cbcs.difference_update(to_be_purged_set)
     
-    print("That purge took (in seconds)", time.time()-start_time3)
+    debug_print("That purge took (in seconds)", time.time()-start_time3)
 
 
 
@@ -406,7 +410,7 @@ def purge_excl_clauses_that_would_hit_valset_members(all_excl_cbcs=None):
                                     # I am not sure why this function exists
         if (not cbc.is_perfect_fit):
             to_be_purged_reason+="reason2 "
-            # print("PURGED-REASON:", to_be_purged_reason)
+            # debug_print("PURGED-REASON:", to_be_purged_reason)
             to_be_purged_set.add(cbc)
 
     all_excl_cbcs.difference_update(to_be_purged_set)
@@ -424,13 +428,13 @@ def insert_excl_clauses_into_refactored_query(
             ):    
     total_exclusions=set()
     for cbc in all_excl_cbcs:
-        # print(cbc.clause_string, cbc.concept.pt, cbc.n_desc_plus_self_in_membership ,"of", cbc.n_desc_plus_self_all)
+        # debug_print(cbc.clause_string, cbc.concept.pt, cbc.n_desc_plus_self_in_membership ,"of", cbc.n_desc_plus_self_all)
         clause=Clause("-"+cbc.clause_string)
         refactored_query.append(clause)
         total_exclusions.update(set(ClauseMembershipAnalysis(clause=clause, concepts=concepts).members))
     unaccounted_for_exclusions=required_exclusions_set.difference(total_exclusions) 
     valset_members_hit=full_valset_members_set.intersection(total_exclusions)
-    print("VALSET hit: ", len(valset_members_hit))
+    debug_print("VALSET hit: ", len(valset_members_hit))
     return unaccounted_for_exclusions
 
 ###################################################################
@@ -442,14 +446,14 @@ def add_single_concept_excl_clauses_for_unaccounted_for_exclusions(
     refactored_query=None,
     concepts=None,    
     ):
-    print("Adding clauses to cover residue of %s concepts remaining in unaccounted_for_exclusions" % len(unaccounted_for_exclusions))
+    debug_print("Adding clauses to cover residue of %s concepts remaining in unaccounted_for_exclusions" % len(unaccounted_for_exclusions))
     for concept_id in unaccounted_for_exclusions:
         if concepts[concept_id].descendants==set():
             operator="<<" # if no descendants use "<<" so that if descendants added they will be included by default
         else:
             operator="=" # else have decendants so use "=" so do not include non members
         clause_string="-"+operator+str(concept_id)
-        # print("Adding clause", clause_string)
+        # debug_print("Adding clause", clause_string)
         refactored_query.append(Clause(clause_string))
 
 
@@ -496,16 +500,16 @@ def final_clean_up(
                         to_be_purged_reason+="SUBSUMED_BY_%s " % i_clause1 
                 
         if purge2:
-            print(i_clause2, clause2.clause_type, clause2.clause_string,"will be purged. Reason:", to_be_purged_reason)
+            debug_print(i_clause2, clause2.clause_type, clause2.clause_string,"will be purged. Reason:", to_be_purged_reason)
             to_be_purged_set.add(clause2)
         else:
-            # print(i_clause2,"Not purged")
-            print(i_clause2, clause2.clause_type, clause2.clause_string,"Not purged")
+            # debug_print(i_clause2,"Not purged")
+            debug_print(i_clause2, clause2.clause_type, clause2.clause_string,"Not purged")
 
-    # print(f"To be purged set: {to_be_purged_set}")
+    # debug_print(f"To be purged set: {to_be_purged_set}")
     purged_refactored_query=[]
     for clause in refactored_query:
-        # print(clause.clause_string, clause in to_be_purged_set)
+        # debug_print(clause.clause_string, clause in to_be_purged_set)
         if clause not in to_be_purged_set:
             purged_refactored_query.append(clause)
     refactored_query=purged_refactored_query
@@ -516,9 +520,9 @@ def final_clean_up(
     # These would delete concept only clauses if base concept in GLOBEX
     # And would convert << to < likewise
     #####
-    print("Globex pruning not implemented yet")
+    debug_print("Globex pruning not implemented yet")
 
-    print("CLEAN_UP: took (in seconds)", time.time()-start_time_clean_up)
+    debug_print("CLEAN_UP: took (in seconds)", time.time()-start_time_clean_up)
 
 ###################
 # create_SCT_RULE #
@@ -534,11 +538,11 @@ def create_SCT_RULE(refactored_query):
         elif clause.clause_type=="exclude":
             exclude_SCT_RULE+=  "-" + clause.clause_string + "|"
         else:
-            print("ERROR, exiting:invalid clause_type: %s" % clause.clause_type)
+            debug_print("ERROR, exiting:invalid clause_type: %s" % clause.clause_type)
             sys.exit()
     if exclude_SCT_RULE:
         SCT_RULE= include_SCT_RULE + "[" + exclude_SCT_RULE
     else:
         SCT_RULE= include_SCT_RULE
-    print(SCT_RULE)
+    debug_print(SCT_RULE)
     return SCT_RULE

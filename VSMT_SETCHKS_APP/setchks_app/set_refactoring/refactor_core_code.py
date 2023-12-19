@@ -26,6 +26,11 @@ from setchks_app.set_refactoring.refactor_core_functions import (
     create_SCT_RULE,
     )
 
+def debug_print(*args):
+    debug=False
+    if debug:
+        print(" ".join([str(x) for x in args]))
+
 def refactor_core_code(
     clause_set_string=None,  # this is in DMWB format, e.g. '<25899002|=1234567|=987654|[-123137611|-<<345739873]'
     valset_extens_defn=None, # this is just a list of codes
@@ -42,15 +47,15 @@ def refactor_core_code(
         valset_extens_defn=valset_extens_defn,
         valset_name='input')
     valsets.append(valset=valset)
-    # print(valset)
+    # debug_print(valset)
 
     valset=valsets[valsets.valset_name_to_id[input_valset_name]]
 
-    print("Getting all members ..")
+    debug_print("Getting all members ..")
     valset_membership_analysis=valset_module.ValsetMembershipAnalysis(valset=valset, concepts=concepts, global_exclusions=valsets.global_exclusions, stub_out_interaction_matrix_calc=True, verbose=True)
-    print(".. done getting all members")
+    debug_print(".. done getting all members")
 
-    print("VALSET_INFO:",valset.valset_name, 
+    debug_print("VALSET_INFO:",valset.valset_name, 
                         valset.valset_description, 
                         valset_membership_analysis.full_inclusion_list_n_members, 
                         valset_membership_analysis.full_exclusion_list_n_members, 
@@ -58,7 +63,7 @@ def refactor_core_code(
                         )
 
     n_in_valset=len(valset_membership_analysis.final_inclusion_list)
-    print("Valset %s contains %s members" % (valset.valset_name, n_in_valset))
+    debug_print("Valset %s contains %s members" % (valset.valset_name, n_in_valset))
 
     original_include_clause_strings=set()
     original_exclude_clause_strings=set()
@@ -68,11 +73,11 @@ def refactor_core_code(
         if clause.clause_type=="exclude":
             original_exclude_clause_strings.add(clause.clause_base_concept_id)
 
-    print("At start - Original:   %3d include clauses and %3d exclude clauses" % (len(original_include_clause_strings),len(original_exclude_clause_strings)))
+    debug_print("At start - Original:   %3d include clauses and %3d exclude clauses" % (len(original_include_clause_strings),len(original_exclude_clause_strings)))
 
     full_valset_members_set      = set(copy.deepcopy(valset_membership_analysis.final_inclusion_list)) # this copy will stay fixed
     trimmed_valset_members_set   = set(copy.deepcopy(valset_membership_analysis.final_inclusion_list)) # this will be whittled down as things are accounted for
-    print("Trimmed valset members initially contains %s members" % len(trimmed_valset_members_set))
+    debug_print("Trimmed valset members initially contains %s members" % len(trimmed_valset_members_set))
 
     required_exclusions_set=set()
     refactored_query=[] # this will be a list of Clause objects; some will be includes and some will be excludes
@@ -101,7 +106,7 @@ def refactor_core_code(
     # make initial catch all set of inclusion cbcs #
     ################################################
 
-    print("Initialising inclusion all_incl_cbcs")
+    debug_print("Initialising inclusion all_incl_cbcs")
 
     all_inclusion_candidate_base_concept_ids, all_incl_cbcs=get_set_of_incl_cbcs_based_on_all_ancestors(
             trimmed_valset_members_set=trimmed_valset_members_set,
@@ -109,7 +114,7 @@ def refactor_core_code(
             concepts=concepts,
             )
 
-    print("Initially there are %s cbcs" % len(all_incl_cbcs))
+    debug_print("Initially there are %s cbcs" % len(all_incl_cbcs))
 
     ###############################
     # purge "poor quality" cbcs   #
@@ -117,8 +122,8 @@ def refactor_core_code(
     
     purge_poor_quality_incl_cbcs(all_incl_cbcs=all_incl_cbcs)
     
-    # print("After purging poor quality cbcs, %s cbs remain %s" % (len(all_incl_cbcs), [x.concept_id for x in all_incl_cbcs]))
-    print("After purging poor quality cbcs, %s cbs remain " % len(all_incl_cbcs))
+    # debug_print("After purging poor quality cbcs, %s cbs remain %s" % (len(all_incl_cbcs), [x.concept_id for x in all_incl_cbcs]))
+    debug_print("After purging poor quality cbcs, %s cbs remain " % len(all_incl_cbcs))
 
     #########################################################################
     # purge perfect fit cbcs that are subsumed by another perfect fit cbc   #
@@ -135,8 +140,8 @@ def refactor_core_code(
     perfect_fit_incl_cbcs, imperfect_fit_incl_cbcs=separate_cbcs_into_perfect_and_imperfect_fit_sets(
         all_incl_cbcs=all_incl_cbcs)
     
-    print("Provisionally accepted %s candidate base concepts that are perfect fits" % len(perfect_fit_incl_cbcs))
-    print("Keeping as candidates %s candidate base concepts that are imperfect fits" % len(imperfect_fit_incl_cbcs))
+    debug_print("Provisionally accepted %s candidate base concepts that are perfect fits" % len(perfect_fit_incl_cbcs))
+    debug_print("Keeping as candidates %s candidate base concepts that are imperfect fits" % len(imperfect_fit_incl_cbcs))
 
     #############################################
     # insert perfect fits into refactored_query #
@@ -146,7 +151,7 @@ def refactor_core_code(
             perfect_fit_incl_cbcs=perfect_fit_incl_cbcs,
             refactored_query=refactored_query)    
     
-    print("REFACTORED_QUERY has length", len(refactored_query))
+    debug_print("REFACTORED_QUERY has length", len(refactored_query))
 
     ####################################################################################
     # remove concepts that are captured by the clauses in the current refactored query #
@@ -158,7 +163,7 @@ def refactor_core_code(
         concepts=concepts,
         )
     
-    print("Trimmed valset members now contains remaining %s members" % len(trimmed_valset_members_set))
+    debug_print("Trimmed valset members now contains remaining %s members" % len(trimmed_valset_members_set))
 
     ################################
     # main inclusions finding loop #
@@ -174,12 +179,12 @@ def refactor_core_code(
         concepts=concepts,
         ) 
 
-    print("REFACTORED_QUERY now has length", len(refactored_query))
+    debug_print("REFACTORED_QUERY now has length", len(refactored_query))
 
     ####################################################################
     # Add unaccounted for concepts as explicit extra inclusion clauses #
     ####################################################################
-    print("Adding clauses to cover residue of %s concepts remaining in trimmed list" % len(trimmed_valset_members_set))
+    debug_print("Adding clauses to cover residue of %s concepts remaining in trimmed list" % len(trimmed_valset_members_set))
     
     add_single_concept_clauses_for_unaccounted_for_concepts(
         trimmed_valset_members_set=trimmed_valset_members_set,
@@ -202,13 +207,13 @@ def refactor_core_code(
     ######################
     ######################
 
-    print("Now require %s exclusions" % len(required_exclusions_set))
+    debug_print("Now require %s exclusions" % len(required_exclusions_set))
 
     ################################################
     # make initial catch all set of exclusion cbcs #
     ################################################
 
-    print("Initialising all_excl_cbcs")
+    debug_print("Initialising all_excl_cbcs")
     
     all_excl_cbcs=get_set_of_excl_cbcs_based_on_all_ancestors(
         required_exclusions_set=required_exclusions_set,
@@ -217,7 +222,7 @@ def refactor_core_code(
         concepts=concepts,
     )
     
-    print("Initially there are %s exclusion cbcs" % len(all_excl_cbcs))
+    debug_print("Initially there are %s exclusion cbcs" % len(all_excl_cbcs))
 
     ###############################
     # purge "poor quality" cbcs   #
@@ -225,7 +230,7 @@ def refactor_core_code(
 
     purge_poor_quality_excl_cbcs(all_excl_cbcs=all_excl_cbcs)
     
-    print("After purging poor quality cbcs, %s excl_cbcs remain" % len(all_excl_cbcs))
+    debug_print("After purging poor quality cbcs, %s excl_cbcs remain" % len(all_excl_cbcs))
    
     #########################################################
     # purge excl_cbcs that are subsumed by another excl_cbc #
@@ -233,7 +238,7 @@ def refactor_core_code(
     
     purge_excl_cbcs_subsumed_by_excl_cbc(all_excl_cbcs=all_excl_cbcs)
     
-    print("Now %s excl_cbcs remain" % len(all_excl_cbcs))
+    debug_print("Now %s excl_cbcs remain" % len(all_excl_cbcs))
 
     ##############################################
     # Try delaying perfect fit check to here to  #
@@ -258,7 +263,7 @@ def refactor_core_code(
 
     purge_excl_clauses_that_would_hit_valset_members(all_excl_cbcs=all_excl_cbcs)
     
-    print("After purging imperfect fit cbcs, %s excl_cbcs remain" % len(all_excl_cbcs))
+    debug_print("After purging imperfect fit cbcs, %s excl_cbcs remain" % len(all_excl_cbcs))
 
     ########################################
     # insert clauses into refactored_query #
@@ -282,7 +287,7 @@ def refactor_core_code(
         concepts=concepts,    
         )
  
-    print("Before final clean up query_refactored contains %s clauses" % len(refactored_query))
+    debug_print("Before final clean up query_refactored contains %s clauses" % len(refactored_query))
 
     ##################
     # Final clean up #
@@ -293,10 +298,10 @@ def refactor_core_code(
         concepts=concepts,
     )
 
-    print("After purging, refactored_query contains %s clauses" % len(refactored_query))
+    debug_print("After purging, refactored_query contains %s clauses" % len(refactored_query))
 
     for i_clause, clause in enumerate(refactored_query):
-        print(i_clause, clause.clause_type, clause.clause_string)
+        debug_print(i_clause, clause.clause_type, clause.clause_string)
 
     ##########################################################################################################
     # create new DMWB format rule                                                                            #

@@ -39,13 +39,13 @@ def start_specific_rq_worker(worker_name=None):
         logger.debug(f"Worker already running: {worker_name}")
         return (f"Worker already running: {worker_name}")
     
-    logger.debug("About to start rq worker {worker_name}")
+    logger.debug(f"About to start rq worker {worker_name}")
     if worker_name=="worker_short_jobs":
         os.system(f"rq worker --name worker_short_jobs --url '{redis_string}' short_jobs_queue &")
     else:
         os.system(f"rq worker --name worker_long_jobs --url '{redis_string}' long_jobs_queue &")
 
-    logger.debug("(Re)started rq worker {worker_name}")
+    logger.debug(f"(Re)started rq worker {worker_name}")
     response=os.popen("rq info --raw short_jobs_queue long_jobs_queue").readlines()
     logger.debug(f"response from rq info is {response}")
     return response

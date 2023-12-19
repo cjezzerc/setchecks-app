@@ -6,6 +6,7 @@ import datetime
 import boto3
 import json
 import jsonpickle
+import time
 from flask import jsonify
 
 import logging
@@ -417,7 +418,7 @@ def column_identities():
     column_type_labels=[type_labels[x] for x in setchks_session.columns_info.column_types]
 
     rows_processable=[mr.row_processable for mr in setchks_session.marshalled_rows]
-    logger.debug("rows_processable:"+str(rows_processable))
+    # logger.debug("rows_processable:"+str(rows_processable))
 
     bc=Breadcrumbs()
     bc.set_current_page("column_identities")
@@ -555,9 +556,9 @@ def select_and_run_checks():
     setchks_session.selected_setchks=[]
     for sc in available_setchks:
         this_setchk = setchks_app.setchks.setchk_definitions.setchks[sc]
-        print(setchks_session.sct_version_mode, 
-              this_setchk.setchk_sct_version_modes,
-              setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes)
+        # print(setchks_session.sct_version_mode, 
+        #       this_setchk.setchk_sct_version_modes,
+        #       setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes)
         if (
             "ALL" in this_setchk.setchk_data_entry_extract_types or 
             setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
@@ -569,8 +570,11 @@ def select_and_run_checks():
 
     setchks_jobs_manager=setchks_session.setchks_jobs_manager
     if setchks_jobs_manager is not None:
+
+        time0=time.time()
         job_status_report=setchks_jobs_manager.update_job_statuses()
         logger.debug("\n".join(job_status_report))
+        logger.debug(f"Time taken to get job statuses = {time.time()-time0}")
 
     if (
         "run_checks" in request.args 
