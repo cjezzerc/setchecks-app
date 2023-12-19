@@ -105,11 +105,28 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     timings["check specific sheets"]=f"{(time.time()-time0):0.6f} s" 
 
     ##################################################################
+    #  "Dummy" call to create  By_Row sheet, just to get the row map #                                        #     
+    ##################################################################
+
+    time0=time.time()
+    row_analysis_row_numbers_map=make_analysis_by_row_sheet.make_analysis_by_row_sheet(
+        ws=None, # this flags to routine just to make the map 
+        setchks_list_to_report=setchks_list_to_report,
+        setchks_session=setchks_session,
+        output_OK_messages=output_OK_messages,
+        analysis_by_outcome_row_numbers_map=None, # as not done the by outcome file yet
+        supp_tabs_row_numbers_map=supp_tabs_row_numbers_map,
+        )
+    print(f"Dummy make_analysis_by_row_sheet took {time.time()-time0} seconds")
+    timings["Dummy analysis by row sheet"]=f"{(time.time()-time0):0.6f} s" 
+
+
+    ##################################################################
     #           By_Outcome sheet                                     #     
     ##################################################################
 
     ws=wb.worksheets[3]
-    ws.title='By_Outcome'
+    ws.title='Grp_by_Message'
 
     time0=time.time()
     analysis_by_outcome_row_numbers_map=make_analysis_by_outcome_sheet.make_analysis_by_outcome_sheet(
@@ -117,6 +134,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         setchks_list_to_report=setchks_list_to_report,
         setchks_session=setchks_session,
         output_OK_messages=output_OK_messages,
+        row_analysis_row_numbers_map=row_analysis_row_numbers_map,
         )
     print(f"make_analysis_by_outcome_sheet took {time.time()-time0} seconds")
     timings["analysis by outcome sheet"]=f"{(time.time()-time0):0.6f} s" 
@@ -126,9 +144,10 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ##################################################################
 
     ws=wb.worksheets[2]
-    ws.title='By_Row'
+    ws.title='Grp_By_Row'
 
     time0=time.time()
+    print(analysis_by_outcome_row_numbers_map)
     row_analysis_row_numbers_map=make_analysis_by_row_sheet.make_analysis_by_row_sheet(
         ws=ws, 
         setchks_list_to_report=setchks_list_to_report,

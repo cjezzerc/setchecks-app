@@ -13,7 +13,14 @@ def make_analysis_by_row_sheet(
     output_OK_messages=None,
     analysis_by_outcome_row_numbers_map=None,
     supp_tabs_row_numbers_map=None,
-    ): 
+    ):
+
+    if ws is None: # if no ws passed in then the routine is just precalculating the row map
+        # as there is a circular dependendency of the analysis_by_row and analysis_by_outcome sheets 
+        creating_ws=False # use this to stub out most ws operations
+        ws=[] # but with ws as a regular list the ws.append lines do not need to be stubbed out
+    else:
+        creating_ws=True
 
     # vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
     # vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
@@ -87,16 +94,22 @@ def make_analysis_by_row_sheet(
                     if output_OK_messages or check_item.outcome_level not in ["INFO","DEBUG"]:
                         time_inner_0=time.time()
                         outcome_code=check_item.outcome_code
+                        
                         if outcome_code not in outcome_codes_count:
                             outcome_codes_count[outcome_code]=0
                         else:
                             outcome_codes_count[outcome_code]+=1
-                        row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
+                        
+                        if creating_ws:
+                            row_to_link_to=analysis_by_outcome_row_numbers_map[outcome_code][i_data_row][outcome_codes_count[outcome_code]]
+                        else:
+                            row_to_link_to=None
+                        
                         message=f"{outcome_code}:{check_item.general_message}" 
                         row_specific_message=check_item.row_specific_message
                         if row_specific_message == "None":
                             row_specific_message=""
-                        hyperlink_cell_contents=f'=HYPERLINK("#By_Outcome!B{row_to_link_to}","X")'
+                        hyperlink_cell_contents=f'=HYPERLINK("#Grp_by_Message!C{row_to_link_to}","M")'
                         # print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
                         if supp_tab_ws is not None:
                             # print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
@@ -145,33 +158,34 @@ def make_analysis_by_row_sheet(
     print(f"total_dt_inner_loop{total_dt_inner_loop}")
     print(f"max_dt_inner_loop{max_dt_inner_loop}")
     print(f"min_dt_inner_loop{min_dt_inner_loop}")
-    # crude cell with setting
-    cell_widths=[15,30,50,30,5,5,25,50] + [20]*10
-    for i, width in enumerate(cell_widths):
-        ws.column_dimensions[get_column_letter(i+1)].width=width     
+    
+    if creating_ws:    
+        cell_widths=[15,30,50,30,5,5,25,50] + [20]*10
+        for i, width in enumerate(cell_widths):
+            ws.column_dimensions[get_column_letter(i+1)].width=width     
 
-    # example bit of formatting bling
-    irow=0
-    for row in ws.iter_rows():
-        irow+=1
-        divider_line=row[0].value=="----"
-        if divider_line:
-            ws.row_dimensions[irow].height = 3
-        for cell in row:
-            # cell.alignment=Alignment(wrap_text=True, vertical='top')
-            # cell.style=vsmt_style_wrap_top
-            # cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
+        # example bit of formatting bling
+        irow=0
+        for row in ws.iter_rows():
+            irow+=1
+            divider_line=row[0].value=="----"
             if divider_line:
-                cell.style=styling.vsmt_style_grey_row
-                # cell.fill=color_fills["grey"]
-                # cell.border = border
-            else:
-                strval=str(cell.value)
-                if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
-                    cell.style=styling.vsmt_style_wrap_top_hyperlink
-                elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
-                    cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+                ws.row_dimensions[irow].height = 3
+            for cell in row:
+                # cell.alignment=Alignment(wrap_text=True, vertical='top')
+                # cell.style=vsmt_style_wrap_top
+                # cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
+                if divider_line:
+                    cell.style=styling.vsmt_style_grey_row
+                    # cell.fill=color_fills["grey"]
+                    # cell.border = border
                 else:
-                    cell.style=styling.vsmt_style_wrap_top
+                    strval=str(cell.value)
+                    if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+                        cell.style=styling.vsmt_style_wrap_top_hyperlink
+                    elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+                        cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+                    else:
+                        cell.style=styling.vsmt_style_wrap_top
             
     return row_analysis_row_numbers_map

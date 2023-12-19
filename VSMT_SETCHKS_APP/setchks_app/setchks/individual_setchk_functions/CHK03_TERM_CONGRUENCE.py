@@ -22,6 +22,8 @@ def generate_check_item(
     description_inactive=None,
     csr_correct_dterm=None,
     data_entry_extract_type=None,
+    did_term_type=None,
+    did_term_words=None,
     ):
     #<check_item>
     if outcome_code=="CHK03-OUT-01":
@@ -48,11 +50,11 @@ def generate_check_item(
     #<check_item>
     elif outcome_code=="CHK03-OUT-03":
         if description_inactive==True:
-            check_item=CheckItem(outcome_code=outcome_code)
+            check_item=CheckItem(outcome_code=outcome_code+did_term_type)
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                "The provided Description Id/Term is inactive. " 
-                "You should consider selecting an active Description ID/Term " 
+                f"The provided {did_term_words} is inactive. " 
+                f"You should consider selecting an active {did_term_words} " 
                 "for the corresponding Concept."
                 )
         else:
@@ -60,10 +62,10 @@ def generate_check_item(
     #</check_item>
     #<check_item>
     elif outcome_code=="CHK03-OUT-04":
-        check_item=CheckItem(outcome_code=outcome_code)
+        check_item=CheckItem(outcome_code=outcome_code+did_term_type)
         check_item.outcome_level="Conditional: FACT/DEBUG" # DEBUG unless n_FSN_FOR_DATA_ENTRY>0
         check_item.general_message=(
-            "The provided Description Id/Term has a Description Type of -->"
+            f"The provided {did_term_words} has a Description Type of -->"
             )
         phrase_to_output={
             "fsn": "Fully Specified Name",
@@ -79,10 +81,10 @@ def generate_check_item(
     #<check_item>
     elif outcome_code=="CHK03-OUT-05":
         if dterm_type=="fsn" and data_entry_extract_type in ["ENTRY_PRIMARY","ENTRY_OTHER"]: 
-            check_item=CheckItem(outcome_code=outcome_code)
+            check_item=CheckItem(outcome_code=outcome_code+did_term_type)
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                "The Description Type of the provided Description Id/Term is Fully Specified Name (FSN). "
+                f"The Description Type of the provided {did_term_words} is Fully Specified Name (FSN). "
                 "According to your settings, this is a data extract value set. FSNs should not be presented for data entry purposes. "  
                 "You should choose another Term for the corresponding Concept."
                 )
@@ -284,8 +286,22 @@ def do_check(setchks_session=None, setchk_results=None):
                 #     )
                 # this_row_analysis.append(check_item)
                 
+                
+                if leaf in ["vi","vii"]:
+                    did_term_type="a"
+                    did_term_words="Description Id/Term"
+                elif leaf in ["iv","v"]:
+                    did_term_type="b"
+                    did_term_words="Term"
+                elif leaf in ["ii","x"]:
+                    did_term_type="c"
+                    did_term_words="Description Id"
+                else:
+                    did_term_type=None
+                    did_term_words=None
+
                 for outcome_code_digits in outcome_codes_matrix[leaf]:
-                    check_item=generate_check_item(outcome_code=f"CHK03-OUT-{outcome_code_digits}")
+                    # check_item=generate_check_item(outcome_code=f"CHK03-OUT-{outcome_code_digits}")
                     check_item=generate_check_item(
                         outcome_code=f"CHK03-OUT-{outcome_code_digits}",    
                         preferred_term=concepts[mr.C_Id].pt,
@@ -295,6 +311,8 @@ def do_check(setchks_session=None, setchk_results=None):
                         description_inactive=mr.D_Id_active=="0",
                         csr_correct_dterm=csr_correct_dterm,
                         data_entry_extract_type=setchks_session.data_entry_extract_type,
+                        did_term_type=did_term_type,
+                        did_term_words=did_term_words,
                         )
                     if check_item:
                         this_row_analysis.append(check_item)

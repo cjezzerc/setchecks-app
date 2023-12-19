@@ -118,7 +118,7 @@ def make_row_overview_sheet(
 
     for i_data_row, data_row in enumerate(setchks_session.data_as_matrix[setchks_session.first_data_row:]):
         current_row+=1
-        at_least_one_x=False
+        at_least_one_issue=False
         x_cells=[]
         # not_blank_row_flag=not(setchks_session.marshalled_rows[i_data_row].blank_row)
         for setchk_code in setchks_list_to_report:
@@ -133,14 +133,14 @@ def make_row_overview_sheet(
                     if nothing_output_in_this_cell_yet:
                         if check_item.outcome_level not in ["FACT","INFO","DEBUG"]:
                             row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                            x_cells.append(f'=HYPERLINK("#By_Row!C{row_to_link_to}","x")')
-                            at_least_one_x=True
+                            x_cells.append(f'=HYPERLINK("#Grp_by_Row!C{row_to_link_to}","i")')
+                            at_least_one_issue=True
                             nothing_output_in_this_cell_yet=False 
                 if nothing_output_in_this_cell_yet:
                     x_cells.append("")
             else:
                 x_cells.append("")
-        if at_least_one_x:
+        if at_least_one_issue:
             x_cells.append("*")
         else:
             x_cells.append("") 
@@ -172,7 +172,7 @@ def make_row_overview_sheet(
             #     cell.fill=color_fills["findings_identified"]
             # if i_col==len(x_cells)+1:
             #     cell.fill=color_fills["user_notes"]
-            # if at_least_one_x:
+            # if at_least_one_issue:
             #     cell.fill=color_fills["apricot"]
             # cell.border = border 
             if i_col<=len(x_cells)+1:
@@ -190,18 +190,18 @@ def make_row_overview_sheet(
             #     horizontal=horizontal,
             #     vertical=vertical,
             #     )
-            colour=""
-            if i_col==len(x_cells):
-                # cell.fill=color_fills["findings_identified"]
-                colour="g"
-            if i_col==len(x_cells)+1:
-                # cell.fill=color_fills["user_notes"]
-                colour="g"
-            if at_least_one_x:
-                # cell.fill=color_fills["apricot"]
-                colour="g"
-            # cell.border = border 
-            cell.style=getattr(styling,style+colour)  
+            # colour=""
+            # if i_col==len(x_cells):
+            #     # cell.fill=color_fills["findings_identified"]
+            #     colour="g"
+            # if i_col==len(x_cells)+1:
+            #     # cell.fill=color_fills["user_notes"]
+            #     colour="g"
+            # if at_least_one_issue:
+            #     # cell.fill=color_fills["apricot"]
+            #     colour="g"
+            # # cell.border = border 
+            # cell.style=getattr(styling,style+colour)  
     
     # # crude cell with setting
     # cell_widths=[15,30,50,25,50] + [20]*10
@@ -220,3 +220,12 @@ def make_row_overview_sheet(
     #             cell.fill=grey_fill
     #             cell.border = border  
     #             ws.row_dimensions[irow].height = 3
+    for row in ws.iter_rows():
+        for cell in row:
+            strval=str(cell.value)
+            if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+                cell.style=styling.vsmt_style_wrap_top_hyperlink
+            elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+                cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+            if cell.value=="*":
+                cell.fill=styling.color_fills["grey"]

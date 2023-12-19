@@ -9,6 +9,7 @@ def make_analysis_by_outcome_sheet(
     setchks_list_to_report=None,
     setchks_session=None,
     output_OK_messages=None,
+    row_analysis_row_numbers_map=None,
     ): 
 
     setchks=setchks_app.setchks.setchk_definitions.setchks
@@ -25,7 +26,7 @@ def make_analysis_by_outcome_sheet(
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
-        ws.append(["","Row specific info","Row number"] + header_row_cell_contents) # ** need to create better header row
+        ws.append(["","Row specific info","Link to Grp_by_Row Tab","Row number"] + header_row_cell_contents) # ** need to create better header row
         current_ws_row+=1
     ###################################################################################################
     # first loop over all check items and build a dict so can output them grouped by setchk and outcome
@@ -54,6 +55,7 @@ def make_analysis_by_outcome_sheet(
                                             # value is dict of data_row:output_sheet_row
     for setchk_code in check_items_dict:
         ws.append([setchks[setchk_code].setchk_short_name])
+        current_ws_row+=1
         ws.append(["----"]) 
         current_ws_row+=1
         outcome_codes_sorted=sorted(check_items_dict[setchk_code].keys())
@@ -82,12 +84,18 @@ def make_analysis_by_outcome_sheet(
                     else:
                         data_row_cell_contents.append(cell_content.string)
                 input_file_row_number=i_data_row+setchks_session.first_data_row+1
+                
+                row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
+                link_cell=(f'=HYPERLINK("#Grp_by_Row!E{row_to_link_to}", "R")')
+                print(link_cell)
                 row_specific_message=check_item.row_specific_message
                 if row_specific_message=="None":
                     row_specific_message=""
+
                 ws.append([
                     "",
                     row_specific_message,
+                    link_cell,
                     f"Row{input_file_row_number}",
                     ] 
                     + data_row_cell_contents
