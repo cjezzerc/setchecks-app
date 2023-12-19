@@ -108,9 +108,9 @@ def do_check(setchks_session=None, setchk_results=None):
                         "[RED] According to your settings, this is a data entry value set. "
                         "At least one Description Id has been detected "
                         "in the Identifier column for this data extraction value set. "
-                        "This is a serious error. Data extraction value sets should ONLY contain Concept Ids"
+                        "This is a serious error. Data extraction value sets should ONLY contain Concept Ids. "
                         "All Description Ids must be removed or replaced with the corresponding Concept Ids," 
-                        "for the full complement of Set Checks to be performed."
+                        "for the full suite of Set Checks to be performed."
                         ),
                     outcome_code="CHK01-OUT-08",
                     )

@@ -82,7 +82,7 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item=CheckItem("CHK20-OUT-04")
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
-                f"It appears that the your entry in the Identifier column may have been previously corrupted by Excel. If "
+                f"It appears that your entry in the Identifier column may have been previously corrupted by Excel. If "
                 f"so, this check suggests that the original intent was to include Concept Id -->"
             )
             check_item.row_specific_message=(
@@ -200,7 +200,7 @@ def do_check(setchks_session=None, setchk_results=None):
             SetLevelTableRow(
                 simple_message=(
                     "[RED] Your value set contains entries that do not conform to the SCTID data type. " 
-                    "These entries that must be corrected "
+                    "These entries must be corrected "
                     "for the full suite of Set Checks to be performed."
                     ),
                 outcome_code="CHK20-OUT-09",

@@ -316,7 +316,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     check_item.general_message=(
                         "This active Concept has possible inactive predecessors that should be considered for inclusion "
                         "since, according to your settings, this is a data extraction value set. "
-                        "See 'CHK08_suppl' tab for details"
+                        "See 'CHK08_suppl' tab for details."
                         )
                     #</check_item>
                     this_row_analysis.append(check_item)
@@ -362,8 +362,8 @@ def do_check(setchks_session=None, setchk_results=None):
             simple_message=(
                 "[AMBER] You should study the information provided about possible inactive predecessors. "
                 "Having the fullest set of firmly identified inactive predecessors for each active concept "
-                "will improve the quality of data extraction. Currently this tool does not "
-                "attempt to assess the coverage of implied inactives already in the "
+                "will generally improve the quality of data extraction. Currently this check does not "
+                "attempt to assess the coverage of possible inactive predecessors already in the "
                 "value set."
                 ),
             outcome_code="CHK08-OUT-04",

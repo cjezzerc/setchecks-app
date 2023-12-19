@@ -4,3 +4,6 @@ metadata:
   name: NAMESPACE_TO_BE_REPLACED
   labels:
     ttl: forever
+  annotations:
+    splunk.com/index: eks_logs_vsmt_nonprod  
+  

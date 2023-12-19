@@ -172,7 +172,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-03")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"According to your settings this is a {data_entry_extract_words}."
+                                f"According to your settings this is a {data_entry_extract_words}. "
                                 f"The Concept is from " 
                                 f"a hierarchy that has been categorised as ‘may not be appropriate’ in this context. "
                                 f"The hierarchy is -->"
@@ -188,7 +188,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             check_item=CheckItem("CHK05-OUT-04")
                             check_item.outcome_level="ISSUE"
                             check_item.general_message=(
-                                f"According to your settings this is a {data_entry_extract_words}."
+                                f"According to your settings this is a {data_entry_extract_words}. "
                                 f"The Concept is from " 
                                 f"a hierarchy that has been categorised as ‘not recommended’ in this context. "
                                 f"The hierarchy is -->"
@@ -249,7 +249,7 @@ def do_check(setchks_session=None, setchk_results=None):
         setchk_results.set_level_table_rows.append(
             SetLevelTableRow(
                 simple_message=(
-                    f"[AMBER] According to your settings this is a {data_entry_extract_words}." 
+                    f"[AMBER] According to your settings this is a {data_entry_extract_words}. " 
                     "Some Concepts in the value set are from hierarchies that are categorised as "
                     "either 'not recommended' or 'may not be acceptable' in this context. "
                     "You should check these Concepts."
@@ -276,7 +276,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             f"Number of Concepts that are from hierarchies that are categorised as ‘acceptable’" 
                             ),
                         value=f"{n_CONCEPTS_ACCEPTABLE}",  
-                        outcome_code="CHK05-OUT-08bbbb",
+                        outcome_code="CHK05-OUT-10",
                         )
                     )     
                 #</set_level_count>
@@ -320,8 +320,6 @@ def do_check(setchks_session=None, setchk_results=None):
                                 SetLevelTableRow(
                                     descriptor=(
                                         f" {domain_name} ({acceptability_words})"  
-                                        # f"Number of Concepts that are from the hierarchy {domain_name} ({acceptability_words})"  
-                                        # f"({acceptability_words}) Number of Concepts that are from the hierarchy {domain_name} ({acceptability_words})"  
                                         ),
                                     value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}",  
                                     outcome_code="CHK05-OUT-05",
