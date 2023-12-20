@@ -137,7 +137,25 @@ def do_check(setchks_session=None, setchk_results=None):
                 )
             #</check_item>
             this_row_analysis.append(check_item)            
-           
+        
+        #sort check_items in this_row_analysis
+        def sorting_order(check_item):
+            trimmed_outcome_code=check_item.outcome_code[:12] # get rid of final a,b,c
+            order=[
+                "CHK20-OUT-01",
+                "CHK20-OUT-03",
+                "CHK20-OUT-04",
+                "CHK20-OUT-06",
+                "CHK20-OUT-05",
+                "CHK03-OUT-07",
+                ]
+            if trimmed_outcome_code in order:
+                value=order.index(trimmed_outcome_code)
+            else:
+                value=99999
+            # print(f"SORTING VALUE {trimmed_outcome_code} : {value}")
+            return value
+        this_row_analysis.sort(key=sorting_order)       
     
     ##################################################################
     #     Generate set(file) level analysis                          #     

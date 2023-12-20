@@ -319,7 +319,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             setchk_results.set_level_table_rows.append(
                                 SetLevelTableRow(
                                     descriptor=(
-                                        f" {domain_name} ({acceptability_words})"  
+                                        f"  {domain_name} ({acceptability_words})"  
                                         ),
                                     value=f"{n_CONCEPTS_IN_DOMAIN[domain_id]}",  
                                     outcome_code="CHK05-OUT-05",

@@ -141,7 +141,7 @@ class SuppTabRow():
     #         ]
     def format_as_list(self):
         return [
-            f"Row{self.file_row_number}",
+            f"Row {self.file_row_number}",
             f"HST-{self.ambiguity_status}",
             self.supplied_id,
             self.CONCEPT_DESCRIPTION[self.id_type],
@@ -228,9 +228,9 @@ def do_check(setchks_session=None, setchk_results=None):
                     new_concept_id=concept_id, 
                     sct_version=sct_version,
                     )
-                print(concept_id)
-                print(hst_data)
-                print("======================")
+                # print(concept_id)
+                # print(hst_data)
+                # print("======================")
                 interpretation, hst_options=analyse_hst_data(hst_data=hst_data)
                 interpretations[i_data_row]=interpretation
                 # if (not dual_mode) or active_status_earlier_sct_release[concept_id] is True:

@@ -33,11 +33,11 @@
                         <form action="/enter_metadata" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_name">Name of value set</label>
-                                <input class="form-control" name="vs_name" id="vs_name" value={{ setchks_session.vs_name }}>
+                                <input class="form-control" name="vs_name" id="vs_name" value="{{ setchks_session.vs_name }}"">
                             </div>
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_purpose">Purpose of value set</label>
-                                <textarea class="form-control" name="vs_purpose" id="vs_purpose" rows="1"> {{ setchks_session.vs_purpose }}</textarea>
+                                <textarea class="form-control" name="vs_purpose" id="vs_purpose" rows="1">{{ setchks_session.vs_purpose }}</textarea>
                             </div>
                             <div style="margin-top:1vh;">
                                 <input type="submit" value="Save name and purpose">
@@ -46,7 +46,7 @@
                     </ul>
                 </div>
             </div>
-
+            {{ setchks_session.vs_name}}
             <script> 
             $("#name_and_purpose_form").dirty({preventLeaving: true}); 
             </script>

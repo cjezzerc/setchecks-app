@@ -440,7 +440,7 @@ def column_identities():
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
 def enter_metadata():
-    print("ENTER METADATA FORM KEYS", request.form.keys())
+    print("ENTER METADATA FORM ITEMS", list(request.form.items()))
     print("ENTER METADATA DATA", request.data)
     print("REQUEST:",request.args.keys())
     print(request.files)

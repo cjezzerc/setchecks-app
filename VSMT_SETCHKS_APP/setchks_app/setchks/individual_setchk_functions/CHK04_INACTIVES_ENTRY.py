@@ -104,7 +104,7 @@ class SuppTabRow():
 
     def format_as_list(self):
         return [
-            f"Row{self.file_row_number}",
+            f"Row {self.file_row_number}",
             f"HST-{self.ambiguity_status}",
             self.supplied_id,
             self.CONCEPT_DESCRIPTION[self.id_type],

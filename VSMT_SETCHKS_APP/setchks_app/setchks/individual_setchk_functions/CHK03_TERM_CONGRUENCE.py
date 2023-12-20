@@ -349,6 +349,31 @@ def do_check(setchks_session=None, setchk_results=None):
             check_item.general_message="Blank line"
             #</check_item>
             this_row_analysis.append(check_item)
+        
+        #sort check_items in this_row_analysis
+        def sorting_order(check_item):
+            trimmed_outcome_code=check_item.outcome_code[:12] # get rid of final a,b,c
+            order=[
+                "CHK03-OUT-03",
+                "CHK03-OUT-05",
+                "CHK03-OUT-06",
+                "CHK03-OUT-09",
+                "CHK03-OUT-07",
+                "CHK03-OUT-10",
+                "CHK03-OUT-20",
+                "CHK03-OUT-01",
+                "CHK03-OUT-08",
+                "CHK03-OUT-02",
+                "CHK03-OUT-04",
+                "CHK03-OUT-20",
+                ]
+            if trimmed_outcome_code in order:
+                value=order.index(trimmed_outcome_code)
+            else:
+                value=99999
+            # print(f"SORTING VALUE {trimmed_outcome_code} : {value}")
+            return value
+        this_row_analysis.sort(key=sorting_order)
 
 
     # assign CHK-OUT-04 type check items depending on whether have see FSN misuse
@@ -367,6 +392,10 @@ def do_check(setchks_session=None, setchk_results=None):
                     # print("D")
                 # print(check_item.outcome_level)
         
+    
+                
+    
+    
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION
         + n_FSN_FOR_DATA_ENTRY

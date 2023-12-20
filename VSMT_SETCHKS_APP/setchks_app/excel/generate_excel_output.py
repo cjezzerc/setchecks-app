@@ -12,6 +12,7 @@ from . import (
     make_row_overview_sheet, 
     make_supp_tab_sheets,
     make_chk_specific_sheets,
+    make_set_info_sheet,
     )
 
 
@@ -51,14 +52,30 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
             setchks_list_to_report.append(setchk_code)
 
     wb=openpyxl.Workbook()
-    for i in range(0,7):
+    for i in range(0,8):
         ws=wb.create_sheet()
 
+    ##################################################################
+    #           Set_Info sheet                               #     
+    ##################################################################
+
+    ws=wb.worksheets[0]
+    ws.title='Set_Info'
+
+    time0=time.time()
+    make_set_info_sheet.make_set_info_sheet(
+        ws=ws, 
+        setchks_session=setchks_session,
+        )
+    print(f"make_set_info_sheet took {time.time()-time0} seconds")
+    timings["set info sheet"]=f"{(time.time()-time0):0.6f} s" 
+
+    
     ##################################################################
     #           Set_analysis sheet                               #     
     ##################################################################
 
-    ws=wb.worksheets[0]
+    ws=wb.worksheets[1]
     ws.title='Set analyses'
 
     time0=time.time()
@@ -79,7 +96,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     time0=time.time()
     final_supp_tab_i_ws,supp_tabs_row_numbers_map=make_supp_tab_sheets.make_supp_tab_sheets(
         wb=wb,
-        first_i_ws=4, 
+        first_i_ws=5, 
         setchks_list_to_report=setchks_list_to_report,
         setchks_session=setchks_session,
         color_fills=color_fills,
@@ -125,7 +142,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           By_Outcome sheet                                     #     
     ##################################################################
 
-    ws=wb.worksheets[3]
+    ws=wb.worksheets[4]
     ws.title='Grp_by_Message'
 
     time0=time.time()
@@ -144,7 +161,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           By_Row sheet                                         #     
     ##################################################################
 
-    ws=wb.worksheets[2]
+    ws=wb.worksheets[3]
     ws.title='Grp_By_Row'
 
     time0=time.time()
@@ -164,7 +181,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     #           Row_Overview sheet                                   #     
     ##################################################################
 
-    ws=wb.worksheets[1]
+    ws=wb.worksheets[2]
     ws.title='Row_Overview'
 
     time0=time.time()

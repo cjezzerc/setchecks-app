@@ -199,7 +199,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         descriptor=(
-                            f"Number of Concepts with the Semantic Tag '({tag})'" 
+                            f"  Number of Concepts with the Semantic Tag '({tag})'" 
                             ),
                         value=f"{count}",
                         outcome_code="CHK12-OUT-05",
