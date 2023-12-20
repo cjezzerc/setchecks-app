@@ -29,6 +29,7 @@ border = Border(left=Side(style='thin'),
 
 dashed_top_border=Border(top=Side(style='dashed')) 
 solid_top_border=Border(top=Side(style='thick')) 
+solid_bottom_border=Border(bottom=Side(style='thick')) 
 
 vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
 vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')

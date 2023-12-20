@@ -46,10 +46,12 @@ def make_one_supp_tab_sheet(
     headers_output=False
     # banded_row=False
     current_ws_row=0
+    first_rows_of_blocks=set()
     for i_data_row, supp_tab_entries in enumerate(setchk_results.supp_tab_blocks):
         if supp_tab_entries not in [None, []]:
             # banded_row=not banded_row
             first_row_of_block=True
+            first_rows_of_blocks.add(current_ws_row)
             for supp_tab_row in supp_tab_entries:
                 
                 ##############################################
@@ -70,15 +72,15 @@ def make_one_supp_tab_sheet(
                 ws.append(supp_tab_row.format_as_list())
                 current_ws_row+=1
 
-                for cell in ws[current_ws_row]:
-                    # cell.alignment=cell.alignment.copy(wrap_text=True)
-                    # cell.border = border  
-                    # if banded_row:
-                    #     cell.style=styling.vsmt_style_Tlbg
-                    # else:
-                    #     cell.style=styling.vsmt_style_Tlb
-                    if first_row_of_block:
-                        cell.border=styling.solid_top_border
+                # for cell in ws[current_ws_row]:
+                #     # cell.alignment=cell.alignment.copy(wrap_text=True)
+                #     # cell.border = border  
+                #     # if banded_row:
+                #     #     cell.style=styling.vsmt_style_Tlbg
+                #     # else:
+                #     #     cell.style=styling.vsmt_style_Tlb
+                #     if first_row_of_block:
+                #         cell.border=styling.solid_top_border
                 if first_row_of_block:
                     supp_tab_row_numbers_map.append(current_ws_row)
                     first_row_of_block=False
@@ -99,6 +101,9 @@ def make_one_supp_tab_sheet(
             if i_row<=0:
                 cell.font = styling.bold_font # don't use style here as destroys the 45 deg slant
                                             # (should really bring that code down to this section)
+                ws.row_dimensions[i_row+1].height=50
             else:
                 ws.row_dimensions[i_row].height=18
+            if (i_row) in first_rows_of_blocks:
+                cell.border=styling.solid_top_border
     return supp_tab_row_numbers_map

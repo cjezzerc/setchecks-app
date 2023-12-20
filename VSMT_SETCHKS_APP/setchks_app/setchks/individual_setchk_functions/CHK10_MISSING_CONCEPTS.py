@@ -29,8 +29,8 @@ def do_check(setchks_session=None, setchk_results=None):
 
     plain_english_operators_fmts={
         "=":"Just %s | %s |",
-        "<":"All the descendants of %s | %s | (but not including itself)",
-        "<<":"All the descendants of %s | %s | (including itself)",
+        "<":"All the descendants (not including itself) of %s | %s |",
+        "<<":"All the descendants (plus itself) of %s | %s |",
         }
     
     ##################################################################
@@ -166,10 +166,10 @@ def do_check(setchks_session=None, setchk_results=None):
                         n_removed=len(members_of_include_that_this_exclude_removes)
                         n_in_exclude=len(exclude_members)
                         for i_member, member in enumerate(members_of_include_that_this_exclude_removes):
-                            if i_member==0:
-                                common_nature=plain_english_formatted_clause
-                            else:
-                                common_nature="see above"
+                            # if i_member==0:
+                            common_nature=plain_english_formatted_clause
+                            # else:
+                            #     common_nature="see above"
                             row=chk_specific_sheet.new_row()
                             row.cell_contents=[
                             "","","",
@@ -177,14 +177,14 @@ def do_check(setchks_session=None, setchk_results=None):
                             member.pt,
                             common_nature,
                             ]
-                        row=chk_specific_sheet.new_row()
-                        row.row_fill="grey"
-                        row.row_height=2
+                        # row=chk_specific_sheet.new_row()
+                        # row.row_fill="grey"
+                        # row.row_height=2
 
-                row=chk_specific_sheet.new_row()
-                row.cell_contents=["","","","","","",""]
-                row.row_fill="grey"
-                row.row_height=4
+                # row=chk_specific_sheet.new_row()
+                # row.cell_contents=["","","","","","",""]
+                # row.row_fill="grey"
+                # row.row_height=4
 
                 for member in members_in_vs_from_this_clause:
                     row=chk_specific_sheet.new_row()
@@ -194,9 +194,10 @@ def do_check(setchks_session=None, setchk_results=None):
                         member.pt
                     ]
                 
-                row=chk_specific_sheet.new_row()
-                row.row_fill="grey"
-                row.row_height=16
+                row.is_end_of_clause=True
+                # row=chk_specific_sheet.new_row()
+                # row.row_fill="grey"
+                # row.row_height=16
 
 
     if n_SUGGESTED_NEW_MEMBERS==0:

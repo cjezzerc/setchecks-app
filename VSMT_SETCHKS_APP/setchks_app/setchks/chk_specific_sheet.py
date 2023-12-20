@@ -19,10 +19,12 @@ class ChkSpecificSheetRow():
         "cell_contents",
         "row_height",
         "row_fill",
-        "row_formatting"
+        "row_formatting",
+        "is_end_of_clause",
         ]
     def __init__(self):
         self.cell_contents=[""]
         self.row_height=None
         self.row_fill=None
         self.row_formatting=None
+        self.is_end_of_clause=None

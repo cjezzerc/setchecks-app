@@ -46,13 +46,42 @@ def make_one_chk_specific_sheet(
             pass
             ws.row_dimensions[current_ws_row].height = chk_specific_row.row_height
         for cell in ws[current_ws_row]:
-            # cell.alignment=cell.alignment.copy(wrap_text=True)
-            if chk_specific_row.row_fill is not None:
-                cell.style=styling.vsmt_style_grey_row # only grey available as stopgap measure
-                # cell.fill=color_fills[chk_specific_row.row_fill]
-            else:
-                cell.style=styling.vsmt_style_wrap_top 
+            cell.alignment=cell.alignment.copy(wrap_text=True)
+            # if chk_specific_row.row_fill is not None:
+            #     cell.style=styling.vsmt_style_grey_row # only grey available as stopgap measure
+            #     # cell.fill=color_fills[chk_specific_row.row_fill]
+            # else:
+            cell.style=styling.vsmt_style_wrap_top 
+            if chk_specific_row.is_end_of_clause:
+                cell.border=styling.solid_bottom_border
 
     for i, width in enumerate(chk_specific_sheet.col_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
+    ws.freeze_panes="A3"
+    
+    for i_row in range(0,2):
+        row=ws[i_row+1]
+        for i_cell, cell in enumerate(row):
+            cell.style=styling.named_styles["header_row"]
+
+    # for i_row, row in enumerate(ws.iter_rows()):
+    #     # if i_row<=1:
+    #     #     ws.row_dimensions[i_row+1].height = 50
+    #     # else:
+    #     #     pass
+    #     for i_cell, cell in enumerate(row):
+    #         if i_row<=1:
+    #             cell.style=styling.named_styles["header_row"]
+    #         else:
+    #             strval=str(cell.value)
+    #             if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+    #                 cell.style=styling.vsmt_style_wrap_top_hyperlink
+    #             elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+    #                 cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+    #             else:
+    #                 cell.style=styling.vsmt_style_wrap_top
+    #             if (i_row+1) in top_dashed_cells and i_cell<=8:
+    #                 cell.border=styling.dashed_top_border
+    #             if (i_row) in divider_rows:
+    #                 cell.border=styling.solid_top_border

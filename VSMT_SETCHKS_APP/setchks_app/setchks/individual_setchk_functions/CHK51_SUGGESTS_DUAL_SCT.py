@@ -32,10 +32,10 @@ def do_check(setchks_session=None, setchk_results=None):
     concepts_later=ConceptsDict(sct_version=later_sct_version.date_string)
 
     plain_english_operators_fmts={
-        "=":"Just %s ",
-        "<":"All the descendants of %s (but not including itself)",
-        "<<":"All the descendants of %s (including itself)",
-        }
+    "=":"Just %s | %s |",
+    "<":"All the descendants (not including itself) of %s | %s |",
+    "<<":"All the descendants (plus itself) of %s | %s |",
+    }
     
     ##################################################################
     ##################################################################
@@ -117,17 +117,18 @@ def do_check(setchks_session=None, setchk_results=None):
     ###########################################
     chk_specific_sheet=ChkSpecificSheet(sheet_name="CHK51_suppl")
     setchk_results.chk_specific_sheet=chk_specific_sheet
-    chk_specific_sheet.col_widths=[20,40,20,40,20,40,20,40]
+    # chk_specific_sheet.col_widths=[20,40,20,40,20,40,20,40]
+    chk_specific_sheet.col_widths=[60,20,40,20,40,20,40]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "",
         "",
-        "ONLY IN EARLIER",
+        "Only in earlier",
         "",
-        "COMMON CONTENT",
+        "Common to both",
         "",
-        "ONLY IN LATER",
+        "Only in later",
         "",
         ]
 
@@ -135,7 +136,6 @@ def do_check(setchks_session=None, setchk_results=None):
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
         "Group",
-        "(Preferred Term)",
         "Concept Id",
         "Preferred Term",
         "Concept Id",
@@ -196,11 +196,15 @@ def do_check(setchks_session=None, setchk_results=None):
             if do_output_this_loop:
                 include_cbc_id=str(include_clause.clause_base_concept_id)
                 include_cbc_pt=concepts_earlier[include_cbc_id].pt
-                plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+                # plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
+                plain_english_formatted_clause=(
+                    plain_english_operators_fmts[include_clause.clause_operator] % 
+                    (include_cbc_id, include_cbc_pt)
+                    )
                 row=chk_specific_sheet.new_row()
                 row.cell_contents=[
                 plain_english_formatted_clause,
-                include_cbc_pt,
+                # include_cbc_pt,
                 f"{n_members_of_clause_in_vs_only_earlier}",
                 "", 
                 f"{n_members_of_clause_in_vs_common}",
@@ -211,40 +215,41 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause_only_later:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "","","","","","",
+                        "","","","","",
                         str(member.concept_id),
                         member.pt,
                     ]
                 
-                row=chk_specific_sheet.new_row()
-                row.cell_contents=["","","","","","",""]
-                row.row_fill="grey"
-                row.row_height=4
+                # row=chk_specific_sheet.new_row()
+                # row.cell_contents=["","","","","","",""]
+                # row.row_fill="grey"
+                # row.row_height=4
                 
                 for member in members_in_vs_from_this_clause_only_earlier:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "","",
+                        "",
                         str(member.concept_id),
                         member.pt,
                     ]
                 
-                row=chk_specific_sheet.new_row()
-                row.cell_contents=["","","","","","",""]
-                row.row_fill="grey"
-                row.row_height=4
+                # row=chk_specific_sheet.new_row()
+                # row.cell_contents=["","","","","","",""]
+                # row.row_fill="grey"
+                # row.row_height=4
 
                 for member in members_in_vs_from_this_clause_common:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "","","","",
+                        "","","",
                         str(member.concept_id),
                         member.pt,
                     ]
                 
-                row=chk_specific_sheet.new_row()
-                row.row_fill="grey"
-                row.row_height=16
+                row.is_end_of_clause=True
+                # row=chk_specific_sheet.new_row()
+                # row.row_fill="grey"
+                # row.row_height=16
 
     if (len(whole_vs_concept_ids_only_in_earlier) + len (whole_vs_concept_ids_only_in_later))==0:
         #<set_level_message>

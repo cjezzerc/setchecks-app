@@ -7,6 +7,7 @@ logger=logging.getLogger()
 import setchks_app.terminology_server_module
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.excel.termbrowser import termbrowser_hyperlink
 
 from ..check_item import CheckItem
 from ..set_level_table_row import SetLevelTableRow
@@ -76,21 +77,37 @@ class SuppTabRow():
         }
     
     # class level headers and widths - each different type of supp tab will needs its own SuppTabRow definitions
+    
     headers=[
         "Input row number",
-        "Interpretation",
-        "Supplied  Id",
-        "Id type",	
-        "Implied concept Id (if applicable)",
-        "Term (preferred term for this concept - better version TBI)",	
-        "Implied-inactive Option Number",	
-        "Implied-inactive Concept Id",
-        "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
         "Ambiguity status",
-        "Is the implied-inactive concept already represented in the set",
-        "Is it represented in the list by the same tpe of Id?",
+        "Provided Identifier",
+        "Identifier Type",	
+        "Corresponding Concept Id (if applicable)",
+        "Preferred Term",	
+        "Suggested Inactive Predecessor",
+        "Preferred Term",
+        "Already in set?",
         ]
-    cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
+    
+    # headers=[
+    #     "Input row number",
+    #     "Interpretation",
+    #     "Supplied  Id",
+    #     "Id type",	
+    #     "Implied concept Id (if applicable)",
+    #     "Term (preferred term for this concept - better version TBI)",	
+    #     "Implied-inactive Option Number",	
+    #     "Implied-inactive Concept Id",
+    #     "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
+    #     "Ambiguity status",
+    #     "Is the implied-inactive concept already represented in the set",
+    #     "Is it represented in the list by the same tpe of Id?",
+    #     ]
+    # cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
+    cell_widths=[10,10,20,20,20,30,20,30,10]
+    YES_NO={True:"Yes", False:"No","-":"-"}
+    CONCEPT_DESCRIPTION={"C_Id":"Concept Id", "D_Id":"Description Id"}
 
     
     def __init__(self):
@@ -107,20 +124,35 @@ class SuppTabRow():
         self.is_implied_inactive_concept_in_set=None
         self.is_correct_representation_type_in_set=None
 
+    # def format_as_list(self):
+    #     return [
+    #         f"Row{self.file_row_number}",
+    #         self.interpretation,
+    #         self.supplied_id,
+    #         self.id_type,
+    #         self.implied_concept_id,
+    #         self.term,
+    #         self.implied_inactive_option_counter,
+    #         self.implied_inactive_concept_id,
+    #         self.implied_inactive_concept_pt,
+    #         self.ambiguity_status,
+    #         self.is_implied_inactive_concept_in_set,
+    #         self.is_correct_representation_type_in_set,
+    #         ]
     def format_as_list(self):
         return [
             f"Row{self.file_row_number}",
-            self.interpretation,
+            f"HST-{self.ambiguity_status}",
             self.supplied_id,
-            self.id_type,
-            self.implied_concept_id,
+            self.CONCEPT_DESCRIPTION[self.id_type],
+            # self.implied_concept_id,
+            termbrowser_hyperlink(sctid=self.implied_concept_id),
             self.term,
-            self.implied_inactive_option_counter,
-            self.implied_inactive_concept_id,
+            # self.replacement_option_counter,
+            # self.replacement_concept_id,
+            termbrowser_hyperlink(sctid=self.implied_inactive_concept_id),
             self.implied_inactive_concept_pt,
-            self.ambiguity_status,
-            self.is_implied_inactive_concept_in_set,
-            self.is_correct_representation_type_in_set,
+            self.YES_NO[self.is_implied_inactive_concept_in_set],
             ]
 
         

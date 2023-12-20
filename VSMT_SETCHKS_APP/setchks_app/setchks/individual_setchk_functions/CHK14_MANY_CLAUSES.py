@@ -52,11 +52,11 @@ def do_check(setchks_session=None, setchk_results=None):
                 ) 
         # setchks_session.refactored_form=refactored_valset
     
-    setchk_results.set_analysis["Messages"]=[]
-    msg=(   
-        f"Refactored form:" 
-        )
-    setchk_results.set_analysis["Messages"].append(msg)
+    # setchk_results.set_analysis["Messages"]=[]
+    # msg=(   
+    #     f"Refactored form:" 
+    #     )
+    # setchk_results.set_analysis["Messages"].append(msg)
 
     n_INCLUDE_CLAUSES=0
     n_EXCLUDE_CLAUSES=0
@@ -69,6 +69,11 @@ def do_check(setchks_session=None, setchk_results=None):
     row.cell_contents=[
         "include/exclude",
         "ECL",
+        ]
+    row=chk_specific_sheet.new_row()
+    row.cell_contents=[
+        "",
+        "",
         ]
     ECL_clauses={}
     ECL_clauses["include"]=[]
