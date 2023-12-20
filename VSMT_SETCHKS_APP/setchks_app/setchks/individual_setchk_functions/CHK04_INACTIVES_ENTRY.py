@@ -58,6 +58,7 @@ class SuppTabRow():
         "file_row_number",
         "interpretation",
         "supplied_id",
+        "supplied_id_as_possible_link",
         "id_type",
         "implied_concept_id",
         "term",
@@ -68,55 +69,53 @@ class SuppTabRow():
         "is_replacement_concept_in_set",
         "is_correct_representation_type_in_set",
         }
-    
+    YES_NO={True:"Yes", False:"No","-":"-"}
+    CONCEPT_DESCRIPTION={"C_Id":"Concept Id", "D_Id":"Description Id"}
+
     # class level headers and widths - each different type of supp tab will needs its own SuppTabRow definitions
     headers=[
         "Input row number",
-        "Interpretation",
-        "Supplied  Id",
-        "Id type",	
-        "Implied Concept Id (if applicable)",
-        "Term (Preferred Term for this Concept)",	
-        "Replacement Option Number",	
-        "Suggested Concept Id",
-        "Preferred Term (if you are certain you want to use Description Ids you can find these by clicking on the link)",
         "Ambiguity status",
-        "Is the replacement Concept already represented in the set",
-        "Is it represented in the list by the same type of Id?",
+        "Provided Identifier",
+        "Identifier Type",	
+        "Corresponding Concept Id (if applicable)",
+        "Preferred Term",	
+        "Suggested Concept Id",
+        "Preferred Term",
+        "Already in set",
         ]
-    cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
+    cell_widths=[10,10,20,20,20,30,20,30,10]
 
     
     def __init__(self):
         self.file_row_number=None
         self.interpretation=None
         self.supplied_id=None
+        self.supplied_id_as_possible_link=None
         self.id_type=None
         self.implied_concept_id="" # null string so that if not set it shows as a blank
         self.term=None
-        self.replacement_option_counter=None
         self.replacement_concept_id=None
         self.replacement_concept_pt=None
         self.ambiguity_status=None
         self.is_replacement_concept_in_set=None
         self.is_correct_representation_type_in_set=None
+    
 
     def format_as_list(self):
         return [
             f"Row{self.file_row_number}",
-            self.interpretation,
+            f"HST-{self.ambiguity_status}",
             self.supplied_id,
-            self.id_type,
+            self.CONCEPT_DESCRIPTION[self.id_type],
             # self.implied_concept_id,
             termbrowser_hyperlink(sctid=self.implied_concept_id),
             self.term,
-            self.replacement_option_counter,
+            # self.replacement_option_counter,
             # self.replacement_concept_id,
             termbrowser_hyperlink(sctid=self.replacement_concept_id),
             self.replacement_concept_pt,
-            self.ambiguity_status,
-            self.is_replacement_concept_in_set,
-            self.is_correct_representation_type_in_set,
+            self.YES_NO[self.is_replacement_concept_in_set],
             ]
 
         
@@ -203,9 +202,10 @@ def do_check(setchks_session=None, setchk_results=None):
                             supp_tab_row.interpretation=hst_option.interpretation
                             if mr.C_Id_entered is not None:
                                 supp_tab_row.supplied_id=mr.C_Id_entered
+                                # supp_tab_row.supplied_id_as_possible_link=termbrowser_hyperlink(sctid=supp_tab_row.supplied_id)
                                 supp_tab_row.id_type="C_Id"
                             else:
-                                supp_tab_row.supplied_id=mr.D_Id_entered
+                                supp_tab_row.supplied_id=mr.D_Id_entered 
                                 supp_tab_row.id_type="D_Id"
                                 supp_tab_row.implied_concept_id=mr.C_Id
                             # propose set supp_tab.term via

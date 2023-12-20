@@ -228,8 +228,7 @@ def make_row_overview_sheet(
                 cell.style=styling.vsmt_style_wrap_top_hyperlink
             elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
                 cell.style=styling.vsmt_style_wrap_top_double_hyperlink
-            if cell.value=="*":
-                cell.style=styling.named_styles["asterisk_on_row_overview"]
+
             if i_row<=1:
                 cell.font = styling.bold_font # don't use style here as destroys the 45 deg slant
                                             # (should really bring that code down to this section)

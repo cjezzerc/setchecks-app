@@ -44,11 +44,11 @@ def make_one_supp_tab_sheet(
                                     # each such entry is a row number in supp_tab that this function constructs 
                                     # so that other sheets can link to the right row on this sheet 
     headers_output=False
-    banded_row=False
+    # banded_row=False
     current_ws_row=0
     for i_data_row, supp_tab_entries in enumerate(setchk_results.supp_tab_blocks):
         if supp_tab_entries not in [None, []]:
-            banded_row=not banded_row
+            # banded_row=not banded_row
             first_row_of_block=True
             for supp_tab_row in supp_tab_entries:
                 
@@ -73,13 +73,32 @@ def make_one_supp_tab_sheet(
                 for cell in ws[current_ws_row]:
                     # cell.alignment=cell.alignment.copy(wrap_text=True)
                     # cell.border = border  
-                    if banded_row:
-                        cell.style=styling.vsmt_style_Tlbg
-                    else:
-                        cell.style=styling.vsmt_style_Tlb
+                    # if banded_row:
+                    #     cell.style=styling.vsmt_style_Tlbg
+                    # else:
+                    #     cell.style=styling.vsmt_style_Tlb
+                    if first_row_of_block:
+                        cell.border=styling.solid_top_border
                 if first_row_of_block:
                     supp_tab_row_numbers_map.append(current_ws_row)
                     first_row_of_block=False
         else:
             supp_tab_row_numbers_map.append(None)
+        
+    ws.freeze_panes="A2"
+    
+    for i_row, row in enumerate(ws.iter_rows()):
+        for cell in row:
+            strval=str(cell.value)
+            if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
+                cell.style=styling.vsmt_style_wrap_top_hyperlink
+            elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
+                cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+            else:
+                cell.style=styling.vsmt_style_wrap_top
+            if i_row<=0:
+                cell.font = styling.bold_font # don't use style here as destroys the 45 deg slant
+                                            # (should really bring that code down to this section)
+            else:
+                ws.row_dimensions[i_row].height=18
     return supp_tab_row_numbers_map

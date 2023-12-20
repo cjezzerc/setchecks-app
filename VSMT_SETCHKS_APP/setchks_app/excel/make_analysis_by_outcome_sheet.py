@@ -123,7 +123,7 @@ def make_analysis_by_outcome_sheet(
                 input_file_row_number=i_data_row+setchks_session.first_data_row+1
                 
                 row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                link_cell=(f'=HYPERLINK("#Grp_by_Row!E{row_to_link_to}", "R")')
+                link_cell=(f'=HYPERLINK("#Grp_by_Row!H{row_to_link_to}", "R")')
                 if supp_tab_ws is not None:
                     # print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
                     if supp_tab_mapping[i_data_row] is not None:
