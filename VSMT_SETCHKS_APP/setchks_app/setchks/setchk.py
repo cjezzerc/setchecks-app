@@ -56,3 +56,10 @@ class Setchk():
         return setchk_results
         # return ("Setcheck %s has been run" % self.setchk_short_name)
 
+    @property
+    def setchk_short_code(self):
+        return self.setchk_code.split("_")[0]
+    
+    @property
+    def setchk_short_name_plus_short_code(self):
+        return f"{self.setchk_short_name} ({self.setchk_short_code})"

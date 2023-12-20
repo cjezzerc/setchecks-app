@@ -21,7 +21,7 @@ def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
     for setchk in setchks_list:
         if run_in_rq:
             if setchks_session.passes_gatekeeper or setchk.setchk_code in to_run_if_gatekeeper_not_passed:
-                logger.debug(f"ABOUT TO SEND TO RQ: {setchk.setchk_code}")
+                logger.debug(f"ABOUT TO SEND TO RQ: {setchk.setchk_short_name_plus_short_code}")
                 setchks_jobs_manager.launch_job(
                     setchk=setchk,
                     setchks_session=setchks_session,

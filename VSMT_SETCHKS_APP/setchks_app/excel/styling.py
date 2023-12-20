@@ -1,7 +1,18 @@
+"""Things to do with styling of Excel output, including any conversion text that
+is needed in more than one routine"""
+
 from openpyxl.styles import Alignment, Border, Side, PatternFill, NamedStyle, Font
 from openpyxl.styles.colors import Color
 from openpyxl.styles import numbers
 
+
+message_types_text={
+    "ISSUE":"Issue",
+    "FACT":"(Info)",
+    "Conditional: FACT/DEBUG":"*COND*",
+    }
+
+named_styles={}
 
 color_fills={
         "grey": PatternFill(patternType='solid', fgColor=Color('D9D9D9')),
@@ -15,6 +26,9 @@ border = Border(left=Side(style='thin'),
         right=Side(style='thin'), 
         top=Side(style='thin'), 
         bottom=Side(style='thin'))
+
+dashed_top_border=Border(top=Side(style='dashed')) 
+solid_top_border=Border(top=Side(style='thick')) 
 
 vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
 vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
@@ -34,7 +48,7 @@ vsmt_style_wrap_top_hyperlink.font = Font(name='Calibri',
             color='FF0000EE')
 
 vsmt_style_wrap_top_double_hyperlink=NamedStyle(name="vsmt_style_wrap_top_double_hyperlink")
-vsmt_style_wrap_top_double_hyperlink.alignment=Alignment(wrap_text=True, vertical='top')
+vsmt_style_wrap_top_double_hyperlink.alignment=Alignment(wrap_text=True, vertical='center', horizontal='center')
 vsmt_style_wrap_top_double_hyperlink.number_format = numbers.FORMAT_TEXT
 vsmt_style_wrap_top_double_hyperlink.font = Font(name='Calibri',
             size=11,
@@ -70,3 +84,27 @@ vsmt_style_Tlbg.alignment=Alignment(vertical='top', horizontal='left')
 vsmt_style_Tlbg.fill=color_fills["grey"]
 vsmt_style_Tlbg.border=border
 vsmt_style_Tlbg.number_format = numbers.FORMAT_TEXT
+
+bold_font=Font(bold=True)
+bold_font=Font(bold=True)
+
+style_name="asterisk_on_row_overview"
+named_style=NamedStyle(name=style_name)
+named_styles[style_name]=named_style
+named_style.fill=color_fills["grey"]
+named_style.alignment=Alignment(vertical='center', horizontal='center')
+named_style.number_format = numbers.FORMAT_TEXT
+named_style.font = Font(
+            size=14,
+            bold=True,
+            )
+
+style_name="header_row"
+named_style=NamedStyle(name=style_name)
+named_styles[style_name]=named_style
+named_style.alignment=Alignment(wrap_text=True, vertical='center', horizontal='center')
+named_style.number_format = numbers.FORMAT_TEXT
+named_style.font = Font(
+            bold=True,
+            )
+

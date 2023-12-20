@@ -41,11 +41,11 @@ def make_row_overview_sheet(
     #############################################################
 
     current_row+=1
-    row_cell_contents=["Input Value Set Row"]
+    row_cell_contents=["Input File Row Number"]
 
     for setchk_code in setchks_list_to_report:
         # row_cell_contents.append(setchk_code)
-        row_cell_contents.append(setchks[setchk_code].setchk_short_name)
+        row_cell_contents.append(setchks[setchk_code].setchk_short_name_plus_short_code)
     
     row_cell_contents.append("Issues Identified")
     row_cell_contents.append("User Notes")
@@ -63,7 +63,7 @@ def make_row_overview_sheet(
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
         ws.column_dimensions[get_column_letter(i+1)].width=width     
-    ws.row_dimensions[current_row].height=136.8
+    ws.row_dimensions[current_row].height=142
     text_rotations=[0]+[45]*(len(setchks_list_to_report)+1)+[0]*(1+len(setchks_session.data_as_matrix[0]))
     filters = ws.auto_filter
     rightmost_column=get_column_letter(len(cell_widths))
@@ -102,14 +102,14 @@ def make_row_overview_sheet(
     # row of check numbers 
     ##########################
 
-    current_row+=1
-    row_cell_contents=["CHK# (not for prod)"]
+    # current_row+=1
+    # row_cell_contents=["CHK# (not for prod)"]
 
-    for setchk_code in setchks_list_to_report:
-        row_cell_contents.append(setchk_code[3:5])
+    # for setchk_code in setchks_list_to_report:
+    #     row_cell_contents.append(setchk_code[3:5])
     
-    ws.append(row_cell_contents)
-    current_ws_row+=1
+    # ws.append(row_cell_contents)
+    # current_ws_row+=1
 
 
     ################
@@ -220,7 +220,8 @@ def make_row_overview_sheet(
     #             cell.fill=grey_fill
     #             cell.border = border  
     #             ws.row_dimensions[irow].height = 3
-    for row in ws.iter_rows():
+    ws.freeze_panes=get_column_letter(len(setchks_list_to_report)+4)+"3"
+    for i_row, row in enumerate(ws.iter_rows()):
         for cell in row:
             strval=str(cell.value)
             if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
@@ -228,4 +229,9 @@ def make_row_overview_sheet(
             elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
                 cell.style=styling.vsmt_style_wrap_top_double_hyperlink
             if cell.value=="*":
-                cell.fill=styling.color_fills["grey"]
+                cell.style=styling.named_styles["asterisk_on_row_overview"]
+            if i_row<=1:
+                cell.font = styling.bold_font # don't use style here as destroys the 45 deg slant
+                                            # (should really bring that code down to this section)
+            else:
+                ws.row_dimensions[i_row].height=18

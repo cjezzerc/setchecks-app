@@ -263,7 +263,8 @@ def do_check(setchks_session=None, setchk_results=None):
             SetLevelTableRow(
                 simple_message=(
                     "[AMBER] This check has made suggestions for Concepts that "
-                    "you may wish to add or remove from the value set due to the change in content of the release"
+                    "you may wish to add or remove from the value set due to the change in content of the release."
+                    "See 'CHK51_suppl' tab for suggestions."
                     ),
                 outcome_code="CHK51-OUT-04",
                 )
