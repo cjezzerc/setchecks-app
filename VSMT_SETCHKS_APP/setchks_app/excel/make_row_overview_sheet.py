@@ -133,7 +133,7 @@ def make_row_overview_sheet(
                     if nothing_output_in_this_cell_yet:
                         if check_item.outcome_level not in ["FACT","INFO","DEBUG"]:
                             row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                            x_cells.append(f'=HYPERLINK("#Grp_by_Row!C{row_to_link_to}","i")')
+                            x_cells.append(f'=HYPERLINK("#Grp_by_Row!F{row_to_link_to}","i")')
                             at_least_one_issue=True
                             nothing_output_in_this_cell_yet=False 
                 if nothing_output_in_this_cell_yet:

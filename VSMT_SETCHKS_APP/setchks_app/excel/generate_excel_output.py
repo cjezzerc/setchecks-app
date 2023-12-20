@@ -135,6 +135,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         setchks_session=setchks_session,
         output_OK_messages=output_OK_messages,
         row_analysis_row_numbers_map=row_analysis_row_numbers_map,
+        supp_tabs_row_numbers_map=supp_tabs_row_numbers_map,
         )
     print(f"make_analysis_by_outcome_sheet took {time.time()-time0} seconds")
     timings["analysis by outcome sheet"]=f"{(time.time()-time0):0.6f} s" 

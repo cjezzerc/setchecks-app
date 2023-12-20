@@ -128,7 +128,7 @@ def make_analysis_by_row_sheet(
                         row_specific_message=check_item.row_specific_message
                         if row_specific_message == "None":
                             row_specific_message=""
-                        hyperlink_cell_contents=f'=HYPERLINK("#Grp_by_Message!C{row_to_link_to}","M")'
+                        hyperlink_cell_contents=f'=HYPERLINK("#Grp_by_Message!G{row_to_link_to}","M")'
                         # print(f"i_data_row: {i_data_row} supp_tab_ws: {supp_tab_ws}")
                         if supp_tab_ws is not None:
                             # print(f"supp_tab_mapping:{supp_tab_mapping} {i_data_row} {supp_tab_mapping[i_data_row]}")    
@@ -191,30 +191,16 @@ def make_analysis_by_row_sheet(
         for i, width in enumerate(cell_widths):
             ws.column_dimensions[get_column_letter(i+1)].width=width     
 
-        # example bit of formatting bling
         ws.freeze_panes="J2"
         
         for i_row, row in enumerate(ws.iter_rows()):
-            # divider_line=row[0].value=="----"
-            # if (i_row+1) in divider_rows:
-            #     ws.row_dimensions[i_row+1].height = 3
             if i_row==0:
                 ws.row_dimensions[i_row+1].height = 50
             else:
                 pass
-                # ws.row_dimensions[i_row+1].height = 18
             for i_cell, cell in enumerate(row):
-                # cell.alignment=Alignment(wrap_text=True, vertical='top')
-                # cell.style=vsmt_style_wrap_top
-                # cell.alignment=cell.alignment.copy(wrap_text=True, vertical='top')
                 if i_row==0:
                     cell.style=styling.named_styles["header_row"]
-                # elif (i_row+1) in divider_rows:
-                #     # cell.style=styling.vsmt_style_grey_row
-                #     cell.border=styling.solid_bottom_border
-
-                #     # cell.fill=color_fills["grey"]
-                #     # cell.border = border
                 else:
                     strval=str(cell.value)
                     if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
