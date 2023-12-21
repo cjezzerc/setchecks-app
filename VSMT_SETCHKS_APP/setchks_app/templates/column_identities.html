@@ -169,12 +169,12 @@
         </style>
         <div class="col-8"> 
             <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
-            <a href="/data_upload"  class="btn setchks-btn">Home</a>
+            <a href="/data_upload"  class="btn setchks-btn">Return to Load Page</a>
         </div>
         <div class="col-4">
             <!-- <button type="button" class="btn setchks-btn">Reset and upload new file</button> -->
             <!-- <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button> -->
-            <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (Home)</a>
+            <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (Load)</a>
             {% if setchks_session.columns_info.identification_sufficient ==True %}
                 <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Next (Settings)</a>
             {% else %}

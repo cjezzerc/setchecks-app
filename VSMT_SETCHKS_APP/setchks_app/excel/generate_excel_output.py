@@ -24,7 +24,7 @@ timings={}
 def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_include="ALL", all_setchks=None, output_OK_messages=False):
     """Create an excel workbook from a setchks_session object and a specified list of checks to be included in the report"""
     
-    # raise Exception("Forcing generate excel to fail")
+    raise Exception("Forcing generate excel to fail")
 
     time00=time.time()
     

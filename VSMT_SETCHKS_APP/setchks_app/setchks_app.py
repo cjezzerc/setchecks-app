@@ -390,9 +390,9 @@ def column_identities():
     # set column_info if nor already set OR data has changed number of columns (allows simple reload to leave it unchanged) 
     if (setchks_session.columns_info==None) or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0])):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
-        ci.set_column_type(icol=0,requested_column_type="MIXED")
-        if ci.ncols>1:
-            ci.set_column_type(icol=1,requested_column_type="DTERM")
+        # ci.set_column_type(icol=0,requested_column_type="MIXED")
+        # if ci.ncols>1:
+        #     ci.set_column_type(icol=1,requested_column_type="DTERM")
         setchks_session.columns_info=ci
 
     # if reach here via click on a column identity dropdown

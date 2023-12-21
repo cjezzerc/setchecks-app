@@ -384,6 +384,7 @@ def do_check(setchks_session=None, setchk_results=None):
             # print(check_item.outcome_code)
             if check_item.outcome_code=="CHK03-OUT-04":
                 # print(check_item.outcome_level)
+                #  propose: if n_FSN_FOR_DATA_ENTRY>0 or setchksession.compactness=="FULL":
                 if n_FSN_FOR_DATA_ENTRY>0:
                     check_item.outcome_level="FACT"
                     # print("F")
