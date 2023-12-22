@@ -9,23 +9,51 @@
 
 <div class="container-fluid  mt-0 " >
     
-    <div class="row" style="height: 60vh">    
+    <div class="row" style="height: 60vh; overflow:auto">    
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6 ">
+        <div class="col-8 ">
             
-            <div class="card" style="height: 60vh; overflow:auto">
-                <div class="card-body" style="font-size: 1em;">
+            <div class="card" style="overflow:auto">
+                <div class="card-body" style="font-size: 1em; overflow:auto">
                     <ul>
-                        <li> Please load a file from your device. </li>
-                        <li> Permitted formats are .xlsx (recommended) or tab separated (.txt or .tsv)</li>
-                        <li> One header row is assumed (adjustability TBI) </li>
-                        <li> For .xlsx format, only the first sheet is read</li>
-                        <li> For .xlsx format, file upload can fail in browser specific ways if the file is open in Excel</li>
-                        <li> Please keep the number of concepts less than ca. 1000 for today, and generally advise trials with <100 </li>
+                        <p>
+                        Welcome to the first prototype of the NHS Value Set Management Tool (VSMT). 
+                        We aim to grow the VSMT into a full suite of tools that provide a one-stop-shop for 
+                        all SNOMED CT value sets, including finding existing sets, 
+                        creating and maintaining sets, sharing new sets with others, 
+                        and finding like-minded people to collaborate with. 
+                        </p>
+                        <p>
+                        In this first prototype we are introducing “Set Checks” - 13 separate checks 
+                        that run on user supplied value sets to assess and feedback on 
+                        set content. The checks indicate possible errors, content that might be missing, 
+                        and how a set from an earlier UK SNOMED CT release 
+                        should be changed due to new or changed content in a more 
+                        recent UK SNOMED CT release.
+                        </p>
+                        <p>
+                        You can find a user guide for the tool here and we would love to hear 
+                        your feedback via this form.
+                        </p>
+                        <p>
+                        Thanks for trying out the VSMT!
+                        
+                        
+                        <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> 
+                            Information about recent changes </a> </li>
+                        </p>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1em; overflow:auto">
+                <div class="card-body" style="font-size: 1em; overflow:auto">
+                    <ul>
+                       
                         <li> You will be able to check the upload on the next screen. </li>
                         <li> See this guidance (TBI) for advice on the data required in your file </li>
                         <li> Some examples input files are in <a href="https://nhs.sharepoint.com/:f:/r/sites/msteams_0ce65d/Shared%20Documents/General/Design/example_value_sets_for_trial_app?csf=1&web=1&e=4MeVfX" target="_blank"> this sharepoint folder </a></li>
@@ -37,9 +65,10 @@
                     </ul>
                 </div>
             </div>
+
         </div>
 
-        <div class="col-6">
+        <div class="col-4">
 
             <!-- <div class="card" style="height: 60vh;  background-color: #f0f4f5;" > -->
             <div class="card border-0" style="height: 60vh;  background-color: #f0f4f5;">
@@ -107,9 +136,9 @@
                             <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> 
-                                    Load a new version of file 
+                                    Browse for a file 
                                     <div style="font-size: .6em; line-height: 1.3em;"> 
-                                        Retain items previously entered such as name, purpose, SNOMED CT version etc
+                                        (retaining previously entered settings)
                                     </div>
                                 </label>
                                 <input id="data-browse-input" 
@@ -124,9 +153,9 @@
                             <form action="/column_identities" class="data-browse-form-default-settings" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input-default-settings" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> 
-                                    Browse for a new file 
+                                    Browse for a file 
                                     <div style="font-size: .6em; line-height: 0.8em;"> 
-                                        Revert to default settings 
+                                        (reverting to default settings)
                                     </div>
                                 </label>
                                 <input id="data-browse-input-default-settings" 
@@ -144,7 +173,8 @@
             </div>
         </div>
     </div>
-    <div class="row" style="margin-top:1em; height: 20vh">
+    <div class="row" style="margin-top:1em; height: 3vh;"></div>
+    <div class="row" style="margin-top:1em; height: 8vh; background-color:lightgray">
         
         <style>
             .setchks-btn {
@@ -161,17 +191,19 @@
                 border-style: solid;
                 }
         </style>
-         <div class="col-10"> 
-            <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
-        </div>
-        <div class="col-2">
-            {% if setchks_session.data_as_matrix != [] %}
-            <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i>(View)</a>
-            {% endif %}
-        </div>
+        
+            <div class="col-10"> 
+                <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
+            </div>
+            <div class="col-2 " >
+                {% if setchks_session.data_as_matrix != [] %}
+                <a href="/column_identities"  class="btn setchks-btn float-end" style="margin-top: 1vh" ;><i class="bi bi-arrow-right"></i>(View)</a>
+                {% endif %}
+            </div>
     
     </div>
 </div>
+
 
   
 {% endblock %}

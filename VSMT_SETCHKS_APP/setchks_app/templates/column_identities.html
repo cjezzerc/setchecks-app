@@ -7,7 +7,7 @@
 {% block content %}
     
 <div class="container-fluid  mt-0 ">
-    <div class="row" style="height: 70vh; overflow:auto">
+    <div class="row" style="height: 60vh; overflow:auto">
         
         
         {#                  #}
@@ -53,7 +53,7 @@
             
             <!-- THE TABLE -->
             
-            <div class="card" style="height: 60vh" >
+            <div class="card"  >
                 <!-- <div class="card-header">
                     <strong>Table</strong>
                 </div>                 -->
@@ -149,8 +149,9 @@
             </div>
         </div>
     </div>
-    <div class="row" style="margin-top:1em">
-        
+    <!-- <div class="row" style="margin-top:1em"> -->
+    <div class="row" style="margin-top:1em; height: 3vh;"></div>
+    <div class="row" style="margin-top:1em; height: 8vh; background-color:lightgray">
         
         <style>
             .setchks-btn {
@@ -159,12 +160,23 @@
                 border-style: solid;
                 border-color:#005eb8;
                 border-width :3px; 
+                margin-top: 1vh;
+                width: 15vw
                 }
-            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn:hover {
+                background-color:#ffeb3b; 
+                border-style: solid; 
+                border-color:#005eb8; 
+                border-width :3px;
+                margin-top: 1vh;
+                width: 15vw
+                }
             .setchks-btn-inactive {
                 background-color: lightgray;
                 color: lightslategray;
                 border-style: solid;
+                margin-top: 1vh;
+                width: 15vw
                 }
         </style>
         <div class="col-8"> 
@@ -174,14 +186,15 @@
         <div class="col-4">
             <!-- <button type="button" class="btn setchks-btn">Reset and upload new file</button> -->
             <!-- <button type="button" class="btn setchks-btn-inactive">Reload With Current Settings</button> -->
-            <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (Load)</a>
             {% if setchks_session.columns_info.identification_sufficient ==True %}
-                <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Next (Settings)</a>
+                <a href="/enter_metadata"  class="btn setchks-btn float-end"><i class="bi bi-arrow-right"></i> Next (Settings)</a>
             {% else %}
-                <a href="#"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> Next (Settings)</a>
+                <a href="#"  class="btn setchks-btn-inactive float-end"><i class="bi bi-arrow-right"></i> Next (Settings)</a>
             {% endif %}
+            <a href="/data_upload"  class="btn setchks-btn float-end"><i class="bi bi-arrow-left"></i> Prev (Load)</a>
+
             
-            
+           
             
         </div>
     
