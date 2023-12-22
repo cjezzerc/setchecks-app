@@ -413,6 +413,7 @@ def column_identities():
         for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]: # The marshalled_rows list does NOTinclude the header row
             mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
             setchks_session.marshalled_rows.append(mr)
+        setchks_session.column_content_assessment.assess(marshalled_rows=setchks_session.marshalled_rows)
 
     type_labels={"CID":"Concept Id", "DID":"Description Id", "MIXED":"Mixed Id", "DTERM":"Term","OTHER":"Other"}
     column_type_labels=[type_labels[x] for x in setchks_session.columns_info.column_types]

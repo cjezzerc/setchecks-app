@@ -7,7 +7,7 @@
 {% block content %}
     
 <div class="container-fluid  mt-0 ">
-    <div class="row" style="height: 60vh; overflow:auto">
+    <div class="row" style="height: 70vh;">
         
         
         {#                  #}
@@ -19,12 +19,10 @@
             <div class="card">
                 <div class="card-body" style="font-size: 1em; overflow:auto">
                     <ul>
-                        <li> Please identify the column containing SNOMED CT IDs </li>
-                        <li> You can optionally identify one column as SNOMED CT Terms</li>
-                        <li> Rows with grey background fail "correct format Id in MIXED column" test </li>
-                        <li> Data was loaded from file <b>{{ filename }}</b> </li>
-                        <li> Data is assumed to have a header (other options TBI) </li>
-                        <li> Data is assumed to have tab delimiters (other options TBI) </li>
+                        <li> Please  choose an Identifier column 
+                            using the dropdown at the top of the column
+                        </li>
+                        <li> Optionally you can also identify a Term column </li>
                     </ul>
                 </div>
             </div>
@@ -32,12 +30,28 @@
             <div class="card" style="margin-top:1em; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> Overall analysis: (TBI)</li>  
-                        {% if setchks_session.columns_info.identification_sufficient ==True %}
                         
+                        {% if setchks_session.columns_info.identification_sufficient ==True %}
+                            {% if setchks_session.column_content_assessment.fraction_valid_sctid_rows < 0.3 %}
+                                <li style="color: red;"> <b>[Alert] Your chosen 
+                                    Identifier column does not appear to contain a high proportion of 
+                                    Identifiers conforming to the SCTID data type. You may have selected the wrong column.</b> 
+                                </li>
+                            {% endif %}  
+                             
                         {% else %}
-                        <li> <b>You need to identify at least one column as an Id column</b> </li>
-                        {% endif %}              
+                            <li style="color: red;"> <b>[Alert] You need to choose an 
+                                Identifier column before proceeding to the next page</b> </li>
+                        {% endif %}     
+                        {% if not setchks_session.columns_info.have_dterm_column  %}
+                        <li> <b>[Tip] 
+                            If you want the checks to assess Terms
+                            then you need to choose a Term column. If you only want the checks
+                            to assess the Identifiers that you have provided then you can proceed 
+                            without choosing a Term column.
+                        </b> 
+                        </li>
+                    {% endif %}                         
                     </ul>
                 </div>
             </div>
@@ -53,25 +67,21 @@
             
             <!-- THE TABLE -->
             
-            <div class="card"  >
+            <div class="card"  style="height:70vh; overflow:auto">
                 <!-- <div class="card-header">
                     <strong>Table</strong>
                 </div>                 -->
-                <div class="panel" style="overflow:auto">
+                <div class="panel" >
                 <table class="table table-bordered" >
 
                     <thead>
                         
-                            <!-- add the row of column titles -->
-                            <tr>
-                                <th scope="col">1</th>
-                                {%for cell in file_data[0] %}
-                                <th scope="col">{{ cell.string }}</th>
-                                {% endfor %}
-                            </tr>
 
+
+                            {% set pulldown_text = ({"MIXED":"Identifier","DTERM":"Term","OTHER":"Other"})	%}
+                            
                             <tr>
-                                <th scope="col">Column type</th>
+                                <th scope="col">Column type <i class="bi bi-arrow-right"></i></th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col">
                                     <div>
@@ -89,7 +99,7 @@
                                                     {% else %}
                                                     <option
                                                     {% endif %} 
-                                                    value={{ available_type }}> {{ available_type }}
+                                                    value={{ available_type }}> {{ pulldown_text[available_type] }}
                                                     </option>
                                                 {% endfor %}
                                             </select>
@@ -100,45 +110,40 @@
                                 {% endfor %}
                             </tr>
 
-                            <tr>
+                            <!-- <tr>
                                 <th scope="col"></th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col" style="font-style:italic;"> Column analysis here (TBI)</th>
                                 {% endfor %}
-                            </tr>
-
-                        <style>
-                            .letterCircle {
-                                border-radius: 50%;
-                                width: 36px;
-                                height: 36px;
-                                padding: 8px;
-                            
-                                background: #fff;
-                                border: 2px solid #666;
-                                color: #666;
-                                text-align: center;
-                            
-                                font: 32px Arial, sans-serif;
-                            }
-                        </style>
-                    </thead>
+                            </tr> -->
                     
-                        {% for row in file_data[1:] %}
-                            {% if rows_processable[loop.index-1] %}
+                            <!-- add the row of column titles -->
                             <tr>
-                            {% else %}
+                                <th scope="col">Row 1 (Header)</th>
+                                {%for cell in file_data[0] %}
+                                <th scope="col">{{ cell.string }}</th>
+                                {% endfor %}
+                            </tr>
+                    
+                    
+                        </thead>
+                    
+
+                        {% for row in file_data[1:] %}
+                            <!-- {% if rows_processable[loop.index-1] %} -->
+                            <tr>
+                            <!-- {% else %}
                             <tr style="background-color: lightgray;">
-                            {% endif %}
-                                    <th scope="row">{{ loop.index+1 }}</th>
+                            {% endif %} -->
+                                <th scope="row">Row {{ loop.index + 1 }}</th>
                             {%for cell in row %}
                                 <td>{{ cell.string }}
-                                {% set column_type=setchks_session.columns_info.column_types[loop.index-1] %}
+                                <!-- {% set column_type=setchks_session.columns_info.column_types[loop.index-1] %}
                                 {% if cell.component_type=="Concept_Id" and column_type in ["DID","DTERM","OTHER"] %} <b>(C!)</b> {% endif %}
                                 {% if cell.component_type=="Concept_Id" and column_type in ["CID","MIXED"] %} (C) {% endif %}
                                 {% if cell.component_type=="Description_Id" and column_type in ["CID","DTERM","OTHER"] %} <b>(D!)</b> {% endif %}
                                 {% if cell.component_type=="Description_Id" and column_type in ["DID","MIXED"] %} (D) {% endif %}
-                                {% if cell.component_type not in ["Description_Id","Concept_Id"] and column_type in ["CID","DID","MIXED"] %} <b>(!)</b> {% endif %}
+                                {% if cell.component_type not in ["Description_Id","Concept_Id"] and column_type in ["CID","DID","MIXED"] %} <b>(!)</b> {% endif %} -->
                                 </td>
                             {% endfor %}
                             </tr>
@@ -147,10 +152,17 @@
                   </table>
                 </div>
             </div>
+
+
+
+
         </div>
+
+
+
     </div>
     <!-- <div class="row" style="margin-top:1em"> -->
-    <div class="row" style="margin-top:1em; height: 3vh;"></div>
+    <!-- <div class="row" style="margin-top:1em; height: 8vh;"></div> -->
     <div class="row" style="margin-top:1em; height: 8vh; background-color:lightgray">
         
         <style>

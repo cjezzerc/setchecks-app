@@ -4,6 +4,7 @@ import uuid
 
 from ..excel import generate_excel_output
 from setchks_app.data_as_matrix import load_data_into_matrix
+from setchks_app.data_as_matrix import column_content_assessment
 import setchks_app.setchks.setchk_definitions
 
 class SetchksSession():
@@ -40,6 +41,7 @@ class SetchksSession():
                "columns_info",
                "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
+               "column_content_assessment",
                "passes_gatekeeper",
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
                "refactored_form",
@@ -76,6 +78,7 @@ class SetchksSession():
         self.columns_info=None
         self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
+        self.column_content_assessment=column_content_assessment.ColumnContentAssessment()
         self.passes_gatekeeper=None
         self.setchks_results={}
         self.refactored_form=None
