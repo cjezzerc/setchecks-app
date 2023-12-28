@@ -7,17 +7,17 @@
 {% block content %}
     
 
-<div class="container-fluid  mt-0 " >
+<div class="container-fluid mt-0 " >
     
-    <div class="row" style="height: 60vh; overflow:auto">    
+    <div class="row" style="height: 74vh; overflow:auto">    
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-8 ">
+        <div class="col-8" style="padding-left: 1vh; padding-right: .5vh; ">
             
-            <div class="card" style="overflow:auto">
+            <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em; overflow:auto">
                     <ul>
                         <p>
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="card" style="margin-top:1em; overflow:auto">
+            <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em; overflow:auto">
                     <ul>
                        
@@ -68,9 +68,8 @@
 
         </div>
 
-        <div class="col-4">
+        <div class="col-4" style="padding-left: .5vh; padding-right: .5vh;">
 
-            <!-- <div class="card" style="height: 60vh;  background-color: #f0f4f5;" > -->
             <div class="card border-0" style="height: 60vh;  background-color: #f0f4f5;">
 
                 <div>
@@ -95,7 +94,8 @@
                         border-radius: 20px; 
                         font-size: 2em; 
                         line-height: 2em; 
-                        padding: 20px 20px; 
+                        padding: 1vh 1vh; 
+                        /* padding: 20px 20px;  */
                         text-align: center; 
                         /* color: */
                     }
@@ -118,6 +118,9 @@
                         <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
                         {% if setchks_session.data_as_matrix == [] %}
                         <div>       
+                            
+                            <div style="height:1vh;"></div>
+                            
                             <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> 
@@ -131,8 +134,12 @@
                                     onchange="$('.data-browse-form').submit();" 
                                     />
                             </form>
+                        </div>
                         {% else %}
                         <div>       
+                            
+                            <div style="height:1vh;"></div>
+                            
                             <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input" class="custom-file-upload">
                                     <i class="bi bi-cloud-upload-fill"></i> 
@@ -148,7 +155,8 @@
                                     onchange="$('.data-browse-form').submit();" 
                                     />
                             </form>
-                            <div style="height:20px;"></div>
+
+                            <div style="height:1vh;"></div>
 
                             <form action="/column_identities" class="data-browse-form-default-settings" method="post" enctype="multipart/form-data">
                                 <label for="data-browse-input-default-settings" class="custom-file-upload">
@@ -173,8 +181,7 @@
             </div>
         </div>
     </div>
-    <div class="row" style="margin-top:1em; height: 3vh;"></div>
-    <div class="row" style="margin-top:1em; height: 8vh; background-color:lightgray">
+    <div class="row" style="height: 8vh; background-color:lightgray">
         
         <style>
             .setchks-btn {
@@ -183,12 +190,23 @@
                 border-style: solid;
                 border-color:#005eb8;
                 border-width :3px; 
+                margin-top: 1vh;
+                width: 15vw
                 }
-            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn:hover {
+                background-color:#ffeb3b; 
+                border-style: solid; 
+                border-color:#005eb8; 
+                border-width :3px;
+                margin-top: 1vh;
+                width: 15vw
+                }
             .setchks-btn-inactive {
                 background-color: lightgray;
                 color: lightslategray;
                 border-style: solid;
+                margin-top: 1vh;
+                width: 15vw
                 }
         </style>
         

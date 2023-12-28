@@ -9,13 +9,13 @@
 
 <div class="container-fluid  mt-0 ">
     
-    <div class="row">    
+    <div class="row" style="height: 74vh;">
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6 ">
+            <div class="col-5" style="padding-left: 1vh; padding-right: 0.5vh;">
             
             <!-- <div class="card" style="height: 10vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
@@ -27,28 +27,73 @@
                 </div>
             </div> -->
 
-            <div class="card" style="height: 33vh; margin-top:1vh; overflow:auto">
+            <div class="card" style="height: 39vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <form action="/enter_metadata" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_name">Name of value set</label>
-                                <input class="form-control" name="vs_name" id="vs_name" value="{{ setchks_session.vs_name }}"">
+                                <textarea 
+                                    class="form-control" 
+                                    name="vs_name" 
+                                    id="vs_name" 
+                                    onmouseleave="autosubmit(this, 100, 'Name of value set')"
+                                    onkeypress="check_length_and_CR(this,100,true)"
+                                    rows="1">{{setchks_session.vs_name}}</textarea>
+                                 
                             </div>
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_purpose">Purpose of value set</label>
-                                <textarea class="form-control" name="vs_purpose" id="vs_purpose" rows="1">{{ setchks_session.vs_purpose }}</textarea>
+                                <textarea 
+                                    class="form-control" 
+                                    name="vs_purpose" 
+                                    id="vs_purpose"
+                                    onmouseleave="autosubmit(this, 500, 'Purpose of value set')"
+                                    rows="3">{{setchks_session.vs_purpose}}</textarea>
+                               
                             </div>
-                            <div style="margin-top:1vh;">
+                            <!-- <div style="margin-top:1vh;">
                                 <input type="submit" value="Save name and purpose">
-                            </div>
+                            </div> -->
                         </form>
                     </ul>
                 </div>
             </div>
-            {{ setchks_session.vs_name}}
             <script> 
-            $("#name_and_purpose_form").dirty({preventLeaving: true}); 
+            // $("#name_and_purpose_form").keypress(function (e) {
+            $("#name_and_purpose_form").dirty({preventLeaving: true}); // this should rarely trigger but might if the respose from autosubmit is slow
+            function check_length_and_CR(thing, max_length, CR_not_allowed) {
+                if (thing.value.length>=max_length) {
+                    event.preventDefault();
+                    return false;
+                }
+                // alert(CR_not_allowed)
+                if (e.which == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            // $("#vs_name").keypress(function (e) { //suppress carriage return or attempt to type past 100 chars 
+            //     if (this.value.length >100) {
+            //         event.preventDefault();
+            //         return false;
+            //     }
+            //     if (e.which == 13) {
+            //         event.preventDefault();
+            //         return false;
+            //     }
+            // });
+            function autosubmit(thing, max_length, name_to_show) {
+                let dirtiness=$("#name_and_purpose_form").dirty("isDirty")
+                if (dirtiness===true) {
+                    if (thing.value.length>max_length){ // truncate if necessary before save
+                                                        // this should only trigger if name or purpose pasted in
+                        thing.value=thing.value.slice(0,max_length)
+                        alert(`"${name_to_show}" is too long. It will be truncated to ${max_length} characters`)
+                    }
+                    $('#name_and_purpose_form').submit()
+                }
+            } 
             </script>
             
             <div class="card" style="height: 33vh; margin-top:1vh; overflow:auto">
@@ -149,14 +194,14 @@
         {# RIGHT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6">
+        <div class="col-7" style="padding-left: 0.5vh; padding-right: 1vh;">
 
 
             <!-- ##############################################################
             #    Start of block for first sct_version - "sct_version"    #
             ############################################################## -->
 
-            <div class="card" style="height: 33vh; margin-top:1vh;">
+            <div class="card" style="height: 34vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
@@ -242,7 +287,7 @@
             #   This is a like for like copy with _b tagged on as appropriate #
             ################################################################### -->
             
-            <div class="card" style="height: 33vh; margin-top:1vh;">
+            <div class="card" style="height: 34vh; margin-top:1vh;">
                 <div class="card-body overflow-auto" style="font-size: 1em;" >
                     <ul>
                         <li> Select the later SNOMED CT release by clicking on the timeline or by using the dropdown </li>
@@ -329,9 +374,8 @@
         </div>
     </div>
 
-    <div class="row" style="margin-top:1em">
-    
-       
+        <div class="row" style="margin-top:1em; height: 8vh; background-color:lightgray">
+
         <style>
             .setchks-btn {
                 background-color:white;
@@ -339,12 +383,23 @@
                 border-style: solid;
                 border-color:#005eb8;
                 border-width :3px; 
+                margin-top: 1vh;
+                width: 15vw
                 }
-            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
+            .setchks-btn:hover {
+                background-color:#ffeb3b; 
+                border-style: solid; 
+                border-color:#005eb8; 
+                border-width :3px;
+                margin-top: 1vh;
+                width: 15vw
+                }
             .setchks-btn-inactive {
                 background-color: lightgray;
                 color: lightslategray;
                 border-style: solid;
+                margin-top: 1vh;
+                width: 15vw
                 }
         </style>
          <div class="col-8"> 
@@ -352,12 +407,12 @@
             <a href="/data_upload"  class="btn setchks-btn">Return to Load Page</a>
         </div>
         <div class="col-4">
-            <a href="/column_identities"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (View)</a>
             {% if setchks_session.sct_version == None %}
-                <a href="/select_and_run_checks"  class="btn setchks-btn-inactive"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
+                <a href="/select_and_run_checks"  class="btn setchks-btn-inactive float-end"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
             {% else %}
-                <a href="/select_and_run_checks"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
+                <a href="/select_and_run_checks"  class="btn setchks-btn float-end"><i class="bi bi-arrow-right"></i> Next (Checks)</a>
             {% endif %}
+            <a href="/column_identities"  class="btn setchks-btn float-end"><i class="bi bi-arrow-left"></i> Prev (View)</a>
         </div>
     
     </div>

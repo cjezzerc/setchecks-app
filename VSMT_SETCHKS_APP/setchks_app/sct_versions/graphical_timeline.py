@@ -36,8 +36,10 @@ def create_graphical_timeline(
     fig.update_layout(
         # title="SCT timeline",
         paper_bgcolor='rgb(200,200,200)',
-        height=80,
-        width=630,
+        height=120,
+        width=945,        
+        # height=80,
+        # width=630,
         # height=100,
         # width=700,
         margin=dict(
@@ -93,7 +95,7 @@ def create_graphical_timeline(
     ann_y=[]
     months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     years={2022:"'22", 2023:"'23", 2024:"'24"}
-    for x in range(0,23):
+    for x in range(0,25):
         year=year0+int((month0+x)/12.0)
         month_label=months[(month0+x)%12]
         month_annotations.append("%s" % (month_label))
@@ -125,7 +127,7 @@ def create_graphical_timeline(
         )
     )
 
-    for  x in range(1,24):
+    for  x in range(1,26):
         fig.add_shape(type="rect",
             xref="x", yref="y",
             x0=x, y0=-1.2, x1=x+1, y1=-0.2,
