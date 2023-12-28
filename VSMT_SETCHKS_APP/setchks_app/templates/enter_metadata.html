@@ -32,23 +32,24 @@
                     <ul>
                         <form action="/enter_metadata" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
                             <div class="form-group" style="margin-top:1vh;">
-                                <label for="vs_name">Name of value set</label>
+                                <label for="vs_name">Name of value set (maximum 100 characters)</label>
                                 <textarea 
                                     class="form-control" 
                                     name="vs_name" 
                                     id="vs_name" 
                                     onmouseleave="autosubmit(this, 100, 'Name of value set')"
-                                    onkeypress="check_length_and_CR(this,100,true)"
+                                    onkeypress="check_length_and_CR(this,event,100,true)"
                                     rows="1">{{setchks_session.vs_name}}</textarea>
                                  
                             </div>
                             <div class="form-group" style="margin-top:1vh;">
-                                <label for="vs_purpose">Purpose of value set</label>
+                                <label for="vs_purpose">Purpose of value set (maximum 500 characters)</label>
                                 <textarea 
                                     class="form-control" 
                                     name="vs_purpose" 
                                     id="vs_purpose"
                                     onmouseleave="autosubmit(this, 500, 'Purpose of value set')"
+                                    onkeypress="check_length_and_CR(this,event,500,false)"
                                     rows="3">{{setchks_session.vs_purpose}}</textarea>
                                
                             </div>
@@ -60,29 +61,20 @@
                 </div>
             </div>
             <script> 
-            // $("#name_and_purpose_form").keypress(function (e) {
+
             $("#name_and_purpose_form").dirty({preventLeaving: true}); // this should rarely trigger but might if the respose from autosubmit is slow
-            function check_length_and_CR(thing, max_length, CR_not_allowed) {
+            
+            function check_length_and_CR(thing, e, max_length, CR_not_allowed) {
                 if (thing.value.length>=max_length) {
                     event.preventDefault();
                     return false;
                 }
-                // alert(CR_not_allowed)
-                if (e.which == 13) {
+                if (e.which == 13 && CR_not_allowed) {
                     event.preventDefault();
                     return false;
                 }
             }
-            // $("#vs_name").keypress(function (e) { //suppress carriage return or attempt to type past 100 chars 
-            //     if (this.value.length >100) {
-            //         event.preventDefault();
-            //         return false;
-            //     }
-            //     if (e.which == 13) {
-            //         event.preventDefault();
-            //         return false;
-            //     }
-            // });
+           
             function autosubmit(thing, max_length, name_to_show) {
                 let dirtiness=$("#name_and_purpose_form").dirty("isDirty")
                 if (dirtiness===true) {
