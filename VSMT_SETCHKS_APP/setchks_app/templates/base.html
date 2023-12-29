@@ -26,19 +26,89 @@
 
 <body>
     
-    <nav class="navbar navbar-light " style="background-color: #005eb8; height: 14vh; margin-bottom: 0em; padding-left: 0.5em;">
+    <nav class="navbar navbar-light " style="background-color: #005eb8; height: 12vh; margin-bottom: 0em;">
         <div class="container-fluid">
-            <p style="font-size: 1em; color: white">
+            <!-- <p style="font-size: 1em; color: white"> -->
             <!-- <img src="../static/svg/nhs_logo.svg" alt="" width="300" height="30"> -->
-            <img src="../static/images/VSMT_banner.jpg" alt="" width="800" height="100">
+            <span style="width:40vw">
+                <img src="../static/images/VSMT_banner.jpg" alt="" width="720" height="90">
+            </span>
             <!-- Value Set Management Tool: Set Checks (Prototype)  -->
-            <span style="font-size: 0.6em;"> 
+            <!-- <span style="font-size: 0.6em;"> 
                 [commit:{{config["VERSION"]}}]
-            </span>
-            </p>
-            <span style="float: right;">
+            </span> -->
+            <table style="width: 30vw; font-size: 0.9em; color: white">
+                <tr>
+                    <td><b>Value Set Name:</b></td>
+                    <td></td>
+                    <td><i><b>{{ setchks_session.vs_name }}</td>
+                </tr>
+                <tr>
+                    <td ><b>Input File:</b></td>
+                    <td></td>
+                    <td><i><b>{{ setchks_session.filename }}</td>
+                </tr>
+                <tr>
+                    {% set context_nicer_words={
+                    "ENTRY_PRIMARY":"Data entry value set for Primary Care purposes",
+                    "ENTRY_OTHER":"Data entry value set for non-Primary Care purposes",
+                    "EXTRACT":"Data extraction value set",
+                    } %}
+                    <td ><b>Context:</b></td>
+                    <td></td>
+                    <td><i><b>{{context_nicer_words[setchks_session.data_entry_extract_type]}}</td>
+                </tr>
+                <tr>
+                    {% set mode_nicer_words={
+                        "SINGLE_SCT_VERSION":"Set checks (Single SNOMED CT Version)",
+                        "DUAL_SCT_VERSIONS":"Assess changes between two releases (Dual SNOMED CT Versions)",
+                        } %}
+                    <td ><b>Mode:</b></td>
+                    <td></td>
+                    <td><i><b>{{mode_nicer_words[setchks_session.sct_version_mode]}}</i></td>
+                </tr>
+                
+            </table>
+
+            <table style="width: 25vw; font-size: 0.9em; color: white">
+                {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
+                    <tr>
+                        <td><b>SNOMED CT Version:</b></td>
+                        <td></td>
+                        <td><i><b>{{ setchks_session.sct_version.name_for_dropdown}}</i></td>
+                    </tr>
+                    <tr>
+                        <!-- empty cell -->
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td><b>Earlier SNOMED CT Version:</b></td>
+                        <td></td>
+                        <td><i><b>{{ setchks_session.sct_version.name_for_dropdown}}</i></td>
+                    </tr>
+                    <tr>
+                        <td><b>Later SNOMED CT Version:</b></td>
+                        <td></td>
+                        <td><i><b>{{ setchks_session.sct_version_b.name_for_dropdown}}</i></td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td><b>Software Version:</b></td>
+                    <td></td>
+                    <td><i>{{config["VERSION"]}}</i></td>
+                </tr>
+              
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><b><a href="#" style="color: #ffffff;">Feedback</a></b></td>
+                </tr>
+            </table>
+
+            <!-- </p> -->
+            <!-- <span style="float: right;">
                 <a href="#" style="color: #ffffff;">Feedback</a>
-            </span>
+            </span> -->
         </div>
     </nav>
 

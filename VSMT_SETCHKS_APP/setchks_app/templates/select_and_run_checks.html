@@ -30,23 +30,22 @@ animation: none;
 </style> 
 
 
-<div class="container-fluid  mt-5 ">
+<div class="container-fluid  mt-0 ">
     
-    <div class="row">    
+    <div class="row" style="height: 76vh;">
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6 ">
+        <div class="col-6" style="padding-left: 1vh; padding-right: 0.5vh;">
             
-            <div class="card" style="height: 60vh">
-                <div class="panel" style="overflow:auto; font-size: 1em;">
+            <div class="card" style="height: 72vh; margin-top:1vh; overflow:auto">
+                <!-- <div class="panel"> -->
                 
                 <!-- <div class="card-body" style="font-size: 1em;"> -->
-                    The following checks will be run (selectability and nicer set-check titles etc TBI):
-
-                    <table class="table-sm table-bordered">
+                    <span style="height:4vh; margin-top:1vh">The following checks will be run:</span>
+                    <table class="table table-bordered">
                         <thead>
                             <!-- add the row of column titles -->
                             <tr>
@@ -107,7 +106,7 @@ animation: none;
 
 
                        
-                </div>
+                <!-- </div> -->
             </div>
 
         </div>
@@ -116,10 +115,9 @@ animation: none;
         {# RIGHT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6">
+        <div class="col-6" style="padding-left: 0.5vh; padding-right: 1.0vh;">
 
-
-            <div class="card" style="height: 30vh; overflow:auto">
+            <div class="card" style="height: 30vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         <li> A summary of meta data will be here (TBI) </li>
@@ -145,7 +143,7 @@ animation: none;
                 }
             </style>
             
-            <div class="card" style="height: 29vh; margin-top:1vh; overflow:auto">
+            <div class="card" style="height: 30vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
@@ -183,22 +181,34 @@ animation: none;
         </div>
     </div>
 
-    <div class="row" style="margin-top:1em">
+    <!-- <div class="row" style="margin-top:1em"> -->
+        <div class="row" style="height: 8vh; background-color:lightgray">
     
-        <style>
-            .setchks-btn {
-                background-color:white;
-                color: black;
-                border-style: solid;
-                border-color:#005eb8;
-                border-width :3px; 
-                }
-            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
-            .setchks-btn-inactive {
-                background-color: lightgray;
-                color: lightslategray;
-                border-style: solid;
-                }
+            <style>
+                .setchks-btn {
+                    background-color:white;
+                    color: black;
+                    border-style: solid;
+                    border-color:#005eb8;
+                    border-width :3px; 
+                    margin-top: 1vh;
+                    width: 15vw
+                    }
+                .setchks-btn:hover {
+                    background-color:#ffeb3b; 
+                    border-style: solid; 
+                    border-color:#005eb8; 
+                    border-width :3px;
+                    margin-top: 1vh;
+                    width: 15vw
+                    }
+                .setchks-btn-inactive {
+                    background-color: lightgray;
+                    color: lightslategray;
+                    border-style: solid;
+                    margin-top: 1vh;
+                    width: 15vw
+                    }
             
             
         </style>
@@ -207,11 +217,12 @@ animation: none;
             <a href="/data_upload"  class="btn setchks-btn">Return to Load Page</a>
         </div>
         <div class="col-3">
-            <a href="/enter_metadata"  class="btn setchks-btn"><i class="bi bi-arrow-left"></i> Prev (Settings)</a>
+            <a href="/enter_metadata"  class="btn setchks-btn float-end"><i class="bi bi-arrow-left"></i> Prev (Settings)</a>
             <!-- <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Data upload</a> -->
         </div>
     
     </div>
+    
 </div>
 
   
