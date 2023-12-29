@@ -41,12 +41,20 @@
                 <tr>
                     <td><b>Value Set Name:</b></td>
                     <td></td>
-                    <td><i><b>{{ setchks_session.vs_name }}</td>
+                    {% set name_to_show=setchks_session.vs_name %}
+                    {% if (name_to_show|length)>50 %}
+                        {% set name_to_show=name_to_show[:22]+"......"+name_to_show[-22:]%}
+                    {% endif %}
+                    <td><i><b>{{name_to_show}}</td>
                 </tr>
                 <tr>
                     <td ><b>Input File:</b></td>
                     <td></td>
-                    <td><i><b>{{ setchks_session.filename }}</td>
+                    {% set filename_to_show=setchks_session.filename %}
+                    {% if (filename_to_show|length)>50 %}
+                        {% set filename_to_show=filename_to_show[:22]+"......"+filename_to_show[-22:]%}
+                    {% endif %}
+                    <td><i><b>{{ filename_to_show }}</td>
                 </tr>
                 <tr>
                     {% set context_nicer_words={

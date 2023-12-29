@@ -117,11 +117,38 @@ animation: none;
 
         <div class="col-6" style="padding-left: 0.5vh; padding-right: 1.0vh;">
 
-            <div class="card" style="height: 30vh; margin-top:1vh; overflow:auto">
+        {% if setchks_session.setchks_jobs_manager.jobs_running %}
+            {% if setchks_session.all_CHKXX_finished %}
+                {% set progress_status="Creating report" %}
+            {% else %}
+                {% set progress_status="Checks running" %}
+            {% endif %}
+        {% else %}
+            {% if not setchks_session.all_CHKXX_finished %}
+                {% set progress_status="Checks ready to run" %}
+            {% else %}
+                {% if not setchks_session.excel_file_available %}
+                    {% set progress_status="Checks completed"%}
+                {% else %}
+                    {% if not setchks_session.excel_file_generation_failed %}
+                        {% set progress_status="Report available" %}
+                    {% else %}
+                        {% set progress_status="Report creation failed" %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+                
+            <div class="card" style="height: 20vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <ul>
-                        <li> A summary of meta data will be here (TBI) </li>
+                        <li>Checks ready to run</li>
+                        <li>Checks running</li>    
+                        <li>Checks completed</li>    
+                        <li>Creating report</li>    
+                        <li>Report available</li>    
                     </ul>
+                    <p><b>{{progress_status}}</b></p>
                 </div>
             </div>
 
