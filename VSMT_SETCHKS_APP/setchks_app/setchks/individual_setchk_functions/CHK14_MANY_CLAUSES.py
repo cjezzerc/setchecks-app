@@ -108,16 +108,7 @@ def do_check(setchks_session=None, setchk_results=None):
     full_ECL,
     ]
     
-    #<set_level_message>
-    setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            simple_message=(
-                "[GREEN] This check has detected no issues."
-                ),
-            outcome_code="CHK14-OUT-06",
-            )
-        ) 
-    #</set_level_message>
+    
 
     n_CLAUSES=n_INCLUDE_CLAUSES+n_EXCLUDE_CLAUSES
     if n_CLAUSES>30:
@@ -133,40 +124,52 @@ def do_check(setchks_session=None, setchk_results=None):
                 )
             )
         #</set_level_message>
-    
-    #<set_level_count>
-    setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Total number of clauses in the refactored form"
-                ),
-            value=f"{n_CLAUSES}",
-            outcome_code="CHK14-OUT-02",
+        #<set_level_count>
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                "Total number of clauses in the refactored form"
+                    ),
+                value=f"{n_CLAUSES}",
+                outcome_code="CHK14-OUT-02",
+                )
             )
-        )
-    #</set_level_count>
-    
-    #<set_level_count>
-    setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Number of include clauses in the refactored form"
-                ),
-            value=f"{n_INCLUDE_CLAUSES}",
-            outcome_code="CHK14-OUT-03",
+        #</set_level_count>
+        
+        #<set_level_count>
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                "Number of include clauses in the refactored form"
+                    ),
+                value=f"{n_INCLUDE_CLAUSES}",
+                outcome_code="CHK14-OUT-03",
+                )
             )
-        )
-    #</set_level_count>
+        #</set_level_count>
 
-    #<set_level_count>
-    setchk_results.set_level_table_rows.append(
-        SetLevelTableRow(
-            descriptor=(
-            "Number of exclude clauses in the refactored form"
-                ),
-            value=f"{n_EXCLUDE_CLAUSES}",
-            outcome_code="CHK14-OUT-04",
+        #<set_level_count>
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                descriptor=(
+                "Number of exclude clauses in the refactored form"
+                    ),
+                value=f"{n_EXCLUDE_CLAUSES}",
+                outcome_code="CHK14-OUT-04",
+                )
             )
-        )
-    #</set_level_count>
+        #</set_level_count>  
+    else:
+        #<set_level_message>
+        setchk_results.set_level_table_rows.append(
+            SetLevelTableRow(
+                simple_message=(
+                    "[GREEN] This check has detected no issues."
+                    ),
+                outcome_code="CHK14-OUT-06",
+                )
+            ) 
+        #</set_level_message>
+    
+
 
