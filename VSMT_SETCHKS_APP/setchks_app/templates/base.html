@@ -129,13 +129,27 @@
     </style>
     <nav style="--bs-breadcrumb-divider: '&rarr;'; height:4vh;padding-left: 1em;background-color:lightgray; font-size:1.6em; margin-left:0em; margin-top:0em;" aria-label="breadcrumb">
         <ol class="breadcrumb breadcrumb-responsive">
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> Load </li>
+            <li 
+                onclick="window.location.href='/data_upload'"
+                class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> 
+                <i 
+                    id="home_button" 
+                    class="bi bi-house-fill"
+                    style="color:#005eb8"
+                    >
+                </i>
+                Load 
+            </li>
             <!-- <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["confirm_upload"] }}"> Confirm Upload </li> -->
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["column_identities"] }}"> View</li>
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Settings </li>
             <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Checks</li>  
         </ol>
+
     </nav>
+    <script>
+        $
+    </script>
 
 
     {% block content %}
