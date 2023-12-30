@@ -29,6 +29,27 @@ animation: none;
 } 
 </style> 
 
+{% if setchks_session.setchks_jobs_manager.jobs_running %}
+{% if setchks_session.all_CHKXX_finished %}
+    {% set progress_status="CREATING_REPORT" %}
+{% else %}
+    {% set progress_status="CHECKS_RUNNING" %}
+{% endif %}
+{% else %}
+{% if not setchks_session.all_CHKXX_finished %}
+    {% set progress_status="CHECKS_READY_TO_RUN" %}
+{% else %}
+    {% if not setchks_session.excel_file_available %}
+        {% set progress_status="CHECKS_COMPLETED"%}
+    {% else %}
+        {% if not setchks_session.excel_file_generation_failed %}
+            {% set progress_status="REPORT_AVAILABLE" %}
+        {% else %}
+            {% set progress_status="REPORT_CREATION_FAILED" %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% endif %}
 
 <div class="container-fluid  mt-0 ">
     
@@ -38,13 +59,13 @@ animation: none;
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6" style="padding-left: 1vh; padding-right: 0.5vh;">
+        <div class="col-9" style="padding-left: 1vh; padding-right: 0.5vh;">
             
             <div class="card" style="height: 72vh; margin-top:1vh; overflow:auto">
                 <!-- <div class="panel"> -->
                 
                 <!-- <div class="card-body" style="font-size: 1em;"> -->
-                    <span style="height:4vh; margin-top:1vh">The following checks will be run:</span>
+                    <span style="height:4vh; margin-top:1vh; font-size: 1.4em;">Based on your settings for "Context" and "Mode", the following suite of checks will be run:</span>
                     <table class="table table-bordered">
                         <thead>
                             <!-- add the row of column titles -->
@@ -73,12 +94,41 @@ animation: none;
                                             <b>Completed</b>
                                         {% elif setchk_run_status=="failed" %}
                                             <i><a href="rq?action=failed_jobs">Job failed</a></i>
+                                        {% elif 
+                                            (not setchks_session.passes_gatekeeper) 
+                                            and (setchks_session.setchks_to_run_as_gatekeeper_not_passed != [])
+                                            and (sc not in setchks_session.setchks_to_run_as_gatekeeper_not_passed) 
+                                            %}
+                                            <i>Will not be run</i> 
+                                        {% else %}
+                                            Ready to run
                                         {% endif %}
                                         </span>
                                     {% endif %}
                                 </td>
                                 </tr>
                             {% endfor %}
+                            
+                        
+                        </tbody>
+                    </table>
+
+                    {% if progress_status in [
+                        "CHECKS_COMPLETED",
+                        "CREATING_REPORT",
+                        "REPORT_AVAILABLE",
+                        "REPORT_CREATION_FAILED"
+                        ] %}
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <!-- add the row of column titles -->
+                            <tr>
+                                <th scope="col">Task</th>
+                                <th scope="col">Run Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <tr>
                                 <td> Create Excel Output</td>
                                 <td>
@@ -94,7 +144,7 @@ animation: none;
                                     {% elif generate_run_status=="finished" %}
                                         <b>Ready</b>
                                     {% elif generate_run_status=="failed" %}
-                                        <i>Job failed</i>
+                                        <i><a href="rq?action=failed_jobs">Job failed</a></i>
                                     {% endif %}
                                     </span>
                             {% endif %}
@@ -102,6 +152,7 @@ animation: none;
                             </tr>
                         </tbody>
                     </table>
+                    {% endif %}
 
 
 
@@ -115,42 +166,7 @@ animation: none;
         {# RIGHT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6" style="padding-left: 0.5vh; padding-right: 1.0vh;">
-
-        {% if setchks_session.setchks_jobs_manager.jobs_running %}
-            {% if setchks_session.all_CHKXX_finished %}
-                {% set progress_status="Creating report" %}
-            {% else %}
-                {% set progress_status="Checks running" %}
-            {% endif %}
-        {% else %}
-            {% if not setchks_session.all_CHKXX_finished %}
-                {% set progress_status="Checks ready to run" %}
-            {% else %}
-                {% if not setchks_session.excel_file_available %}
-                    {% set progress_status="Checks completed"%}
-                {% else %}
-                    {% if not setchks_session.excel_file_generation_failed %}
-                        {% set progress_status="Report available" %}
-                    {% else %}
-                        {% set progress_status="Report creation failed" %}
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        {% endif %}
-                
-            <div class="card" style="height: 20vh; margin-top:1vh; overflow:auto">
-                <div class="card-body" style="font-size: 1em;">
-                    <ul>
-                        <li>Checks ready to run</li>
-                        <li>Checks running</li>    
-                        <li>Checks completed</li>    
-                        <li>Creating report</li>    
-                        <li>Report available</li>    
-                    </ul>
-                    <p><b>{{progress_status}}</b></p>
-                </div>
-            </div>
+        <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
 
             <style>
             .setchks-btn-green {
@@ -170,48 +186,147 @@ animation: none;
                 }
             </style>
             
-            <div class="card" style="height: 30vh; margin-top:1vh; overflow:auto">
+
+
+
+            <style>
+
+                .custom-file-upload {
+                   
+                    display: inline-block;
+                    cursor: pointer;
+                    /* width: 30vw;  */
+                    width: 400px; 
+                    height: 130px;
+                    margin: 5 auto; 
+                    border-style: solid;
+                    border-width: 3px;
+                    border-color: #005eb8;
+                    background-color: white; 
+                    border-radius: 20px; 
+                    font-size: 2em; 
+                    line-height: 2em; 
+                    padding: 1vh 1vh; 
+                    /* padding: 20px 20px;  */
+                    text-align: center; 
+                    /* color: */
+                }
+                .custom-file-upload:hover { background-color: #ffeb3b;} 
+                .custom-file-upload:active { background-color: #ffeb3b; }
+
+            </style>
+
+
+            <style>
+                .upload-methods > div {
+                    display: block;
+                    vertical-align: top;
+                    margin-right: 1em;
+                    padding-bottom: 1em ;
+                    }
+            </style>
+            
+            <div  class="upload-methods">   
+                <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
+
+                <div style="height:1vh;"></div>
+                <div 
+                    class="custom-file-upload"
+                    {% if progress_status=="CHECKS_READY_TO_RUN" %}
+                        style="background-color:#007f3b; color: white"   
+                        onclick="window.location.href='/select_and_run_checks?run_checks=True'"
+                    {% else %}
+                        style="background-color:white; color: grey; border-color: grey;"                                           
+                    {% endif %}
+                    >
+                    <i class="bi bi-play-btn-fill"></i>
+                    Run checks
+                    <div style="font-size: .6em; line-height: 1.3em;"> 
+                        (and create report)
+                    </div>
+                </div>
+
+                {% if setchks_session.setchks_jobs_manager.jobs_running %}
+                    <script>
+                        setTimeout(function() { window.location='/select_and_run_checks'; }, 1000);
+                    </script>
+                {% endif %}
+                {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
+                    results_available and (not setchks_session.excel_file_available) %}
+                    <!-- <a href="" id="generate_excel_button" class="btn setchks-btn-green">Create Report</a> -->
+                    <script>
+                        setTimeout(function() { window.location='/select_and_run_checks?generate_report=True'; }, 1000);
+                    </script>
+                    {% endif %}
+                <div style="height:1vh;"></div>
+                <div 
+                    class="custom-file-upload"
+                    {% if progress_status=="REPORT_AVAILABLE" %}
+                        style="background-color:#007f3b; color: white"   
+                        onclick="window.location.href='/select_and_run_checks?download_report=True'"
+                    {% else %}
+                        style="background-color:white; color: grey; border-color: grey;"                                           
+                    {% endif %}>
+                    <i class="bi bi-cloud-download-fill"></i>
+                    Download Report
+                </div>
+
+            </div>
+
+            <div class="card" style="height: 44vh; margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
+                    <!-- <div style="font-size:1.6em;"> 
+                        Stage:
+                    </div>
+                    <ul>
+                        {% for status_required, words in [
+                            ("CHECKS_READY_TO_RUN","Checks ready to run"),
+                            ("CHECKS_RUNNING","Checks running"),
+                            ("CHECKS_COMPLETED","Checks completed"),
+                            ("CREATING_REPORT","Creating report"),
+                            ("REPORT_AVAILABLE","Report available"),
+                            ] %}
+                            {% set blinking_style = "" %}
+                            {% if progress_status==status_required %}
+                                {% set list_item="<b>" + words + "</b>" %}
+                                {% if progress_status in ["CHECKS_RUNNING", "CREATING_REPORT"] %}
+                                    {% set blinking_style = "run_status_blinking" %}
+                                {% endif %}
+                            {% else %}
+                                {% set list_item='<span style="color: grey"><i>' + words + '</i></span>' %}
+                            {% endif %}
+                            
+                            <li class="{{ blinking_style }}" style="font-size:1.4em" >{{ list_item|safe }}</li>
+                        {% endfor %}
+                    </ul> -->
+               
                     <ul>
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                            <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
+                            <!-- <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
                             <script>
                                 setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
-                            </script>
-                            <br>Please do not navigate away from this page while jobs are running (safeguards TBI)
-                        {% elif not setchks_session.all_CHKXX_finished %}
-                            <a href="/select_and_run_checks?run_checks=True"  class="btn setchks-btn">Run checks</a>
-                        {% endif %}
-                        {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
-                            results_available and (not setchks_session.excel_file_available) %}
-                            <a href="/select_and_run_checks?generate_report=True" id="generate_excel_button" class="btn setchks-btn-green">Create Report</a>
-                            <script>
-                                setTimeout(function() { window.location=$('#generate_excel_button').attr("href"); }, 1000);
-                            </script>
-                            {% endif %}
-                        {% if setchks_session.excel_file_available and not setchks_session.excel_file_generation_failed %}
-                            <a href="/select_and_run_checks?download_report=True" id="download_report_button" class="btn setchks-btn-green">Download Excel Report</a>
-                            <!-- <script>
-                                setTimeout(function() { window.location=$('#download_report_button').attr("href"); }, 1000);
                             </script> -->
-                            {% endif %}
+                            <div>
+                                Please do not navigate away from this page while jobs are running (safeguards TBI)
+                            </div>
+                                {% endif %}
                         {% if setchks_session.passes_gatekeeper==False %}
-                        <br> <b> It has been detected that the value set contains entries in the MIXED column that are not found in the selected release.
-                        <br> CHK02 and CHK20 will be run to provide information on the problematic entries. 
-                        <br> No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
+                        <div style="font-weight: bold; color: red"
+                        <b> [Alert] It has been detected that some of the Identifiers in your value set 
+                            do not meet certain basic criteria.
+                        A set of basic checks will be run, which will provide information on the problematic entries. 
+                        No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
                         {% endif %}
 
                     </ul>
                 </div>
             </div>
-
         </div>
     </div>
-
     <!-- <div class="row" style="margin-top:1em"> -->
-        <div class="row" style="height: 8vh; background-color:lightgray">
-    
-            <style>
+    <div class="row" style="height: 8vh; background-color:lightgray">
+
+        <style>
                 .setchks-btn {
                     background-color:white;
                     color: black;
@@ -239,15 +354,14 @@ animation: none;
             
             
         </style>
-         <div class="col-9"> 
-            <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
-            <a href="/data_upload"  class="btn setchks-btn">Return to Load Page</a>
+        <div class="col-9"> 
+        <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
+        <a href="/data_upload"  class="btn setchks-btn">Return to Load Page</a>
         </div>
         <div class="col-3">
             <a href="/enter_metadata"  class="btn setchks-btn float-end"><i class="bi bi-arrow-left"></i> Prev (Settings)</a>
-            <!-- <a href="/data_upload"  class="btn setchks-btn"><i class="bi bi-arrow-right"></i> Data upload</a> -->
         </div>
-    
+
     </div>
     
 </div>

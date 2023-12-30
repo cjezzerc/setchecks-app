@@ -43,6 +43,7 @@ class SetchksSession():
                "marshalled_rows", # big and often needed
                "column_content_assessment",
                "passes_gatekeeper",
+               "setchks_to_run_as_gatekeeper_not_passed",
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
                "refactored_form",
                "terminology_server",
@@ -80,6 +81,7 @@ class SetchksSession():
         self.marshalled_rows=None
         self.column_content_assessment=column_content_assessment.ColumnContentAssessment()
         self.passes_gatekeeper=None
+        self.setchks_to_run_as_gatekeeper_not_passed=[]
         self.setchks_results={}
         self.refactored_form=None
         self.terminology_server=None
@@ -143,4 +145,5 @@ class SetchksSession():
         self.excel_file_available=False
         self.excel_file_generation_failed=False
         self.passes_gatekeeper=None
+        self.setchks_to_run_as_gatekeeper_not_passed=[]
         self.all_CHKXX_finished=False

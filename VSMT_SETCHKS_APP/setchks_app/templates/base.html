@@ -51,7 +51,10 @@
                     <td ><b>Input File:</b></td>
                     <td></td>
                     {% set filename_to_show=setchks_session.filename %}
-                    {% if (filename_to_show|length)>50 %}
+                    {% if filename_to_show == None %}
+                        {% set filename_to_show="No file loaded" %}
+                    {% endif %}
+                    {% if filename_to_show != None and (filename_to_show|length)>50 %}
                         {% set filename_to_show=filename_to_show[:22]+"......"+filename_to_show[-22:]%}
                     {% endif %}
                     <td><i><b>{{ filename_to_show }}</td>
