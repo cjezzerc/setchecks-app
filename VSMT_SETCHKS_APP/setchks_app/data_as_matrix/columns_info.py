@@ -18,6 +18,7 @@ class ColumnsInfo():
                                  }
         self._ncols=ncols
         self._column_types=["OTHER"]*self._ncols
+        self.set_column_type(icol=0, requested_column_type="MIXED")
     
     def __str__(self):
         output_str="\n"

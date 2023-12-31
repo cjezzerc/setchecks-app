@@ -24,8 +24,9 @@
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-3" style="padding-left: 1vh; padding-right: 0.5vh;">
-            
+        <div class="col-2" style="padding-left: 1vh; padding-right: 0.5vh;">
+          
+            {#
             <div class="card" style="height: 14vh; margin-top:1vh; overflow:auto">
             <!-- <div class="card"> -->
                 <div class="card-body">
@@ -37,35 +38,83 @@
                     </ul>
                 </div>
             </div>
+            #}
 
-            <div class="card" style="height: 24vh; margin-top:1vh; overflow:auto">
-                <div class="card-body" style="font-size: 1em;">
-                    <ul>
-                        
-                        {% if setchks_session.columns_info.identification_sufficient ==True %}
-                            {% if setchks_session.column_content_assessment.fraction_valid_sctid_rows < 0.3 %}
-                                <li style="color: red;"> <b>[Alert] Your chosen 
-                                    Identifier column does not appear to contain a high proportion of 
-                                    Identifiers conforming to the SCTID data type. You may have selected the wrong column.</b> 
-                                </li>
-                            {% endif %}  
-                             
-                        {% else %}
-                            <li style="color: red;"> <b>[Alert] You need to choose an 
-                                Identifier column before proceeding to the next page</b> </li>
-                        {% endif %}     
-                        {% if not setchks_session.columns_info.have_dterm_column  %}
-                        <li> <b>[Tip] 
+            {% if setchks_session.columns_info.identification_sufficient==True %}
+                {% if setchks_session.column_content_assessment.fraction_valid_sctid_rows > 0.3 %}
+                <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
+                    <div class="card-header" style="padding: 0 1vh; background-color:lightgrey">
+                    <i class="bi bi-hand-thumbs-up" style="-webkit-text-stroke: 1px; font-size:150%"></i>
+                    </div>
+                    <div class="card-body" style="">
+                        <p> 
+                        The chosen Identifier column contains a good proportion of 
+                        Identifiers conforming to the SCTID data type  
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
+                    <div class="card-header" style="padding: 0 1vh; background-color:darkorange">
+                    <i class="bi bi-exclamation-triangle" style="-webkit-text-stroke: 1px; font-size:150%"></i>
+                    </div>
+                    <div class="card-body" style="">
+                        <p> 
+                        The chosen 
+                        Identifier column does not appear to contain a high proportion of 
+                        Identifiers conforming to the SCTID data type. 
+                        </p>
+                        <p>
+                        The wrong column might have been chosen. 
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}  
+                <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
+                    <div class="card-header" style="padding: 0 1vh; background-color:red">
+                    <b><i class="bi bi-x-lg" style="-webkit-text-stroke: 1px; font-size:150%"></i></b>
+                    </div>
+                    <div class="card-body" style="">
+                        Please choose an Identifier column before proceeding to the next page
+                    </div>
+                </div>
+            {% endif %}  
+
+            {% if setchks_session.columns_info.ncols>1 %}
+                {% if setchks_session.columns_info.have_dterm_column %}
+                    <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
+                        <div class="card-header" style="padding: 0 1vh; background-color:lightgrey">
+                        <i class="bi bi-hand-thumbs-up" style="-webkit-text-stroke: 1px; font-size:150%"></i>
+                        </div>
+                        <div class="card-body" style="">
+                            <p> 
+                            You have chosen a Term column.  
+                            </p>
+                            <p>
+                            We have not checked at this stage if these appear to be valid SNOMED Terms.
+                            </p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
+                        <div class="card-header" style="padding: 0 1vh; background-color:darkorange">
+                            <i class="bi bi-question-circle" style="-webkit-text-stroke: 1px; font-size:150%"></i>
+                        </div>
+                        <div class="card-body" style="">
+                            <p>
                             If you want the checks to assess Terms
-                            then you need to choose a Term column. If you only want the checks
+                            then you need to choose a Term column. 
+                            </p>
+                            <p>
+                            If you only want the checks
                             to assess the Identifiers that you have provided then you can proceed 
                             without choosing a Term column.
-                        </b> 
-                        </li>
-                    {% endif %}                         
-                    </ul>
-                </div>
-            </div>
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}  
+            {% endif %}  
         
         </div>
 
@@ -73,12 +122,12 @@
         {# RIGHT HAND PANEL #}
         {#                  #}
 
-        <div class="col-9" style="padding-left: .5vh; padding-right: .5vh;">
+        <div class="col-10" style="padding-left: .5vh; padding-right: .5vh;">
             
             
             <!-- THE TABLE -->
             
-            <div class="card"  style="height:73.5vh; margin-top:1vh; overflow:auto">
+            <div class="card"  style="height:79vh; margin-top:1vh; overflow:auto">
                 <!-- <div class="card-header">
                     <strong>Table</strong>
                 </div>                 -->
@@ -92,7 +141,7 @@
                             {% set pulldown_text = ({"MIXED":"Identifier","DTERM":"Term","OTHER":"Other"})	%}
                             
                             <tr>
-                                <th scope="col">Column type <i class="bi bi-arrow-right"></i></th>
+                                <th style="text-align:right; vertical-align: middle;"   scope="col">Column type:</i></th>
                                 {%for cell in file_data[0] %}
                                 <th scope="col">
                                     <div>
@@ -100,9 +149,11 @@
                                         {% set column_form_name = "type_selector_form_for_col_" + icol|string %}
                                         <form action="/column_identities" class="{{ column_form_name }}" method="post" enctype="multipart/form-data">
                                             {% set column_selector_name = "type_selector_for_col_" + icol|string %}
-                                            <select name="{{ column_selector_name }}" class="form-select" 
+                                            <select 
+                                                name="{{ column_selector_name }}" 
+                                                class="form-select" 
                                                 onchange="$('.{{ column_form_name }}').submit();" 
-                                                style="margin-top: 0.5em;"
+                                                style="font-size: 1.0em"
                                                 >
                                                 {% for available_type in ["MIXED","DTERM","OTHER"] %} 
                                                     {% if available_type == setchks_session.columns_info.column_types[icol] %}
