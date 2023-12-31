@@ -474,7 +474,7 @@ def do_check(setchks_session=None, setchk_results=None):
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                 simple_message=(
-                    "[GREEN]No inactive concepts have been detected using the later release"
+                    "[GREEN] No inactive concepts have been detected using the later release"
                     ),
                 outcome_code="CHK04-OUT-20",
                 )

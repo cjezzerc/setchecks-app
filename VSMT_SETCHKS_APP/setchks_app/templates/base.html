@@ -26,131 +26,133 @@
 
 <body>
     
-    <nav class="navbar navbar-light " style="background-color: #005eb8; height: 12vh; margin-bottom: 0em;">
-        <div class="container-fluid">
+    <nav class="
+        navbar 
+        navbar-expand-lg 
+        navbar-light  
+        " 
+        style="
+            overflow:auto;
+            background-color: #005eb8; 
+            margin-bottom: 0em;
+            min-height: 13vh; 
+            max-height:25vh;
+            ">
+        <div class="container-fluid" style="padding:0">
             <!-- <p style="font-size: 1em; color: white"> -->
             <!-- <img src="../static/svg/nhs_logo.svg" alt="" width="300" height="30"> -->
-            <span style="width:40vw">
-                <img src="../static/images/VSMT_banner.jpg" alt="" width="720" height="90">
+            <span style="width:32vw; padding-left:1vh">
+                <img src="../static/images/VSMT_banner.png" style="height:100%; width:100%; object-fit:contain" width="600" height="100">
             </span>
             <!-- Value Set Management Tool: Set Checks (Prototype)  -->
             <!-- <span style="font-size: 0.6em;"> 
                 [commit:{{config["VERSION"]}}]
             </span> -->
-            <table style="width: 30vw; font-size: 0.9em; color: white">
-                <tr>
-                    <td><b>Value Set Name:</b></td>
-                    <td></td>
-                    {% set name_to_show=setchks_session.vs_name %}
-                    {% if (name_to_show|length)>50 %}
-                        {% set name_to_show=name_to_show[:22]+"......"+name_to_show[-22:]%}
-                    {% endif %}
-                    <td><i><b>{{name_to_show}}</td>
-                </tr>
-                <tr>
-                    <td ><b>Input File:</b></td>
-                    <td></td>
-                    {% set filename_to_show=setchks_session.filename %}
-                    {% if filename_to_show == None %}
-                        {% set filename_to_show="No file loaded" %}
-                    {% endif %}
-                    {% if filename_to_show != None and (filename_to_show|length)>50 %}
-                        {% set filename_to_show=filename_to_show[:22]+"......"+filename_to_show[-22:]%}
-                    {% endif %}
-                    <td><i><b>{{ filename_to_show }}</td>
-                </tr>
-                <tr>
-                    {% set context_nicer_words={
-                    "ENTRY_PRIMARY":"Data entry value set for Primary Care purposes",
-                    "ENTRY_OTHER":"Data entry value set for non-Primary Care purposes",
-                    "EXTRACT":"Data extraction value set",
-                    } %}
-                    <td ><b>Context:</b></td>
-                    <td></td>
-                    <td><i><b>{{context_nicer_words[setchks_session.data_entry_extract_type]}}</td>
-                </tr>
-                <tr>
-                    {% set mode_nicer_words={
-                        "SINGLE_SCT_VERSION":"Set checks (Single SNOMED CT Version)",
-                        "DUAL_SCT_VERSIONS":"Assess changes between two releases (Dual SNOMED CT Versions)",
-                        } %}
-                    <td ><b>Mode:</b></td>
-                    <td></td>
-                    <td><i><b>{{mode_nicer_words[setchks_session.sct_version_mode]}}</i></td>
-                </tr>
-                
-            </table>
-
-            <table style="width: 25vw; font-size: 0.9em; color: white">
-                {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
+            <div style="width: 6vw"></div>
+            <div style="overflow:auto; width: 27vw; padding:0; font-size: 1.1em; color: white">
+                <table>
                     <tr>
-                        <td><b>SNOMED CT Version:</b></td>
+                        <td>Set Name:</td>
                         <td></td>
-                        <td><i><b>{{ setchks_session.sct_version.name_for_dropdown}}</i></td>
+                        {% set name_to_show=setchks_session.vs_name %}
+                        {% if (name_to_show|length)>37 %}
+                            {% set name_to_show=name_to_show[:16]+" (...) "+name_to_show[-16:]%}
+                        {% endif %}
+                        <td><b>{{name_to_show}}</b></td>
+                    </tr>
+                    <tr>
+                        <td >Input File:</td>
+                        <td></td>
+                        {% set filename_to_show=setchks_session.filename %}
+                        {% if filename_to_show == None %}
+                            {% set filename_to_show="No file loaded" %}
+                        {% endif %}
+                        {% if filename_to_show != None and (filename_to_show|length)>36 %}
+                            {% set filename_to_show=filename_to_show[:16]+" (...) "+filename_to_show[-16:]%}
+                        {% endif %}
+                        <td><b>{{ filename_to_show }}</b></td>
+                    </tr>
+                    <tr>
+                        {% set context_nicer_words={
+                        "ENTRY_PRIMARY":"Data entry (Primary Care)",
+                        "ENTRY_OTHER":"Data entry (non-Primary Care)",
+                        "EXTRACT":"Data extraction",
+                        } %}
+                        <td >Context:</td>
+                        <td></td>
+                        <td><b>{{context_nicer_words[setchks_session.data_entry_extract_type]}}</b></td>
+                    </tr>
+                    
+                    
+                </table>
+            </div>
+
+            <div style="overflow:auto; width: 27vw; padding:0; font-size: 1.1em; color: white">
+                <style>
+
+                </style>
+                </style>
+                <table>
+                    <tr>
+                        {% set mode_nicer_words={
+                            "SINGLE_SCT_VERSION":"Single SNOMED Release",
+                            "DUAL_SCT_VERSIONS":"Dual SNOMED Releases",
+                            } %}
+                        <td >Mode:</td>
+                        <td></td>
+                        <td><b>{{mode_nicer_words[setchks_session.sct_version_mode]}}</b></td>
+                    </tr>                 
+                    {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
+                    <tr>
+                        <td>SNOMED Release:</td>
+                        <td></td>
+                        <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</td>
                     </tr>
                     <tr>
                         <!-- empty cell -->
                     </tr>
                 {% else %}
                     <tr>
-                        <td><b>Earlier SNOMED CT Version:</b></td>
+                        <td>Earlier Release:</td>
                         <td></td>
-                        <td><i><b>{{ setchks_session.sct_version.name_for_dropdown}}</i></td>
+                        <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</b></td>
                     </tr>
                     <tr>
-                        <td><b>Later SNOMED CT Version:</b></td>
+                        <td>Later Release:</b></td>
                         <td></td>
-                        <td><i><b>{{ setchks_session.sct_version_b.name_for_dropdown}}</i></td>
+                        <td><b>{{ setchks_session.sct_version_b.name_for_dropdown}}</b></td>
                     </tr>
                 {% endif %}
-                <tr>
-                    <td><b>Software Version:</b></td>
-                    <td></td>
-                    <td><i>{{config["VERSION"]}}</i></td>
-                </tr>
+                
+              
+                
+                </table>
+            </div>
+           
+            <div style="overflow:auto; width: 8vw; font-size: 1.1em; color: white">
+                <table>
+                    
               
                 <tr>
                     <td></td>
                     <td></td>
                     <td><b><a href="#" style="color: #ffffff;">Feedback</a></b></td>
                 </tr>
-            </table>
-
-            <!-- </p> -->
-            <!-- <span style="float: right;">
-                <a href="#" style="color: #ffffff;">Feedback</a>
-            </span> -->
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><b><a href="#" style="color: #ffffff;">T&Cs</a></b></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Vsn: {{config["VERSION"]}}</td>
+                </tr>
+                </table>
+            </div>
+           
         </div>
     </nav>
-
-    <style>
-        .setchks-breadcrumb-strong {font-weight: bold; color:#005eb8}
-        .setchks-breadcrumb-weak {font-weight: normal; color:#4c6272}
-    </style>
-    <nav style="--bs-breadcrumb-divider: '&rarr;'; height:4vh;padding-left: 1em;background-color:lightgray; font-size:1.6em; margin-left:0em; margin-top:0em;" aria-label="breadcrumb">
-        <ol class="breadcrumb breadcrumb-responsive">
-            <li 
-                onclick="window.location.href='/data_upload'"
-                class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> 
-                <i 
-                    id="home_button" 
-                    class="bi bi-house-fill"
-                    style="color:#005eb8"
-                    >
-                </i>
-                Load 
-            </li>
-            <!-- <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["confirm_upload"] }}"> Confirm Upload </li> -->
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["column_identities"] }}"> View</li>
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Settings </li>
-            <li class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Checks</li>  
-        </ol>
-
-    </nav>
-    <script>
-        $
-    </script>
-
 
     {% block content %}
     {% endblock %}

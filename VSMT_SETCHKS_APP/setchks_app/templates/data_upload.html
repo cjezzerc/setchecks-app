@@ -5,6 +5,16 @@
 {% endblock %}
 
 {% block content %}
+
+{% set nav_prev_page_shown=False %}
+{% set nav_prev_page_live=True %}
+{% set nav_prev_page_location="" %}
+
+{% set nav_next_page_shown=setchks_session.data_as_matrix != [] %}
+{% set nav_next_page_live=True %}
+{% set nav_next_page_location="/column_identities" %}
+
+{% include 'navigation.html' %}
     
 
 <div class="container-fluid mt-0 " >
@@ -181,45 +191,7 @@
             </div>
         </div>
     </div>
-    <div class="row" style="height: 8vh; background-color:lightgray">
-        
-        <style>
-            .setchks-btn {
-                background-color:white;
-                color: black;
-                border-style: solid;
-                border-color:#005eb8;
-                border-width :3px; 
-                margin-top: 1vh;
-                width: 15vw
-                }
-            .setchks-btn:hover {
-                background-color:#ffeb3b; 
-                border-style: solid; 
-                border-color:#005eb8; 
-                border-width :3px;
-                margin-top: 1vh;
-                width: 15vw
-                }
-            .setchks-btn-inactive {
-                background-color: lightgray;
-                color: lightslategray;
-                border-style: solid;
-                margin-top: 1vh;
-                width: 15vw
-                }
-        </style>
-        
-            <div class="col-10"> 
-                <!-- <a href="/reset_setchks_session"  class="btn setchks-btn">Hard reset</a> -->
-            </div>
-            <div class="col-2 " >
-                {% if setchks_session.data_as_matrix != [] %}
-                <a href="/column_identities"  class="btn setchks-btn float-end" style="margin-top: 1vh" ;><i class="bi bi-arrow-right"></i>(View)</a>
-                {% endif %}
-            </div>
-    
-    </div>
+
 </div>
 
 

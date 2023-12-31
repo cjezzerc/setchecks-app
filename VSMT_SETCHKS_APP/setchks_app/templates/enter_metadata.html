@@ -5,6 +5,16 @@
 {% endblock %}
 
 {% block content %}
+
+{% set nav_prev_page_shown=True %}
+{% set nav_prev_page_live=True %}
+{% set nav_prev_page_location="/column_identities" %}
+
+{% set nav_next_page_shown=True %}
+{% set nav_next_page_live=True %}
+{% set nav_next_page_location="/select_and_run_checks" %}
+
+{% include 'navigation.html' %}
     
 
 <div class="container-fluid  mt-0 ">
@@ -366,7 +376,8 @@
         </div>
     </div>
 
-        <div class="row" style="height: 8vh; background-color:lightgray">
+    {#    
+    <div class="row" style="height: 8vh; background-color:lightgray">
 
         <style>
             .setchks-btn {
@@ -408,6 +419,7 @@
         </div>
     
     </div>
+    #}
 </div>
 
   

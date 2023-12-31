@@ -103,7 +103,7 @@ def create_app():
     if "VERSION" in os.environ:
         app.config["VERSION"]=os.environ["VERSION"]
     else:
-        app.config["VERSION"]="no-version-info-available"
+        app.config["VERSION"]="local"
     
     
     return app
