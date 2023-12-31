@@ -25,7 +25,7 @@
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-8" style="padding-left: 1vh; padding-right: .5vh; ">
+        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
             
             <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em; overflow:auto">
@@ -78,7 +78,7 @@
 
         </div>
 
-        <div class="col-4" style="padding-left: .5vh; padding-right: .5vh;">
+        <div class="col-3" style="padding-left: .5vh; padding-right: .5vh;">
 
             <div class="card border-0" style="height: 60vh;  background-color: #f0f4f5;">
 
@@ -100,17 +100,18 @@
                         border-style: solid;
                         border-width: 3px;
                         border-color: #005eb8;
-                        background-color: white; 
+                        background-color:#007f3b;
+                        /* background-color: white;  */
                         border-radius: 20px; 
                         font-size: 2em; 
                         line-height: 2em; 
                         padding: 1vh 1vh; 
                         /* padding: 20px 20px;  */
                         text-align: center; 
-                        /* color: */
+                        color: white;
                     }
-                    .custom-file-upload:hover { background-color: #ffeb3b;} 
-                    .custom-file-upload:active { background-color: #ffeb3b; }
+                    .custom-file-upload:hover { background-color: darkgreen;} 
+                    .custom-file-upload:active { background-color: darkgreen; }
 
                     </style>
 
@@ -125,66 +126,53 @@
                     </style>
                     
                     <div  class="upload-methods">   
-                        <!-- <div  style="display: inline-block; vertical-align: top; margin-right: 1em;">    -->
-                        {% if setchks_session.data_as_matrix == [] %}
-                        <div>       
-                            
-                            <div style="height:1vh;"></div>
-                            
-                            <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
-                                <label for="data-browse-input" class="custom-file-upload">
-                                    <i class="bi bi-cloud-upload-fill"></i> 
-                                    Browse for a file 
-                                    
-                                </label>
-                                <input id="data-browse-input" 
-                                    type="file" 
-                                    name="uploaded_file"
-                                    accept=".txt,.tsv,.xlsx" 
-                                    onchange="$('.data-browse-form').submit();" 
-                                    />
-                            </form>
-                        </div>
-                        {% else %}
-                        <div>       
-                            
-                            <div style="height:1vh;"></div>
-                            
-                            <form action="/column_identities" class="data-browse-form" method="post" enctype="multipart/form-data">
-                                <label for="data-browse-input" class="custom-file-upload">
-                                    <i class="bi bi-cloud-upload-fill"></i> 
-                                    Browse for a file 
-                                    <div style="font-size: .6em; line-height: 1.3em;"> 
-                                        (retaining previously entered settings)
-                                    </div>
-                                </label>
-                                <input id="data-browse-input" 
-                                    type="file" 
-                                    name="uploaded_file"
-                                    accept=".txt,.tsv,.xlsx" 
-                                    onchange="$('.data-browse-form').submit();" 
-                                    />
-                            </form>
+                        <div style="height:1vh;"></div>
+                        <form action="/column_identities" class="data-browse-form-default-settings" method="post" enctype="multipart/form-data">
+                            <label for="data-browse-input-default-settings" class="custom-file-upload">
+                                <i class="bi bi-cloud-upload-fill"></i> 
+                                Browse for a file 
+                                <div style="font-size: .6em; line-height: 1.3em;"> 
+                                    (default settings)
+                                </div>
+                            </label>
+                            <input id="data-browse-input-default-settings" 
+                                type="file" 
+                                name="uploaded_file_default_settings"
+                                accept=".txt,.tsv,.xlsx" 
+                                onchange="$('.data-browse-form-default-settings').submit();" 
+                                />
+                        </form>
 
-                            <div style="height:1vh;"></div>
+                        <div style="height:1vh;"></div>
 
-                            <form action="/column_identities" class="data-browse-form-default-settings" method="post" enctype="multipart/form-data">
-                                <label for="data-browse-input-default-settings" class="custom-file-upload">
-                                    <i class="bi bi-cloud-upload-fill"></i> 
-                                    Browse for a file 
-                                    <div style="font-size: .6em; line-height: 0.8em;"> 
-                                        (reverting to default settings)
-                                    </div>
-                                </label>
-                                <input id="data-browse-input-default-settings" 
-                                    type="file" 
-                                    name="uploaded_file_default_settings"
-                                    accept=".txt,.tsv,.xlsx" 
-                                    onchange="$('.data-browse-form-default-settings').submit();" 
-                                    />
-                            </form>
-                        </div>
-                        {% endif %}
+                        <form 
+                            action="/column_identities" 
+                            class="data-browse-form" 
+                            method="post" 
+                            enctype="multipart/form-data">
+
+                            <label 
+                                for="data-browse-input" 
+                                class="custom-file-upload"
+                                {% if setchks_session.data_as_matrix == [] %}
+                                    style="background-color:white; color: grey; border-color: grey;"                                           
+                                {% endif %}
+                                >
+                                <i class="bi bi-cloud-upload-fill"></i> 
+                                Browse for a file 
+                                <div style="font-size: .6em; line-height: 0.8em;"> 
+                                    (retaining previously entered settings)
+                                </div>
+                            </label>
+                            {% if setchks_session.data_as_matrix != [] %}
+                            <input id="data-browse-input" 
+                                type="file" 
+                                name="uploaded_file"
+                                accept=".txt,.tsv,.xlsx" 
+                                onchange="$('.data-browse-form').submit();" 
+                                />
+                            {% endif %}
+                        </form>
 
                     </div> 
                 </div>
