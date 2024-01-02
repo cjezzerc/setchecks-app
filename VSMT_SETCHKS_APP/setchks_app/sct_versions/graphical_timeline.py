@@ -36,7 +36,8 @@ def create_graphical_timeline(
     fig.update_layout(
         # title="SCT timeline",
         paper_bgcolor='rgb(200,200,200)',
-        height=120,
+        # height=120,
+        height=90,
         width=945,        
         # height=80,
         # width=630,
@@ -67,17 +68,25 @@ def create_graphical_timeline(
         range=[-1.5,0.7],
         )
 
-    selected_color    ='#005eb8'
+    # selected_color    ='#005eb8'
+    selected_color    ='#0d6efd'
     not_selected_color='White'
+    not_selected_line_color='#A0A0A0'
     color_list=[]
+    line_color_list=[]
     for i_date, flag in enumerate(selected_flags):
         if flag:
             color_list.append(selected_color)
+            line_color_list.append(selected_color)
         else:
             color_list.append(not_selected_color)
+            line_color_list.append(not_selected_line_color)
 
-    marker=dict(color=color_list, size=18, line=dict(color='#005eb8', width=2))
 
+    # marker=dict(color=color_list, size=18, line=dict(color='#005eb8', width=2))
+    
+    # put out a large circle at each Release point coloured according to whether selected (curveNumber 0 as a js event)
+    marker=dict(color=color_list, size=18, line=dict(color=line_color_list, width=1))
     fig.add_trace(
         go.Scatter(
             mode='markers',
@@ -86,8 +95,28 @@ def create_graphical_timeline(
             marker=marker,
             showlegend=False,
             hoverinfo="none",
+            hoverlabel={"bgcolor":"#00FF00"},
+            hovertext=available_sct_dates,
         )
     )
+
+    # put out a small white circle so that (curveNumber 1 as a js event)
+    # (quick fix to put small circle in the selected circle (and all the others too..) so that looks like a bootstrap check button)
+    marker=dict(color='#ffffff', size=9, line=dict(color='#ffffff', width=0))
+    fig.add_trace(
+        go.Scatter(
+            mode='markers',
+            x=x_list,
+            y=y_list,
+            marker=marker,
+            showlegend=False,
+            hoverinfo="none",
+            hoverlabel={"bgcolor":"#00FF00"},
+            hovertext=available_sct_dates,
+        )
+    )
+
+
 
     year_annotations=[]
     month_annotations=[]

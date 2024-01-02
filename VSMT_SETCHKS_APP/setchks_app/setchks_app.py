@@ -478,7 +478,7 @@ def enter_metadata():
     
     # if reach here via click on versions timeline
     if 'pointNumber' in request.form:
-        # print("===>>>> pointNumber=", request.form['pointNumber'])
+        print("===>>>> pointNumber=", request.form['pointNumber'])
         setchks_session.sct_version=setchks_session.available_sct_versions[int(request.form['pointNumber'])]
 
        # if reach here via click on versions dropdown (b)

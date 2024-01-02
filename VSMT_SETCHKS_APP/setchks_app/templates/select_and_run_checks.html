@@ -69,14 +69,144 @@ animation: none;
         {# LEFT HAND PANEL #}
         {#                  #}
 
+        <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
+
+            <style>
+                .custom_run_checks_button {
+                    display: inline-block;
+                    cursor: pointer;
+                    width: 100%; 
+                    height: 14vh;
+                    /* margin: 5 auto;  */
+                    border-style: solid;
+                    border-width: 3px;
+                    background-color:#007f3b; 
+                    color: white;
+                    border-color: #005eb8;
+                    border-radius: 20px; 
+                    font-size: 2em; 
+                    line-height: 2em; 
+                    padding: 1vh 1vh; 
+                    text-align: center; 
+                }
+                .custom_run_checks_button:hover { background-color: darkgreen;} 
+                .custom_run_checks_button:active { background-color: darkgreen; }
+
+                .custom_run_checks_button_inactive {
+                    background-color: #f0f4f5; 
+                    color: #A0A0A0; 
+                    border-color: lightgrey;
+                    }
+
+                .custom_run_checks_button_inactive:hover { background-color:#f0f4f5; }
+                .custom_run_checks_button_inactive:active { background-color:#f0f4f5; }
+            </style>
+ 
+            <div style="height:1vh;"></div>
+            <div 
+                {% if progress_status=="CHECKS_READY_TO_RUN" %}
+                    class="custom_run_checks_button"
+                    onclick="window.location.href='/select_and_run_checks?run_checks=True'"
+                {% else %}
+                    class="custom_run_checks_button custom_run_checks_button_inactive"
+                {% endif %}
+                >
+                <i class="bi bi-play-btn-fill"></i>
+                Run checks
+                <div style="font-size: .6em; line-height: 1.3em;"> 
+                    (and create report)
+                </div>
+            </div>
+
+            {% if setchks_session.setchks_jobs_manager.jobs_running %}
+                <script>
+                    setTimeout(function() { window.location='/select_and_run_checks'; }, 1000);
+                </script>
+            {% endif %}
+            {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
+                results_available and (not setchks_session.excel_file_available) %}
+                <script>
+                    setTimeout(function() { window.location='/select_and_run_checks?generate_report=True'; }, 1000);
+                </script>
+                {% endif %}
+            <div style="height:1vh;"></div>
+            <div 
+                class="custom_run_checks_button"
+                {% if progress_status=="REPORT_AVAILABLE" %}
+                    style="background-color:#007f3b; color: white"   
+                    onclick="window.location.href='/select_and_run_checks?download_report=True'"
+                {% else %}
+                    style="background-color:#f0f4f5; color: #A0A0A0; border-color: lightgrey;"                                           
+                {% endif %}>
+                <i class="bi bi-cloud-download-fill"></i>
+                Download Report
+            </div>
+
+            <!-- <div style="height:1vh;"></div> -->
+            <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
+                <div class="card-body" style="font-size: 1em;">
+                    <!-- <div style="font-size:1.33em;"> 
+                        Stage:
+                    </div>
+                    <ul>
+                        {% for status_required, words in [
+                            ("CHECKS_READY_TO_RUN","Checks ready to run"),
+                            ("CHECKS_RUNNING","Checks running"),
+                            ("CHECKS_COMPLETED","Checks completed"),
+                            ("CREATING_REPORT","Creating report"),
+                            ("REPORT_AVAILABLE","Report available"),
+                            ] %}
+                            {% set blinking_style = "" %}
+                            {% if progress_status==status_required %}
+                                {% set list_item="<b>" + words + "</b>" %}
+                                {% if progress_status in ["CHECKS_RUNNING", "CREATING_REPORT"] %}
+                                    {% set blinking_style = "run_status_blinking" %}
+                                {% endif %}
+                            {% else %}
+                                {% set list_item='<span style="color: grey"><i>' + words + '</i></span>' %}
+                            {% endif %}
+                            
+                            <li class="{{ blinking_style }}" style="font-size:1.4em" >{{ list_item|safe }}</li>
+                        {% endfor %}
+                    </ul> -->
+               
+                    <ul>
+                        {% if setchks_session.setchks_jobs_manager.jobs_running %}
+                            <!-- <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
+                            <script>
+                                setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
+                            </script> -->
+                            <div>
+                                Please do not navigate away from this page while jobs are running (safeguards TBI)
+                            </div>
+                                {% endif %}
+                        {% if setchks_session.passes_gatekeeper==False %}
+                        <div style="font-weight: bold; color: red"
+                        <b> [Alert] It has been detected that some of the Identifiers in your value set 
+                            do not meet certain basic criteria.
+                        A set of basic checks will be run, which will provide information on the problematic entries. 
+                        No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {#                  #}
+        {# RIGHT HAND PANEL #}
+        {#                  #}
+
         <div class="col-9" style="padding-left: 1vh; padding-right: 0.5vh;">
             
             <div class="card" style="height: 72vh; margin-top:1vh; overflow:auto">
-                <!-- <div class="panel"> -->
+                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                    Suite of Set Checks corresponding to Settings
+                </div
+                <div class="card-body">
                 
-                <!-- <div class="card-body" style="font-size: 1em;"> -->
                     <!-- <span style="height:4vh; margin-top:1vh; font-size: 1.0em;">Based on your settings for "Context" and "Mode", the following suite of checks will be run:</span> -->
-                    <table class="table table-bordered" style="font-size:1.0em">
+                    <table class="table table-bordered" style="font-size:1.0em; ">
                         <thead>
                             <!-- add the row of column titles -->
                             <tr>
@@ -183,6 +313,7 @@ animation: none;
                         </tbody>
                     </table>
                     {% endif %}
+                </div>
 
 
 
@@ -192,150 +323,6 @@ animation: none;
 
         </div>
 
-        {#                  #}
-        {# RIGHT HAND PANEL #}
-        {#                  #}
-
-        <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
-
-            <style>
-            .setchks-btn-green {
-                background-color: #007f3b;
-                color: white;
-                border-style: solid;
-                border-width: 3px;
-                border-color: black;
-                }
-
-                .setchks-btn-green:hover {
-                background-color: #005f1b;
-                color: white;
-                border-style: solid;
-                border-width: 3px;
-                border-color: black;
-                }
-            </style>
-            
-            <style>
-
-                .custom_run_checks_button {
-                    display: inline-block;
-                    cursor: pointer;
-                    width: 100%; 
-                    height: 14vh;
-                    margin: 5 auto; 
-                    border-style: solid;
-                    border-width: 3px;
-                    background-color:#007f3b; 
-                    color: white;
-                    border-color: #005eb8;
-                    border-radius: 20px; 
-                    font-size: 2em; 
-                    line-height: 2em; 
-                    padding: 1vh 1vh; 
-                    text-align: center; 
-                }
-                .custom_run_checks_button:hover { background-color: darkgreen;} 
-                .custom_run_checks_button:active { background-color: darkgreen; }
-
-                .custom_run_checks_button_inactive {
-                    background-color:white; 
-                    color: grey; 
-                    border-color: grey;
-                }
-            </style>
- 
-            <div style="height:1vh;"></div>
-            <div 
-                {% if progress_status=="CHECKS_READY_TO_RUN" %}
-                    class="custom_run_checks_button"
-                    onclick="window.location.href='/select_and_run_checks?run_checks=True'"
-                {% else %}
-                    class="custom_run_checks_button custom_run_checks_button_inactive"
-                {% endif %}
-                >
-                <i class="bi bi-play-btn-fill"></i>
-                Run checks
-                <div style="font-size: .6em; line-height: 1.3em;"> 
-                    (and create report)
-                </div>
-            </div>
-
-            {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                <script>
-                    setTimeout(function() { window.location='/select_and_run_checks'; }, 1000);
-                </script>
-            {% endif %}
-            {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
-                results_available and (not setchks_session.excel_file_available) %}
-                <!-- <a href="" id="generate_excel_button" class="btn setchks-btn-green">Create Report</a> -->
-                <script>
-                    setTimeout(function() { window.location='/select_and_run_checks?generate_report=True'; }, 1000);
-                </script>
-                {% endif %}
-            <div style="height:1vh;"></div>
-            <div 
-                class="custom_run_checks_button"
-                {% if progress_status=="REPORT_AVAILABLE" %}
-                    style="background-color:#007f3b; color: white"   
-                    onclick="window.location.href='/select_and_run_checks?download_report=True'"
-                {% else %}
-                    style="background-color:white; color: grey; border-color: grey;"                                           
-                {% endif %}>
-                <i class="bi bi-cloud-download-fill"></i>
-                Download Report
-            </div>
-
-            <!-- <div style="height:1vh;"></div> -->
-            <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
-                <div class="card-body" style="font-size: 1em;">
-                    <!-- <div style="font-size:1.33em;"> 
-                        Stage:
-                    </div>
-                    <ul>
-                        {% for status_required, words in [
-                            ("CHECKS_READY_TO_RUN","Checks ready to run"),
-                            ("CHECKS_RUNNING","Checks running"),
-                            ("CHECKS_COMPLETED","Checks completed"),
-                            ("CREATING_REPORT","Creating report"),
-                            ("REPORT_AVAILABLE","Report available"),
-                            ] %}
-                            {% set blinking_style = "" %}
-                            {% if progress_status==status_required %}
-                                {% set list_item="<b>" + words + "</b>" %}
-                                {% if progress_status in ["CHECKS_RUNNING", "CREATING_REPORT"] %}
-                                    {% set blinking_style = "run_status_blinking" %}
-                                {% endif %}
-                            {% else %}
-                                {% set list_item='<span style="color: grey"><i>' + words + '</i></span>' %}
-                            {% endif %}
-                            
-                            <li class="{{ blinking_style }}" style="font-size:1.4em" >{{ list_item|safe }}</li>
-                        {% endfor %}
-                    </ul> -->
-               
-                    <ul>
-                        {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                            <!-- <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
-                            <script>
-                                setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
-                            </script> -->
-                            <div>
-                                Please do not navigate away from this page while jobs are running (safeguards TBI)
-                            </div>
-                                {% endif %}
-                        {% if setchks_session.passes_gatekeeper==False %}
-                        <div style="font-weight: bold; color: red"
-                        <b> [Alert] It has been detected that some of the Identifiers in your value set 
-                            do not meet certain basic criteria.
-                        A set of basic checks will be run, which will provide information on the problematic entries. 
-                        No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
-                        {% endif %}
-
-                    </ul>
-                </div>
-            </div>
-        </div>
     </div>
  
     
