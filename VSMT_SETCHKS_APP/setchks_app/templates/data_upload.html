@@ -134,57 +134,74 @@
                     <!-- <div style="height:0vh;"></div> -->
                     <form 
                         action="/column_identities" 
-                        class="data-browse-form-default-settings" 
+                        class="data-browse-form" 
                         method="post" 
                         enctype="multipart/form-data"
                         >
-                        <label for="data-browse-input-default-settings" class="custom-file-upload">
+                        <label for="data-browse-input" class="custom-file-upload">
                             <i class="bi bi-cloud-upload-fill"></i> 
                             Browse for a file 
-                            <div style="font-size: .6em; line-height: 1.3em;"> 
+                            <!-- <div style="font-size: .6em; line-height: 1.3em;"> 
                                 (default settings)
-                            </div>
+                            </div> -->
                         </label>
-                        <input id="data-browse-input-default-settings" 
-                            type="file" 
-                            name="uploaded_file_default_settings"
-                            accept=".txt,.tsv,.xlsx" 
-                            onchange="$('.data-browse-form-default-settings').submit();" 
-                            />
-                    </form>
-
-                    <!-- <div style="height:1vh;"></div> -->
-
-                    <form 
-                        action="/column_identities" 
-                        class="data-browse-form" 
-                        method="post" 
-                        enctype="multipart/form-data">
-
-                        <label 
-                            for="data-browse-input" 
-                            class="custom-file-upload"
-                            {% if setchks_session.data_as_matrix == [] %}
-                                style="background-color:white; color: grey; border-color: grey;"                                           
-                            {% endif %}
-                            >
-                            <i class="bi bi-cloud-upload-fill"></i> 
-                            Browse for a file 
-                            <div style="font-size: .6em; line-height: 0.8em;"> 
-                                (retaining previously entered settings)
-                            </div>
-                        </label>
-                        {% if setchks_session.data_as_matrix != [] %}
                         <input id="data-browse-input" 
                             type="file" 
                             name="uploaded_file"
                             accept=".txt,.tsv,.xlsx" 
                             onchange="$('.data-browse-form').submit();" 
                             />
-                        {% endif %}
                     </form>
 
+                    <!-- <div style="height:1vh;"></div> -->
+
                 </div> 
+ 
+            {% if setchks_session.data_as_matrix != [] %}
+                <div class="card" style="height: 35vh; margin-top:1vh; overflow:auto">
+                    <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                        When load a new file ...
+                    </div>
+                    <div class="card-body" style="font-size: 1em;">
+    
+                        <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
+                            {% for a_type in [
+                                ("DEFAULT_SETTINGS","Revert to default settings 
+                                    <br><span style='font-size: 0.8em'>(typical when starting work on a different value set)</span>"),
+                                ("RETAIN_SETTINGS","Retain metadata and settings
+                                    <br><span style='font-size: 0.8em'>(e.g. to run the same checks, use the same SNOMED release, and keep the same name etc
+                                    when loading a revised version 
+                                    of a value set)</span>"),
+                                ] %}
+                                {% if a_type[0] == setchks_session.load_file_behaviour %}
+                                    {% set checked_var="checked" %}
+                                {% else %}
+                                    {% set checked_var="" %}
+                                {% endif %}
+            
+                                <div class="form-check">
+                                    <input  class="form-check-input" 
+                                            type="radio" 
+                                            name="load_file_behaviour" 
+                                            {{ checked_var}} 
+                                            value="{{ a_type[0] }}" 
+                                            id={{ a_type[0] }} 
+                                            onchange="$('.load_file_behaviour_buttons').submit();"
+                                            >
+                                    <label class="form-check-label" for={{ a_type[0] }}>
+                                    {{ a_type[1]|safe}}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            
+                        </form>
+                        <p>These settings can be further adjusted on the Settings page after loading</p>
+            
+    
+    
+                    </div>
+                </div>
+            {% endif %}
             </div>
         </div>
 

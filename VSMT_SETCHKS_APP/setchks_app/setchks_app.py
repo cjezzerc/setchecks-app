@@ -25,7 +25,6 @@ from setchks_app.concepts_service.concepts_service import ConceptsService
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
-from setchks_app.sct_versions import get_sct_versions
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
 from setchks_app.redis.rq_utils import (
@@ -313,7 +312,11 @@ def data_upload():
     print(request.files)
     print(f"session keys={list(session.keys())}")
 
+
     setchks_session=gui_setchks_session.get_setchk_session(session)
+
+    if 'load_file_behaviour' in request.form: 
+        setchks_session.load_file_behaviour=request.form['load_file_behaviour']
 
     bc=Breadcrumbs()
     bc.set_current_page("data_upload")
@@ -376,19 +379,27 @@ def column_identities():
 
     # if reach here via file upload, load the data into matrix
     if 'uploaded_file' in request.files:
+        if setchks_session.load_file_behaviour=="DEFAULT_SETTINGS":
+            session['setchks_session']=None
+            setchks_session=gui_setchks_session.get_setchk_session(session)
         setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
         setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
         # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
-    if 'uploaded_file_default_settings' in request.files:
-        session['setchks_session']=None
-        setchks_session=gui_setchks_session.get_setchk_session(session)
-        setchks_session.load_data_into_matrix(data=request.files['uploaded_file_default_settings'], upload_method='from_file', table_has_header=True)
-        # setchks_session.reset_analysis() # throw away all old results
-        setchks_session.marshalled_rows=[]
+    # if 'uploaded_file_default_settings' in request.files:
+    #     session['setchks_session']=None
+    #     setchks_session=gui_setchks_session.get_setchk_session(session)
+    #     setchks_session.load_data_into_matrix(data=request.files['uploaded_file_default_settings'], upload_method='from_file', table_has_header=True)
+    #     # setchks_session.reset_analysis() # throw away all old results
+    #     setchks_session.marshalled_rows=[]
     # set column_info if nor already set OR data has changed number of columns (allows simple reload to leave it unchanged) 
-    if (setchks_session.columns_info==None) or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0])):
+    # additonally: OR load_file_behaviour is "DEFAULT_SETTINGS"
+    if (
+        (setchks_session.columns_info==None) 
+        or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0]))
+        or (setchks_session.load_file_behaviour=="DEFAULT_SETTINGS")
+    ):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
         # ci.set_column_type(icol=0,requested_column_type="MIXED")
         # if ci.ncols>1:
@@ -449,18 +460,17 @@ def enter_metadata():
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
  
-    if setchks_session.available_sct_versions is None:
-        all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
-        setchks_session.available_sct_versions=[]
-        ds=DescriptionsService(data_type="hst")
-        hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
-        for sct_version, hst_exists in hst_dict.items():
-            if hst_exists: # only make sct_version available if has an HST 
-                setchks_session.available_sct_versions.append(all_available_sct_versions[sct_version])
+    # if setchks_session.available_sct_versions is None:
+    #     all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
+    #     setchks_session.available_sct_versions=[]
+    #     ds=DescriptionsService(data_type="hst")
+    #     hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
+    #     for sct_version, hst_exists in hst_dict.items():
+    #         if hst_exists: # only make sct_version available if has an HST 
+    #             setchks_session.available_sct_versions.append(all_available_sct_versions[sct_version])
 
-
-        setchks_session.sct_version=setchks_session.available_sct_versions[0]
-        setchks_session.sct_version_b=setchks_session.available_sct_versions[0]
+    #     setchks_session.sct_version=setchks_session.available_sct_versions[0]
+    #     setchks_session.sct_version_b=setchks_session.available_sct_versions[0]
 
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
     current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections

@@ -6,6 +6,10 @@ from ..excel import generate_excel_output
 from setchks_app.data_as_matrix import load_data_into_matrix
 from setchks_app.data_as_matrix import column_content_assessment
 import setchks_app.setchks.setchk_definitions
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.sct_versions import get_sct_versions
+
+
 
 class SetchksSession():
     """
@@ -35,6 +39,7 @@ class SetchksSession():
     __slots__=("uuid",
                "unparsed_data", # big and only needed on the confirm upload page
                "filename",
+               "load_file_behaviour",
                "data_as_matrix", # big and only needed when populating marshalled rows
                "table_has_header", 
                "first_data_row",
@@ -73,6 +78,7 @@ class SetchksSession():
         self.uuid=None
         self.unparsed_data=None
         self.filename=None
+        self.load_file_behaviour="DEFAULT_SETTINGS"
         self.data_as_matrix=[]
         self.table_has_header=None
         self.first_data_row=None
@@ -85,11 +91,11 @@ class SetchksSession():
         self.setchks_results={}
         self.refactored_form=None
         self.terminology_server=None
-        self.available_sct_versions=None 
+        self.available_sct_versions=None # see initialise below
         self.vs_name=""
         self.vs_purpose=""
-        self.sct_version=None
-        self.sct_version_b=None
+        self.sct_version=None # see initialise below
+        self.sct_version_b=None # see initialise below
         self.sct_version_mode="SINGLE_SCT_VERSION"
         self.available_setchks=setchks_app.setchks.setchk_definitions.setchks
         self.selected_setchks=None
@@ -103,6 +109,7 @@ class SetchksSession():
         self.excel_file_generation_failed=False
         self.timings={} # arbitrary entries can be put in this dict for debug purposes
         self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
+        self.initialise_sct_versions()
     def __repr__(self):
         repr_strings=[]
         # for k,v in self.__dict__.items():
@@ -147,3 +154,15 @@ class SetchksSession():
         self.passes_gatekeeper=None
         self.setchks_to_run_as_gatekeeper_not_passed=[]
         self.all_CHKXX_finished=False
+
+    def initialise_sct_versions(self):
+        all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
+        self.available_sct_versions=[]
+        ds=DescriptionsService(data_type="hst")
+        hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
+        for sct_version, hst_exists in hst_dict.items():
+            if hst_exists: # only make sct_version available if has an HST 
+                self.available_sct_versions.append(all_available_sct_versions[sct_version])
+
+        self.sct_version=self.available_sct_versions[0]
+        self.sct_version_b=self.available_sct_versions[0]
