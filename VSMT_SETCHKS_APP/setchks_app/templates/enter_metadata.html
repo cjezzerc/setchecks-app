@@ -11,8 +11,13 @@
 {% set nav_prev_page_location="/column_identities" %}
 
 {% set nav_next_page_shown=True %}
-{% set nav_next_page_live=True %}
-{% set nav_next_page_location="/select_and_run_checks" %}
+{% if (setchks_session.sct_version_mode=="SINGLE_SCT_VERSION")  
+   or (setchks_session.sct_version_b.date_string > setchks_session.sct_version.date_string) %}
+    {% set nav_next_page_live=True %}
+{% else %}
+    {% set nav_next_page_live=False %}
+{% endif %}
+    {% set nav_next_page_location="/select_and_run_checks" %}
 
 {% include 'navigation.html' %}
     
@@ -251,7 +256,7 @@
                     console.log("hover")
                     if (event_data.points[0].curveNumber in [0,1]) {
                         var timeline_hover_info=document.getElementById("timeline_hover_info");
-                        timeline_hover_info.innerHTML=timeline_data_info[event_data.points[0].pointNumber];
+                        timeline_hover_info.innerHTML="Click here to select release: UK Monolith edition:" +timeline_data_info[event_data.points[0].pointNumber];
                     }
                     });
             </script>
@@ -278,6 +283,12 @@
             <div style="height: 1vh"> </div>
             <span>
                 <b>More recent release ("Later release"):</b>
+                {% if setchks_session.sct_version_b.date_string <= setchks_session.sct_version.date_string %}
+                <span style="color:red">
+                    <b><i class="bi bi-x-lg" style="-webkit-text-stroke: 1px; font-size:100%"></i>
+                    This release is not later than the "Earlier release" above</b>
+                </span>
+                {% endif %}
             </span>
                     <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
                     
@@ -340,7 +351,7 @@
                     console.log("hover")
                     if (event_data_b.points[0].curveNumber in [0,1]) {
                         var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
-                        timeline_hover_info_b.innerHTML=timeline_data_info_b[event_data_b.points[0].pointNumber];
+                        timeline_hover_info_b.innerHTML="Click here to select release: UK Monolith edition:" + timeline_data_info_b[event_data_b.points[0].pointNumber];
                     }
                 });
             </script>
