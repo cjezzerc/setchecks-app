@@ -20,8 +20,69 @@
 <div class="container-fluid mt-0 " >
     
     <div class="row" style="height: 76vh; overflow:auto">    
+
+
         {#                  #}
         {# LEFT HAND PANEL #}
+        {#                  #}
+
+        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
+            
+            <div class="card" style="margin-top:1vh; overflow:auto">
+                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                    About this tool
+                </div>
+                <div class="card-body" style="font-size: 1.0em; overflow:auto">
+                    <ul>
+                        <p>
+                        Welcome to the first prototype of the NHS Value Set Management Tool (VSMT). 
+                        We aim to grow the VSMT into a full suite of tools that provide a one-stop-shop for 
+                        all SNOMED CT value sets, including finding existing sets, 
+                        creating and maintaining sets, sharing new sets with others, 
+                        and finding like-minded people to collaborate with. 
+                        </p>
+                        <p>
+                        In this first prototype we are introducing “Set Checks” - 13 separate checks 
+                        that run on user supplied value sets to assess and provide feedback on 
+                        set content. The checks indicate possible errors, content that might be missing, 
+                        and how a set from an earlier UK SNOMED CT release 
+                        should be changed due to new or changed content in a more 
+                        recent UK SNOMED CT release.
+                        </p>
+                        <p>
+                        You can find a user guide for the tool here and we would love to hear 
+                        your feedback via this form.
+                        </p>
+                        <p>
+                        Thanks for trying out the VSMT!
+                        
+                        
+                        <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> 
+                            Information about recent changes </a> </li>
+                        </p>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1vh; overflow:auto">
+                <div class="card-body" style="font-size: 1.0em; overflow:auto">
+                    <ul>
+                       
+                        <li> You will be able to check the upload on the next screen. </li>
+                        <li> See this guidance (TBI) for advice on the data required in your file </li>
+                        <li> Some examples input files are in <a href="https://nhs.sharepoint.com/:f:/r/sites/msteams_0ce65d/Shared%20Documents/General/Design/example_value_sets_for_trial_app?csf=1&web=1&e=4MeVfX" target="_blank"> this sharepoint folder </a></li>
+                        <li>  <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> Information about recent changes </a> </li>
+                        <li> (If link above fails navigate to Teams: Value Set Tooling - General\Developer related\Release notes\updates.docx)</li>
+                        <li> <b> If you have any problems, or just want to ask a question or get guidance, please contact Jeremy or Alan 1:1 via Teams chat.</b> If the issue cannot be resolved immediately 
+                              we will ask you to make a bug report - we will explain how - it is very easy and we will only need a very basic amount of info. </li>
+                        <li>  <a href="https://nhsd-jira.digital.nhs.uk/issues/?filter=55351" target="_blank"> Bug reports on Jira </a> </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        {#                  #}
+        {# RIGHT HAND PANEL #}
         {#                  #}
 
         <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
@@ -125,66 +186,6 @@
 
                 </div> 
             </div>
-        </div>
-
-        {#                  #}
-        {# RIGHT HAND PANEL #}
-        {#                  #}
-
-        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
-            
-            <div class="card" style="margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                    About this tool
-                </div>
-                <div class="card-body" style="font-size: 1.0em; overflow:auto">
-                    <ul>
-                        <p>
-                        Welcome to the first prototype of the NHS Value Set Management Tool (VSMT). 
-                        We aim to grow the VSMT into a full suite of tools that provide a one-stop-shop for 
-                        all SNOMED CT value sets, including finding existing sets, 
-                        creating and maintaining sets, sharing new sets with others, 
-                        and finding like-minded people to collaborate with. 
-                        </p>
-                        <p>
-                        In this first prototype we are introducing “Set Checks” - 13 separate checks 
-                        that run on user supplied value sets to assess and provide feedback on 
-                        set content. The checks indicate possible errors, content that might be missing, 
-                        and how a set from an earlier UK SNOMED CT release 
-                        should be changed due to new or changed content in a more 
-                        recent UK SNOMED CT release.
-                        </p>
-                        <p>
-                        You can find a user guide for the tool here and we would love to hear 
-                        your feedback via this form.
-                        </p>
-                        <p>
-                        Thanks for trying out the VSMT!
-                        
-                        
-                        <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> 
-                            Information about recent changes </a> </li>
-                        </p>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card" style="margin-top:1vh; overflow:auto">
-                <div class="card-body" style="font-size: 1.0em; overflow:auto">
-                    <ul>
-                       
-                        <li> You will be able to check the upload on the next screen. </li>
-                        <li> See this guidance (TBI) for advice on the data required in your file </li>
-                        <li> Some examples input files are in <a href="https://nhs.sharepoint.com/:f:/r/sites/msteams_0ce65d/Shared%20Documents/General/Design/example_value_sets_for_trial_app?csf=1&web=1&e=4MeVfX" target="_blank"> this sharepoint folder </a></li>
-                        <li>  <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> Information about recent changes </a> </li>
-                        <li> (If link above fails navigate to Teams: Value Set Tooling - General\Developer related\Release notes\updates.docx)</li>
-                        <li> <b> If you have any problems, or just want to ask a question or get guidance, please contact Jeremy or Alan 1:1 via Teams chat.</b> If the issue cannot be resolved immediately 
-                              we will ask you to make a bug report - we will explain how - it is very easy and we will only need a very basic amount of info. </li>
-                        <li>  <a href="https://nhsd-jira.digital.nhs.uk/issues/?filter=55351" target="_blank"> Bug reports on Jira </a> </li>
-                    </ul>
-                </div>
-            </div>
-
         </div>
 
     </div>
