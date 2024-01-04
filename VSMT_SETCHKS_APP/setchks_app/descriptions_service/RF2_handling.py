@@ -47,9 +47,9 @@ def create_collection_from_RF2_file(
                         acceptability_temp="acceptable"
                     # check for conflicting data where duplicates exist
                     assert (
-                        #    (referenceComponentId not in acceptabilities) or (acceptabilities[referenceComponentId]==acceptability_temp)
-                           (referenceComponentId not in acceptabilities)
-                           ), f"duplicate entry for {referenceComponentId} in lang refsets"
+                        (referenceComponentId not in acceptabilities) or (acceptabilities[referenceComponentId]==acceptability_temp)
+                        #    (referenceComponentId not in acceptabilities)
+                           ), f"conflicting duplicate entries for {referenceComponentId} in lang refsets"
                     acceptabilities[referenceComponentId]=acceptability_temp
                   
                 else:
