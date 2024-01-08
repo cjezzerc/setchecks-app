@@ -151,6 +151,17 @@ def do_check(setchks_session=None, setchk_results=None):
             #</check_item>
             this_row_analysis.append(check_item)
 
+    # assign CHK12-OUT-01 type check items depending on whether have seen mixture of tags
+    # in which case useful to see what all the other tags are
+    # print("======================")
+    for this_row_analysis in setchk_results.row_analysis:
+        for check_item in this_row_analysis:
+            if check_item.outcome_code=="CHK12-OUT-01":
+                if len(tag_counts)>1 or setchks_session.output_full_or_compact=="FULL_OUTPUT":
+                    check_item.outcome_level="FACT"
+                else:
+                    check_item.outcome_level="DEBUG"
+
     if len(tag_counts)==1:
         #<set_level_message>
         setchk_results.set_level_table_rows.append(
@@ -199,7 +210,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
                         descriptor=(
-                            f"  Number of Concepts with the Semantic Tag '({tag})'" 
+                            f"Number of Concepts with the Semantic Tag '({tag})'" 
                             ),
                         value=f"{count}",
                         outcome_code="CHK12-OUT-05",

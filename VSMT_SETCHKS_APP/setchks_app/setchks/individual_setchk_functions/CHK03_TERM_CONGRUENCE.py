@@ -376,26 +376,16 @@ def do_check(setchks_session=None, setchk_results=None):
         this_row_analysis.sort(key=sorting_order)
 
 
-    # assign CHK-OUT-04 type check items depending on whether have see FSN misuse
+    # assign CHK03-OUT-04 type check items depending on whether have see FSN misuse
     # in which case useful to see what all the other term types are
     # print("======================")
     for this_row_analysis in setchk_results.row_analysis:
         for check_item in this_row_analysis:
-            # print(check_item.outcome_code)
-            if check_item.outcome_code=="CHK03-OUT-04":
-                # print(check_item.outcome_level)
-                #  propose: if n_FSN_FOR_DATA_ENTRY>0 or setchksession.compactness=="FULL":
-                if n_FSN_FOR_DATA_ENTRY>0:
+            if check_item.outcome_code in ["CHK03-OUT-04a","CHK03-OUT-04b","CHK03-OUT-04c"]:
+                if n_FSN_FOR_DATA_ENTRY>0 or setchks_session.output_full_or_compact=="FULL_OUTPUT":
                     check_item.outcome_level="FACT"
-                    # print("F")
                 else:
                     check_item.outcome_level="DEBUG"
-                    # print("D")
-                # print(check_item.outcome_level)
-        
-    
-                
-    
     
     n_ISSUES=( 
           n_INACTIVE_DESCRIPTION
