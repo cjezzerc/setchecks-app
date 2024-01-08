@@ -205,7 +205,7 @@ def do_check(setchks_session=None, setchk_results=None):
         # tags_list= [ x for x in tag_counts].sorted()
         
         for tag, count in tag_counts.items():
-            if tag!=majority_tag:
+            if (tag!=majority_tag) or joint_majority_tag:
                 #<set_level_count>
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
