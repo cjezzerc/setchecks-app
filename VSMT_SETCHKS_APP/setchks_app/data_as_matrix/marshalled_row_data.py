@@ -235,26 +235,36 @@ class MarshalledRow():
             if self.C_Id_entered and self.D_Term_entered:
                 C_Id_data=ds.get_data_about_concept_id(concept_id=self.C_Id_entered, sct_version=setchks_session.sct_version)
                 self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=False
-                for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
+                
+                # setup list to loop over items twice - once csr and once ci - see bug SIV-747
+                # this method means that in the COW given and available descriptions - Cow and cow - then 
+                # just the first of these description encountered will be selected (outstanding "bug" SIV-752)
+                items_list_csr=[(item, item["case_sig"]) for item in C_Id_data]
+                items_list_ci=[(item, "ci") for item in C_Id_data]
+                two_pass_items_list=items_list_csr+items_list_ci
+                # for item in C_Id_data: # C_Id_data is a list of dicts (as can have several associated descriptions)
+                for item, csr_indicator in two_pass_items_list: 
                     if compare_strings_csr(
                         string1=item["term"],
                         string2=self.D_Term_entered,
-                        csr_indicator="ci",
-                        ): # first look for match in case insensitive way
+                        # csr_indicator="ci",
+                        csr_indicator=csr_indicator,
+                        ): # look for first match, going over in csr fashion first and then ci until get a match 
                         self.congruence_of_C_Id_entered_and_D_Term_entered_case_insens=True
                         self.D_Id_derived_from_C_Id_entered_and_D_Term_entered=item["desc_id"]
                         
-                        D_Id_data=ds.get_data_about_description_id(
-                            description_id=self.D_Id_derived_from_C_Id_entered_and_D_Term_entered,
-                            sct_version=setchks_session.sct_version
-                            )
-                        if D_Id_data is not None: # it shouldn't be but have had problems with inactive D_Ids
-                            self.D_Id_active=D_Id_data["active_status"]
-                        else:
-                            logging.error(
-                                f"Could not get descriptions data for D_Id" 
-                                "{self.D_Id_derived_from_C_Id_entered_and_D_Term_entered}"
-                                )
+                        # D_Id_data=ds.get_data_about_description_id(
+                        #     description_id=self.D_Id_derived_from_C_Id_entered_and_D_Term_entered,
+                        #     sct_version=setchks_session.sct_version
+                        #     )
+                        # if D_Id_data is not None: # it shouldn't be but have had problems with inactive D_Ids
+                        #     self.D_Id_active=D_Id_data["active_status"]
+                        self.D_Id_active=item["active_status"]
+                        # else:
+                        #     logging.error(
+                        #         f"Could not get descriptions data for D_Id" 
+                        #         "{self.D_Id_derived_from_C_Id_entered_and_D_Term_entered}"
+                        #         )
                         
                         self.D_Term_Type_derived_from_C_Id_entered_and_D_Term_entered=item["term_type"]
                         if item["case_sig"]=="ci" or compare_strings_csr(
