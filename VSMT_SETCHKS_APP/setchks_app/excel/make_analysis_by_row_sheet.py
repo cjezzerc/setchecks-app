@@ -154,8 +154,10 @@ def make_analysis_by_row_sheet(
                             hyperlink_cell_contents,
                             supp_tab_hyperlink_cell_contents,
                             ] 
-                        if not something_was_output: # only add the file data for the first outcome line
-                            ws_row_contents+=data_row_cell_contents
+                        # if not something_was_output: # only add the file data for the first outcome line
+                        #     ws_row_contents+=data_row_cell_contents
+                        ws_row_contents+=data_row_cell_contents # reverted to always showing as filtering
+                                                                # can lead to weird misundertstandings
                         time0=time.time()
                         ws.append(ws_row_contents)
                         current_ws_row+=1
