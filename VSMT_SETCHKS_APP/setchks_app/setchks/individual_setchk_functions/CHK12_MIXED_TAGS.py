@@ -157,7 +157,7 @@ def do_check(setchks_session=None, setchk_results=None):
     for this_row_analysis in setchk_results.row_analysis:
         for check_item in this_row_analysis:
             if check_item.outcome_code=="CHK12-OUT-01":
-                if len(tag_counts)>1 or setchks_session.output_full_or_compact=="FULL_OUTPUT":
+                if len(tag_counts)>1 and setchks_session.output_full_or_compact=="FULL_OUTPUT":
                     check_item.outcome_level="FACT"
                 else:
                     check_item.outcome_level="DEBUG"

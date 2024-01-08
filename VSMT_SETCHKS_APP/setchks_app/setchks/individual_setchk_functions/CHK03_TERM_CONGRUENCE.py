@@ -382,7 +382,7 @@ def do_check(setchks_session=None, setchk_results=None):
     for this_row_analysis in setchk_results.row_analysis:
         for check_item in this_row_analysis:
             if check_item.outcome_code in ["CHK03-OUT-04a","CHK03-OUT-04b","CHK03-OUT-04c"]:
-                if n_FSN_FOR_DATA_ENTRY>0 or setchks_session.output_full_or_compact=="FULL_OUTPUT":
+                if n_FSN_FOR_DATA_ENTRY>0 and setchks_session.output_full_or_compact=="FULL_OUTPUT":
                     check_item.outcome_level="FACT"
                 else:
                     check_item.outcome_level="DEBUG"
