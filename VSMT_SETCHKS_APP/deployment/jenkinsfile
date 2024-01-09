@@ -73,7 +73,7 @@ url = "https://${fqdn}${path}"
 searchText = 'Healthy'
 
 node {
-  try {
+  
 
     stage('Print Config'){
       echo "################ JOB CONFIG ########################"
@@ -280,5 +280,5 @@ node {
       }
     }
 
-  } 
+ 
 }
