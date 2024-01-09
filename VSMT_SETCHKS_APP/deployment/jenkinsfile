@@ -57,7 +57,7 @@ def serviceTag = "vsmt"
 
 def envName = 'dev'
 def envDomain = 'k8s-nonprod.texasplatform.uk'
-def texasEnvName = 'live-nonprod'
+def texasEnvName = 'live-lk8s-nonprod'
 
 def nodeLabel = 'master'
 
