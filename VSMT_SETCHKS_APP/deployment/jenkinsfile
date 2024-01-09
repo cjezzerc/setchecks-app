@@ -14,12 +14,6 @@ def ecrAccountName = 'live-mgmt'
 // Jenkins variables
 def jobName = "${env.JOB_NAME}"
 def branchName = "${env.BRANCH_NAME}"
-// simplifiedBranchName is used for namespaces, so removing feature prefix, converting to lower case and truncating...
-simplifiedBranchName = branchName.replace("feature/", "").toLowerCase()
-if ( simplifiedBranchName.length() > 24 ){
-  echo "truncating branch name for use in namespaces ..."
-  simplifiedBranchName = simplifiedBranchName.substring(0,23)
-}
 def jenkinsUrl = "${env.BUILD_URL}"
 def jenkinsScriptsDir = 'VSMT_SETCHKS_APP/deployment/scripts'
 def jobFolder = "vsmt_deployment"
@@ -30,7 +24,7 @@ def commitHash
 
 // App & service Team vars
 def appName = "vsmt-setchks-app"
-def serviceTeam
+def serviceTeam = "vsmt"
 def serviceTeamEnvName = 'dev'
 def vsmt_setchks_app_version
 def version ='latest'
@@ -42,7 +36,7 @@ def currentAccountId
 
 // k8s vars
 def appK8sDir = 'VSMT_SETCHKS_APP/deployment/k8s'
-def appNamespace = "${appName}-${simplifiedBranchName}-${serviceTeamEnvName}"
+def appNamespace = "${appName}-${serviceTeamEnvName}"
 def deploymentName = "${appName}-deploy"
 def serviceName = "${appName}-svc"
 def servicePort = 5000
@@ -56,77 +50,18 @@ def albScheme = 'internet-facing' // 'internal' or 'internet-facing'
 //*******TAGS******************
 //***** BILLING TAGS ******
 def serviceTag = "vsmt"
-def serviceOwnerTag = "jecr3"
-def versionTag = "2.0"
-def projectNameTag = "vsmt"
-//******* Environment Tags *******
-def dataClassificationTag = "1"
-def environmentTag = "testing"
-def publicFacingTag = "N"
 //****** Application information Tags *******
-def appNameTag = "nhsd-texas-sample pipeline-ingress"
-def rvTag = "1"
-def buildDateTag = new Date().format("dd-MM-yyyy")
-def buildTimeTag = new Date().format("HH:mm")
-def stackTag = "demo"
-def toolTag = "k8s"
+// def buildDateTag = new Date().format("dd-MM-yyyy")
+// def buildTimeTag = new Date().format("HH:mm")
 //******************************
 
-def texasEnvName
-def envDomain
+def envName = 'dev'
+def envDomain = 'k8s-nonprod.texasplatform.uk'
+def texasEnvName = 'live-nonprod'
 
 def nodeLabel = 'master'
-// ************************************************************************************
-// Jenkins job folder/names must match the following convention EXACTLY:
-//
-// sample-pipeline/<service team name>/deploy to (live-lk8s-nonprod|live-lk8s-prod)
-//
-//   e.g. sample-pipelines/dspt/deploy to live-lk8s-nonprod
-//
-// ************************************************************************************
 
 echo "BUILD_URL is ${BUILD_URL}"
-
-// if ( jenkinsUrl ==~ /^http:\/\/texas-jenkins-v1:8080\/.*$/ ){
-//   echo "This is Texas Jenkins MoM - changing nodeLabel to jenkins-slave"
-//   nodeLabel = 'jenkins-slave'
-// }
-
-// Get service team and target environment from Jenkins job name
-// if ( jobName ==~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
-if ( jobName ==~ /${jobFolder}\/vsmt\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/ ){
-  def envMatch = jobName =~ /${jobFolder}\/([a-zA-Z\-_0-9]*)\/deploy to (dev-lk8s|dev-mgmt|test-lk8s|test-mgmt|live-lk8s-nonprod|live-mgmt|live-lk8s-prod)\/.*/
-  serviceTeam = envMatch[0][1]
-  texasEnvName = envMatch[0][2]
-}
-// else if ( ( texasEnvName != 'live-lk8s-nonprod' ) && ( serviceTeam != 'texas' ) ){
-//   println "Only Texas can deploy this pipeline to environments other than non-prod"
-//   currentBuild.result = 'FAILURE'
-//   return
-// }
-else {
-  println "Invalid job name"
-  currentBuild.result = 'FAILURE'
-  return
-}
-
-// Set additional config from target environment
-if ( texasEnvName == 'live-lk8s-nonprod' ){
-  envDomain = 'k8s-nonprod.texasplatform.uk'
-} else if ( texasEnvName == 'live-lk8s-prod') {
-  currentBuild.result = 'FAILURE'
-  envDomain = 'k8s-prod.texasplatform.uk'
-} else if ( texasEnvName == 'live-mgmt') {
-  envDomain = 'mgmt.texasplatform.uk'
-} else if ( texasEnvName == 'test-lk8s') {
-  envDomain = 'k8s.texastest.uk'
-} else if ( texasEnvName == 'test-mgmt') {
-  envDomain = 'mgmt.texastest.uk'
-} else if ( texasEnvName == 'dev-lk8s') {
-  envDomain = 'k8s.texasdev.uk'
-} else if ( texasEnvName == 'dev-mgmt') {
-  envDomain = 'mgmt.texasdev.uk'
-}
 
 // The following variables are used for health checks after the deployment
 // Note the trailing '.' !
@@ -137,14 +72,6 @@ path = '/healthy'
 url = "https://${fqdn}${path}"
 searchText = 'Healthy'
 
-def postFailure() {
-    updateGitlabCommitStatus name: 'build', state: 'failed'
-}
-
-def postSuccess() {
-    updateGitlabCommitStatus name: 'build', state: 'success'
-}
-
 node {
   try {
 
@@ -152,7 +79,7 @@ node {
       echo "################ JOB CONFIG ########################"
       echo "  serviceTeam is: ${serviceTeam}"
       echo "  serviceTeamEnvName is: ${serviceTeamEnvName}"
-      echo "  texasEnvName is: ${texasEnvName}"
+      echo "  envName is: ${envName}"
       echo "  hostedZoneName is: ${hostedZoneName}"
       echo "  FQDN is: ${fqdn}"
       echo "  Test URL is: ${url}"
@@ -167,10 +94,6 @@ node {
     stage('Checkout') {
       echo 'Git repository checkout...'
       checkout scm
-    }
-
-    stage('Quality Checks'){
-      echo "Placeholder for e.g. Sonarqube, git-secrets etc."
     }
 
     stage("Authenticate") {
@@ -214,7 +137,7 @@ node {
 
     stage('Scan Image') {
       sh "chmod +x ${jenkinsScriptsDir}/*.sh"
-      sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${version} false ${liveMgmtAccountId}"
+      sh "${jenkinsScriptsDir}/ecr_scan_image.sh ${dockerImage} ${commitHash} false ${liveMgmtAccountId}"
     }
 
     stage("Authenticate to ${texasEnvName} AWS/k8s and tf apply") {
@@ -235,7 +158,7 @@ node {
             sh """aws sts get-caller-identity"""
             echo "kubeconfig is: ${kubeconfig}"
             dir ("${jenkinsScriptsDir}"){
-                sh "./terraform.sh service_account ${texasEnvName} eu-west-2 apply"
+                sh "./terraform.sh service_account ${envName} eu-west-2 apply"
             }
         }
     }
@@ -290,20 +213,6 @@ node {
             sh ("""sed -i 's/SECURITY_POLICY_TO_BE_REPLACED/${securityPolicy}/g' ingress.yaml""")
             // TAGS for ALB
             sh ("""sed -i 's/SERVICE_TAG_TO_BE_REPLACED/${serviceTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/SERVICE_OWNER_TAG_TO_BE_REPLACED/${serviceOwnerTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/VERSION_TAG_TO_BE_REPLACED/${versionTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/PROJECT_NAME_TAG_TO_BE_REPLACED/${projectNameTag}/g' ingress.yaml""")
-
-            sh ("""sed -i 's/DATA_CLASSIFICATION_TAG_TO_BE_REPLACED/${dataClassificationTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/ENVIRONMENT_TAG_TO_BE_REPLACED/${environmentTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/PUBLIC_FACING_TAG_TO_BE_REPLACED/${publicFacingTag}/g' ingress.yaml""")
-
-            sh ("""sed -i 's/APPLICATION_NAME_TAG_TO_BE_REPLACED/${appNameTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/RV_TAG_TO_BE_REPLACED/${rvTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/BUILD_DATE_TAG_TO_BE_REPLACED/${buildDateTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/BUILD_TIME_TAG_TO_BE_REPLACED/${buildTimeTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/STACK_TAG_TO_BE_REPLACED/${stackTag}/g' ingress.yaml""")
-            sh ("""sed -i 's/TOOL_TAG_TO_BE_REPLACED/${toolTag}/g' ingress.yaml""")
 
             sh ("""sed -i 's|CERT_ARN_TO_BE_REPLACED|${certArn}|g' ingress.yaml""")
 
@@ -371,27 +280,5 @@ node {
       }
     }
 
-    // stage("Destroy webapp") {
-    //   // Prevent concurrent app ns destroys
-    //   lock ("${appNamespace}"){
-    //     withEnv([ "AWS_ACCESS_KEY_ID=${awsAccessKeyId}",
-    //       "AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}",
-    //       "AWS_SESSION_TOKEN=${awsSessionToken}",
-    //       "KUBECONFIG=${kubeconfig}"
-    //       ])
-    //     {
-    //       sh """kubectl delete ns ${appNamespace}"""
-    //     }
-    //   }
-    // }
-
-  // Post build result to GitLab
-  } finally {
-    def currentResult = currentBuild.result ?: 'SUCCESS'
-    if (currentResult == 'SUCCESS') {
-      postSuccess()
-    } else {
-      postFailure()
-    }
-  }
+  } 
 }

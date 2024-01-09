@@ -13,20 +13,7 @@ metadata:
     # alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-2017-01
     alb.ingress.kubernetes.io/ssl-policy: SECURITY_POLICY_TO_BE_REPLACED #ELBSecurityPolicy-TLS-1-2-2017-01
     alb.ingress.kubernetes.io/tags: |
-      Service=SERVICE_TAG_TO_BE_REPLACED,
-      Owner=SERVICE_OWNER_TAG_TO_BE_REPLACED,
-      TagVersion=VERSION_TAG_TO_BE_REPLACED,
-      Project=PROJECT_NAME_TAG_TO_BE_REPLACED,
-      DataClassification=DATA_CLASSIFICATION_TAG_TO_BE_REPLACED,
-      Environment=ENVIRONMENT_TAG_TO_BE_REPLACED,
-      PublicFacing=PUBLIC_FACING_TAG_TO_BE_REPLACED,
-      Name=APPLICATION_NAME_TAG_TO_BE_REPLACED,
-      ReleaseVersion=RV_TAG_TO_BE_REPLACED,
-      BuildDate=BUILD_DATE_TAG_TO_BE_REPLACED,
-      BuildTime=BUILD_TIME_TAG_TO_BE_REPLACED,
-      Stack=STACK_TAG_TO_BE_REPLACED,
-      Tool=TOOL_TAG_TO_BE_REPLACED
-
+      Service=SERVICE_TAG_TO_BE_REPLACED
 
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/backend-protocol: HTTP

@@ -31,24 +31,15 @@ then
 elif [[ $MODE = 'destroy' ]]
 then
   TF_ACTION_STRING='destroy -auto-approve'
-  if [[ $ENV != 'dev-k8s' && $ENV != 'dev-mgmt' && $ENV != 'test-k8s' && $ENV != 'test-mgmt' ]]
-  then
-    echo "You can only destroy a dev or test environment"
-    exit 1
-  fi
 else
   echo "invalid mode $MODE"
   exit 1
 fi
 
-# VSMT_SETCHKS_APP_REPO_DIR='..'
-# TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/env/$ENV-$REGION.tfvars"
-# GLOBAL_TFVARS_FILE="$VSMT_SETCHKS_APP_REPO_DIR/tfvars/global/global.tfvars"
-# STACKDIR="$VSMT_SETCHKS_APP_REPO_DIR/stacks/$STACK"
-TFVARS_FILE="../../tfvars/env/$ENV-$REGION.tfvars"
+TFVARS_FILE="../../tfvars/env/$ENV.tfvars"
 GLOBAL_TFVARS_FILE="../../tfvars/global/global.tfvars"
 STACKDIR="../stacks/$STACK"
-TF_OUTPUT_FILE="/var/tmp/$ENV-$REGION-$STACK-output.txt"
+TF_OUTPUT_FILE="/var/tmp/$ENV-$STACK-output.txt"
 
 > $TF_OUTPUT_FILE
 
@@ -68,18 +59,10 @@ tfenv use 1.6.0
 echo $ENV
 terraform --version
 
-# if [[ $REGION = 'eu-west-2' ]]
-# then
-
 terraformStateBucket="nhsd-texasplatform-terraform-service-state-store-lk8s-nonprod"
-keyToUse="vsmt/service_account"
+keyToUse="vsmt/$ENV/$STACK"
 awsRegion="eu-west-2"
 terraform init -upgrade -reconfigure -backend-config="bucket=$terraformStateBucket" -backend-config="key=$keyToUse/terraform.tfstate" -backend-config="region=$awsRegion" -no-color
-
-#   terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep -v euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
-# else
-#   terraform init -upgrade -reconfigure -backend-config="bucket=$(aws s3 ls | grep terraform-state-store | grep euw1 | awk '{print $3}')" -backend-config="region=$REGION" -backend-config="key=vsmt/$(basename $(pwd))/terraform.tfstate"
-# fi
 
 if [[ ${OVERRIDE_TFVARS} == '' ]]
 then
@@ -87,8 +70,6 @@ then
 else
     terraform $TF_ACTION_STRING -var-file=${GLOBAL_TFVARS_FILE} -var-file=${TFVARS_FILE} -var="${OVERRIDE_TFVARS}" 2>&1 | tee $TF_OUTPUT_FILE
 fi
-
-# rm "$STACKDIR/${ENV}_${REGION}_${STACK}_undeclared_vars.tf"
 
 # Make TF/pipeline error if a stack fails
 if [[ "$(grep '^.*Error:' $TF_OUTPUT_FILE)" != '' ]]
