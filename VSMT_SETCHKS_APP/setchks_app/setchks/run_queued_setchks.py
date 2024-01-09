@@ -33,8 +33,9 @@ def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
         else:
             logger.debug("Running ..: " + str(setchk.setchk_code))
             setchk.run_check(setchks_session=setchks_session)
-    job_status_report=setchks_session.setchks_jobs_manager.update_job_statuses()
-    logger.debug("\n".join(job_status_report))
+    if run_in_rq:
+        job_status_report=setchks_session.setchks_jobs_manager.update_job_statuses()
+        logger.debug("\n".join(job_status_report))
 
     # # queue up (or directly run) excel generation 
     # user_tmp_folder="/tmp/"+setchks_session.uuid
