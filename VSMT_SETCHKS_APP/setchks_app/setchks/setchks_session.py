@@ -47,6 +47,7 @@ class SetchksSession():
                "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
                "column_content_assessment",
+               "time_started_processing",
                "processing_status",
                "preprocessing_done",
                "preprocessing_failed",
@@ -89,6 +90,7 @@ class SetchksSession():
         self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
         self.column_content_assessment=column_content_assessment.ColumnContentAssessment()
+        self.time_started_processing=None
         self.processing_status="1_CHECKS_READY_TO_RUN" # strictly only the case if data loaded, sct_releases chosen etc
         self.preprocessing_done=False
         self.preprocessing_failed=False
@@ -157,6 +159,7 @@ class SetchksSession():
         self.setchks_jobs_manager=None
         self.excel_file_available=False
         self.excel_file_generation_failed=False
+        self.time_started_processing=None
         self.preprocessing_done=False
         self.preprocessing_failed=False
         self.passes_gatekeeper=None

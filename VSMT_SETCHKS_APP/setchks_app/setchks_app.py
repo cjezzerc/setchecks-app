@@ -29,6 +29,7 @@ from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
+from setchks_app.mgmt_info.summary_info import store_summary_dict_to_db
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
     launch_sleep_job, 
@@ -611,6 +612,7 @@ def select_and_run_checks():
              )
         ):
 
+        setchks_session.time_started_processing=datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S')
         setchks_session.processing_status="2_PREPROCESSING"
 
         # start_rq_worker_if_none_running()
@@ -653,6 +655,11 @@ def select_and_run_checks():
             os.system("mkdir -p " + user_tmp_folder)
             excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
             setchks_session.excel_filename=excel_filename
+            
+            # propose store MI of summary and setchks_session here so that stored
+            # if excel generation fails
+            store_summary_dict_to_db(setchks_session=setchks_session)
+            
             run_in_rq=True
             if run_in_rq:
                 setchks_jobs_manager.launch_job(
@@ -668,6 +675,10 @@ def select_and_run_checks():
               # if excel file generation fails.
             setchks_session.excel_file_available=True # even though it isn't..
             
+    # propose store excel file to MI here
+    #if setchks_session.processing_status=="5_REPORT_AVAILABLE" and processing_status_changed_this_visit:    
+    #  ... store .xlsx as MI ..
+                
     if "download_report" in request.args and setchks_session.processing_status=="5_REPORT_AVAILABLE":
         if setchks_session.excel_file_generation_failed:
             pass
