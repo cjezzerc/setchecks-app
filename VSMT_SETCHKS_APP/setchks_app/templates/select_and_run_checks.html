@@ -39,28 +39,6 @@ animation: none;
 } 
 </style> 
 
-{% if setchks_session.setchks_jobs_manager.jobs_running %}
-{% if setchks_session.all_CHKXX_finished %}
-    {% set progress_status="CREATING_REPORT" %}
-{% else %}
-    {% set progress_status="CHECKS_RUNNING" %}
-{% endif %}
-{% else %}
-{% if not setchks_session.all_CHKXX_finished %}
-    {% set progress_status="CHECKS_READY_TO_RUN" %}
-{% else %}
-    {% if not setchks_session.excel_file_available %}
-        {% set progress_status="CHECKS_COMPLETED"%}
-    {% else %}
-        {% if not setchks_session.excel_file_generation_failed %}
-            {% set progress_status="REPORT_AVAILABLE" %}
-        {% else %}
-            {% set progress_status="REPORT_CREATION_FAILED" %}
-        {% endif %}
-    {% endif %}
-{% endif %}
-{% endif %}
-
 <div class="container-fluid  mt-0 ">
     
     <div class="row" style="height: 76vh;">
@@ -89,11 +67,18 @@ animation: none;
                             </tr>
                         </thead>
                         <tbody>
-                            {% for setchk in setchks_session.selected_setchks %}
-                                {% set sc=setchk.setchk_code %}
+                            {% for setchk in ["PREPROCESSING"] + setchks_session.selected_setchks %}
+                               
+                                {% if setchk!="PREPROCESSING" %}
+                                    {% set sc=setchk.setchk_code %}
+                                    {% set name_to_show=setchk.setchk_short_name_plus_short_code %}
+                                {% else %}
+                                    {% set sc="PREPROCESSING" %}
+                                    {% set name_to_show="Preprocessing" %}
+                                    {% endif %}
                                 {% set setchk_run_status = setchks_session.setchks_run_status[sc] %}
                                 <tr style="margin-top: 0em;">
-                                    <td> {{ setchk.setchk_short_name_plus_short_code }}</td>
+                                    <td> {{ name_to_show }}</td>
                                     <td> 
                                         <!-- {{ setchk_run_status }}  -->
                                         {% if setchk_run_status=="started" %}
@@ -137,6 +122,9 @@ animation: none;
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
+                                        {% if sc=="PREPROCESSING" and setchk_run_status=="finished" %}
+                                            (-)
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -145,12 +133,12 @@ animation: none;
                         </tbody>
                     </table>
 
-                    {% if progress_status in [
-                        "CHECKS_COMPLETED",
-                        "CREATING_REPORT",
-                        "REPORT_AVAILABLE",
-                        "REPORT_CREATION_FAILED"
+                    {% if setchks_session.processing_status in [
+                        "4_CREATING_REPORT",
+                        "5_REPORT_AVAILABLE",
+                        "6_REPORT_CREATION_FAILED", 
                         ] %}
+                        <!-- NB 6_REPORT_CREATION_FAILED does not exist yet -->
 
                     <table class="table table-bordered" style="font-size:1.0em">
                         <thead>
@@ -235,9 +223,9 @@ animation: none;
  
             <div style="height:1vh;"></div>
             <div 
-                {% if progress_status=="CHECKS_READY_TO_RUN" %}
+                {% if setchks_session.processing_status=="1_CHECKS_READY_TO_RUN" %}
                     class="custom_run_checks_button"
-                    onclick="window.location.href='/select_and_run_checks?run_checks=True'"
+                    onclick="window.location.href='/select_and_run_checks?do_preprocessing=True'"
                 {% else %}
                     class="custom_run_checks_button custom_run_checks_button_inactive"
                 {% endif %}
@@ -254,16 +242,11 @@ animation: none;
                     setTimeout(function() { window.location='/select_and_run_checks'; }, 1000);
                 </script>
             {% endif %}
-            {% if (not setchks_session.setchks_jobs_manager.jobs_running) and 
-                results_available and (not setchks_session.excel_file_available) %}
-                <script>
-                    setTimeout(function() { window.location='/select_and_run_checks?generate_report=True'; }, 1000);
-                </script>
-                {% endif %}
+                       
             <div style="height:1vh;"></div>
             <div 
                 class="custom_run_checks_button"
-                {% if progress_status=="REPORT_AVAILABLE" %}
+                {% if setchks_session.processing_status=="5_REPORT_AVAILABLE" %}
                     style="background-color:#007f3b; color: white"   
                     onclick="window.location.href='/select_and_run_checks?download_report=True'"
                 {% else %}
@@ -281,16 +264,16 @@ animation: none;
                     </div>
                     <ul>
                         {% for status_required, words in [
-                            ("CHECKS_READY_TO_RUN","Checks ready to run"),
-                            ("CHECKS_RUNNING","Checks running"),
-                            ("CHECKS_COMPLETED","Checks completed"),
-                            ("CREATING_REPORT","Creating report"),
-                            ("REPORT_AVAILABLE","Report available"),
+                            ("1_CHECKS_READY_TO_RUN","Checks ready to run"),
+                            ("2_PREPROCESSING","Preprocessing Value Set"),
+                            ("3_CHECKS_RUNNING","Checks running"),
+                            ("4_CREATING_REPORT","Creating report"),
+                            ("5_REPORT_AVAILABLE","Report available"),
                             ] %}
                             {% set blinking_style = "" %}
-                            {% if progress_status==status_required %}
+                            {% if setchks_session.processing_status==status_required %}
                                 {% set list_item="<b>" + words + "</b>" %}
-                                {% if progress_status in ["CHECKS_RUNNING", "CREATING_REPORT"] %}
+                                {% if setchks_session.processing_status in ["2_PREPROCESSING", "3_CHECKS_RUNNING", "4_CREATING_REPORT"] %}
                                     {% set blinking_style = "run_status_blinking" %}
                                 {% endif %}
                             {% else %}

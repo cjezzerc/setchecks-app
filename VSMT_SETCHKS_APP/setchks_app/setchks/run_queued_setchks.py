@@ -12,8 +12,8 @@ logger=logging.getLogger(__name__)
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
 def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
-    setchks_jobs_manager=SetchksJobsManager(setchks_session=setchks_session)
-    setchks_session.setchks_jobs_manager=setchks_jobs_manager
+    # setchks_jobs_manager=SetchksJobsManager(setchks_session=setchks_session)
+    # setchks_session.setchks_jobs_manager=setchks_jobs_manager
     setchks_session.setchks_to_run_as_gatekeeper_not_passed=["CHK02_IDS_IN_RELEASE", "CHK20_INCORR_FMT_SCTID",]
     if setchks_session.data_entry_extract_type=="EXTRACT":
         setchks_session.setchks_to_run_as_gatekeeper_not_passed.append("CHK01_APPROP_SCTID")
@@ -22,7 +22,7 @@ def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
         if run_in_rq:
             if setchks_session.passes_gatekeeper or setchk.setchk_code in setchks_session.setchks_to_run_as_gatekeeper_not_passed:
                 logger.debug(f"ABOUT TO SEND TO RQ: {setchk.setchk_short_name_plus_short_code}")
-                setchks_jobs_manager.launch_job(
+                setchks_session.setchks_jobs_manager.launch_job(
                     setchk=setchk,
                     setchks_session=setchks_session,
                     )
@@ -33,7 +33,7 @@ def run_queued_setchks(setchks_list=None, setchks_session=None, run_in_rq=True):
         else:
             logger.debug("Running ..: " + str(setchk.setchk_code))
             setchk.run_check(setchks_session=setchks_session)
-    job_status_report=setchks_jobs_manager.update_job_statuses()
+    job_status_report=setchks_session.setchks_jobs_manager.update_job_statuses()
     logger.debug("\n".join(job_status_report))
 
     # # queue up (or directly run) excel generation 

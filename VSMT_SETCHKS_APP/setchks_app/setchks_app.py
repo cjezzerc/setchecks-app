@@ -22,6 +22,8 @@ from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 from setchks_app.concepts_service.concepts_service import ConceptsService
+from setchks_app.jobs_manager.jobs_manager import SetchksJobsManager
+
 
 from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
@@ -567,61 +569,84 @@ def select_and_run_checks():
     setchks_session.selected_setchks=[]
     for sc in available_setchks:
         this_setchk = setchks_app.setchks.setchk_definitions.setchks[sc]
-        # print(setchks_session.sct_version_mode, 
-        #       this_setchk.setchk_sct_version_modes,
-        #       setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes)
         if (
             "ALL" in this_setchk.setchk_data_entry_extract_types or 
             setchks_session.data_entry_extract_type in this_setchk.setchk_data_entry_extract_types
             ) and (
             setchks_session.sct_version_mode in this_setchk.setchk_sct_version_modes    
-        ):
+            ):
             setchks_session.selected_setchks.append(this_setchk)
-    logger.debug(setchks_session.selected_setchks)
+    # logger.debug(setchks_session.selected_setchks)
 
+    # get update on queued jobs if in state 2,3,4
     setchks_jobs_manager=setchks_session.setchks_jobs_manager
     if setchks_jobs_manager is not None:
-
         time0=time.time()
         job_status_report=setchks_jobs_manager.update_job_statuses()
         logger.debug("\n".join(job_status_report))
         logger.debug(f"Time taken to get job statuses = {time.time()-time0}")
 
+    processing_status_changed_this_visit=False
+    if (setchks_session.processing_status=="2_PREPROCESSING") and (setchks_session.preprocessing_done):
+        setchks_session.processing_status="3_CHECKS_RUNNING"
+        processing_status_changed_this_visit=True
+    elif (setchks_session.processing_status=="3_CHECKS_RUNNING") and (setchks_session.all_CHKXX_finished):
+        setchks_session.processing_status="4_CREATING_REPORT"
+        processing_status_changed_this_visit=True
+    elif (setchks_session.processing_status=="4_CREATING_REPORT") and (setchks_session.excel_file_available):
+        setchks_session.processing_status="5_REPORT_AVAILABLE"
+        processing_status_changed_this_visit=True
+
+    # if in state 2,3,4 see if state changes based on update on queued jobs 
+    # if state does change set flag "state_changed_this_visit"
+    # tests will be of form
+    # if setchks_session.processing_status=="3_CHECKS_RUNNING" and state_changed_this_visit:
+    #   ... launch checks
+
     if (
-        "run_checks" in request.args 
+        "do_preprocessing" in request.args and setchks_session.processing_status=="1_CHECKS_READY_TO_RUN"
         and (
              setchks_jobs_manager is None
              or setchks_jobs_manager.jobs_running==False 
              )
         ):
 
+        setchks_session.processing_status="2_PREPROCESSING"
+
         # start_rq_worker_if_none_running()
         start_specific_rq_worker(worker_name="worker_long_jobs")
         start_specific_rq_worker(worker_name="worker_short_jobs")
-        setchks_session.setchks_results={}  
-        setchks_session.setchks_run_status={}
+        # setchks_session.setchks_results={}  
+        # setchks_session.setchks_run_status={}
 
-        # not convinced why would not always recalculate mr when run checks
-        time0_for_mr=time.time()
-        if setchks_session.setchks_results=={}: # Missing results means either 
-                                                # marshalled rows never calculated, 
-                                                # or sct_release or column_identities have changed
-            setchks_session.passes_gatekeeper=True
-            for mr in setchks_session.marshalled_rows:
-                mr.do_things_dependent_on_SCT_release(setchks_session=setchks_session)
-                if setchks_session.passes_gatekeeper:
-                    if mr.C_Id is None and not mr.blank_row:
-                        setchks_session.passes_gatekeeper=False
-                    elif setchks_session.data_entry_extract_type=="EXTRACT" and mr.D_Id_entered is not None:
-                        setchks_session.passes_gatekeeper=False
-        logger.debug(f"Time for doing all the mr.do_things_dependent_on_SCT_release = {time.time()-time0_for_mr}")
-        
-        setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
+        if not setchks_session.preprocessing_failed:
+            run_in_rq=True
+            if run_in_rq:
+                setchks_jobs_manager=SetchksJobsManager(setchks_session=setchks_session)
+                setchks_session.setchks_jobs_manager=setchks_jobs_manager
+                setchks_jobs_manager.launch_job(
+                    do_preprocessing=True,
+                    setchks_session=setchks_session,
+                    )
+                job_status_report=setchks_jobs_manager.update_job_statuses()
+                logger.debug("\n".join(job_status_report))
+            else:
+                logger.debug("Doing preprocessing ..: ")
+                setchks_session.do_SCT_release_dependent_preprocessing()
+        else:   # quick and dirty way to stop the auto reload generating endless loop
+                # if preprocessing fails.
+            setchks_session.preprocessing_done=True # even though it isn't..
+                
+    
+    # if "run_checks" in request.args:
+    if setchks_session.processing_status=="3_CHECKS_RUNNING" and processing_status_changed_this_visit:    
+            setchks_session.setchks_jobs_list=setchks_app.setchks.run_queued_setchks.run_queued_setchks(
             setchks_list=setchks_session.selected_setchks, 
             setchks_session=setchks_session,
             )
 
-    if "generate_report" in request.args:
+    # if "generate_report" in request.args:
+    if setchks_session.processing_status=="4_CREATING_REPORT" and processing_status_changed_this_visit:
         logger.debug("Report requested")
         if not setchks_session.excel_file_generation_failed:
             user_tmp_folder="/tmp/"+setchks_session.uuid
@@ -643,20 +668,15 @@ def select_and_run_checks():
               # if excel file generation fails.
             setchks_session.excel_file_available=True # even though it isn't..
             
-    
-    if "download_report" in request.args:
+    if "download_report" in request.args and setchks_session.processing_status=="5_REPORT_AVAILABLE":
         if setchks_session.excel_file_generation_failed:
             pass
         else:
             return send_file(setchks_session.excel_filename)
 
-    # results_available=len(list(setchks_session.setchks_results)) > 0 and (not setchks_jobs_manager.jobs_running)
-    results_available=setchks_session.all_CHKXX_finished
-
     return render_template('select_and_run_checks.html',
                            breadcrumbs_styles=bc.breadcrumbs_styles,
                            setchks_session=setchks_session,
-                           results_available=results_available,
                            all_setchks=setchks_app.setchks.setchk_definitions.setchks,
                             )
 

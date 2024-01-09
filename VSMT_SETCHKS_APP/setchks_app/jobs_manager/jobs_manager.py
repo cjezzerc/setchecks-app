@@ -20,7 +20,13 @@ class SetchksJobsManager():
         self.redis_connection_string=get_redis_string() # use string rather than client so object is hashable
         self.setchks_session=setchks_session
         
-    def launch_job(self, setchk=None, setchks_session=None, generate_excel=False):
+    def launch_job(
+        self, 
+        setchk=None, 
+        setchks_session=None, 
+        do_preprocessing=False,
+        generate_excel=False,
+        ):
         
         if len(setchks_session.marshalled_rows)>200:
             queue_name="long_jobs_queue"
@@ -31,7 +37,10 @@ class SetchksJobsManager():
             queue_name,
             connection=redis.from_url(self.redis_connection_string),
             )
-        if generate_excel:
+        if do_preprocessing:
+            rq_job = q.enqueue(setchks_session.do_SCT_release_dependent_preprocessing)
+            self.jobs.append(SetchksJob(rq_job=rq_job, associated_task="PREPROCESSING"))
+        elif generate_excel:
             rq_job = q.enqueue(setchks_session.generate_excel_output)
             self.jobs.append(SetchksJob(rq_job=rq_job, associated_task="GENERATE_EXCEL"))
         else: # run a setchk        
@@ -51,6 +60,9 @@ class SetchksJobsManager():
                     rq_job = rq.job.Job.fetch(rq_job_id, connection=redis.from_url(self.redis_connection_string))
                     rq_status=rq_job.get_status()
                     if rq_status=="finished":
+                        if setchks_job.associated_task=="PREPROCESSING":
+                            self.setchks_session.marshalled_rows, self.setchks_session.preprocessing_done, self.setchks_session.passes_gatekeeper=rq_job.result
+                            # self.setchks_session=rq_job.result
                         if setchks_job.associated_task[:3]=="CHK":
                             self.setchks_session.setchks_results[setchks_job.associated_task]=rq_job.result
                             setchks_job.results_fetched=True
@@ -62,6 +74,8 @@ class SetchksJobsManager():
                     elif rq_status=="failed":
                         if setchks_job.associated_task=="GENERATE_EXCEL":
                             self.setchks_session.excel_file_generation_failed=True
+                        elif setchks_job.associated_task=="PREPROCESSING":
+                            self.setchks_session.preprocessing_failed=True
                         else:
                             pass # no specific action for setchks but setchks_job_status will pick this up
                     else: # still running or queued

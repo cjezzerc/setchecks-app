@@ -47,6 +47,9 @@ class SetchksSession():
                "data_entry_extract_type", # provisional allowed values "ENTRY_PRIMARY", "ENTRY_OTHER", "EXTRACT"
                "marshalled_rows", # big and often needed
                "column_content_assessment",
+               "processing_status",
+               "preprocessing_done",
+               "preprocessing_failed",
                "passes_gatekeeper",
                "setchks_to_run_as_gatekeeper_not_passed",
                "setchks_results", # big; each (big) individual setchk needed during setchk and when constructing report
@@ -86,6 +89,9 @@ class SetchksSession():
         self.data_entry_extract_type="ENTRY_PRIMARY"
         self.marshalled_rows=None
         self.column_content_assessment=column_content_assessment.ColumnContentAssessment()
+        self.processing_status="1_CHECKS_READY_TO_RUN" # strictly only the case if data loaded, sct_releases chosen etc
+        self.preprocessing_done=False
+        self.preprocessing_failed=False
         self.passes_gatekeeper=None
         self.setchks_to_run_as_gatekeeper_not_passed=[]
         self.setchks_results={}
@@ -151,9 +157,12 @@ class SetchksSession():
         self.setchks_jobs_manager=None
         self.excel_file_available=False
         self.excel_file_generation_failed=False
+        self.preprocessing_done=False
+        self.preprocessing_failed=False
         self.passes_gatekeeper=None
         self.setchks_to_run_as_gatekeeper_not_passed=[]
         self.all_CHKXX_finished=False
+        self.processing_status="1_CHECKS_READY_TO_RUN" # strictly only the case if data loaded, sct_releases chosen etc
 
     def initialise_sct_versions(self):
         all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
@@ -166,3 +175,16 @@ class SetchksSession():
 
         self.sct_version=self.available_sct_versions[0]
         self.sct_version_b=self.available_sct_versions[0]
+
+    def do_SCT_release_dependent_preprocessing(self):
+        self.passes_gatekeeper=True
+        for mr in self.marshalled_rows:
+            mr.do_things_dependent_on_SCT_release(setchks_session=self)
+            if self.passes_gatekeeper:
+                if mr.C_Id is None and not mr.blank_row:
+                    self.passes_gatekeeper=False
+                elif self.data_entry_extract_type=="EXTRACT" and mr.D_Id_entered is not None:
+                    self.passes_gatekeeper=False
+        self.preprocessing_done=True
+        return self.marshalled_rows, self.preprocessing_done , self.passes_gatekeeper # this is for if run in a queue
+        # return self # this is for if run in a queue
