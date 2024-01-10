@@ -4,7 +4,7 @@
 
 resource "aws_iam_role" "iam_host_role" {
   path               = "/"
-  name               = "${var.service_name}_host_role"
+  name               = "${var.service_name}-host-role-${var.env}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -69,12 +69,12 @@ data "aws_iam_policy_document" "iam_host_role_policy_document" {
 
 resource "aws_iam_role_policy" "iam_host_role_policy" {
   role   = aws_iam_role.iam_host_role.id
-  name   = "${var.service_name}_host_policy"
+  name   = "${var.service_name}-host-policy-${var.env}"
   policy = data.aws_iam_policy_document.iam_host_role_policy_document.json
 }
 
 resource "aws_iam_instance_profile" "host_profile" {
-  name = "${var.service_name}-instance-profile"
+  name = "${var.service_name}-instance-profile-${var.env}"
   role = aws_iam_role.iam_host_role.name
   path = "/"
 }

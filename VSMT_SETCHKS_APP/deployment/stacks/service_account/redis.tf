@@ -6,7 +6,7 @@
 # }
 
 resource "aws_security_group" "elasticache_security_group" {
-  name        = "vsmt-cache-sg"
+  name        = "vsmt-cache-sg-${var.env}"
   description = "VSMT Elasticache Security Group"
   vpc_id      = data.aws_vpc.cluster_vpc.id
 
@@ -37,20 +37,20 @@ resource "aws_security_group" "elasticache_security_group" {
 }
 
 resource "aws_elasticache_subnet_group" "elasticache_subnet_group" {
-  name       = "vsmt-cache-subnet-group"
+  name       = "vsmt-cache-subnet-group-${var.env}"
   subnet_ids = data.aws_subnets.private_subnets.ids
   tags       = local.tags
 }
 
 resource "aws_elasticache_parameter_group" "elasticache_parameter_group" {
-  name   = "${var.service_name}-parameter-group"
+  name   = "${var.service_name}-parameter-group-${var.env}"
   family = "redis7"
   tags = local.tags
 }
 
 resource "aws_elasticache_replication_group" "redis_replication_group" {
   automatic_failover_enabled  = false
-  replication_group_id        = "vsmt-redis-replication-group"
+  replication_group_id        = "vsmt-redis-replication-group-${var.env}"
   description                 = "example description"
   node_type                   = "cache.t3.micro"
   parameter_group_name        = aws_elasticache_parameter_group.elasticache_parameter_group.name
