@@ -54,3 +54,7 @@ data "aws_subnets" "private_subnets" {
 data "aws_security_group" "eks-worker-sg" {
   name = "${var.name_prefix}-live-leks-cluster-sg"
 }
+
+data "aws_security_group" "openvpn_sg" {
+  name = "${var.name_prefix}-openvpn-sg"
+}

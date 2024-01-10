@@ -29,14 +29,9 @@ from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
-from setchks_app.mgmt_info.summary_info import (
-    store_summary_dict_to_db,
-    get_summary_info
-    )
-from setchks_app.mgmt_info.handle_setchks_session import (
-    store_setchks_session,
-    get_setchks_session,
-    )
+import setchks_app.mgmt_info.handle_summary_info 
+import setchks_app.mgmt_info.handle_setchks_session
+import setchks_app.mgmt_info.handle_excel_file
 
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
@@ -666,8 +661,8 @@ def select_and_run_checks():
             
             # propose store MI of summary and setchks_session here so that stored
             # if excel generation fails
-            store_summary_dict_to_db(setchks_session=setchks_session)
-            store_setchks_session(setchks_session=setchks_session)
+            setchks_app.mgmt_info.handle_summary_info.store_summary_dict_to_db(setchks_session=setchks_session)
+            setchks_app.mgmt_info.handle_setchks_session.store_setchks_session(setchks_session=setchks_session)
             run_in_rq=True
             if run_in_rq:
                 setchks_jobs_manager.launch_job(
@@ -683,9 +678,9 @@ def select_and_run_checks():
               # if excel file generation fails.
             setchks_session.excel_file_available=True # even though it isn't..
             
-    # propose store excel file to MI here
-    #if setchks_session.processing_status=="5_REPORT_AVAILABLE" and processing_status_changed_this_visit:    
-    #  ... store .xlsx as MI ..
+    # store excel file to MI here
+    if setchks_session.processing_status=="5_REPORT_AVAILABLE" and processing_status_changed_this_visit:    
+        setchks_app.mgmt_info.handle_excel_file.store_excel_file(setchks_session=setchks_session)
                 
     if "download_report" in request.args and setchks_session.processing_status=="5_REPORT_AVAILABLE":
         if setchks_session.excel_file_generation_failed:
@@ -724,9 +719,13 @@ def mgmt_info():
     object=request.args.get("object", None)
     run_id=request.args.get("run_id", None)
     if object=="setchks_session":
-        ss=get_setchks_session(run_id=run_id)
+        ss=setchks_app.mgmt_info.handle_setchks_session.get_setchks_session(run_id=run_id)
         return jsonify(json.loads(jsonpickle.encode(ss, unpicklable=False)))
-    return get_summary_info()
+    elif object=="excel_file":
+        ef, filename=setchks_app.mgmt_info.handle_excel_file.get_excel_file(run_id=run_id)
+        return send_file(ef, download_name=filename) 
+    else:
+        return setchks_app.mgmt_info.handle_summary_info.get_summary_info()
 
 #############################################
 #############################################

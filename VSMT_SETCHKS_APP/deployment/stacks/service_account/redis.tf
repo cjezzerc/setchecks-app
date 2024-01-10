@@ -26,6 +26,22 @@ resource "aws_security_group" "elasticache_security_group" {
     security_groups  = [data.aws_security_group.eks-worker-sg.id]
   }
 
+    ingress {    
+    description      = "ingress from vpn to Elasticache"
+    from_port        = 6379
+    to_port          = 6379
+    protocol         = "tcp"
+    security_groups  = [data.aws_security_group.openvpn_sg.id]
+  }
+
+    ingress {    
+    description      = "ingress from vpn to DocumentDB"
+    from_port        = 27017
+    to_port          = 27017
+    protocol         = "tcp"
+    security_groups  = [data.aws_security_group.openvpn_sg.id]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
