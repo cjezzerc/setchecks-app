@@ -189,6 +189,11 @@ node {
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' namespace.yaml""")
             sh ("""kubectl apply -f namespace.yaml""")
 
+            // Create/update config_map
+            sh ("""sed -i 's/ENV_TO_BE_REPLACED/${envName}/g' config_map.yaml""")
+            sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' config_map.yaml""")
+            sh ("""kubectl apply -f config_map.yaml""")
+
             // Create/update vsmt_setchks_app deployment
             sh ("""sed -i 's/NAMESPACE_TO_BE_REPLACED/${appNamespace}/g' vsmt_setchks_app_deployment.yaml""")
             // Use | as a delimiter if the values contain /
