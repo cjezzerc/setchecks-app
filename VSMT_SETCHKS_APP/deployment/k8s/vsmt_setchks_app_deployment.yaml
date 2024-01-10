@@ -17,6 +17,9 @@ spec:
       containers:
         - name: CONTAINER_NAME_TO_BE_REPLACED
           image: IMAGE_NAME_TO_BE_REPLACED
+          envFrom: 
+            - configMapRef:
+                name: vsmt
           ports:
             - containerPort: 5000
           resources:
