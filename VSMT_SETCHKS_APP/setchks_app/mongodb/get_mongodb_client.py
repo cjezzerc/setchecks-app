@@ -14,6 +14,9 @@ from pymongo import MongoClient
 
 def get_documentdb_endpoint():
     client=boto3.client('docdb')
+    # propose:
+    # env_tag=os.environ["WHATEVER"]
+    # response=client.describe_db_clusters(DBClusterIdentifier=f'vsmt-docdb-cluster-{env_tag}')
     response=client.describe_db_clusters(DBClusterIdentifier='vsmt-docdb-cluster')
     logger.debug(f"response={response}")
     endpoint=response['DBClusters'][0]['Endpoint']

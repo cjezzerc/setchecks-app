@@ -12,6 +12,9 @@ import boto3
 
 def get_elasticache_endpoint():
     client=boto3.client('elasticache')
+    # propose:
+    # env_tag=os.environ["WHATEVER"]
+    # response=client.describe_replication_groups(ReplicationGroupId=f'vsmt-redis-replication-group-{env_tag}')
     response=client.describe_replication_groups(ReplicationGroupId='vsmt-redis-replication-group')
     logger.debug(f"response={response}")
     endpoint=response['ReplicationGroups'][0]['NodeGroups'][0]['PrimaryEndpoint']['Address']

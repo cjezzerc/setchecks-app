@@ -1,3 +1,7 @@
+import json
+
+from bson import json_util
+
 from setchks_app.mongodb import get_mongodb_client
 
 def store_summary_dict_to_db(
@@ -37,5 +41,13 @@ def store_summary_dict_to_db(
     mongodb_client=get_mongodb_client.get_mongodb_client()
     collection=mongodb_client["mgmt_info"]["summaries"]
     collection.insert_one(summary_dict)
+
+def get_summary_info():
+    mongodb_client=get_mongodb_client.get_mongodb_client()
+    collection=mongodb_client["mgmt_info"]["summaries"]
+    data=list(collection.find())
+
+    return json.loads(json_util.dumps(data))
+
 
 

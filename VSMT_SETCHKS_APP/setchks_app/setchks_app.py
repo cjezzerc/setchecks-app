@@ -29,7 +29,15 @@ from setchks_app.gui.breadcrumbs import Breadcrumbs
 from setchks_app.gui import gui_setchks_session
 from setchks_app.sct_versions import graphical_timeline
 from setchks_app.mongodb import get_mongodb_client
-from setchks_app.mgmt_info.summary_info import store_summary_dict_to_db
+from setchks_app.mgmt_info.summary_info import (
+    store_summary_dict_to_db,
+    get_summary_info
+    )
+from setchks_app.mgmt_info.handle_setchks_session import (
+    store_setchks_session,
+    get_setchks_session,
+    )
+
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
     launch_sleep_job, 
@@ -659,7 +667,7 @@ def select_and_run_checks():
             # propose store MI of summary and setchks_session here so that stored
             # if excel generation fails
             store_summary_dict_to_db(setchks_session=setchks_session)
-            
+            store_setchks_session(setchks_session=setchks_session)
             run_in_rq=True
             if run_in_rq:
                 setchks_jobs_manager.launch_job(
@@ -704,6 +712,21 @@ def setchks_session():
 
     # surely there has to be a simplification to the line below!
     return jsonify(json.loads(jsonpickle.encode(setchks_session, unpicklable=False)))
+
+#############################################
+#############################################
+##     report MI endpoint                  ##
+#############################################
+#############################################
+
+@bp.route('/mgmt_info', methods=['GET'])
+def mgmt_info():
+    object=request.args.get("object", None)
+    run_id=request.args.get("run_id", None)
+    if object=="setchks_session":
+        ss=get_setchks_session(run_id=run_id)
+        return jsonify(json.loads(jsonpickle.encode(ss, unpicklable=False)))
+    return get_summary_info()
 
 #############################################
 #############################################
@@ -758,7 +781,7 @@ def refactored_form():
 
 ######################################
 ######################################
-## path validaotr endpoint endpoint ##
+## path validator endpoint endpoint ##
 ######################################
 ######################################
 
