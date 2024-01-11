@@ -137,7 +137,7 @@ class SetchksSession():
                                        table_has_header=None, 
                                        separator="\t"):
         
-        load_data_into_matrix.load_data_into_matrix(self, 
+        return load_data_into_matrix.load_data_into_matrix(self, 
                                 data=data, 
                                 upload_method=upload_method, 
                                 table_has_header=table_has_header, 

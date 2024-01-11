@@ -15,7 +15,13 @@
 {% set nav_next_page_location="/enter_metadata" %}
 
 {% include 'navigation.html' %}
-    
+
+{% if multisheet_flag==True %}
+    <script>
+        alert("There is more than one worksheet in this file - only the first sheet will be read. \nIf your value set is not in the first sheet then you will need to adjust the file to put the value set as the first sheet and then reload.")
+    </script>
+{% endif %}
+
 <div class="container-fluid  mt-0 ">
     <div class="row" style="height: 76vh;">
         

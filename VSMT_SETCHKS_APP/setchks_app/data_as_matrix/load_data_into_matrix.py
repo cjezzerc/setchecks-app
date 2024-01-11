@@ -13,6 +13,7 @@ def load_data_into_matrix(setchks_session,
                                     table_has_header=None, 
                                     separator="\t"):
         
+    multisheet_flag=False
     setchks_session.table_has_header=table_has_header# True, False or None(==unknown)
     if setchks_session.table_has_header: # ** generally need graceful ways to cope with things like a file that has no data rows etc
         setchks_session.first_data_row=1
@@ -39,6 +40,7 @@ def load_data_into_matrix(setchks_session,
                                                 # is not yet implemented. However reparsing is not relevant for xlsx so probably safe just to
                                                 # set this to None
             wb=openpyxl.load_workbook(data)
+            multisheet_flag = (len(wb.worksheets)>1)
             ws=wb.worksheets[0]
             for row in ws.iter_rows():
                 row_as_list=[]
@@ -80,7 +82,7 @@ def load_data_into_matrix(setchks_session,
             for row in setchks_session.data_as_matrix:
                 if len(row)<nmax:
                     row+=[DataCellContents(cell_contents="") for x in range(0,nmax-len(row))]
-
+    return multisheet_flag
 
 
 

@@ -384,39 +384,26 @@ def column_identities():
     setchks_session=gui_setchks_session.get_setchk_session(session)
 
     # if reach here via file upload, load the data into matrix
+    multisheet_flag=False
     if 'uploaded_file' in request.files:
         if setchks_session.load_file_behaviour=="DEFAULT_SETTINGS":
             session['setchks_session']=None
             setchks_session=gui_setchks_session.get_setchk_session(session)
-        setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
+        multisheet_flag=setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
         setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
-        # session['setchks_session']=setchks_session # save updated setchks_session to the session variable
 
-    # if 'uploaded_file_default_settings' in request.files:
-    #     session['setchks_session']=None
-    #     setchks_session=gui_setchks_session.get_setchk_session(session)
-    #     setchks_session.load_data_into_matrix(data=request.files['uploaded_file_default_settings'], upload_method='from_file', table_has_header=True)
-    #     # setchks_session.reset_analysis() # throw away all old results
-    #     setchks_session.marshalled_rows=[]
-    # set column_info if nor already set OR data has changed number of columns (allows simple reload to leave it unchanged) 
-    # additonally: OR load_file_behaviour is "DEFAULT_SETTINGS"
     if (
         (setchks_session.columns_info==None) 
         or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0]))
         or (setchks_session.load_file_behaviour=="DEFAULT_SETTINGS")
     ):
         ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
-        # ci.set_column_type(icol=0,requested_column_type="MIXED")
-        # if ci.ncols>1:
-        #     ci.set_column_type(icol=1,requested_column_type="DTERM")
         setchks_session.columns_info=ci
 
     # if reach here via click on a column identity dropdown
     if len(request.form.keys())!=0:
         k, v=list(request.form.items())[0]
-        # print("===>>>>", k, v)
-        # col_label is of form e.g. type_selector_for_col_3
         icol=int(k.split("_")[-1])
         requested_column_type=v
         ci=setchks_session.columns_info
@@ -440,7 +427,15 @@ def column_identities():
 
     bc=Breadcrumbs()
     bc.set_current_page("column_identities")
-
+    print("==================")
+    print("==================")
+    print("==================")
+    print("==================")
+    print(multisheet_flag)
+    print("==================")
+    print("==================")
+    print("==================")
+    print("==================")
     return render_template('column_identities.html',
                            setchks_session=setchks_session,
                            file_data=setchks_session.data_as_matrix,
@@ -448,6 +443,7 @@ def column_identities():
                            breadcrumbs_styles=bc.breadcrumbs_styles,
                            rows_processable=rows_processable,
                            column_type_labels=column_type_labels,
+                           multisheet_flag=multisheet_flag,
                             )
 
 #####################################
@@ -466,18 +462,6 @@ def enter_metadata():
 
     setchks_session=gui_setchks_session.get_setchk_session(session)
  
-    # if setchks_session.available_sct_versions is None:
-    #     all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
-    #     setchks_session.available_sct_versions=[]
-    #     ds=DescriptionsService(data_type="hst")
-    #     hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
-    #     for sct_version, hst_exists in hst_dict.items():
-    #         if hst_exists: # only make sct_version available if has an HST 
-    #             setchks_session.available_sct_versions.append(all_available_sct_versions[sct_version])
-
-    #     setchks_session.sct_version=setchks_session.available_sct_versions[0]
-    #     setchks_session.sct_version_b=setchks_session.available_sct_versions[0]
-
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
     current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections
 
