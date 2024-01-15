@@ -9,30 +9,83 @@
 
 <div class="container-fluid  mt-0 " >
     
-    <div class="row" style="height: 60vh">    
+    <div class="row" style="height: 80vh; margin-top: 1vh">    
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-6 ">
+        <div class="col-9 ">
             
-            <div class="card" style="height: 60vh; overflow:auto">
-                This is a load of small print
+            <div class="card" style=" overflow:auto; padding: 1vh; ">
+
+                <div>
+<style>
+    h1 {font-size: 1.4em; font-weight: bold;}
+    h2 {font-size: 1.0em; font-weight: bold; font-style: italic ;}
+    p {font-size: 0.8em}
+</style>
+<h1>Introduction and Welcome</h1>
+<p>
+Welcome to the Proof of Concept (PoC) for NHS England’s Value Set Management Tool (VSMT). 
+</p>
+<h2>
+Scope
+</h2>
+<p>
+The current PoC is limited to allowing a user to upload a value set, and for the VSMT to provide an outcome report, based on a range of 13 pre-defined Set Checks. 
+Different Set Checks run depending on whether the value set is being used for data entry or data extraction purposes, and whether the user wishes to check the value set against a single SNOMED release or between two SNOMED releases.  
+</p>
+<h2>
+Limitations
+</h2>
+<p>
+The PoC is developed for use in Health & Care settings within the UK, and therefore makes use of published SNOMED CT UK Edition only. The inclusion of any SNOMED Components that are not within the SNOMED CT UK Edition in your value set may prevent the full suite of Set Checks being completed.
+</p>
+<p>
+The PoC does not prevent users from loading large files but uploading large files (in excess of 2,000) may impact the performance of the tool.  
+</p>
+<h2>
+Licencing
+</h2>
+<p>
+By using the PoC, you accept the licence agreement for the use of SNOMED CT (a link to the agreement is provided here).
+</p>
+<h2>
+Cookies
+</h2>
+<p>
+The PoC operates with only essential cookies. By using the PoC, you accept the use of these essential cookies. 
+</p>
+
+<h2>
+Use of the PoC
+</h2>
+<p>
+You recognise that the PoC is a service available to other users, and that access or capacity may on occasion be limited. You will comply with any fair use guidance that may be given by NHS England from time to time. You recognise that NHS England may need to suspend or limit usage that is in excess of fair usage at its discretion or where it may impact other users.
+</p>
+<p>
+NHS England do not guarantee or warrant that the that the functions of the PoC will be uninterrupted or error free, that defects will be corrected, or represent the full functionality, accuracy, or reliability of the materials or data.
+</p>
+<p>
+NHS England offer no warranty for the PoC working in any browser or configuration. Please note that you may see inconsistencies in the presentation of pages if you are using an older or deprecated version of a browser.
+</p>
+<p>
+NHS England makes no assumption that your access to the PoC will be from within the UK, and we are not responsible or liable for your compliance with any local laws, appropriate to the geographic area from which you seek to access the PoC. 
+</p>
+<p>
+A version of this VSMT PoC Usage Agreement can also be found <here>. 
+</p>
+<p>
+By using the VSMT PoC, you accept and consent to the above, and you agree to comply with them.
+</p>
+
+                </div> 
             </div>
         </div>
 
-        <div class="col-6">
-
-            <!-- <div class="card" style="height: 60vh;  background-color: #f0f4f5;" > -->
-            <div class="card border-0" style="height: 60vh;  background-color: #f0f4f5;">
-                
-                
-            </div>
-        </div>
-    </div>
-    <div class="row" style="margin-top:1em; height: 20vh">
-        
+       
+    <div class="row" style="margin-top:1vh; ">
         <style>
             .setchks-btn {
                 background-color:white;

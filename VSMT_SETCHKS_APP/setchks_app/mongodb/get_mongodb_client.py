@@ -32,6 +32,24 @@ def get_mongodb_client():
         logger.debug(f"Connection string to mongodb is {connection_string}")
         mongodb_client=MongoClient(connection_string)
     else:
-        logger.debug("Configuring mongodb to connect to localhost")
-        mongodb_client=MongoClient()   
+        if os.path.exists("/proc/sys/fs/binfmt_misc/WSLInterop"):
+            # Test for if WSL (above) comes from 
+            # https://superuser.com/questions/1749781/how-can-i-check-if-the-environment-is-wsl-from-a-shell-script
+            # Also for bits below follwed everything in: 
+            # https://github.com/microsoft/WSL/issues/5486 sylvix Mar 31 2021:
+            # """Yet another solution, more in one place:
+            # While installing MongoDB on Windows, make sure you enable Windows service, otherwise you'll have to run it manually.
+            # After installation edit mongod.cfg and set bindIp to 0.0.0.0 (see previous post by @MKrupauskas, thank you, BTW)
+            # Go to Firewall and Network protection in Windows settings (Start -> type "Firewall" -> Enter)
+            # Click "Allow an app through firewall" link in bottom part of the window
+            # Click "Change settings", then button "Allow another app" will be enabled. Click it. Browse for "mongod.exe" executable (in %Program Files%\MongoDB\Server\X.Y\bin. Then click "Network types" and select both types. Then click "Add".
+            # It will add a set of rules to Defender Firewall that didn't work for some reason when added manually.
+            # In WSL find host IP. On my machine cat /etc/resolv.conf works, after "nameserver" part. Or google for "wsl find host ip" there are plenty of solutions there.
+            # mongo %INSERT_HOST_IP_HERE%"""
+            IP_HOST=open('/etc/resolv.conf').readlines()[-1].split()[1]
+            logger.debug(f"Configuring mongodb to connect from WSL2 to {IP_HOST}")
+            mongodb_client=MongoClient(f'mongodb://{IP_HOST}:27017/')
+        else:
+            logger.debug("Configuring mongodb to connect to localhost")
+            mongodb_client=MongoClient()   
     return mongodb_client
