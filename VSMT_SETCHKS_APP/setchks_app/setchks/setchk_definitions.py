@@ -90,6 +90,7 @@ setchks['CHK10_MISSING_CONCEPTS']=Setchk(
     setchk_function=CHK10_MISSING_CONCEPTS.do_check,
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
+    setchk_set_level_only=True,
     )
 
 setchks['CHK12_MIXED_TAGS']=Setchk(
@@ -107,6 +108,7 @@ setchks['CHK14_MANY_CLAUSES']=Setchk(
     setchk_function=CHK14_MANY_CLAUSES.do_check,
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
+    setchk_set_level_only=True,
     )
 
 setchks['CHK20_INCORR_FMT_SCTID']=Setchk(
@@ -131,4 +133,5 @@ setchks['CHK51_SUGGESTS_DUAL_SCT']=Setchk(
     setchk_function=CHK51_SUGGESTS_DUAL_SCT.do_check,
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["DUAL_SCT_VERSIONS"],
+    setchk_set_level_only=True,
     )

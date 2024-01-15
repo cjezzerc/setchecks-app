@@ -43,10 +43,13 @@ def make_row_overview_sheet(
     current_row+=1
     row_cell_contents=["Input File Row Number"]
 
+    n_check_indicator_columns=0
     for setchk_code in setchks_list_to_report:
+        if setchks_session.available_setchks[setchk_code].setchk_set_level_only is False:
         # row_cell_contents.append(setchk_code)
-        row_cell_contents.append(setchks[setchk_code].setchk_short_name_plus_short_code)
-    
+            row_cell_contents.append(setchks[setchk_code].setchk_short_name_plus_short_code)
+            n_check_indicator_columns+=1
+
     row_cell_contents.append("Issues Identified")
     row_cell_contents.append("User Notes")
 
@@ -59,12 +62,12 @@ def make_row_overview_sheet(
     ws.append(row_cell_contents)
     current_ws_row+=1
 
-    cell_widths=[13.33]+[3.5]*(len(setchks_list_to_report)+1)+[25]*(1+len(setchks_session.data_as_matrix[0]))
+    cell_widths=[13.33]+[3.5]*(n_check_indicator_columns+1)+[25]*(1+len(setchks_session.data_as_matrix[0]))
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
         ws.column_dimensions[get_column_letter(i+1)].width=width     
     ws.row_dimensions[current_row].height=142
-    text_rotations=[0]+[45]*(len(setchks_list_to_report)+1)+[0]*(1+len(setchks_session.data_as_matrix[0]))
+    text_rotations=[0]+[45]*(n_check_indicator_columns+1)+[0]*(1+len(setchks_session.data_as_matrix[0]))
     filters = ws.auto_filter
     rightmost_column=get_column_letter(len(cell_widths))
     filters.ref = f"A{current_row+1}:{rightmost_column}{current_row+100000}" # the "current row+1" puts the filter on the row below the labels
@@ -122,24 +125,25 @@ def make_row_overview_sheet(
         x_cells=[]
         # not_blank_row_flag=not(setchks_session.marshalled_rows[i_data_row].blank_row)
         for setchk_code in setchks_list_to_report:
-            setchk_results=setchks_results[setchk_code]
-            if setchk_results.row_analysis!=[]:
-                nothing_output_in_this_cell_yet=True # this makes sure only one thing put out per 
-                                                     # row for a particular setchk
-                                                     # link will be to the first one found
-                                                     # (better behaviours could be implemented some day)
-                for check_item in setchk_results.row_analysis[i_data_row]:
-                    # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
+            if setchks_session.available_setchks[setchk_code].setchk_set_level_only is False:
+                setchk_results=setchks_results[setchk_code]
+                if setchk_results.row_analysis!=[]:
+                    nothing_output_in_this_cell_yet=True # this makes sure only one thing put out per 
+                                                        # row for a particular setchk
+                                                        # link will be to the first one found
+                                                        # (better behaviours could be implemented some day)
+                    for check_item in setchk_results.row_analysis[i_data_row]:
+                        # if not_blank_row_flag and (check_item["Result_id"] not in [0]):
+                        if nothing_output_in_this_cell_yet:
+                            if check_item.outcome_level not in ["FACT","INFO","DEBUG"]:
+                                row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
+                                x_cells.append(f'=HYPERLINK("#Grp_by_Row!F{row_to_link_to}","i")')
+                                at_least_one_issue=True
+                                nothing_output_in_this_cell_yet=False 
                     if nothing_output_in_this_cell_yet:
-                        if check_item.outcome_level not in ["FACT","INFO","DEBUG"]:
-                            row_to_link_to=row_analysis_row_numbers_map[i_data_row][setchk_code]
-                            x_cells.append(f'=HYPERLINK("#Grp_by_Row!F{row_to_link_to}","i")')
-                            at_least_one_issue=True
-                            nothing_output_in_this_cell_yet=False 
-                if nothing_output_in_this_cell_yet:
+                        x_cells.append("")
+                else:
                     x_cells.append("")
-            else:
-                x_cells.append("")
         if at_least_one_issue:
             x_cells.append("*")
         else:
@@ -220,7 +224,7 @@ def make_row_overview_sheet(
     #             cell.fill=grey_fill
     #             cell.border = border  
     #             ws.row_dimensions[irow].height = 3
-    ws.freeze_panes=get_column_letter(len(setchks_list_to_report)+4)+"3"
+    ws.freeze_panes=get_column_letter(n_check_indicator_columns+4)+"3"
     for i_row, row in enumerate(ws.iter_rows()):
         for cell in row:
             strval=str(cell.value)

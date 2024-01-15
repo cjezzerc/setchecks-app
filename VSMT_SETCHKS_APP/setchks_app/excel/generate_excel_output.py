@@ -196,8 +196,15 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     print(f"make_row_overview_sheet took {time.time()-time0} seconds")
     timings["row overview sheet"]=f"{(time.time()-time0):.6f} s" 
     
-
+    ##################################################################
+    #          Remove vlank worksheets                               #     
+    ##################################################################
     
+    for ws in wb.worksheets:
+        if ws.max_row==1 and ws.max_column==1:
+            wb.remove(ws)
+        # print(f"=====> sheet {ws.title} max_row={ws.max_row} {ws.max_column}")
+
     ##################################################################
     #          Write workbook to file                                #     
     ##################################################################

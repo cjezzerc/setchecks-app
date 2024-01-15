@@ -20,6 +20,7 @@ class Setchk():
         "setchk_function",
         "setchk_data_entry_extract_types",
         "setchk_sct_version_modes",
+        "setchk_set_level_only", # if does not generate any row specific output
         ]
 
     def __init__(
@@ -29,6 +30,7 @@ class Setchk():
         setchk_function=None,
         setchk_data_entry_extract_types=None,
         setchk_sct_version_modes=None,
+        setchk_set_level_only=False,
 
         ):
         """
@@ -41,6 +43,7 @@ class Setchk():
         self.setchk_function=setchk_function
         self.setchk_data_entry_extract_types=setchk_data_entry_extract_types
         self.setchk_sct_version_modes=setchk_sct_version_modes
+        self.setchk_set_level_only=setchk_set_level_only
 
     def run_check(self,  setchks_session=None):
         """Runs the actual check
