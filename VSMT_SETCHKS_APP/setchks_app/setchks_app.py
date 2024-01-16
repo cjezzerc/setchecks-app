@@ -7,6 +7,7 @@ import boto3
 import json
 import jsonpickle
 import time
+import re
 from flask import jsonify
 
 import logging
@@ -640,7 +641,10 @@ def select_and_run_checks():
         if not setchks_session.excel_file_generation_failed:
             user_tmp_folder="/tmp/"+setchks_session.uuid
             os.system("mkdir -p " + user_tmp_folder)
-            excel_filename="%s/setchks_output_%s.xlsx" % (user_tmp_folder,  datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
+            name_prefix=re.sub(r'[^a-zA-Z0-9_-]',"",setchks_session.vs_name)
+            if len(name_prefix)>30:
+                name_prefix=name_prefix[0:30]
+            excel_filename="%s/%s_setchks_output_%s.xlsx" % (user_tmp_folder,  name_prefix, datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
             setchks_session.excel_filename=excel_filename
             
             # propose store MI of summary and setchks_session here so that stored
