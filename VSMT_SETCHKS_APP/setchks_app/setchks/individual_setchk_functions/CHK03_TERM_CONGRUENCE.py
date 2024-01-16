@@ -399,17 +399,28 @@ def do_check(setchks_session=None, setchk_results=None):
         )
     
     if n_ISSUES==0 and n_MISSING_TERM==0:
-        #<set_level_message>
-        setchk_results.set_level_table_rows.append(
-            SetLevelTableRow(
-                simple_message=(
-                    "[GREEN] This check has detected no issues."
-                    ),
-                outcome_code="CHK03-OUT-12",
-                )
-            )     
-        #</set_level_message>
-        
+        if setchks_session.columns_info.have_dterm_column:
+            #<set_level_message>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                        "[GREEN] This check has detected no issues."
+                        ),
+                    outcome_code="CHK03-OUT-12",
+                    )
+                )     
+            #</set_level_message>
+        else:
+            # <set_level_message>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                        "[GREEN] This check has detected no issues. Scope of check was limited, as no Term column was chosen."
+                        ),
+                    outcome_code="CHK03-OUT-21",
+                    )
+                )     
+            #</set_level_message>
     
 
 

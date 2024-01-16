@@ -42,12 +42,16 @@ def do_check(setchks_session=None, setchk_results=None):
     # INVALID_SCTID = (07)
     # BLANK_ENTRY = (08)
 
+    at_least_one_valid_SCTID=False
+
     for mr in setchks_session.marshalled_rows:
         n_FILE_TOTAL_ROWS+=1
         this_row_analysis=[]
         setchk_results.row_analysis.append(this_row_analysis) # when this_row_analysis updated below, 
                                                               # this will automatically update
         if not mr.blank_row:
+            if mr.C_Id_why_none not in ["BLANK_ENTRY", "INVALID_SCTID"]:
+                at_least_one_valid_SCTID=True # this is used for seeing whether to nuance the GREEN set level message
             if mr.C_Id_why_none in ["CID_NISR_CID_NILR"]: 
                 n_CID_NISR_CID_NILR+=1
                 #<check_item>
@@ -194,16 +198,29 @@ def do_check(setchks_session=None, setchk_results=None):
     n_NISR      = n_NISR_ILR + n_NISR_NILR + n_NISR_SRIL
 
     if n_NISR==0:
-        #<set_level_message>
-        setchk_results.set_level_table_rows.append(
-            SetLevelTableRow(
-                simple_message=(
-                    f"[GREEN] This check has detected no issues." 
-                    ),
-                outcome_code="CHK02-OUT-18",
+        if at_least_one_valid_SCTID:
+            #<set_level_message>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                        f"[GREEN] This check has detected no issues." 
+                        ),
+                    outcome_code="CHK02-OUT-18",
+                    )
                 )
-            )
-        #</set_level_message>
+            #</set_level_message>
+        else:
+            #<set_level_message>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                    simple_message=(
+                         "[AMBER] This check has detected no issues. However no Identifiers could be checked, as the file contains "
+                         "no Identifiers conforming to the SCTID data type." 
+                        ),
+                    outcome_code="CHK02-OUT-22",
+                    )
+                )
+            #</set_level_message>
     else:
     
         if n_NISR_SRIL!=0:
