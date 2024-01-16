@@ -15,7 +15,6 @@ def do_check(setchks_session=None, setchk_results=None):
 
     """
 
-    raise Exception("Forcing check to fail")
 
     selected_sct_version = setchks_session.sct_version.date_string
     latest_sct_version   = setchks_session.available_sct_versions[0].date_string
