@@ -77,7 +77,7 @@ class SetchksJobsManager():
                         elif setchks_job.associated_task=="PREPROCESSING":
                             self.setchks_session.preprocessing_failed=True
                         else:
-                            pass # no specific action for setchks but setchks_job_status will pick this up
+                            pass # this is picked up by run_status
                     else: # still running or queued
                         self.jobs_running=True
                         if setchks_job.associated_task[:3]=="CHK":

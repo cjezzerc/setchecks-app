@@ -13,6 +13,7 @@ def do_check(setchks_session=None, setchk_results=None):
     Implements just the Core check
     """
 
+
     print("Set Check %s called" % setchk_results.setchk_code)
 
     ds=DescriptionsService()

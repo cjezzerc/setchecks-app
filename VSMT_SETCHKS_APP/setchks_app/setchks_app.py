@@ -644,7 +644,7 @@ def select_and_run_checks():
             name_prefix=re.sub(r'[^a-zA-Z0-9_-]',"",setchks_session.vs_name)
             if len(name_prefix)>30:
                 name_prefix=name_prefix[0:30]
-            excel_filename="%s/%s_setchks_output_%s.xlsx" % (user_tmp_folder,  name_prefix, datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
+            excel_filename="%s/%s_vsmt_setchecks_output_%s.xlsx" % (user_tmp_folder,  name_prefix, datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
             setchks_session.excel_filename=excel_filename
             
             # propose store MI of summary and setchks_session here so that stored

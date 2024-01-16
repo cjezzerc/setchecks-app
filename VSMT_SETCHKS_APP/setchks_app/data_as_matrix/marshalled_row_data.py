@@ -80,7 +80,7 @@ class MarshalledRow():
         "D_Term_csr_correct_derived_from_C_Id_entered_and_D_Term_entered",
         "C_Id", # this will contain either an entered C_Id or if D_Id given then the implied C_Id  
         "C_Id_source", # either "ENTERED", "DERIVED" or None  
-        "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "DID_NOT_IN_RELEASE"
+        "C_Id_why_none", # this will explain why C_Id is None; either "NOT_SET_YET", None, "BLANK_ENTRY", "INVALID_SCTID", "CID_NISR_SRIL", etc
         "C_Id_via_latest_release", # This is C_Id obtained by looking in latest release; if derived from a D_Id in latest release then *may* also be in selected release
         "C_Id_active", # TBI possibly
         "D_Id_active",

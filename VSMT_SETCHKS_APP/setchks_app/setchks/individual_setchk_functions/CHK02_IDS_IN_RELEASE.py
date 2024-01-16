@@ -14,6 +14,9 @@ def do_check(setchks_session=None, setchk_results=None):
     NB This does not handle the SRIL case yet. Spec needs updating and then can be included
 
     """
+
+    raise Exception("Forcing check to fail")
+
     selected_sct_version = setchks_session.sct_version.date_string
     latest_sct_version   = setchks_session.available_sct_versions[0].date_string
     

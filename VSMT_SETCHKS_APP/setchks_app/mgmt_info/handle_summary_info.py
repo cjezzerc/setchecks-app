@@ -14,13 +14,18 @@ def store_summary_dict_to_db(
             concepts_set.add(mr.C_Id)
 
     setchk_set_level_message_codes=[]
-    for setchk_code in setchks_session.setchks_results:
-        for set_level_table_row in setchks_session.setchks_results[setchk_code].set_level_table_rows:
-            if set_level_table_row.simple_message is not None:
-                message_code=set_level_table_row.outcome_code
-                severity=set_level_table_row.simple_message.split()[0][1:-1]
-                if severity !="GREEN":
-                    setchk_set_level_message_codes.append(message_code)
+    # for setchk_code in setchks_session.setchks_results:
+    for setchk_code in [x.setchk_code for x in setchks_session.selected_setchks]:
+        if setchks_session.setchks_run_status[setchk_code]!="failed":
+            for set_level_table_row in setchks_session.setchks_results[setchk_code].set_level_table_rows:
+                if set_level_table_row.simple_message is not None:
+                    message_code=set_level_table_row.outcome_code
+                    severity=set_level_table_row.simple_message.split()[0][1:-1]
+                    if severity !="GREEN":
+                        setchk_set_level_message_codes.append(message_code)
+        else:
+            message_code=setchk_code.split("_")[0]+"-OUT-FAIL"
+            setchk_set_level_message_codes.append(message_code)
 
     summary_dict={}
     summary_dict["Time and date checks were run"]=setchks_session.time_started_processing
