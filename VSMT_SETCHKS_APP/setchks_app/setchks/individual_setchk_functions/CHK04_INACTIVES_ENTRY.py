@@ -75,16 +75,17 @@ class SuppTabRow():
     # class level headers and widths - each different type of supp tab will needs its own SuppTabRow definitions
     headers=[
         "Input row number",
-        "Ambiguity status",
         "Provided Identifier",
         "Identifier Type",	
         "Corresponding Concept Id (if applicable)",
         "Preferred Term",	
+        "",
+        "Equivalence of Suggested Concept to Provided Concept",
         "Suggested Concept Id",
         "Preferred Term",
         "Already in set",
         ]
-    cell_widths=[10,10,20,20,20,30,20,30,10]
+    cell_widths=[10,20,20,20,30,5,24,20,30,10]
 
     
     def __init__(self):
@@ -103,9 +104,15 @@ class SuppTabRow():
     
 
     def format_as_list(self):
+        ambiguity_status_words={
+            "0":"No ambiguity",
+            "1":"Possible ambiguity",
+            "2":"Loss of precision",
+            "3":"Definite ambiguity",
+        }
         return [
             f"Row {self.file_row_number}",
-            f"HST-{self.ambiguity_status}",
+            # f"HST-{self.ambiguity_status}",
             self.supplied_id,
             self.CONCEPT_DESCRIPTION[self.id_type],
             # self.implied_concept_id,
@@ -113,6 +120,8 @@ class SuppTabRow():
             self.term,
             # self.replacement_option_counter,
             # self.replacement_concept_id,
+            "-->",
+            ambiguity_status_words[self.ambiguity_status],
             termbrowser_hyperlink(sctid=self.replacement_concept_id),
             self.replacement_concept_pt,
             self.YES_NO[self.is_replacement_concept_in_set],

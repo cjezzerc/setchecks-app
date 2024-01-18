@@ -38,7 +38,10 @@ def make_set_analysis_sheet(
     for setchk_code in [x.setchk_code for x in setchks_session.selected_setchks]:
         setchk_short_name=setchks[setchk_code].setchk_short_name
         setchk_short_code=setchks[setchk_code].setchk_short_code
-        if setchks_session.setchks_run_status[setchk_code]=="failed":
+        if (setchk_code in setchks_session.setchks_run_status  # test needed in case fail gatekeeper
+            and 
+            setchks_session.setchks_run_status[setchk_code]=="failed"
+        ):
             message_code=setchk_code.split("_")[0]+"-OUT-FAIL"
             severity="RED"
             message="Check failed. Please report to software developers."

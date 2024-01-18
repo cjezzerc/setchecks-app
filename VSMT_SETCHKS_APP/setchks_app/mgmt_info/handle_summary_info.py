@@ -16,7 +16,10 @@ def store_summary_dict_to_db(
     setchk_set_level_message_codes=[]
     # for setchk_code in setchks_session.setchks_results:
     for setchk_code in [x.setchk_code for x in setchks_session.selected_setchks]:
-        if setchks_session.setchks_run_status[setchk_code]!="failed":
+        if (setchk_code in setchks_session.setchks_run_status  # test needed in case fail gatekeeper
+            and 
+            setchks_session.setchks_run_status[setchk_code]!="failed"
+        ):
             for set_level_table_row in setchks_session.setchks_results[setchk_code].set_level_table_rows:
                 if set_level_table_row.simple_message is not None:
                     message_code=set_level_table_row.outcome_code
