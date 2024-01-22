@@ -63,6 +63,8 @@ def create_app():
         os.environ['TRUDAPIKEY']=dictionary_pw['TRUDAPIKEY']
         os.environ['DOCUMENTDB_USERNAME']=dictionary_pw['DOCUMENTDB_USERNAME']
         os.environ['DOCUMENTDB_PASSWORD']=dictionary_pw['DOCUMENTDB_PASSWORD']
+        os.environ['COGNITO_CLIENT_ID']=dictionary_pw['COGNITO_CLIENT_ID']
+        os.environ['COGNITO_CLIENT_SECRET']=dictionary_pw['COGNITO_CLIENT_SECRET']
         logger.debug("got secrets")
     else:
         logger.debug("no need to get secrets")
@@ -89,7 +91,7 @@ def create_app():
             print("Configuring mongodb to connect to localhost")
             app.config['SESSION_MONGODB']=MongoClient()
 
-    
+   
     kill_all_rq_workers()
     # start_rq_worker_if_none_running()
     start_specific_rq_worker(worker_name="worker_long_jobs")

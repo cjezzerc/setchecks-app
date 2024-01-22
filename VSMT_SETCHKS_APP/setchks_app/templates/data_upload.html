@@ -19,7 +19,7 @@
 
 <div class="container-fluid mt-0 " >
     
-    <div class="row" style="height: 76vh; overflow:auto">    
+    <div class="row" style="height: 78vh; overflow:auto">    
 
 
         {#                  #}
@@ -30,53 +30,57 @@
             
             <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                    About this tool
+                    Welcome
                 </div>
                 <div class="card-body" style="font-size: 1.0em; overflow:auto">
-                    <ul>
                         <p>
-                        Welcome to the first prototype of the NHS Value Set Management Tool (VSMT). 
+                        Welcome to a first Proof of Concept (PoC) of the NHS Value Set Management Tool (VSMT). 
                         We aim to grow the VSMT into a full suite of tools that provide a one-stop-shop for 
                         all SNOMED CT value sets, including finding existing sets, 
                         creating and maintaining sets, sharing new sets with others, 
                         and finding like-minded people to collaborate with. 
                         </p>
                         <p>
-                        In this first prototype we are introducing “Set Checks” - 13 separate checks 
-                        that run on user supplied value sets to assess and provide feedback on 
-                        set content. The checks indicate possible errors, content that might be missing, 
+                        In this first PoC we are introducing “Set Checks” - 13 separate checks 
+                        that run on user supplied SNOMED CT value sets to assess and provide feedback on 
+                        set content. 
+                        The focus of these checks is for value sets that are used for data entry to, 
+                        or data extraction from, electronic patient records.  
+                        The checks indicate possible errors, content that might be missing, 
                         and how a set from an earlier UK SNOMED CT release 
                         should be changed due to new or changed content in a more 
                         recent UK SNOMED CT release.
                         </p>
                         <p>
-                        You can find a user guide for the tool here and we would love to hear 
-                        your feedback via this form.
+                        Thanks for trying out the VSMT! We would love to hear your feedback, 
+                        and there is a link on each page of the application to send an email to us. 
                         </p>
                         <p>
-                        Thanks for trying out the VSMT!
-                        
-                        
-                        <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> 
-                            Information about recent changes </a> </li>
+                        SNOMED Implementation Team, 
+                        NHS England
                         </p>
-                    </ul>
                 </div>
             </div>
 
             <div class="card" style="margin-top:1vh; overflow:auto">
+                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                    Using the Set Checks Application 
+                </div>
                 <div class="card-body" style="font-size: 1.0em; overflow:auto">
-                    <ul>
-                       
-                        <li> You will be able to check the upload on the next screen. </li>
-                        <li> See this guidance (TBI) for advice on the data required in your file </li>
-                        <li> Some examples input files are in <a href="https://nhs.sharepoint.com/:f:/r/sites/msteams_0ce65d/Shared%20Documents/General/Design/example_value_sets_for_trial_app?csf=1&web=1&e=4MeVfX" target="_blank"> this sharepoint folder </a></li>
-                        <li>  <a href="https://nhs.sharepoint.com/:w:/r/sites/msteams_0ce65d/Shared%20Documents/General/Developer%20related/Release%20notes/updates.docx?d=w62b781d94b9641debc2702f03b329d4d&csf=1&web=1&e=Bs22kZ" target="_blank"> Information about recent changes </a> </li>
-                        <li> (If link above fails navigate to Teams: Value Set Tooling - General\Developer related\Release notes\updates.docx)</li>
-                        <li> <b> If you have any problems, or just want to ask a question or get guidance, please contact Jeremy or Alan 1:1 via Teams chat.</b> If the issue cannot be resolved immediately 
-                              we will ask you to make a bug report - we will explain how - it is very easy and we will only need a very basic amount of info. </li>
-                        <li>  <a href="https://nhsd-jira.digital.nhs.uk/issues/?filter=55351" target="_blank"> Bug reports on Jira </a> </li>
-                    </ul>
+                    <p> 
+                    To load your value set file, and start using the tool, just click the big green button.
+                    </p>
+                    <p> 
+                    You should have received a Welcome Pack, that contains further information about using the tool. 
+                    If you haven’t received the pack, or want a new copy, then please contact us via the Feedback link.
+                    </p>
+                    <p>
+                    By using this tool, you are accepting of the T&Cs. You can re-read the T&Cs at any time using the link
+                    provided on each page of the application. 
+                    </p>   
+                    <span style="padding-right: 3vh;"><a href="release_notes/update_notes.html">Recent application updates</a></span>
+                   
+                    <span><a href="release_notes/known_issues.html">Known issues</a></span>
                 </div>
             </div>
 
@@ -158,7 +162,7 @@
                 </div> 
  
             {% if setchks_session.data_as_matrix != [] %}
-                <div class="card" style="height: 35vh; margin-top:1vh; overflow:auto">
+                <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
                     <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
                         When load a new file ...
                     </div>
@@ -167,9 +171,9 @@
                         <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
                             {% for a_type in [
                                 ("DEFAULT_SETTINGS","Revert to default settings 
-                                    <br><span style='font-size: 0.8em'>(typical when starting work on a different value set)</span>"),
+                                    <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
                                 ("RETAIN_SETTINGS","Retain metadata and settings
-                                    <br><span style='font-size: 0.8em'>(e.g. to run the same checks, use the same SNOMED release, and keep the same name etc
+                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED release, and keep the same name etc
                                     when loading a revised version 
                                     of a value set)</span>"),
                                 ] %}

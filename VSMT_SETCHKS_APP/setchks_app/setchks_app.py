@@ -56,6 +56,8 @@ from werkzeug.exceptions import abort
 
 bp = Blueprint('setchks_app', __name__)
 
+
+
 # This list should probably come from a config file in due course
 available_setchks=[
     'CHK20_INCORR_FMT_SCTID', 
@@ -765,6 +767,57 @@ def refactored_form():
     return_string="<pre>"+"<br>".join(output_strings)+"</pre>"
     # surely there has to be a simplification to the line below!
     return return_string
+
+
+######################################
+######################################
+## trial cognito protected endpoint ##
+######################################
+######################################
+
+@bp.route('/cognito_test')
+def cognito_test():
+    # return redirect('https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id=6hqdelonkvu0os0qltob6n4a8q&response_type=code&scope=email+openid+phone&redirect_uri=https%3A%2F%2Fvsmt-setchks-app-test-lb.k8s-nonprod.texasplatform.uk%2F')
+    # return redirect('https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id=6ccujrhmmnbla9g46vcmahsn31&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_landing')
+    if "code" in request.args.keys():
+        import base64, jwt, requests
+        # return f"code:{}"
+        code=request.args['code']
+        client_id=os.environ["COGNITO_CLIENT_ID"]
+        client_secret=os.environ["COGNITO_CLIENT_SECRET"]
+        token_url="https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/token"
+        message = bytes(f"{client_id}:{client_secret}",'utf-8')
+        secret_hash = base64.b64encode(message).decode()
+        payload = {
+            "grant_type": 'authorization_code',
+            "client_id": client_id,
+            "code": code,
+            "redirect_uri": 'http://localhost:5000/cognito_test'
+        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": f"Basic {secret_hash}"}
+            
+        resp = requests.post(token_url, params=payload, headers=headers)
+        # print(resp.json())
+        return str((jwt.decode(resp.json()['id_token'], algorithms=["RS256"], options={"verify_signature": False})))
+    else:
+        print("=========================")
+        print("=====  REDIRECT       ===")
+        print("=========================")
+        return redirect(
+            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            )
+######################################
+######################################
+## trial cognito2 protected endpoint ##
+######################################
+######################################
+
+@bp.route('/cognito_logout')
+def cognito_logout():
+    return redirect(
+            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            )
 
 ######################################
 ######################################
