@@ -18,6 +18,8 @@ import setchks_app.setchks.setchk_definitions
 import setchks_app.setchks.run_queued_setchks
 
 from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
+from setchks_app.identity_mgmt.wrapper import auth_required
+from setchks_app.identity_mgmt.get_token import get_token_from_code
 
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
@@ -771,41 +773,34 @@ def refactored_form():
 
 ######################################
 ######################################
-## trial cognito protected endpoint ##
+## trial cognito login              ##
 ######################################
 ######################################
 
 @bp.route('/cognito_test')
 def cognito_test():
-    # return redirect('https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id=6hqdelonkvu0os0qltob6n4a8q&response_type=code&scope=email+openid+phone&redirect_uri=https%3A%2F%2Fvsmt-setchks-app-test-lb.k8s-nonprod.texasplatform.uk%2F')
-    # return redirect('https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id=6ccujrhmmnbla9g46vcmahsn31&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_landing')
+    print(request.args.keys())
     if "code" in request.args.keys():
-        import base64, jwt, requests
-        # return f"code:{}"
         code=request.args['code']
-        client_id=os.environ["COGNITO_CLIENT_ID"]
-        client_secret=os.environ["COGNITO_CLIENT_SECRET"]
-        token_url="https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/token"
-        message = bytes(f"{client_id}:{client_secret}",'utf-8')
-        secret_hash = base64.b64encode(message).decode()
-        payload = {
-            "grant_type": 'authorization_code',
-            "client_id": client_id,
-            "code": code,
-            "redirect_uri": 'http://localhost:5000/cognito_test'
-        }
-        headers = {"Content-Type": "application/x-www-form-urlencoded",
-                    "Authorization": f"Basic {secret_hash}"}
-            
-        resp = requests.post(token_url, params=payload, headers=headers)
-        # print(resp.json())
-        return str((jwt.decode(resp.json()['id_token'], algorithms=["RS256"], options={"verify_signature": False})))
+        session['jwt_token']=get_token_from_code(code=code)
+        return redirect(session['function_provoking_auth_call'])
     else:
-        print("=========================")
-        print("=====  REDIRECT       ===")
-        print("=========================")
         return redirect(
-            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            )
+    
+######################################
+######################################
+## trial cognito logout             ##
+######################################
+######################################
+
+@bp.route('/cognito_logout')
+def cognito_logout():
+    del session['jwt_token']
+    return redirect(
+            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
             )
 ######################################
 ######################################
@@ -813,12 +808,21 @@ def cognito_test():
 ######################################
 ######################################
 
-@bp.route('/cognito_logout')
-def cognito_logout():
-    return redirect(
-            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            )
+@bp.route('/cognito_hello')
+@auth_required
+def cognito_hello():
+    return "You're in"
 
+######################################
+######################################
+## trial cognito2 protected endpoint ##
+######################################
+######################################
+
+@bp.route('/cognito_another_hello')
+@auth_required
+def cognito_another_hello():
+    return "And here!"
 ######################################
 ######################################
 ## path validator endpoint endpoint ##

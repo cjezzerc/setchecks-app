@@ -38,47 +38,13 @@ def make_set_analysis_sheet(
     for setchk_code in [x.setchk_code for x in setchks_session.selected_setchks]:
         setchk_short_name=setchks[setchk_code].setchk_short_name
         setchk_short_code=setchks[setchk_code].setchk_short_code
-        if (setchk_code in setchks_session.setchks_run_status  # test needed in case fail gatekeeper
-            and 
-            setchks_session.setchks_run_status[setchk_code]=="failed"
-        ):
-            message_code=setchk_code.split("_")[0]+"-OUT-FAIL"
-            severity="RED"
-            message="Check failed. Please report to software developers."
-            count=""
-            value=""
-            ws.append(
-                [
-                setchk_short_code, 
-                setchk_short_name, 
-                message_code,
-                severity,
-                message,
-                count,
-                value 
-                ]
-                )
-            current_ws_row+=1
-        else:
-            for message in setchks_results[setchk_code].set_analysis["Messages"]:
-                ws.append([setchk_short_name, message])
-                current_ws_row+=1
-                # cell=ws[ws.max_row][0]
-                # cell=ws[ws.max_row][1]
-            for set_level_table_row in setchks_results[setchk_code].set_level_table_rows:
-                if set_level_table_row.simple_message is not None:
-                    f=set_level_table_row.simple_message.split()
-                    severity=f[0][1:-1]
-                    message=" ".join(f[1:])
-                    message_code=set_level_table_row.outcome_code
-                    count=""
-                    value=""
-                else:
-                    severity=""
-                    message=""
-                    message_code=set_level_table_row.outcome_code
-                    count=set_level_table_row.descriptor
-                    value=set_level_table_row.value
+        if (setchk_code in setchks_session.setchks_run_status):  # test needed in case fail gatekeeper
+            if setchks_session.setchks_run_status[setchk_code]=="failed":
+                message_code=setchk_code.split("_")[0]+"-OUT-FAIL"
+                severity="RED"
+                message="Check failed. Please report to software developers."
+                count=""
+                value=""
                 ws.append(
                     [
                     setchk_short_code, 
@@ -91,6 +57,38 @@ def make_set_analysis_sheet(
                     ]
                     )
                 current_ws_row+=1
+            else:
+                for message in setchks_results[setchk_code].set_analysis["Messages"]:
+                    ws.append([setchk_short_name, message])
+                    current_ws_row+=1
+                    # cell=ws[ws.max_row][0]
+                    # cell=ws[ws.max_row][1]
+                for set_level_table_row in setchks_results[setchk_code].set_level_table_rows:
+                    if set_level_table_row.simple_message is not None:
+                        f=set_level_table_row.simple_message.split()
+                        severity=f[0][1:-1]
+                        message=" ".join(f[1:])
+                        message_code=set_level_table_row.outcome_code
+                        count=""
+                        value=""
+                    else:
+                        severity=""
+                        message=""
+                        message_code=set_level_table_row.outcome_code
+                        count=set_level_table_row.descriptor
+                        value=set_level_table_row.value
+                    ws.append(
+                        [
+                        setchk_short_code, 
+                        setchk_short_name, 
+                        message_code,
+                        severity,
+                        message,
+                        count,
+                        value 
+                        ]
+                        )
+                    current_ws_row+=1
         # ws.append(["----"]) 
         end_of_block_rows.add(current_ws_row)
     cell_widths=[8,32,15,8,65,65,10]
