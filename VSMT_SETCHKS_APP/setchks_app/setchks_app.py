@@ -20,6 +20,7 @@ import setchks_app.setchks.run_queued_setchks
 from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
 from setchks_app.identity_mgmt.wrapper import auth_required
 from setchks_app.identity_mgmt.get_token import get_token_from_code
+from setchks_app.identity_mgmt.test_if_authorised import is_authorised
 
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
@@ -96,6 +97,7 @@ def health_check():
 #################################
 
 @bp.route("/redis_check")
+@auth_required
 def redis_check():
     logger.debug("redis check called (with ssl=True)")
     
@@ -137,6 +139,7 @@ def redis_check():
 #################################
 
 @bp.route("/session_check")
+@auth_required
 def session_check():
     logger.info("session check called")
     session['time']=str(datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
@@ -149,6 +152,7 @@ def session_check():
 #################################
 
 @bp.route("/mongodb_check")
+@auth_required
 def mongodb_check():
     logger.info("mongodb check called")
 
@@ -182,6 +186,7 @@ def mongodb_check():
 #################################
 
 @bp.route("/descriptions_db")
+@auth_required
 def descriptions_db():
     logger.info("descriptions_db called")
     logger.debug(list(request.args.items()))
@@ -247,6 +252,7 @@ def descriptions_db():
 #####################################
 
 @bp.route("/rq")
+@auth_required
 def rq():
     logger.info("rq called")
     logger.debug(list(request.args.items()))
@@ -316,7 +322,8 @@ def rq():
 
 @bp.route('/', methods=['GET'])
 @bp.route('/data_upload', methods=['GET','POST'])
-@accept_ts_and_cs_required
+@auth_required
+@accept_ts_and_cs_required # NB this must come AFTER the auth_required for various redirects to work
 def data_upload():
     print(request.form.keys())
     print("REQUEST:",request.args.keys())
@@ -381,7 +388,12 @@ def data_upload():
 #####################################
 
 @bp.route('/column_identities', methods=['GET','POST'])
+@auth_required
 def column_identities():
+
+    # if not is_authorised(): # @auth_required wrapper did not seem to work here ? issue with request.files?
+    #     return redirect('/data_upload')
+    
     print(request.form.keys())
     print("REQUEST:",request.args.keys())
     print(request.files)
@@ -458,6 +470,7 @@ def column_identities():
 #####################################
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
+@auth_required
 def enter_metadata():
     print("ENTER METADATA FORM ITEMS", list(request.form.items()))
     print("ENTER METADATA DATA", request.data)
@@ -549,6 +562,7 @@ def enter_metadata():
 #############################################
 
 @bp.route('/select_and_run_checks', methods=['GET','POST'])
+@auth_required
 def select_and_run_checks():
     print("ENTER METADATA FROM KEYS", request.form.keys())
     print("REQUEST:",request.args.keys())
@@ -693,6 +707,7 @@ def select_and_run_checks():
 #############################################
 
 @bp.route('/setchks_session', methods=['GET'])
+@auth_required
 def setchks_session():
     
     setchks_session=gui_setchks_session.get_setchk_session(session)
@@ -707,6 +722,7 @@ def setchks_session():
 #############################################
 
 @bp.route('/mgmt_info', methods=['GET'])
+@auth_required
 def mgmt_info():
     object=request.args.get("object", None)
     run_id=request.args.get("run_id", None)
@@ -726,6 +742,7 @@ def mgmt_info():
 #############################################
 
 @bp.route('/reset_setchks_session', methods=['GET'])
+@auth_required
 def reset_setchks_session():
     session['setchks_session']=None
     return redirect("/data_upload")
@@ -737,6 +754,7 @@ def reset_setchks_session():
 #############################################
 
 @bp.route('/ts_and_cs', methods=['GET'])
+@auth_required
 def ts_and_cs():
     if "accept" in request.args.keys():
         session["ts_and_cs_accepted"]=True
@@ -758,6 +776,7 @@ def ts_and_cs():
 #############################################
 
 @bp.route('/refactored_form', methods=['GET'])
+@auth_required
 def refactored_form():
     from setchks_app.set_refactoring.concept_module import ConceptsDict
     setchks_session=gui_setchks_session.get_setchk_session(session)
