@@ -8,6 +8,8 @@ import json
 import jsonpickle
 import time
 import re
+import urllib.parse
+
 from flask import jsonify
 
 import logging
@@ -20,7 +22,8 @@ import setchks_app.setchks.run_queued_setchks
 from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
 from setchks_app.identity_mgmt.wrapper import auth_required
 from setchks_app.identity_mgmt.get_token import get_token_from_code
-from setchks_app.identity_mgmt.test_if_authorised import is_authorised
+# from setchks_app.identity_mgmt.test_if_authorised import is_authorised
+from setchks_app.identity_mgmt.redirect_uri import redirect_uri
 
 from setchks_app.data_as_matrix.columns_info import ColumnsInfo
 from setchks_app.data_as_matrix.marshalled_row_data import MarshalledRow
@@ -806,7 +809,11 @@ def cognito_test():
     else:
         return redirect(
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
+            f'login?client_id={os.environ["COGNITO_CLIENT_ID"]}'
+            '&response_type=code&scope=email+openid+phone'
+            f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
             )
     
 ######################################
@@ -819,7 +826,11 @@ def cognito_test():
 def cognito_logout():
     del session['jwt_token']
     return redirect(
-            f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+            'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
+            f'logout?client_id={os.environ["COGNITO_CLIENT_ID"]}'
+            '&response_type=code'
+            f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
             )
 ######################################
 ######################################

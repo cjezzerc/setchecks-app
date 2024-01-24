@@ -1,5 +1,7 @@
 import base64, jwt, requests, os
 
+from setchks_app.identity_mgmt.redirect_uri import redirect_uri
+
 def get_token_from_code(code=None):
     client_id=os.environ["COGNITO_CLIENT_ID"]
     client_secret=os.environ["COGNITO_CLIENT_SECRET"]
@@ -10,7 +12,8 @@ def get_token_from_code(code=None):
         "grant_type": 'authorization_code',
         "client_id": client_id,
         "code": code,
-        "redirect_uri": 'http://localhost:5000/cognito_test'
+        # "redirect_uri": 'http://localhost:5000/cognito_test'
+        "redirect_uri": redirect_uri
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": f"Basic {secret_hash}"}
