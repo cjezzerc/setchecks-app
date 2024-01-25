@@ -33,6 +33,7 @@ def store_summary_dict_to_db(
     summary_dict={}
     summary_dict["Time and date checks were run"]=setchks_session.time_started_processing
     summary_dict["Session uuid"]=setchks_session.uuid
+    summary_dict["User email"]=setchks_session.email
     summary_dict["Run identifier"]=setchks_session.uuid+":"+summary_dict["Time and date checks were run"]
     summary_dict["Name of input file"]=setchks_session.filename
     summary_dict["Name of value set"]=setchks_session.vs_name

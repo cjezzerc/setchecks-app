@@ -13,5 +13,6 @@ def get_setchk_session(session=None):
     else: # otherwise initialise the setchks_session object and save to session variable
         setchks_session=setchks_app.setchks.setchks_session.SetchksSession()
         setchks_session.uuid=session.sid
+        setchks_session.email=session['jwt_token']['email']
         session['setchks_session']=setchks_session 
     return setchks_session

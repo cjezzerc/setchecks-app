@@ -37,6 +37,7 @@ class SetchksSession():
     """
 
     __slots__=("uuid",
+               "email",
                "unparsed_data", # big and only needed on the confirm upload page
                "filename",
                "load_file_behaviour",
@@ -76,10 +77,12 @@ class SetchksSession():
                "app_version",
                )
 
-    def __init__(self, session=None):
+    # def __init__(self, session=None):
+    def __init__(self):
         # self.uuid=str(uuid.uuid4())
         # self.uuid=session.sid
         self.uuid=None
+        self.email=None
         self.unparsed_data=None
         self.filename=None
         self.load_file_behaviour="DEFAULT_SETTINGS"

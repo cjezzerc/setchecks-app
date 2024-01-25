@@ -447,15 +447,6 @@ def column_identities():
 
     bc=Breadcrumbs()
     bc.set_current_page("column_identities")
-    print("==================")
-    print("==================")
-    print("==================")
-    print("==================")
-    print(multisheet_flag)
-    print("==================")
-    print("==================")
-    print("==================")
-    print("==================")
     return render_template('column_identities.html',
                            setchks_session=setchks_session,
                            file_data=setchks_session.data_as_matrix,
@@ -795,7 +786,7 @@ def refactored_form():
 
 ######################################
 ######################################
-## trial cognito login              ##
+## cognito endpoint                 ##
 ######################################
 ######################################
 

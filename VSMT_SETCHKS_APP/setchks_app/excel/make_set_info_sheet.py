@@ -3,6 +3,7 @@
 from openpyxl.utils import get_column_letter
 import setchks_app.setchks.setchk_definitions
 from . import styling
+from flask import current_app
 
 
 def make_set_info_sheet(
@@ -24,7 +25,7 @@ def make_set_info_sheet(
     
     ws.append([
         "Date Checks Run",
-        "TBI",
+        setchks_session.time_started_processing,
         ])
     
     ws.append([
@@ -70,19 +71,26 @@ def make_set_info_sheet(
         ])
         ws.append([
             "Later SNOMED CT Version",
-            f"UK Monolith Edition {setchks_session.sct_version_b.name_for_dropdown}",
+            f"{setchks_session.sct_version_b.name_for_dropdown}",
+        ])
+
+
+    ws.append([
+        "User email",
+        setchks_session.email,
+        ])
+
+    ws.append([
+        "Run identifier",
+        f"{setchks_session.uuid}:{setchks_session.time_started_processing}",
         ])
 
     ws.append([
         "Software Version",
-        "TBI",
+        "TBI"
+        # current_app.config["VERSION"]
         ])
     
-    ws.append([
-        "Session UUID",
-        setchks_session.excel_filename.split("/")[-2],
-        ])
-
     cell_widths=[30,80]
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
