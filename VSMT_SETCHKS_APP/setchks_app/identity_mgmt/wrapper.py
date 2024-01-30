@@ -26,6 +26,7 @@ def auth_required(f):
             else:
                 session['jwt_token']=get_token_from_refresh_token(refresh_token=jwt_token['refresh_token'])
                 authorized ='id_token' in session['jwt_token']
+            
         if authorized:
             if "cognito:groups" in jwt_token:
                 cognito_group_memberships=jwt_token["cognito:groups"]
