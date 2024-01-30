@@ -108,7 +108,7 @@ def create_app():
         app.config["VERSION"]="local"
     
     if os.environ["DEPLOYMENT_ENV"]=="AWS":
-        app.config["ENVIRONMENT"]=os.environ["DEPLOYMENT_AWS_ENV"].upper()
+        app.config["ENVIRONMENT"]=os.environ["DEPLOYMENT_AWSENV"].upper()
     else:
         app.config["ENVIRONMENT"]="LOCAL"
     return app
