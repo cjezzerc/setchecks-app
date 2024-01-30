@@ -20,7 +20,7 @@ import setchks_app.setchks.setchk_definitions
 import setchks_app.setchks.run_queued_setchks
 
 from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
-from setchks_app.identity_mgmt.wrapper import auth_required
+from setchks_app.identity_mgmt.wrapper import auth_required, auth_required_admin
 from setchks_app.identity_mgmt.get_token import get_token_from_code
 # from setchks_app.identity_mgmt.test_if_authorised import is_authorised
 from setchks_app.identity_mgmt.redirect_uri import redirect_uri
@@ -189,7 +189,7 @@ def mongodb_check():
 #################################
 
 @bp.route("/descriptions_db")
-@auth_required
+@auth_required_admin
 def descriptions_db():
     logger.info("descriptions_db called")
     logger.debug(list(request.args.items()))
