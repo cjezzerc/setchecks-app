@@ -14,6 +14,8 @@ from pymongo import MongoClient
 from setchks_app.sct_versions import get_sct_versions
 from . import pull_concepts_from_ontoserver
 from setchks_app.mongodb import get_mongodb_client
+from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+
 
 class ConceptsService():
 
@@ -46,14 +48,19 @@ class ConceptsService():
         get_mongodb_client.get_mongodb_client().drop_database("concepts_service")
     
     def make_missing_collections(self):
+        hst=DescriptionsService(data_type="hst")
+
         existence_data=self.check_whether_releases_on_ontoserver_have_collections()
         for date_string, existence in existence_data.items():
-            if not existence:
-                print(f"==============\nMaking collection for {date_string}\n==============")
-                self.create_collection_from_ontoserver(sct_version=date_string)
+            in_hst=hst.check_have_sct_version_collection_in_db(sct_version=date_string)
+            if in_hst:
+                if not existence:
+                    print(f"==============\nMaking collection for {date_string}\n==============")
+                    self.create_collection_from_ontoserver(sct_version=date_string)
+                else:
+                    print("==============\nCollection already exists for %s\n==============" % date_string)
             else:
-                print("==============\nCollection already exists for %s\n==============" % date_string)
-
+                print(f"===============\nCollection not in hst for {date_string} so no need to get\n==============")
     def check_whether_releases_on_ontoserver_have_collections(self):
         return_data={}
         for sct_version in self.get_list_of_releases_on_ontoserver():
