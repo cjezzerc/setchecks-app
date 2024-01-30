@@ -74,7 +74,7 @@ def auth_required_admin(f):
                 return "You are not authorised to access this endpoint in this environment"    
         else:
             # session['function_provoking_auth_call']=url_for('setchks_app.'+f.__name__) # trying dropping this to simplify things
-            session['function_provoking_auth_call']='/data_upload'
+            # session['function_provoking_auth_call']='/data_upload'
             return redirect(url_for('setchks_app.cognito_test'))
     return wrap2
 

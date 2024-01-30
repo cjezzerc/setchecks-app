@@ -464,7 +464,7 @@ def column_identities():
 #####################################
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
-@auth_required
+# @auth_required    ### temporary
 def enter_metadata():
     print("ENTER METADATA FORM ITEMS", list(request.form.items()))
     print("ENTER METADATA DATA", request.data)
@@ -796,9 +796,10 @@ def cognito_test():
     if "code" in request.args.keys():
         code=request.args['code']
         session['jwt_token']=get_token_from_code(code=code)
-        return redirect(session['function_provoking_auth_call'])
+        # return redirect(session['function_provoking_auth_call'])
+        return redirect('/data_upload')
     else:
-        return redirect(
+        redirect_string=(
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
             'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
@@ -806,6 +807,8 @@ def cognito_test():
             '&response_type=code&scope=email+openid+phone'
             f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
             )
+        logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
+        return redirect(redirect_string)
     
 ######################################
 ######################################
@@ -816,13 +819,15 @@ def cognito_test():
 @bp.route('/cognito_logout')
 def cognito_logout():
     del session['jwt_token']
-    return redirect(
+    redirect_string=(
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
             'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
             f'logout?client_id={os.environ["COGNITO_CLIENT_ID"]}'
             '&response_type=code'
             f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
             )
+    logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
+    return redirect(redirect_string)
 ######################################
 ######################################
 ## trial cognito2 protected endpoint ##
