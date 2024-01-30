@@ -133,7 +133,7 @@ node {
         vsmt_setchks_app_version = "${commitHash}"
 
       ecrImageName = "${liveMgmtAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${dockerImage}"
-      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} --build-arg DEPLOYMENT_ENV=AWS -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
+      sh """docker build --build-arg VERSION=${vsmt_setchks_app_version} --build-arg DEPLOYMENT_ENV=AWS --build-arg DEPLOYMENT_AWSENV=${params.ENVIRONMENT} -t ${ecrImageName}:${vsmt_setchks_app_version} -f VSMT_SETCHKS_APP/Dockerfile ."""
       // Authenticate against ECR
       sh """aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${liveMgmtAccountId}.dkr.ecr.eu-west-2.amazonaws.com"""
       // Create repo if it doesn't exist

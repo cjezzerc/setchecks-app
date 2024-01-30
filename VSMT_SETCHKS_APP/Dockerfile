@@ -16,8 +16,11 @@ ENV ONTOSERVER_INSTANCE=https://dev.ontology.nhs.uk/dev1/fhir/
 ENV ONTOAUTH_INSTANCE=https://dev.ontology.nhs.uk/authorisation/auth/realms/terminology/protocol/openid-connect/token
 
 # pass in --build-arg DEPLOYMENT_ENV=    LOCAL or AWS
+# pass in --build-arg DEPLOYMENT_AWSENV=    DEMO or TEST
 ARG DEPLOYMENT_ENV 
 ENV DEPLOYMENT_ENV=$DEPLOYMENT_ENV
+ARG DEPLOYMENT_AWSENV 
+ENV DEPLOYMENT_AWSENV=$DEPLOYMENT_AWSENV
 ARG VERSION
 ENV VERSION=$VERSION
 
