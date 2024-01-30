@@ -31,6 +31,8 @@ def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None
     sct_version="http://snomed.info/sct/83821000000107/version/"+sct_version
     # relative_sub_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "<<"+str(root_id))
     relative_sub_url= "ValueSet/$expand?property=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "*")
+    # relative_sub_url= "ValueSet/$expand?property=*&url=%s?fhir_vs=ecl/(%s)" % (sct_version, "*")
+    # worked:   relative_sub_url= "ValueSet/$expand?url=%s?fhir_vs=ecl/(%s)" % (sct_version, "*")
     # relative_sub_url= "ValueSet/$expand?activeOnly=false&=inactive&url=%s?fhir_vs=ecl/(%s)&property=*&property=child" % (sct_version, "<<"+str(root_id))
     terminology_server=TerminologyServer()
     
@@ -51,7 +53,8 @@ def download_limited_concept_data_from_ontoserver(sct_version=None, root_id=None
         relative_url=relative_sub_url+"&count=%s&offset=%s" % (n_per_fetch, offset)
         terminology_server=TerminologyServer() # call every time as bodge to prevent token expiring
         response=terminology_server.do_get(relative_url=relative_url, verbose=True) 
-        print(response)
+        # print(response)
+        # print(response.text)
         print("Parsing..")
         temp_valueset=ValueSet.parse_obj(response.json())
         # print("\n".join(vsmt_uprot.fhir_utils.repr_resource(temp_valueset)))

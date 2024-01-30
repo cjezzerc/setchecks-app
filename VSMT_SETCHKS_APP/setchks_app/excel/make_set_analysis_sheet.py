@@ -42,7 +42,7 @@ def make_set_analysis_sheet(
             if setchks_session.setchks_run_status[setchk_code]=="failed":
                 message_code=setchk_code.split("_")[0]+"-OUT-FAIL"
                 severity="RED"
-                message="Check failed. Please report to software developers."
+                message="Check failed. Please report to software developers via feedback button in the app."
                 count=""
                 value=""
                 ws.append(

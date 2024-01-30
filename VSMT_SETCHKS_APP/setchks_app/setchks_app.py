@@ -175,9 +175,9 @@ def mongodb_check():
             logger.debug("db_name"+"-"+c_name)
             c=db[c_name]
             # n_documents=c.estimated_document_count() # does not seem to work in DocumentDB
-            #  n_documents=c.count_documents({}) # horribly slow on ig tables
-            # output_strings.append(f'db: {db_name:30s} collection:{c_name:30s} est_n_documents:{n_documents}')                
-            output_strings.append(f'db: {db_name:30s} collection:{c_name:30s}')                
+            n_documents=c.count_documents({}) # horribly slow on ig tables
+            output_strings.append(f'db: {db_name:30s} collection:{c_name:30s} n_documents:{n_documents}')                
+            # output_strings.append(f'db: {db_name:30s} collection:{c_name:30s}')                
 
     return '<br>'.join(output_strings)
 
