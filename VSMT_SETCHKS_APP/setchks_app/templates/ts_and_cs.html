@@ -101,10 +101,17 @@ By using the VSMT PoC, you accept and consent to the above, and you agree to com
                 border-style: solid;
                 }
         </style>
-         <div class="col-10"> 
-            <a href="/ts_and_cs?accept"  class="btn setchks-btn">Accept</a>
+        {% if setchks_session["ts_and_cs_accepted"]==None %}
+        <div class="col-10"> 
+            <a href="/ts_and_cs?accept"  class="btn setchks-btn">Accept Terms and Conditions</a>
         </div>
-        
+        {% else %}
+        <div class="col-10" style="font-size: 2em;"> 
+            <p>You accepted these Terms and Conditions on {{setchks_session["ts_and_cs_accepted"]}}</p> 
+            <p>Please use the browser back button to return to the app</p> 
+
+        </div>
+        {% endif %}        
     
     </div>
 </div>

@@ -114,12 +114,15 @@
                     <span class="float-end">
                         <span style="padding-right: 2vw; font-weight: bold;"> {{config["ENVIRONMENT"]}} </span>
                         <span style="padding-right: 2vw; font-weight: bold;"> {{setchks_session.email}} </span>
-                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="/cognito_logout" >logout</a> </span>
-                        <span data-toggle="tooltip" data-placement="top" 
-                        title="Please include screenshots etc in your email" 
+                        <!-- <span 
+                        data-toggle="tooltip" data-placement="top" 
+                        title="Please include screenshots etc in your email"  -->
+                        <span
                         style="padding-right: 2vw; font-weight: bold;" mouseover="hello"> 
-                            <a href="#" >Feedback</a> </span>
-                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="#" >T&Cs</a> </span>
+                        <a href="mailto:england.vsmtpoc@nhs.net?subject=(VSMT%20PoC) <your customised subject line here>&body=Use this email address for making feature suggestions, reporting bugs or asking for assistance.%0APlease leave (VSMT PoC) in the subject line.%0AScreenshots and example files are helpful for diagnosing issues.">Feedback</a> 
+                        </span>
+                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="ts_and_cs" >T&Cs</a> </span>
+                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="/cognito_logout" >Logout</a> </span>
                     </span>
                 <!-- </span> -->
 

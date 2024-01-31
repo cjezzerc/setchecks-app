@@ -38,6 +38,7 @@ class SetchksSession():
 
     __slots__=("uuid",
                "email",
+               "ts_and_cs_accepted",
                "unparsed_data", # big and only needed on the confirm upload page
                "filename",
                "load_file_behaviour",
@@ -83,6 +84,7 @@ class SetchksSession():
         # self.uuid=session.sid
         self.uuid=None
         self.email=None
+        self.ts_and_cs_accepted=None
         self.unparsed_data=None
         self.filename=None
         self.load_file_behaviour="DEFAULT_SETTINGS"

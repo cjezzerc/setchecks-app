@@ -25,6 +25,7 @@ else:
 
 cs=ConceptsService()
 
+
 action=sys.argv[1]
 
 if action=="check_coverage":

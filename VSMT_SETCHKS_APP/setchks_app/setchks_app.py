@@ -751,10 +751,12 @@ def reset_setchks_session():
 @auth_required
 def ts_and_cs():
     if "accept" in request.args.keys():
-        session["ts_and_cs_accepted"]=True
+        session["ts_and_cs_accepted"]=datetime.datetime.now().strftime('%d %b %Y')
         return redirect("/data_upload")
     else:
         setchks_session=gui_setchks_session.get_setchk_session(session)
+        if "ts_and_cs_accepted" in session:
+            setchks_session.ts_and_cs_accepted=session["ts_and_cs_accepted"]
         bc=Breadcrumbs()
         bc.set_current_page("data_upload")
         return render_template(
