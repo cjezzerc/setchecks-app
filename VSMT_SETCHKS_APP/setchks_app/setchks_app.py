@@ -413,13 +413,13 @@ def column_identities():
         setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
 
-    if (
-        (setchks_session.columns_info==None) 
-        or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0]))
-        or (setchks_session.load_file_behaviour=="DEFAULT_SETTINGS")
-    ):
-        ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
-        setchks_session.columns_info=ci
+        if (
+            (setchks_session.columns_info==None) 
+            or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0]))
+            or (setchks_session.load_file_behaviour=="DEFAULT_SETTINGS")
+        ):
+            ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
+            setchks_session.columns_info=ci
 
     # if reach here via click on a column identity dropdown
     if len(request.form.keys())!=0:
@@ -764,6 +764,24 @@ def ts_and_cs():
             breadcrumbs_styles=bc.breadcrumbs_styles,
             setchks_session=setchks_session,
             )
+    
+#############################################
+#############################################
+##     feedback endpoint                  ##
+#############################################
+#############################################
+
+@bp.route('/feedback', methods=['GET'])
+@auth_required
+def feedback():
+    setchks_session=gui_setchks_session.get_setchk_session(session)
+    bc=Breadcrumbs()
+    bc.set_current_page("data_upload")
+    return render_template(
+        "feedback.html",
+        breadcrumbs_styles=bc.breadcrumbs_styles,
+        setchks_session=setchks_session,
+        )
 
 #############################################
 #############################################
