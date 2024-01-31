@@ -25,7 +25,7 @@ from setchks_app.redis.rq_utils import (
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
-    app.secret_key = 'BAD_SECRET_KEY'
+    
 
     app.config["REDIS_STRING"]=get_redis_string()
 
@@ -65,10 +65,13 @@ def create_app():
         os.environ['DOCUMENTDB_PASSWORD']=dictionary_pw['DOCUMENTDB_PASSWORD']
         os.environ['COGNITO_CLIENT_ID']=dictionary_pw['COGNITO_CLIENT_ID']
         os.environ['COGNITO_CLIENT_SECRET']=dictionary_pw['COGNITO_CLIENT_SECRET']
+        os.environ['FLASK_APP_SECRET']=dictionary_pw['FLASK_APP_SECRET']
         logger.debug("got secrets")
     else:
         logger.debug("no need to get secrets")
 
+    app.secret_key = os.environ['FLASK_APP_SECRET']
+    
     # these os.environ elements would need to be passed to an process running via redis queue
     # ['DEPLOYMENT_ENV', 'ONTOSERVER_INSTANCE', 'ONTOAUTH_INSTANCE', 'ONTOSERVER_USERNAME', 'ONTOSERVER_SECRET', 
     # 'TRUDAPIKEY', 
