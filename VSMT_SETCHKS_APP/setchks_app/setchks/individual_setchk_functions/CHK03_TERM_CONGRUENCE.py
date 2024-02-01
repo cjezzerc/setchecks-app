@@ -85,7 +85,7 @@ def generate_check_item(
             check_item.outcome_level="ISSUE"
             check_item.general_message=(
                 f"The Description Type of the provided {did_term_words} is Fully Specified Name (FSN). "
-                "According to your settings, this is a data extract value set. FSNs should not be presented for data entry purposes. "  
+                "According to your settings, this is a data entry value set. FSNs should not be presented for data entry purposes. "  
                 "You should choose another Term for the corresponding Concept."
                 )
         else:
