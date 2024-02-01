@@ -741,6 +741,22 @@ def reset_setchks_session():
     session['setchks_session']=None
     return redirect("/data_upload")
 
+
+#############################################
+#############################################
+##     temporary report environ endpoint    ##
+#############################################
+#############################################
+
+@bp.route('/show_environ_stuff', methods=['GET'])
+@auth_required
+def show_environ_stuff():
+    stuff=[]
+    stuff.append(os.environ["DEPLOYMENT_ENV"])
+    if "ENV" in os.environ:
+        stuff.append(os.environ["ENV"])
+    return "<br>".join(stuff)
+
 #############################################
 #############################################
 ##     ts_and_cs endpoint                  ##
