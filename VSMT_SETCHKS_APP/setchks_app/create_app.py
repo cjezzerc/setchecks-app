@@ -110,7 +110,8 @@ def create_app():
     else:
         app.config["VERSION"]="local"
     
-    if os.environ["DEPLOYMENT_ENV"]=="AWS":
+    if os.environ["DEPLOYMENT_ENV"]=="AWS": # This is currently just used in a jinja template
+                                            # I could not get the rest of the app to access it without a context error
         # app.config["ENVIRONMENT"]=os.environ["DEPLOYMENT_AWSENV"].upper()
         app.config["ENVIRONMENT"]=os.environ["ENV"].upper()
     else:
