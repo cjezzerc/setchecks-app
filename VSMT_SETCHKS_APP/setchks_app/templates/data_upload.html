@@ -44,6 +44,10 @@
                         In this first PoC we are introducing “Set Checks” - 13 separate checks 
                         that run on user supplied SNOMED CT value sets to assess and provide feedback on 
                         set content. 
+                        Different Set Checks run depending on whether the value set is being used for 
+                        data entry or data extraction purposes, and whether the user wishes to check 
+                        the value set against a single SNOMED CT release or between two SNOMED CT releases.  
+
                         The focus of these checks is for value sets that are used for data entry to, 
                         or data extraction from, electronic patient records.  
                         The checks indicate possible errors, content that might be missing, 
@@ -52,13 +56,16 @@
                         recent UK SNOMED CT release.
                         </p>
                         <p>
-                        Thanks for trying out the VSMT! We would love to hear your feedback, 
-                        and there is a link on each page of the application to send an email to us. 
+                        We would love to hear your feedback, 
+                        for which there is a link on each page.
                         </p>
                         <p>
-                        SNOMED Implementation Team, 
-                        NHS England
+                        Thanks for trying out the VSMT!
                         </p>
+                        <p><b>
+                        Technology and Information Standards (TIS)
+                        <br>NHS England
+                        </b></p>
                 </div>
             </div>
 
@@ -68,19 +75,21 @@
                 </div>
                 <div class="card-body" style="font-size: 1.0em; overflow:auto">
                     <p> 
-                    To load your value set file, and start using the tool, just click the big green "Browse for a file" button.
+                    To upload your value set file, and start using the tool, just click the big green "Browse for a file" button.
                     </p>
-                    <p> 
-                    You should have received a Welcome Pack, that contains further information about using the tool. 
-                    If you haven’t received the pack, or want a new copy, then please contact us via the Feedback link.
+                    <p>Click for  
+                    <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160" target="_blank">supporting materials including a user guide, example files, 
+                    and detailed reference information on the setchecks<b> (FINAL LINK NEEDED)</b></a> 
                     </p>
                     <p>
                     By using this tool, you are accepting of the T&Cs. You can re-read the T&Cs at any time using the link
                     provided on each page of the application. 
                     </p>   
-                    <span style="padding-right: 3vh;"><a href="release_notes/update_notes.html">Recent application updates</a></span>
+                    <p style="color:red; font-weight: bold;">
+                        IMPORTANT: This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
+                    </p>
                    
-                    <span><a href="release_notes/known_issues.html">Known issues</a></span>
+                    <!-- <span><a href="release_notes/known_issues.html">Known issues</a></span> -->
                 </div>
             </div>
 
@@ -164,16 +173,16 @@
             {% if setchks_session.data_as_matrix != [] %}
                 <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
                     <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                        When load a new file ...
+                        Options when Loading a New File
                     </div>
                     <div class="card-body" style="font-size: 1em;">
     
                         <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
                             {% for a_type in [
-                                ("DEFAULT_SETTINGS","Revert to default settings 
+                                ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
                                     <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
-                                ("RETAIN_SETTINGS","Retain metadata and settings
-                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED release, and keep the same name etc
+                                ("RETAIN_SETTINGS","<b>Retain</b> metadata and settings
+                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name etc
                                     when loading a revised version 
                                     of a value set)</span>"),
                                 ] %}
