@@ -152,9 +152,9 @@
 
         <div class="col-9" style="padding-left: 0.5vh; padding-right: 1vh;">
 
-            <div class="card" style="height: 76vh; margin-top:1vh; overflow:auto">
+            <div class="card" style="height: 57vh; margin-top:1vh; overflow:auto">
                 <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                    Settings
+                    SNOMED Release(s)
                 </div>
                 <div class="card-body" style="font-size: 1em;">
                     <span> <b>Mode:</b> </span>
@@ -371,42 +371,41 @@
             <div style="height:24vh"></div>
             {% endif %}
 
-            <div style="height: 2vh"> </div>
-            <span> <b>Size of Report:</b></span>
-            <form action="/enter_metadata" class="output_full_or_compact_buttons" method="post" enctype="multipart/form-data">
-                {% for a_type in [
-                    ("COMPACT_OUTPUT","Standard"),
-                    ("FULL_OUTPUT","Extended (more complete information; less easy to read and may lead to large file sizes)"),
-                    ] %}
-                    {% if a_type[0] == setchks_session.output_full_or_compact %}
-                        {% set checked_var="checked" %}
-                    {% else %}
-                        {% set checked_var="" %}
-                    {% endif %}
-
-                    <div class="form-check">
-                        <input  class="form-check-input" 
-                                type="radio" 
-                                name="output_full_or_compact" 
-                                {{ checked_var}} 
-                                value="{{ a_type[0] }}" 
-                                id={{ a_type[0] }} 
-                                onchange="$('.output_full_or_compact_buttons').submit();"
-                                >
-                        <label class="form-check-label" for={{ a_type[0] }}>
-                        {{ a_type[1]}}
-                        </label>
-                    </div>
-                {% endfor %}
-                
-            </form>
-            <!-- <div class="card" style="height: 19vh; margin-top:1vh;">
-                <div class="card-body" style="font-size: 1em;">
-                    <ul>
-                        <li> Version detail info will be here (TBI) </li>
-                    </ul>
+        </div>
+    </div>
+            <div class="card" style="height: 18vh; margin-top:1vh; overflow:auto">
+                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                    Output Report Size
                 </div>
-            </div> -->
+                <div class="card-body" style="font-size: 1em;">
+                    <span> <b>Size of Report:</b></span>
+                    <form action="/enter_metadata" class="output_full_or_compact_buttons" method="post" enctype="multipart/form-data">
+                        {% for a_type in [
+                            ("COMPACT_OUTPUT","Standard"),
+                            ("FULL_OUTPUT","Extended (more complete information; less easy to read and may lead to large file sizes)"),
+                            ] %}
+                            {% if a_type[0] == setchks_session.output_full_or_compact %}
+                                {% set checked_var="checked" %}
+                            {% else %}
+                                {% set checked_var="" %}
+                            {% endif %}
+
+                            <div class="form-check">
+                                <input  class="form-check-input" 
+                                        type="radio" 
+                                        name="output_full_or_compact" 
+                                        {{ checked_var}} 
+                                        value="{{ a_type[0] }}" 
+                                        id={{ a_type[0] }} 
+                                        onchange="$('.output_full_or_compact_buttons').submit();"
+                                        >
+                                <label class="form-check-label" for={{ a_type[0] }}>
+                                {{ a_type[1]}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                        
+                    </form>
 
         </div>
     </div>
