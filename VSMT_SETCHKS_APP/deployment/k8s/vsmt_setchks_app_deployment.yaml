@@ -27,7 +27,7 @@ spec:
               cpu: 10m
               memory: 6000Mi
             limits:
-              cpu: 500m
+              cpu: 1000m
               memory: 8000Mi
       serviceAccount: ddc-vsmt-setchks-app
       serviceAccountName: ddc-vsmt-setchks-app
