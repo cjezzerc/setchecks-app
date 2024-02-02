@@ -105,7 +105,7 @@ class SetchksSession():
         self.refactored_form=None
         self.terminology_server=None
         self.available_sct_versions=None # see initialise below
-        self.vs_name="no-name-given"
+        self.vs_name="Untitled"
         self.vs_purpose=""
         self.sct_version=None # see initialise below
         self.sct_version_b=None # see initialise below

@@ -243,11 +243,5 @@ def make_analysis_by_outcome_sheet(
                 if (i_row) in divider_rows_between_checks:
                     cell.border=styling.solid_top_border
 
-    filters = ws.auto_filter
-    rightmost_column=get_column_letter(len(cell_widths))
-    filters.ref = f"A2:{rightmost_column}100000" # the "current row+1" puts the filter on the row below the labels
-                                                                        # (otherwise it obscures some text)  
-                                                                        # the "current row+100000" makes sure define a valid region
-                                                                        # but there must be a better way!!!
-        
+    
     return analysis_by_outcomes_row_numbers_map

@@ -47,6 +47,7 @@ def make_one_supp_tab_sheet(
     # banded_row=False
     current_ws_row=0
     first_rows_of_blocks=set()
+    n_cols=-1
     for i_data_row, supp_tab_entries in enumerate(setchk_results.supp_tab_blocks):
         if supp_tab_entries not in [None, []]:
             # banded_row=not banded_row
@@ -67,6 +68,9 @@ def make_one_supp_tab_sheet(
                     for cell in ws[ws.max_row]:
                         cell.alignment=cell.alignment.copy(wrap_text=True, horizontal="center")
                     headers_output=True
+                    ws.append([]) # for filter arrows
+                    current_ws_row+=1
+                    n_cols=len(supp_tab_row.cell_widths)
                 #                                            #
                 ##############################################
                 ws.append(supp_tab_row.format_as_list())
@@ -107,4 +111,14 @@ def make_one_supp_tab_sheet(
                 # ws.row_dimensions[i_row+1].height=18
             if (i_row) in first_rows_of_blocks:
                 cell.border=styling.solid_top_border
+    
+    if n_cols!=-1: # this is if no non header rows have been output
+        filters = ws.auto_filter
+        rightmost_column=get_column_letter(n_cols)
+        filters.ref = f"A2:{rightmost_column}100000" # the "current row+1" puts the filter on the row below the labels
+                                                                            # (otherwise it obscures some text)  
+                                                                            # the "current row+100000" makes sure define a valid region
+                                                                            # but there must be a better way!!!
+            
+    
     return supp_tab_row_numbers_map
