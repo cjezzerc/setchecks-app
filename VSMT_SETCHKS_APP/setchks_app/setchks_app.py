@@ -405,11 +405,13 @@ def column_identities():
 
     # if reach here via file upload, load the data into matrix
     multisheet_flag=False
+    too_many_rows=False
     if 'uploaded_file' in request.files:
         if setchks_session.load_file_behaviour=="DEFAULT_SETTINGS":
             session['setchks_session']=None
             setchks_session=gui_setchks_session.get_setchk_session(session)
         multisheet_flag=setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
+        too_many_rows= len(setchks_session.data_as_matrix)>5000
         setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
 
@@ -455,6 +457,7 @@ def column_identities():
                            rows_processable=rows_processable,
                            column_type_labels=column_type_labels,
                            multisheet_flag=multisheet_flag,
+                           too_many_rows=too_many_rows,
                             )
 
 #####################################

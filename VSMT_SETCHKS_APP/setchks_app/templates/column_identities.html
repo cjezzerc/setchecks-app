@@ -16,6 +16,12 @@
 
 {% include 'navigation.html' %}
 
+{% if too_many_rows==True %}
+<script>
+    alert("The current limit for input files in this web tool is 5000 rows. Your file exceeds this. We are working to increase this size limit. In the meantime please contact us if you would like to analyse such large files as we can run them for you. Please load another file")
+    window.location.href = "/data_upload";
+</script>
+{% endif %}
 {% if multisheet_flag==True %}
     <script>
         alert("There is more than one worksheet in this file - only the first sheet will be read. \nIf your value set is not in the first sheet then you will need to adjust the file to put the value set as the first sheet and then reload.")
