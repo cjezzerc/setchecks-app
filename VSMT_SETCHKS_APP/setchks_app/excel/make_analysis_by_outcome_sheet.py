@@ -36,8 +36,8 @@ def make_analysis_by_outcome_sheet(
                 "Severity", 
                 "Message",
                 "Message Extension",
-                "Link (R)",
-                "Link (S)",
+                "Link to Grp by Row",
+                "Link to Suppl Tab",
                 "Input File Row Number", 
                 ] + header_row_cell_contents
             ) 
@@ -187,7 +187,7 @@ def make_analysis_by_outcome_sheet(
         # current_ws_row+=1 
    
     # cell_widths=[50,30,10] + [20]*10
-    cell_widths=[8,30,18,8,50,30,5,5,8,25,50] + [20]*10
+    cell_widths=[8,30,18,8,50,30,7,7,8,25,50] + [20]*10
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
@@ -243,5 +243,11 @@ def make_analysis_by_outcome_sheet(
                 if (i_row) in divider_rows_between_checks:
                     cell.border=styling.solid_top_border
 
-    # ws['A1'].hyperlink="#By_Row!C5"
+    filters = ws.auto_filter
+    rightmost_column=get_column_letter(len(cell_widths))
+    filters.ref = f"A2:{rightmost_column}100000" # the "current row+1" puts the filter on the row below the labels
+                                                                        # (otherwise it obscures some text)  
+                                                                        # the "current row+100000" makes sure define a valid region
+                                                                        # but there must be a better way!!!
+        
     return analysis_by_outcomes_row_numbers_map

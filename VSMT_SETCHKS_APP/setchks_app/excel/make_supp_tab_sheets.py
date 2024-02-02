@@ -103,7 +103,8 @@ def make_one_supp_tab_sheet(
                                             # (should really bring that code down to this section)
                 ws.row_dimensions[i_row+1].height=50
             else:
-                ws.row_dimensions[i_row+1].height=18
+                pass # try doing nothing to see if it makes wrap work better
+                # ws.row_dimensions[i_row+1].height=18
             if (i_row) in first_rows_of_blocks:
                 cell.border=styling.solid_top_border
     return supp_tab_row_numbers_map

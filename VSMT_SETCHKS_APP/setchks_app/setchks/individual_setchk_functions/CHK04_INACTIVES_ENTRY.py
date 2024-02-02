@@ -75,13 +75,13 @@ class SuppTabRow():
     # class level headers and widths - each different type of supp tab will needs its own SuppTabRow definitions
     headers=[
         "Input row number",
-        "Provided Identifier",
+        "Provided Identifier (Inactive)",
         "Identifier Type",	
         "Corresponding Concept Id (if applicable)",
         "Preferred Term",	
         "",
         "Equivalence of Suggested Concept to Provided Concept",
-        "Suggested Concept Id",
+        "Suggested Concept Id (Active)",
         "Preferred Term",
         "Already in set",
         ]

@@ -80,7 +80,7 @@ class SuppTabRow():
     
     headers=[
         "Input row number",
-        "Provided Identifier",
+        "Provided Identifier (Active)",
         "Identifier Type",	
         "Corresponding Concept Id (if applicable)",
         "Preferred Term",	

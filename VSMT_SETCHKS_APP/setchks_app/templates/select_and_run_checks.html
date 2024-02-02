@@ -257,7 +257,7 @@ animation: none;
             </div>
 
             <!-- <div style="height:1vh;"></div> -->
-            <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
+            <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <div style="font-size:1.33em;"> 
                         Stage:
@@ -285,23 +285,35 @@ animation: none;
                     </ul>
                
                     <ul>
+                        {% if setchks_session.passes_gatekeeper==False %}
+                            <div style="font-weight: bold; color: red">
+                            <b> [Alert] It has been detected that some of the Identifiers in your value set 
+                                do not meet certain basic criteria.
+                            A set of basic checks will be run, which will provide information on the problematic entries. 
+                            No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.
+                            </b>
+                            </div>
+                        {% endif %}
+
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
                             <!-- <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
                             <script>
                                 setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
                             </script> -->
                             <div>
-                                Please do not navigate away from this page while jobs are running (safeguards TBI)
+                                <p>
+                                    Please do not navigate to another page in the tool while jobs are queued or running.
+                                </p>
+                                <p>
+                                    Your jobs may remain queued until the jobs of other users have completed.
+                                </p>
+                                <p>
+                                    Please see User Guide for further information on run times and the queueing system.
+                                </p>
+
                             </div>
                                 {% endif %}
-                        {% if setchks_session.passes_gatekeeper==False %}
-                        <div style="font-weight: bold; color: red"
-                        <b> [Alert] It has been detected that some of the Identifiers in your value set 
-                            do not meet certain basic criteria.
-                        A set of basic checks will be run, which will provide information on the problematic entries. 
-                        No other checks will be run until these entries are corrected or removed from your file, and the file is reloaded.</b>
-                        {% endif %}
-
+                        
                     </ul>
                 </div>
             </div>

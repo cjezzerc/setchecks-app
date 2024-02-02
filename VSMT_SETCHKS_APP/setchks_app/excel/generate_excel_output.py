@@ -110,6 +110,7 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
     ##################################################################
 
     time0=time.time()
+    sub_timings={}
     final_chk_specific_i_ws=make_chk_specific_sheets.make_chk_specific_sheets(
         wb=wb,
         first_i_ws=final_supp_tab_i_ws+1, 
@@ -117,9 +118,11 @@ def generate_excel_output(setchks_session=None, excel_filename=None, setchks_to_
         setchks_session=setchks_session,
         color_fills=color_fills,
         border=border,
+        sub_timings=sub_timings,
         )
     print(f"make_chk_specific_sheets took {time.time()-time0} seconds")
     timings["check specific sheets"]=f"{(time.time()-time0):0.6f} s" 
+    timings["check specific sheets subtimings"]=sub_timings 
 
     ##################################################################
     #  "Dummy" call to create  By_Row sheet, just to get the row map #                                        #     

@@ -52,11 +52,14 @@ def make_analysis_by_row_sheet(
                 "Severity", 
                 "Message",
                 "Message Extension",
-                "Link (M)",
-                "Link (S)"
+                "Link to Grp by Msg",
+                "Link to Suppl Tab",
                 ] + header_row_cell_contents
             ) 
         current_ws_row+=1
+        ws.append([]) # for filter arrows
+        current_ws_row+=1
+        
     ws_append_time=0
     time_bigloop0=time.time()
     n_loops=0
@@ -189,7 +192,7 @@ def make_analysis_by_row_sheet(
     
     print(f"top_dashed_cells={top_dashed_cells}")
     if creating_ws:    
-        cell_widths=[8,8,30,18,8,50,30,5,5,25,50] + [20]*10
+        cell_widths=[8,8,30,18,8,50,30,7,7,25,50] + [20]*10
         for i, width in enumerate(cell_widths):
             ws.column_dimensions[get_column_letter(i+1)].width=width     
 
@@ -215,7 +218,14 @@ def make_analysis_by_row_sheet(
                         cell.border=styling.dashed_top_border
                     if (i_row) in divider_rows:
                         cell.border=styling.solid_top_border
+        filters = ws.auto_filter
+        rightmost_column=get_column_letter(len(cell_widths))
+        filters.ref = f"A2:{rightmost_column}100000" # the "current row+1" puts the filter on the row below the labels
+                                                                            # (otherwise it obscures some text)  
+                                                                            # the "current row+100000" makes sure define a valid region
+                                                                            # but there must be a better way!!!
             
+
     return row_analysis_row_numbers_map
 
   
