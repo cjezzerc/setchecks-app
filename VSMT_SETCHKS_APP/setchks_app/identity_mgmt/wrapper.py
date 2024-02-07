@@ -34,7 +34,8 @@ def auth_required(f):
                 cognito_group_memberships={}
             level_allowed=True 
             if os.environ['DEPLOYMENT_ENV'] == "AWS":
-                if os.environ['DEPLOYMENT_AWSENV'] !="demo": # only let vsmt_admin into environments other than demo
+                # if os.environ['DEPLOYMENT_AWSENV'] !="demo": # only let vsmt_admin into environments other than demo
+                if os.environ['ENV'] !="demo": # only let vsmt_admin into environments other than demo
                     level_allowed="vsmt_internal" in cognito_group_memberships
             if level_allowed:
                 return f(*args, **kwargs)
