@@ -154,7 +154,7 @@
 
             <div class="card" style="height: 57vh; margin-top:1vh; overflow:auto">
                 <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                    SNOMED Release(s)
+                    SNOMED Release(s) (Currently restricted to Monolith releases on the NHS Terminology Server corresponding to a Clinical Extension release)
                 </div>
                 <div class="card-body" style="font-size: 1em;">
                     <span> <b>Mode:</b> </span>
@@ -199,7 +199,7 @@
             {% else %}
             <span> <b>Release to which the value set is well aligned ("Earlier release"):</b> </span>    
             {% endif %}
-            <div class="card" style="width:fit-content">
+            <div class="card" style="width:fit-content;">
                     <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
                         <div style="margin-top:0">
                             <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
@@ -227,7 +227,6 @@
                         <div> <p style="margin-bottom:0"  id="timeline_hover_info"> <br> </p></div>  <!-- div for the hover info -->
                 </div>
             </div>
-      
             <script> // draw plotly figure
                 var timeline_fig_div = document.getElementById('timeline_fig'); 
                 var plotlyConfiguration = { displayModeBar: false };

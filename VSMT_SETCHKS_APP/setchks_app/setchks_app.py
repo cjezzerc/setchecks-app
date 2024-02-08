@@ -39,6 +39,7 @@ from setchks_app.mongodb import get_mongodb_client
 import setchks_app.mgmt_info.handle_summary_info 
 import setchks_app.mgmt_info.handle_setchks_session
 import setchks_app.mgmt_info.handle_excel_file
+import setchks_app.mgmt_info.get_excel_summaries
 
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
@@ -100,7 +101,7 @@ def health_check():
 #################################
 
 @bp.route("/redis_check")
-@auth_required
+@auth_required_admin
 def redis_check():
     logger.debug("redis check called (with ssl=True)")
     
@@ -142,7 +143,7 @@ def redis_check():
 #################################
 
 @bp.route("/session_check")
-@auth_required
+@auth_required_admin
 def session_check():
     logger.info("session check called")
     session['time']=str(datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
@@ -155,7 +156,7 @@ def session_check():
 #################################
 
 @bp.route("/mongodb_check")
-@auth_required
+@auth_required_admin
 def mongodb_check():
     logger.info("mongodb check called")
 
@@ -255,7 +256,7 @@ def descriptions_db():
 #####################################
 
 @bp.route("/rq")
-@auth_required
+@auth_required_admin
 def rq():
     logger.info("rq called")
     logger.debug(list(request.args.items()))
@@ -467,7 +468,7 @@ def column_identities():
 #####################################
 
 @bp.route('/enter_metadata', methods=['GET','POST'])
-# @auth_required    ### temporary
+@auth_required
 def enter_metadata():
     print("ENTER METADATA FORM ITEMS", list(request.form.items()))
     print("ENTER METADATA DATA", request.data)
@@ -720,7 +721,7 @@ def setchks_session():
 #############################################
 
 @bp.route('/mgmt_info', methods=['GET'])
-@auth_required
+@auth_required_admin
 def mgmt_info():
     object=request.args.get("object", None)
     run_id=request.args.get("run_id", None)
@@ -730,6 +731,9 @@ def mgmt_info():
     elif object=="excel_file":
         ef, filename=setchks_app.mgmt_info.handle_excel_file.get_excel_file(run_id=run_id)
         return send_file(ef, download_name=filename) 
+    elif object=="excel_summaries":
+        esf, es_filename=setchks_app.mgmt_info.get_excel_summaries.get_excel_summaries()
+        return send_file(esf, download_name=es_filename) 
     else:
         return setchks_app.mgmt_info.handle_summary_info.get_summary_info()
 
@@ -810,7 +814,7 @@ def feedback():
 #############################################
 
 @bp.route('/refactored_form', methods=['GET'])
-@auth_required
+@auth_required_admin
 def refactored_form():
     from setchks_app.set_refactoring.concept_module import ConceptsDict
     setchks_session=gui_setchks_session.get_setchk_session(session)
@@ -868,33 +872,14 @@ def cognito_logout():
             )
     logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
     return redirect(redirect_string)
-######################################
-######################################
-## trial cognito2 protected endpoint ##
-######################################
-######################################
 
-@bp.route('/cognito_hello')
-@auth_required
-def cognito_hello():
-    return "You're in"
-
-######################################
-######################################
-## trial cognito2 protected endpoint ##
-######################################
-######################################
-
-@bp.route('/cognito_another_hello')
-@auth_required
-def cognito_another_hello():
-    return "And here!"
 ######################################
 ######################################
 ## path validator endpoint endpoint ##
 ######################################
 ######################################
 
+@auth_required
 @bp.route('/', methods=['GET'])
 @bp.route('/path_validator', methods=['GET','POST'])
 def path_validator():
