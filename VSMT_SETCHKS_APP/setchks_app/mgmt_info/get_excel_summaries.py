@@ -19,7 +19,6 @@ def get_excel_summaries():
         "Time and date checks were run",
         "Run identifier",
         "Name of input file",
-        "Time and date checks were run",
         "Name of value set",
         "Name of report file",
         "Number of rows in file",
