@@ -62,12 +62,12 @@ def make_set_info_sheet(
     if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION":
         ws.append([
             "SNOMED CT Version",
-            f"UK Monolith Edition {setchks_session.sct_version.name_for_dropdown}",
+            f"{setchks_session.sct_version.name_for_dropdown}",
         ])
     else:
         ws.append([
             "Earlier SNOMED CT Version",
-            f"UK Monolith Edition {setchks_session.sct_version.name_for_dropdown}",
+            f"{setchks_session.sct_version.name_for_dropdown}",
         ])
         ws.append([
             "Later SNOMED CT Version",
