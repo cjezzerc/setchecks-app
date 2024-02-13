@@ -1,7 +1,6 @@
 import json
-
 from bson import json_util
-
+from flask import current_app
 from setchks_app.mongodb import get_mongodb_client
 
 def store_summary_dict_to_db(
@@ -37,6 +36,7 @@ def store_summary_dict_to_db(
     summary_dict["Run identifier"]=setchks_session.uuid+":"+summary_dict["Time and date checks were run"]
     summary_dict["Name of input file"]=setchks_session.filename
     summary_dict["Name of value set"]=setchks_session.vs_name
+    summary_dict["Purpose of value set"]=setchks_session.vs_purpose
     summary_dict["Name of report file"]=setchks_session.excel_filename.split("/")[-1]
     summary_dict["Number of rows in file"]=setchks_session.first_data_row+len(setchks_session.marshalled_rows)
     summary_dict["Number of identifiable concepts"]=len(concepts_set)
@@ -46,6 +46,8 @@ def store_summary_dict_to_db(
     summary_dict["Selected release b"]=setchks_session.sct_version_b.date_string
     summary_dict["Verbosity of Excel"]=setchks_session.output_full_or_compact
     summary_dict["Set level messages"]=setchk_set_level_message_codes
+    summary_dict["Version"]=current_app.config["VERSION"]
+    summary_dict["Environment"]=current_app.config["ENVIRONMENT"]
 
     mongodb_client=get_mongodb_client.get_mongodb_client()
     collection=mongodb_client["mgmt_info"]["summaries"]

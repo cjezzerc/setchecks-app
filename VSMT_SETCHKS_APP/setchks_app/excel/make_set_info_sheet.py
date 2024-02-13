@@ -3,7 +3,7 @@
 from openpyxl.utils import get_column_letter
 import setchks_app.setchks.setchk_definitions
 from . import styling
-from flask import current_app
+from flask import current_app, has_app_context
 
 
 def make_set_info_sheet(
@@ -85,11 +85,27 @@ def make_set_info_sheet(
         f"{setchks_session.uuid}:{setchks_session.time_started_processing}",
         ])
 
-    ws.append([
-        "Software Version",
-        "TBI"
-        # current_app.config["VERSION"]
-        ])
+    if has_app_context():
+        ws.append([
+            "Software Version",
+            current_app.config["VERSION"]
+            ])
+    else:
+        ws.append([
+            "Software Version",
+            "Local"
+            ])
+
+    if has_app_context():
+        ws.append([
+            "Environment",
+            current_app.config["ENVIRONMENT"]
+            ])
+    else:   
+        ws.append([
+            "Environment",
+            "LOCAL"
+            ])
     
     cell_widths=[30,80]
     for i, width in enumerate(cell_widths):
