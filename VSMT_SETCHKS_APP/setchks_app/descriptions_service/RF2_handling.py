@@ -30,6 +30,7 @@ def create_collection_from_RF2_file(
     # for descriptions, additionally read the language file and build dict of acc/pref keyed by D_Id
     if data_type=="descriptions":
         acceptabilities={}
+        inactive_acceptabilities=set()
         for line in open(RF2_filename2).readlines()[1:]: 
             line=line.strip()
             f=line.split('\t')
@@ -53,6 +54,7 @@ def create_collection_from_RF2_file(
                     acceptabilities[referenceComponentId]=acceptability_temp
                   
                 else:
+                    inactive_acceptabilities.add(referenceComponentId)
                     pass    # acceptabilities entry will be missing if the active status in the 
                             # lang refset is 0, which can be considered same as "is no longer in the refset"
 
@@ -70,7 +72,9 @@ def create_collection_from_RF2_file(
             term=f[7]
             case_sig=f[8]
 
-            if desc_id in acceptabilities or active_status=="0": # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
+            # if desc_id in acceptabilities or active_status=="0": # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
+            if desc_id in acceptabilities or (active_status=="0" and desc_id in inactive_acceptabilities): # (only add description if not "unnacceptable" i.e must be (active) in lang refset)
+                                                                                                           # or if is an inactive description and is in lang refset even if that entry is inactive
                 if desc_id in acceptabilities:
                     acceptability=acceptabilities[desc_id]
                     if typeId=="900000000000003001": # = fsn
