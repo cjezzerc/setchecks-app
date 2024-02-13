@@ -76,6 +76,7 @@ class SetchksSession():
                "excel_file_generation_failed",
                "timings",
                "app_version",
+               "environment",
                )
 
     # def __init__(self, session=None):
@@ -121,8 +122,10 @@ class SetchksSession():
         self.excel_file_available=False
         self.excel_file_generation_failed=False
         self.timings={} # arbitrary entries can be put in this dict for debug purposes
-        self.app_version="FUNCTIONALITY_DISABLED" # current_app.config["VERSION"] # need way to do this differently if not run from app
+        self.app_version="NOT SET" # will stay as "NOT SET" if not running from app (i.e. via script)
+        self.environment="NOT SET" # ditto
         self.initialise_sct_versions()
+        
     def __repr__(self):
         repr_strings=[]
         # for k,v in self.__dict__.items():

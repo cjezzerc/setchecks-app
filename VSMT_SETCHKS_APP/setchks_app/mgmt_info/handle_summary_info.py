@@ -46,8 +46,9 @@ def store_summary_dict_to_db(
     summary_dict["Selected release b"]=setchks_session.sct_version_b.date_string
     summary_dict["Verbosity of Excel"]=setchks_session.output_full_or_compact
     summary_dict["Set level messages"]=setchk_set_level_message_codes
-    summary_dict["Version"]=current_app.config["VERSION"]
-    summary_dict["Environment"]=current_app.config["ENVIRONMENT"]
+    # if "environment" in setchks_session.__slots__: # temporary protection for people with old setchks_session objects (13/2/24)
+    summary_dict["Version"]=setchks_session.app_version
+    summary_dict["Environment"]=setchks_session.environment
 
     mongodb_client=get_mongodb_client.get_mongodb_client()
     collection=mongodb_client["mgmt_info"]["summaries"]

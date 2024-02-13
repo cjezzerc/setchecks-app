@@ -85,28 +85,17 @@ def make_set_info_sheet(
         f"{setchks_session.uuid}:{setchks_session.time_started_processing}",
         ])
 
-    if has_app_context():
-        ws.append([
-            "Software Version",
-            current_app.config["VERSION"]
-            ])
-    else:
-        ws.append([
-            "Software Version",
-            "Local"
-            ])
-
-    if has_app_context():
-        ws.append([
-            "Environment",
-            current_app.config["ENVIRONMENT"]
-            ])
-    else:   
-        ws.append([
-            "Environment",
-            "LOCAL"
-            ])
     
+    # if "environment" in setchks_session.__slots__: # temporary protection for people with old setchks_session objects (13/2/24)
+    ws.append([
+        "Software Version",
+        setchks_session.app_version
+        ])
+    ws.append([
+        "Environment",
+        setchks_session.environment
+        ])
+
     cell_widths=[30,80]
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     

@@ -57,7 +57,7 @@ from rq import Queue
 from setchks_app.redis.get_redis_client import get_redis_string, get_redis_client
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file,
+    Blueprint, flash, g, redirect, render_template, request, url_for, session, current_app, send_file
 )
 from werkzeug.exceptions import abort
 
@@ -618,6 +618,10 @@ def select_and_run_checks():
 
         setchks_session.time_started_processing=datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S')
         setchks_session.processing_status="2_PREPROCESSING"
+        # if "environment" in setchks_session.__slots__: # temporary protection for people with old setchks_session objects (13/2/24)
+        setchks_session.app_version=current_app.config["VERSION"]
+        setchks_session.environment=current_app.config["ENVIRONMENT"]
+            
 
         # start_rq_worker_if_none_running()
         start_specific_rq_worker(worker_name="worker_long_jobs")
