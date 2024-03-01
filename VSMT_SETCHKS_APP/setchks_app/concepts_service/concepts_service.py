@@ -1,4 +1,4 @@
-"""Definition of interface class to database of concept_id, description_id, decription_term tuples"""
+"""Definition of class to interface to concepts_service database"""
 
 import os
 import requests

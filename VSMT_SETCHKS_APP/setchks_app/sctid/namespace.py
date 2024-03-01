@@ -11,7 +11,7 @@ class Namespace():
         self.notes=details_dict["notes"]
 
 def get_namespaces():
-
+    pass
 
 
 if __name__=="__main__":

@@ -1,6 +1,7 @@
 import requests
 import os
 import time
+import sys
 
 from fhir.resources.valueset import ValueSet
 from flask import current_app
