@@ -94,12 +94,14 @@ def make_one_supp_tab_sheet(
     ws.freeze_panes="A2"
     
     for i_row, row in enumerate(ws.iter_rows()):
-        for cell in row:
+        for i_cell, cell in enumerate(row):
             strval=str(cell.value)
             if len(strval)>=16 and str(cell.value)[0:16]=='=HYPERLINK("http':
                 cell.style=styling.vsmt_style_wrap_top_hyperlink
             elif len(strval)>=6 and str(cell.value)[0:6]=='=HYPER':
                 cell.style=styling.vsmt_style_wrap_top_double_hyperlink
+            elif i_cell in [len(row)-1, len(row)-2]: # i.e. last two columns, for eff dates
+                cell.style=styling.vsmt_style_wrap_top_number # (so can filter)
             else:
                 cell.style=styling.vsmt_style_wrap_top
             if i_row<=0:

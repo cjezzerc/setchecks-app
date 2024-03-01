@@ -35,6 +35,9 @@ vsmt_style_wrap_top=NamedStyle(name="vsmt_style_wrap_top")
 vsmt_style_wrap_top.alignment=Alignment(wrap_text=True, vertical='top')
 vsmt_style_wrap_top.number_format = numbers.FORMAT_TEXT
 
+vsmt_style_wrap_top_number=NamedStyle(name="vsmt_style_wrap_top_number")
+vsmt_style_wrap_top_number.alignment=Alignment(wrap_text=True, vertical='top')
+vsmt_style_wrap_top_number.number_format = numbers.FORMAT_NUMBER
 
 vsmt_style_wrap_top_hyperlink=NamedStyle(name="vsmt_style_wrap_top_hyperlink")
 vsmt_style_wrap_top_hyperlink.alignment=Alignment(wrap_text=True, vertical='top')

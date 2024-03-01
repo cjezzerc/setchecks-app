@@ -62,9 +62,11 @@ class SuppTabRow():
         "id_type",
         "implied_concept_id",
         "term",
+        "eff_time",
         "replacement_option_counter",
         "replacement_concept_id",
         "replacement_concept_pt",
+        "replacement_concept_eff_time",
         "ambiguity_status",
         "is_replacement_concept_in_set",
         "is_correct_representation_type_in_set",
@@ -84,8 +86,10 @@ class SuppTabRow():
         "Suggested Concept Id (Active)",
         "Preferred Term",
         "Already in set",
+        "Effective Time (Inactive Concept)",
+        "Effective Time (Suggested Active Concept)",
         ]
-    cell_widths=[10,20,20,20,30,5,24,20,30,10]
+    cell_widths=[10,20,20,20,30,5,24,20,30,10,20,20]
 
     
     def __init__(self):
@@ -96,8 +100,10 @@ class SuppTabRow():
         self.id_type=None
         self.implied_concept_id="" # null string so that if not set it shows as a blank
         self.term=None
+        self.eff_time=None
         self.replacement_concept_id=None
         self.replacement_concept_pt=None
+        self.replacement_concept_eff_time=None
         self.ambiguity_status=None
         self.is_replacement_concept_in_set=None
         self.is_correct_representation_type_in_set=None
@@ -125,6 +131,8 @@ class SuppTabRow():
             termbrowser_hyperlink(sctid=self.replacement_concept_id),
             self.replacement_concept_pt,
             self.YES_NO[self.is_replacement_concept_in_set],
+            int(self.eff_time),
+            int(self.replacement_concept_eff_time),
             ]
 
         
@@ -233,12 +241,14 @@ def do_check(setchks_session=None, setchk_results=None):
                             #     supp_tab_row.term=concepts[concept_id].pt
                             # but for familiarisation day 2 just do (as no time to test the above)
                             supp_tab_row.term=concepts[concept_id].pt
+                            supp_tab_row.eff_time=concepts[concept_id].effective_time
 
                             # if mr.C_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
                             # if mr.D_Id_entered is not None and mr.congruence_of_C_Id_entered_and_D_Term_entered_csr
                             supp_tab_row.replacement_option_counter=f"{i_option+1}/{len(hst_options)}"
                             supp_tab_row.replacement_concept_id=hst_option.new_concept_id
                             supp_tab_row.replacement_concept_pt=concepts[hst_option.new_concept_id].pt
+                            supp_tab_row.replacement_concept_eff_time=concepts[hst_option.new_concept_id].effective_time
                             supp_tab_row.ambiguity_status=hst_option.is_ambiguous
                             supp_tab_row.is_replacement_concept_in_set=supp_tab_row.replacement_concept_id in valset_members
                             if supp_tab_row.is_replacement_concept_in_set is True:
