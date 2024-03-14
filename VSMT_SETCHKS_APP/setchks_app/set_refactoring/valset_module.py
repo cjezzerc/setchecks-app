@@ -155,20 +155,23 @@ class ClauseBasedRule():
     #             clause.clause_base_concept_fsn="NOT IN THIS BRANCH"
         
 class ValsetCollection(list):
+    # 14 Mar 2024 am removing the .valset_collection attribute as causes problems in unpickling
+    # and is a hangover from DMWB related work.    
     def __init__(self):
         self.global_exclusions=None
         self.valset_name_to_id={}
         # self.create_filter_valsets()
     def append(self, valset=None):
         self.valset_name_to_id[valset.valset_name]=len(self) # keep a map of names in the list
-        if valset.valset_collection is None: 
-            valset.valset_collection=self   # this will allow a valset to retrieve e.g. the filter_memberships,
-                                            # which are common to all valsets in collection,
-                                            # even though their application is controlled by valset level flags
-        else:
-            print("======> Error, valset is already in a collection")
-            print(valset)
-            sys.exit()
+        # if valset.valset_collection is None: 
+        #     valset.valset_collection=self   # this will allow a valset to retrieve e.g. the filter_memberships,
+        #                                     # which are common to all valsets in collection,
+        #                                     # even though their application is controlled by valset level flags
+        # else:
+            
+            # print("======> Error, valset is already in a collection")
+            # print(valset)
+            # sys.exit()
         super().append(valset)
 
     # def process_filters(self, concepts=None): # NEED TO THINK WHAT HAPPENS IF have more than one set of concepts in play
@@ -204,7 +207,7 @@ class Valset():
         "clause_based_rule",
         "metadata_column",
         "is_a_filter_valset",
-        "valset_collection",
+        # "valset_collection",
         "export_filter",
         "lexical_filter",
         "filter_flags",
@@ -234,7 +237,7 @@ class Valset():
 
         self.metadata_column=metadata_column
         self.is_a_filter_valset=is_a_filter_valset
-        self.valset_collection=None # this is set by the ValsetColection append method
+        # self.valset_collection=None # this is set by the ValsetColection append method
         self.process_metadata()
         
     def __repr__(self):
@@ -273,18 +276,20 @@ class ValsetMembershipAnalysis():
         # do membership analysis for each clause
         # full_exclusion_set=set(global_exclusions)
         full_exclusion_set=set()
-        if not valset.is_a_filter_valset:
-            # print("1 valset is not a filter valset")
-            if valset.apply_filters:
-                # print("2 Applying filters")
-                for filter_name, filter_flag in valset.filter_flags.items():
-                    # print("3a Filter", filter_name,"..")
-                    if filter_flag:
-                        # print("3b .. is applied")
-                        # print("3c size is", len(valset.valset_collection.filter_memberships[filter_name]))
-                        full_exclusion_set=full_exclusion_set.union(set(valset.valset_collection.filter_memberships[filter_name]))
-        if verbose:
-            print("Filters generate an exclusion set of size", len(full_exclusion_set))
+        # commenting out block 14mar2024 as from DMWB work
+        # if not valset.is_a_filter_valset:
+        #     # print("1 valset is not a filter valset")
+        #     if valset.apply_filters:
+        #         # print("2 Applying filters")
+        #         for filter_name, filter_flag in valset.filter_flags.items():
+        #             # print("3a Filter", filter_name,"..")
+                    
+        #             if filter_flag:
+        #                 # print("3b .. is applied")
+        #                 # print("3c size is", len(valset.valset_collection.filter_memberships[filter_name]))
+        #                 full_exclusion_set=full_exclusion_set.union(set(valset.valset_collection.filter_memberships[filter_name]))
+        # if verbose:
+        #     print("Filters generate an exclusion set of size", len(full_exclusion_set))
         full_inclusion_set=set()
         final_inclusion_set=set()
 

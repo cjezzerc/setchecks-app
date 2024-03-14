@@ -23,7 +23,8 @@ class SetchkResults():
         "meta_data",
         "supp_tab_headers",
         "supp_tab_blocks",
-        "chk_specific_sheet"
+        "chk_specific_sheet",
+        "chk_specific_data",
         )
 
     def __init__(self):
@@ -38,6 +39,10 @@ class SetchkResults():
         self.supp_tab_headers=None
         self.supp_tab_blocks=None
         self.chk_specific_sheet=None
+        self.chk_specific_data={} # this for special cases such as storing refactored_valset in CHK10
+                                  # values can be arbitrary data objects with self explanatory keys
+                                  # Data is not for interpretation by the core app but can be added
+                                  # for post hoc extra bespoke analysis
 
     def __repr__(self):
         repr_strings=[]

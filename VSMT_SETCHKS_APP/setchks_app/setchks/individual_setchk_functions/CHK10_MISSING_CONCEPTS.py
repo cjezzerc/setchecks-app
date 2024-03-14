@@ -56,6 +56,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 concepts=concepts,
                 ) 
         # setchks_session.refactored_form=refactored_valset
+    
 
 # A pattern analysis of your value set indicates that you have 37 concepts that are all descendants of the concept X but there are 8 descendants that you have not in_vs.
 # These m concepts (that you may have omitted in error) are: ….  Overlap (I1,E1)+overlap(I1+E2)+overlap(I1+E3) …
@@ -75,13 +76,18 @@ def do_check(setchks_session=None, setchk_results=None):
     # and build up total set of excludes                             #
     ##################################################################
 
+    setchk_results.chk_specific_data["refactored_valset"]=refactored_valset
+    setchk_results.chk_specific_data["include_clauses"]=[]
+    setchk_results.chk_specific_data["exclude_clauses"]=[]
     for clause in clauses: 
         members=ClauseMembershipAnalysis(clause=clause, concepts=concepts).members # members is a list of concept ids
         members=set(concepts[x] for x in members) # now members is a set of Concepts
         if clause.clause_type=="include":
             include_clauses_and_memberships.append((clause, members,))
+            setchk_results.chk_specific_data["include_clauses"].append((clause, len(members)))
         else:
             exclude_clauses_and_memberships.append((clause, members,))
+            setchk_results.chk_specific_data["exclude_clauses"].append((clause, len(members)))
             all_excluded_concepts.update(members)
 
     
