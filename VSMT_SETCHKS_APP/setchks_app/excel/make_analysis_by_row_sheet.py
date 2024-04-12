@@ -31,6 +31,7 @@ def make_analysis_by_row_sheet(
 
     setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
+    ci=setchks_session.columns_info
 
     row_analysis_row_numbers_map=[] # each entry in list corresponds 1:1 to a row in data file
                                 # each such entry is a dict
@@ -43,6 +44,13 @@ def make_analysis_by_row_sheet(
     if setchks_session.table_has_header:
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
+        identifier_term_separator_headers=[]
+        identifier_header=header_row_cell_contents[ci.mixed_column]
+        identifier_term_separator_headers.append(f'Identifier ("{identifier_header}")')
+        if ci.have_dterm_column:
+            dterm_header=header_row_cell_contents[ci.dterm_column]
+            identifier_term_separator_headers.append(f'Term ("{dterm_header}")')
+        identifier_term_separator_headers.append("")
         ws.append(
             [
                 "Input File Row Number", 
@@ -54,7 +62,7 @@ def make_analysis_by_row_sheet(
                 "Message Extension",
                 "Link to Grp by Msg",
                 "Link to Suppl Tab",
-                ] + header_row_cell_contents
+                ] + identifier_term_separator_headers + header_row_cell_contents
             ) 
         current_ws_row+=1
         ws.append([]) # for filter arrows
@@ -159,6 +167,16 @@ def make_analysis_by_row_sheet(
                             ] 
                         # if not something_was_output: # only add the file data for the first outcome line
                         #     ws_row_contents+=data_row_cell_contents
+
+                        identifier_term_separator_data=[]
+                        identifier_data=data_row_cell_contents[ci.mixed_column]
+                        identifier_term_separator_data.append(identifier_data)
+                        if ci.have_dterm_column:
+                            dterm_data=data_row_cell_contents[ci.dterm_column]
+                            identifier_term_separator_data.append(dterm_data)
+                        identifier_term_separator_data.append("Input file -->")
+                        ws_row_contents+=identifier_term_separator_data
+
                         ws_row_contents+=data_row_cell_contents # reverted to always showing as filtering
                                                                 # can lead to weird misundertstandings
                         time0=time.time()
@@ -192,11 +210,20 @@ def make_analysis_by_row_sheet(
     
     print(f"top_dashed_cells={top_dashed_cells}")
     if creating_ws:    
-        cell_widths=[8,8,30,18,8,50,30,7,7,25,50] + [20]*10
+        # cell_widths=[8,8,30,18,8,50,30,7,7,25,50] + [20]*10
+        cell_widths=[8,8,20,15,8,50,30,7,7,20]
+        if ci.have_dterm_column:
+            cell_widths.append(30)
+        cell_widths.append(12)
+        cell_widths+=[20]*ci.ncols
         for i, width in enumerate(cell_widths):
             ws.column_dimensions[get_column_letter(i+1)].width=width     
 
-        ws.freeze_panes="J2"
+        # ncols_to_freeze=12
+        # if ci.have_dterm_column:
+        #     ncols_to_freeze+=1
+        # # ws.freeze_panes="J3"
+        # ws.freeze_panes=get_column_letter(ncols_to_freeze)+"2"
         
         for i_row, row in enumerate(ws.iter_rows()):
             if i_row==0:

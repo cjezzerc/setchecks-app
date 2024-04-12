@@ -46,7 +46,7 @@ setchks['CHK02_IDS_IN_RELEASE']=Setchk(
 
 setchks['CHK03_TERM_CONGRUENCE']=Setchk(
     setchk_code='CHK03_TERM_CONGRUENCE',
-    setchk_short_name='Appropriate/consistent Terms', 
+    setchk_short_name='Appropriate / consistent Terms', 
     setchk_function=CHK03_TERM_CONGRUENCE.do_check,
     setchk_data_entry_extract_types=["ALL"],
     setchk_sct_version_modes=["SINGLE_SCT_VERSION"],
