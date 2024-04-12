@@ -28,11 +28,11 @@
 
         <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
             
-            <div class="card" style="margin-top:1vh; overflow:auto">
+            <div class="card" style=" margin-top:1vh; overflow:auto">
                 <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
                     Welcome
                 </div>
-                <div class="card-body" style="font-size: 1.0em; overflow:auto">
+                <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
                         <p>
                         Welcome to a first Proof of Concept (PoC) of the NHS Value Set Management Tool (VSMT). 
                         We aim to grow the VSMT into a full suite of tools that provide a one-stop-shop for 
@@ -58,13 +58,11 @@
                         <p>
                         We would love to hear your feedback, 
                         for which there is a link on each page.
-                        </p>
-                        <p>
+                        
                         Thanks for trying out the VSMT!
-                        </p>
-                        <p><b>
-                        Technology and Information Standards (TIS)
-                        <br>NHS England
+                        
+                        <br><b>
+                        Technology and Information Standards (TIS), NHS England
                         </b></p>
                 </div>
             </div>
@@ -73,21 +71,24 @@
                 <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
                     Using the Set Checks Application 
                 </div>
-                <div class="card-body" style="font-size: 1.0em; overflow:auto">
-                    <p> 
-                    To upload your value set file, and start using the tool, just click the big green "Browse for a file" button.
-                    </p>
-                    <p>Click for  
-                    <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=51269456" target="_blank">supporting materials including a user guide, 
-                    and detailed reference information on the setchecks</a> 
-                    </p>
+                <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
+                    <ul> 
+                    <li>The input file must be in xlsx or tab-separated format with any number of columns, with a single header row, and a maximum of 5000 rows.</li>
+                    <li>One column must contain SNOMED Identifiers; another column can optionally contain Terms; all other columns are disregarded by the set checks.</li>
+                    <li>The selection of the Identifier and Term columns is made in the app after upload.</li>
+                    <li>To upload your value set file, and start using the tool, click the big green "Browse for a file" button.</li>
+                    <li>Click for  
+                        <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=51269456" target="_blank">supporting materials including a user guide, 
+                        and detailed reference information on the setchecks</a> 
+                        </li>    
+                    </ul>
+                   
+
                     <p>
                     By using this tool, you are accepting of the T&Cs. You can re-read the T&Cs at any time using the link
                     provided on each page of the application. 
                     </p>   
-                    <p style="color:red; font-weight: bold;">
-                        IMPORTANT: This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
-                    </p>
+                    
                    
                     <!-- <span><a href="release_notes/known_issues.html">Known issues</a></span> -->
                 </div>
@@ -171,18 +172,18 @@
                 </div> 
  
             {% if setchks_session.data_as_matrix != [] %}
-                <div class="card" style="height: 42vh; margin-top:1vh; overflow:auto">
+                <div class="card" style=" margin-top:1vh; overflow:auto">
                     <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
                         Options when Loading a New File
                     </div>
-                    <div class="card-body" style="font-size: 1em;">
+                    <div class="card-body" style="padding: 1vh; font-size: 1em;">
     
                         <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
                             {% for a_type in [
                                 ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
-                                    <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
+                                    <br><span style='font-size: 0.8em'>(typical when starting work on a different value set)</span>"),
                                 ("RETAIN_SETTINGS","<b>Retain</b> metadata and settings
-                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name etc
+                                    <br><span style='font-size: 0.8em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name etc
                                     when loading a revised version 
                                     of a value set)</span>"),
                                 ] %}
@@ -208,13 +209,25 @@
                             {% endfor %}
                             
                         </form>
-                        <p>These settings can be further adjusted on the Settings page after loading</p>
+                        <p>The settings can be further adjusted on the Settings page after loading</p>
             
     
     
                     </div>
                 </div>
             {% endif %}
+                <div class="card" style=" margin-top:1vh; overflow:auto">
+                    <div class="card-header" style="background-color: red; font-weight: bold;">
+                       
+                    <i class="bi bi-exclamation-triangle" style="-webkit-text-stroke: 1px; font-size:150%"></i>
+
+                    </div>
+                    <div class="card-body" style="padding: 1vh; font-size: 1em;">
+                        
+                        <p style="color:red; font-weight: bold;">
+                            This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
+                        </p>
+                </div>
             </div>
         </div>
 
