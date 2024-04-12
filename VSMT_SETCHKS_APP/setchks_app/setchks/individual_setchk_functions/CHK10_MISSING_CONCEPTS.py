@@ -96,10 +96,11 @@ def do_check(setchks_session=None, setchk_results=None):
     ###########################################
     chk_specific_sheet=ChkSpecificSheet(sheet_name="CHK10_suppl")
     setchk_results.chk_specific_sheet=chk_specific_sheet
-    chk_specific_sheet.col_widths=[60,20,40,20,40,20]
+    chk_specific_sheet.col_widths=[20,60,20,40,20,40,20]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
+        "",
         "",
         "Current Members",
         "",
@@ -110,6 +111,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
+        "Suggestions group",
         "Group",
         "Concept Id",
         "Preferred Term",
@@ -122,6 +124,8 @@ def do_check(setchks_session=None, setchk_results=None):
     #############################################
 
     n_SUGGESTED_NEW_MEMBERS=0
+    i_suggestions_group=0
+
     for sorting_flag in ["ONLY_NON_ZERO", "ONLY_ZERO"]: # sorting_flag float include clauses with some 
                                                         # "interacting" exclude clauses to the top
         for i_clause, clause_and_members_tuple in enumerate(include_clauses_and_memberships):
@@ -134,6 +138,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 (n>1 and sorting_flag=="ONLY_NON_ZERO") 
                 )
             if do_output_this_loop:
+                i_suggestions_group+=1
                 if sorting_flag=="ONLY_NON_ZERO":
                     n_SUGGESTED_NEW_MEMBERS+=n
                 n_members_of_clause=len(include_members)
@@ -147,6 +152,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     )
                 row=chk_specific_sheet.new_row()
                 row.cell_contents=[
+                f"Suggestions group {i_suggestions_group}",
                 plain_english_formatted_clause,
                 f"{n_members_of_clause_in_vs}/{n_members_of_clause}",
                 "",
@@ -178,7 +184,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             #     common_nature="see above"
                             row=chk_specific_sheet.new_row()
                             row.cell_contents=[
-                            "","","",
+                            "","","","",
                             str(member.concept_id),
                             member.pt,
                             common_nature,
@@ -195,6 +201,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
+                        "",
                         "",
                         str(member.concept_id),
                         member.pt
