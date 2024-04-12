@@ -413,6 +413,8 @@ def do_check(setchks_session=None, setchk_results=None):
         SetLevelTableRow(
             simple_message=(
                 "[AMBER] You should study the information provided about possible inactive predecessors. "
+                "This check has identified inactive codes that probably mean the same as some of the codes in your list "
+                "and that could be in the data you want to extract from. " 
                 "Having the fullest set of firmly identified inactive predecessors for each active concept "
                 "will generally improve the quality of data extraction. Currently this check does not "
                 "attempt to assess the coverage of possible inactive predecessors already in the "

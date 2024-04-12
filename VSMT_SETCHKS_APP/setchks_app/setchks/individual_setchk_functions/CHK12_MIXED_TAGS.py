@@ -179,7 +179,7 @@ def do_check(setchks_session=None, setchk_results=None):
             SetLevelTableRow(
                 simple_message=(
                     "[AMBER] Your value set contains more than one type of Semantic Tag. "  
-                    "This sometimes indicates that erroneous Concepts have been included."
+                    "This sometimes indicates that some Concepts have been erroneously included."
                     ),
                     outcome_code="CHK12-OUT-03",
                 )
