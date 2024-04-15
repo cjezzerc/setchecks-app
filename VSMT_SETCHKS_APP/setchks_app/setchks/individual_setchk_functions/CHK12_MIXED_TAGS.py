@@ -8,6 +8,7 @@ import setchks_app.terminology_server_module
 from setchks_app.set_refactoring.concept_module import ConceptsDict
 
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.concepts_service import valid_semantic_tags
 
 from ..check_item import CheckItem
 from ..set_level_table_row import SetLevelTableRow
@@ -59,8 +60,10 @@ def do_check(setchks_session=None, setchk_results=None):
             mObj=re.search(r'.*\((.*?)\)$', fsn.strip())
             if mObj:
                 semantic_tag=mObj.groups()[0]
+                if semantic_tag not in valid_semantic_tags.valid_semantic_tags:
+                    semantic_tag="No recognisable tag" # if final parenthesis contains text other than a recognised tag  
             else:
-                semantic_tag="NO_SEMANTIC_TAG_FOUND"
+                semantic_tag="No recognisable tag" # if there is no final parenthesis
         else:
             semantic_tag="NO_FSN_FOUND"
         semantic_tags[concept_id]=semantic_tag
