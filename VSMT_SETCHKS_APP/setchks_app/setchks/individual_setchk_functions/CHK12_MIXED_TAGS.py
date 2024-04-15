@@ -71,20 +71,6 @@ def do_check(setchks_session=None, setchk_results=None):
             tag_counts[semantic_tag]=0
         tag_counts[semantic_tag]+=1
 
-    # OLD CODE
-    # joint_majority_tag=False
-    # majority_tag=None
-    # majority_count=0
-    # n_concepts=0 # this will be count of distinct concepts encountered in file
-    # for tag, count in tag_counts.items():
-    #     n_concepts+=count
-    #     if count==majority_count:
-    #         joint_majority_tag=True
-    #     elif count>majority_count:
-    #         joint_majority_tag=False
-    #         majority_tag=tag
-    #         majority_count=count
-
     dominant_tag=None
     dominant_count=0
     n_concepts=0 # this will be count of distinct concepts encountered in file
@@ -234,14 +220,10 @@ def do_check(setchks_session=None, setchk_results=None):
                 )     
             #</set_level_count>
 
-        #propose
-        # tags_list= [ x for x in tag_counts].sorted()
         tag_counts_list=[(x, tag_counts[x]) for x in tag_counts.keys()]
-        # tag_counts_list.sort(key=lambda x:(x[1],x[0],), reverse=True)
         tag_counts_list.sort(key=lambda x:x[0], reverse=False)
         tag_counts_list.sort(key=lambda x:x[1], reverse=True)
         
-        # for tag, count in tag_counts.items():
         for tag, count in tag_counts_list:
             if (tag!=dominant_tag):
                 #<set_level_count>
