@@ -147,26 +147,6 @@ def do_check(setchks_session=None, setchk_results=None):
         ECL_clause,
         ]
     
-    # OLD ANALYSIS STYLE WITH NO COUNTS AND DEFAULT ORDER
-    # for clause in refactored_valset.clause_based_rule.clauses:
-    #     clause_base_concept_id=str(clause.clause_base_concept_id)
-    #     clause_type=clause.clause_type
-    #     if clause_type=="include":
-    #         n_INCLUDE_CLAUSES+=1
-    #     else:
-    #         n_EXCLUDE_CLAUSES+=1
-    #     clause_operator=clause.clause_operator
-    #     if clause_operator[0]=="=":
-    #         clause_operator=clause_operator[1:]
-    #     pt=concepts[clause_base_concept_id].pt
-    #     ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
-    #     ECL_clauses[clause_type].append(ECL_clause)
-    #     row=chk_specific_sheet.new_row()
-    #     row.cell_contents=[
-    #     clause_type,
-    #     ECL_clause,
-    #     ]
-    
     
     ##########################################
     # Make full ECL expression for value set #
