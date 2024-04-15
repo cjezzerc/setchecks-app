@@ -193,11 +193,20 @@ def do_check(setchks_session=None, setchk_results=None):
     setchk_results.supp_tab_blocks=[] # there will be one entry in list for each data row
                     # each entry will either be None(active entries) or a list(B) of supp_tab_row objects
                     # if there are no replacements the list(B) will be []
-    interpretations={}
+    interpretations={} 
+    # unambiguous_replacement_is_in_valset={} # keyed by i_data_row; value is always just True (ie essentially is a set)
+    
+    # Next two counters are computed earlier than the others. These counters were added later and are to give an
+    # indication to the user of how many "easy cases" already sorted out.
+    # These two counters apply in both the single and dual case. Int he dual case thye only apply to things inactivated
+    # since earlier release.
+    N_CONCEPTS_WITH_UNAMBIG_REPL=0
+    N_CONCEPTS_WITH_UNAMBIG_REPL_WITH_REPL_IN_VALSET=0
+    
     for i_data_row, mr in enumerate(setchks_session.marshalled_rows):
         if mr.C_Id is not None:
-            concept_id=mr.C_Id
-            valset_members.add(concept_id)  
+            concept_id=mr.C_Id 
+            # valset_members.add(concept_id)  # this is not needed as done in loop above
             active_status[concept_id]=concepts[concept_id].active
             if dual_mode:
                 active_status_earlier_sct_release[concept_id]=concepts_earlier_sct_version[concept_id].active
@@ -256,6 +265,10 @@ def do_check(setchks_session=None, setchk_results=None):
                             else:
                                 supp_tab_row.is_correct_representation_type_in_set="-"
                             supp_tab_entries.append(supp_tab_row)
+                            if interpretation=="UNAMBIGUOUS":
+                                N_CONCEPTS_WITH_UNAMBIG_REPL+=1
+                                if supp_tab_row.is_replacement_concept_in_set is True:
+                                    N_CONCEPTS_WITH_UNAMBIG_REPL_WITH_REPL_IN_VALSET+=1
                 else: # it's inactive but also was inactive in earlier_sct_version so not reported
                     supp_tab_entries=None
             else: # if active
@@ -486,6 +499,28 @@ def do_check(setchks_session=None, setchk_results=None):
                 )
             )
             #</set_level_count>
+            #<set_level_count>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    'Number of inactive Concepts with a "No ambiguity" replacement '
+                    ),
+                value=f"{N_CONCEPTS_WITH_UNAMBIG_REPL}",
+                outcome_code="CHK04-OUT-01",
+                )
+            )
+            #</set_level_count>
+                        #<set_level_count>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    'Number of inactive Concepts with a "No ambiguity" replacement where the replacement is already in the value set'
+                    ),
+                value=f"{N_CONCEPTS_WITH_UNAMBIG_REPL_WITH_REPL_IN_VALSET}",
+                outcome_code="CHK04-OUT-02",
+                )
+            )
+            #</set_level_count>
             
     else: # dual mode
         if n_CONCEPTS_INACTIVE==0:
@@ -546,7 +581,28 @@ def do_check(setchks_session=None, setchk_results=None):
                     )
                 )
                 #</set_level_count>
-
+            #<set_level_count>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    'Number of newly inactivated Concepts with a "No ambiguity" replacement '
+                    ),
+                value=f"{N_CONCEPTS_WITH_UNAMBIG_REPL}",
+                outcome_code="CHK04-OUT-03",
+                )
+            )
+            #</set_level_count>
+            #<set_level_count>
+            setchk_results.set_level_table_rows.append(
+                SetLevelTableRow(
+                descriptor=(
+                    'Number of newly inactivated Concepts with a "No ambiguity" replacement where the replacement is already in the value set'
+                    ),
+                value=f"{N_CONCEPTS_WITH_UNAMBIG_REPL_WITH_REPL_IN_VALSET}",
+                outcome_code="CHK04-OUT-04",
+                )
+            )
+            #</set_level_count>
             if n_CONCEPTS_ALSO_INACTIVE_AT_EARLIER_SCT_VERSION>0:
                 #<set_level_message>
                 setchk_results.set_level_table_rows.append(
