@@ -71,18 +71,30 @@ def do_check(setchks_session=None, setchk_results=None):
             tag_counts[semantic_tag]=0
         tag_counts[semantic_tag]+=1
 
-    joint_majority_tag=False
-    majority_tag=None
-    majority_count=0
+    # OLD CODE
+    # joint_majority_tag=False
+    # majority_tag=None
+    # majority_count=0
+    # n_concepts=0 # this will be count of distinct concepts encountered in file
+    # for tag, count in tag_counts.items():
+    #     n_concepts+=count
+    #     if count==majority_count:
+    #         joint_majority_tag=True
+    #     elif count>majority_count:
+    #         joint_majority_tag=False
+    #         majority_tag=tag
+    #         majority_count=count
+
+    dominant_tag=None
+    dominant_count=0
     n_concepts=0 # this will be count of distinct concepts encountered in file
     for tag, count in tag_counts.items():
         n_concepts+=count
-        if count==majority_count:
-            joint_majority_tag=True
-        elif count>majority_count:
-            joint_majority_tag=False
-            majority_tag=tag
-            majority_count=count
+        if count>dominant_count:
+            dominant_tag=tag
+            dominant_count=count
+    if dominant_count < 0.9*n_concepts:
+        dominant_tag=None
             
     ##################################################################
     ##################################################################
@@ -106,13 +118,44 @@ def do_check(setchks_session=None, setchk_results=None):
             if concept_id is not None:
                 n_FILE_PROCESSABLE_ROWS+=1
                 semantic_tag=semantic_tags[concept_id]
-                if joint_majority_tag or semantic_tag!=majority_tag:
+                # if joint_majority_tag or semantic_tag!=majority_tag:
+                if (dominant_tag is not None):
+                    if semantic_tag!=dominant_tag:
+                        #<check_item>
+                        check_item=CheckItem("CHK12-OUT-02")
+                        check_item.outcome_level="ISSUE"
+                        check_item.general_message=(
+                            "The Semantic Tag for this Concept is not the dominant tag in this value set "
+                            f'(which is "{dominant_tag}"). '
+                            "This may suggest it is an erroneous entry. "
+                            "A full analysis of Semantic Tags used in this value set is given in the 'Set_Analysis' tab. "
+                            "The Semantic Tag for this Concept is -->"
+                            )
+                        check_item.row_specific_message=(
+                            f"{semantic_tag}"
+                        )
+                        this_row_analysis.append(check_item)
+                        #</check_item>
+                    else:
+                        #<check_item>
+                        check_item=CheckItem("CHK12-OUT-01")
+                        check_item.outcome_level="Conditional: FACT/DEBUG"
+                        check_item.general_message=(
+                            "The Semantic Tag for this Concept is the dominant tag in this value set. "
+                            "The Semantic Tag for this Concept is -->"
+                            )
+                        check_item.row_specific_message=(
+                            f"{semantic_tag}"
+                            )
+                        #</check_item>
+                        this_row_analysis.append(check_item)
+                else:
                     #<check_item>
-                    check_item=CheckItem("CHK12-OUT-02")
+                    check_item=CheckItem("CHK12-OUT-07")
                     check_item.outcome_level="ISSUE"
                     check_item.general_message=(
-                        "The Semantic Tag for this Concept is not the most frequently found tag in this value set. "
-                        "This may suggest it is an erroneous entry. "
+                        "As there is no dominant tag in this value set the tag for all rows should be checked "
+                        "as this can sometimes identify Concepts that have been added erroneously. "
                         "A full analysis of Semantic Tags used in this value set is given in the 'Set_Analysis' tab. "
                         "The Semantic Tag for this Concept is -->"
                         )
@@ -121,19 +164,6 @@ def do_check(setchks_session=None, setchk_results=None):
                     )
                     this_row_analysis.append(check_item)
                     #</check_item>
-                else:
-                    #<check_item>
-                    check_item=CheckItem("CHK12-OUT-01")
-                    check_item.outcome_level="Conditional: FACT/DEBUG"
-                    check_item.general_message=(
-                        "The Semantic Tag for this Concept is the most frequently found tag in this value set. "
-                        "The Semantic Tag for this Concept is -->"
-                        )
-                    check_item.row_specific_message=(
-                        f"{semantic_tag}"
-                        )
-                    #</check_item>
-                    this_row_analysis.append(check_item)
             else:
                 # gatekeeper should catch this. This clause allows code to run without gatekeeper
                 #<check_item>
@@ -190,15 +220,15 @@ def do_check(setchks_session=None, setchk_results=None):
             #</set_level_message>
         
         
-        if not joint_majority_tag:
+        if dominant_tag is not None:
             #<set_level_count>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     descriptor=(
-                        f"Number of Concepts with the most frequently "
-                        f"found Semantic Tag '({majority_tag})'" 
+                        f"Number of Concepts with the dominant "
+                        f"Semantic Tag '({dominant_tag})'" 
                         ),
-                    value=f"{majority_count}", 
+                    value=f"{dominant_count}", 
                     outcome_code="CHK12-OUT-04",
                     )
                 )     
@@ -206,9 +236,14 @@ def do_check(setchks_session=None, setchk_results=None):
 
         #propose
         # tags_list= [ x for x in tag_counts].sorted()
+        tag_counts_list=[(x, tag_counts[x]) for x in tag_counts.keys()]
+        # tag_counts_list.sort(key=lambda x:(x[1],x[0],), reverse=True)
+        tag_counts_list.sort(key=lambda x:x[0], reverse=False)
+        tag_counts_list.sort(key=lambda x:x[1], reverse=True)
         
-        for tag, count in tag_counts.items():
-            if (tag!=majority_tag) or joint_majority_tag:
+        # for tag, count in tag_counts.items():
+        for tag, count in tag_counts_list:
+            if (tag!=dominant_tag):
                 #<set_level_count>
                 setchk_results.set_level_table_rows.append(
                     SetLevelTableRow(
