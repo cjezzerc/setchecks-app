@@ -8,7 +8,7 @@ import setchks_app.terminology_server_module
 
 from setchks_app.set_refactoring import refactor_core_code
 from setchks_app.set_refactoring.concept_module import ConceptsDict
-from setchks_app.descriptions_service.descriptions_service import DescriptionsService
+from setchks_app.set_refactoring.valset_module import ClauseMembershipAnalysis
 
 from ..set_level_table_row import SetLevelTableRow
 from ..chk_specific_sheet import ChkSpecificSheet
@@ -63,11 +63,14 @@ def do_check(setchks_session=None, setchk_results=None):
 
     chk_specific_sheet=ChkSpecificSheet(sheet_name="Refactored")
     setchk_results.chk_specific_sheet=chk_specific_sheet
-    chk_specific_sheet.col_widths=[30,200]
+    chk_specific_sheet.col_widths=[15,15,15,15,200]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
-        "include/exclude",
+        "include / exclude",
+        "number of concepts in clause",
+        "number of concepts from clause in value set",
+        "number of concepts excluded by clause from value set",
         "ECL",
         ]
     row=chk_specific_sheet.new_row()
@@ -78,24 +81,96 @@ def do_check(setchks_session=None, setchk_results=None):
     ECL_clauses={}
     ECL_clauses["include"]=[]
     ECL_clauses["exclude"]=[]
+
+
+    ###########################
+    # analyse include clauses #
+    ###########################
+    all_included_concepts=set()
+    includes_staging_list=[]
     for clause in refactored_valset.clause_based_rule.clauses:
+        if clause.clause_type=="include":
+            n_INCLUDE_CLAUSES+=1
+            clause_members=set(
+                ClauseMembershipAnalysis(
+                    clause=clause,
+                    concepts=concepts,
+                    ).members
+                )
+            clause_members=set(str(x) for x in clause_members)
+            all_included_concepts.update(clause_members)
+            n_clause_members=len(clause_members)
+            n_clause_members_in_value_set=len(clause_members.intersection(value_set_members))
+            includes_staging_list.append((clause, n_clause_members, n_clause_members_in_value_set))
+    includes_staging_list.sort(key=lambda x: x[1], reverse=True)  
+
+    ###########################
+    # analyse exclude clauses #
+    ###########################
+    excludes_staging_list=[]
+    for clause in refactored_valset.clause_based_rule.clauses:
+        if clause.clause_type=="exclude":
+            n_EXCLUDE_CLAUSES+=1
+            clause_members=set(
+                ClauseMembershipAnalysis(
+                    clause=clause,
+                    concepts=concepts,
+                    ).members
+                )
+            clause_members=set(str(x) for x in clause_members)
+            n_clause_members=len(clause_members)
+            n_clause_members_excluded_from_value_set=len(clause_members.intersection(all_included_concepts))
+            excludes_staging_list.append((clause, n_clause_members, n_clause_members_excluded_from_value_set))
+    excludes_staging_list.sort(key=lambda x: x[1], reverse=True)  
+
+    for clause, n_clause_members, nnn in includes_staging_list + excludes_staging_list    :      
         clause_base_concept_id=str(clause.clause_base_concept_id)
         clause_type=clause.clause_type
-        if clause_type=="include":
-            n_INCLUDE_CLAUSES+=1
-        else:
-            n_EXCLUDE_CLAUSES+=1
         clause_operator=clause.clause_operator
         if clause_operator[0]=="=":
             clause_operator=clause_operator[1:]
         pt=concepts[clause_base_concept_id].pt
         ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
         ECL_clauses[clause_type].append(ECL_clause)
+        if clause_type=="include": # work what nnn represents and allocate to correct column of output
+            n1=nnn
+            n2=""
+        else:
+            n1=""
+            n2=nnn
         row=chk_specific_sheet.new_row()
         row.cell_contents=[
         clause_type,
+        n_clause_members,
+        n1,
+        n2,
         ECL_clause,
         ]
+    
+    # OLD ANALYSIS STYLE WITH NO COUNTS AND DEFAULT ORDER
+    # for clause in refactored_valset.clause_based_rule.clauses:
+    #     clause_base_concept_id=str(clause.clause_base_concept_id)
+    #     clause_type=clause.clause_type
+    #     if clause_type=="include":
+    #         n_INCLUDE_CLAUSES+=1
+    #     else:
+    #         n_EXCLUDE_CLAUSES+=1
+    #     clause_operator=clause.clause_operator
+    #     if clause_operator[0]=="=":
+    #         clause_operator=clause_operator[1:]
+    #     pt=concepts[clause_base_concept_id].pt
+    #     ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
+    #     ECL_clauses[clause_type].append(ECL_clause)
+    #     row=chk_specific_sheet.new_row()
+    #     row.cell_contents=[
+    #     clause_type,
+    #     ECL_clause,
+    #     ]
+    
+    
+    ##########################################
+    # Make full ECL expression for value set #
+    ##########################################
     include_ECL = "(" + " OR ".join(ECL_clauses["include"]) + ")"
     exclude_ECL = "(" + " OR ".join(ECL_clauses["exclude"]) + ")"
     full_ECL=include_ECL
@@ -105,6 +180,7 @@ def do_check(setchks_session=None, setchk_results=None):
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
     "Full ECL expression:",
+    "","","",
     full_ECL,
     ]
     
