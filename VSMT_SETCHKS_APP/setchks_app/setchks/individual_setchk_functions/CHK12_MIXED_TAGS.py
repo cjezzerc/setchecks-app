@@ -111,7 +111,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         check_item=CheckItem("CHK12-OUT-02")
                         check_item.outcome_level="ISSUE"
                         check_item.general_message=(
-                            "The Semantic Tag for this Concept is not the dominant tag in this value set "
+                            "The Semantic Tag for this Concept is not this value set's dominant tag "
                             f'(which is "{dominant_tag}"). '
                             "This may suggest it is an erroneous entry. "
                             "A full analysis of Semantic Tags used in this value set is given in the 'Set_Analysis' tab. "
