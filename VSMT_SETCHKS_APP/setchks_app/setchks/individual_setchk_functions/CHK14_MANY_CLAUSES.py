@@ -63,15 +63,15 @@ def do_check(setchks_session=None, setchk_results=None):
 
     chk_specific_sheet=ChkSpecificSheet(sheet_name="Refactored")
     setchk_results.chk_specific_sheet=chk_specific_sheet
-    chk_specific_sheet.col_widths=[15,15,15,15,200]
+    chk_specific_sheet.col_widths=[15,15,15,15,120]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
-        "include / exclude",
-        "number of concepts in clause",
-        "number of concepts from clause in value set",
-        "number of concepts excluded by clause from value set",
-        "ECL",
+        "Include / Exclude",
+        "Number of Concepts in Clause",
+        "Number of Concepts from Clause in Value Set",
+        "Number of Concepts Excluded by Clause from Value Set",
+        "Expression Constraint Language (ECL)",
         ]
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
@@ -123,31 +123,32 @@ def do_check(setchks_session=None, setchk_results=None):
             excludes_staging_list.append((clause, n_clause_members, n_clause_members_excluded_from_value_set))
     excludes_staging_list.sort(key=lambda x: x[1], reverse=True)  
 
-    for clause, n_clause_members, nnn in includes_staging_list + excludes_staging_list    :      
-        clause_base_concept_id=str(clause.clause_base_concept_id)
-        clause_type=clause.clause_type
-        clause_operator=clause.clause_operator
-        if clause_operator[0]=="=":
-            clause_operator=clause_operator[1:]
-        pt=concepts[clause_base_concept_id].pt
-        ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
-        ECL_clauses[clause_type].append(ECL_clause)
-        if clause_type=="include": # work what nnn represents and allocate to correct column of output
-            n1=nnn
-            n2=""
-        else:
-            n1=""
-            n2=nnn
-        row=chk_specific_sheet.new_row()
-        row.cell_contents=[
-        clause_type,
-        n_clause_members,
-        n1,
-        n2,
-        ECL_clause,
-        ]
-    
-    
+    for staging_list in [includes_staging_list, excludes_staging_list]:
+        for clause, n_clause_members, nnn in staging_list:      
+            clause_base_concept_id=str(clause.clause_base_concept_id)
+            clause_type=clause.clause_type
+            clause_operator=clause.clause_operator
+            if clause_operator[0]=="=":
+                clause_operator=clause_operator[1:]
+            pt=concepts[clause_base_concept_id].pt
+            ECL_clause= f"{clause_operator:2} {clause_base_concept_id} | {pt} |".strip()
+            ECL_clauses[clause_type].append(ECL_clause)
+            if clause_type=="include": # work what nnn represents and allocate to correct column of output
+                n1=nnn
+                n2=""
+            else:
+                n1=""
+                n2=nnn
+            row=chk_specific_sheet.new_row()
+            row.cell_contents=[
+            clause_type,
+            n_clause_members,
+            n1,
+            n2,
+            ECL_clause,
+            ]
+        row=chk_specific_sheet.new_row() # blank row
+        
     ##########################################
     # Make full ECL expression for value set #
     ##########################################
@@ -156,7 +157,6 @@ def do_check(setchks_session=None, setchk_results=None):
     full_ECL=include_ECL
     if ECL_clauses["exclude"]!=[]:
         full_ECL+= " MINUS " + exclude_ECL
-    chk_specific_sheet.new_row() # blank row 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
     "Full ECL expression:",
