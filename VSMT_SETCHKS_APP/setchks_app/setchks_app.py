@@ -407,6 +407,7 @@ def column_identities():
     # if reach here via file upload, load the data into matrix
     multisheet_flag=False
     too_many_rows=False
+    too_few_rows=False
     if 'uploaded_file' in request.files:
         if setchks_session.load_file_behaviour=="DEFAULT_SETTINGS":
             session['setchks_session']=None
@@ -421,8 +422,12 @@ def column_identities():
             or (setchks_session.columns_info.ncols != len(setchks_session.data_as_matrix[0]))
             or (setchks_session.load_file_behaviour=="DEFAULT_SETTINGS")
         ):
-            ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
-            setchks_session.columns_info=ci
+            if setchks_session.data_as_matrix != []:
+                ci=ColumnsInfo(ncols=len(setchks_session.data_as_matrix[0]))
+                setchks_session.columns_info=ci
+            else:
+                print("!!!!!!!!!!!!!!!!!!!! Too few rows")
+                too_few_rows=True
 
     # if reach here via click on a column identity dropdown
     if len(request.form.keys())!=0:
@@ -443,23 +448,29 @@ def column_identities():
         setchks_session.column_content_assessment.assess(marshalled_rows=setchks_session.marshalled_rows)
 
     type_labels={"CID":"Concept Id", "DID":"Description Id", "MIXED":"Mixed Id", "DTERM":"Term","OTHER":"Other"}
-    column_type_labels=[type_labels[x] for x in setchks_session.columns_info.column_types]
-
+    if setchks_session.columns_info is not None:
+        column_type_labels=[type_labels[x] for x in setchks_session.columns_info.column_types]
+    else:
+        column_type_labels=None
     rows_processable=[mr.row_processable for mr in setchks_session.marshalled_rows]
     # logger.debug("rows_processable:"+str(rows_processable))
 
     bc=Breadcrumbs()
     bc.set_current_page("column_identities")
-    return render_template('column_identities.html',
-                           setchks_session=setchks_session,
-                           file_data=setchks_session.data_as_matrix,
-                           filename=setchks_session.filename,
-                           breadcrumbs_styles=bc.breadcrumbs_styles,
-                           rows_processable=rows_processable,
-                           column_type_labels=column_type_labels,
-                           multisheet_flag=multisheet_flag,
-                           too_many_rows=too_many_rows,
-                            )
+    if too_few_rows is False:
+        return render_template('column_identities.html',
+                            setchks_session=setchks_session,
+                            file_data=setchks_session.data_as_matrix,
+                            filename=setchks_session.filename,
+                            breadcrumbs_styles=bc.breadcrumbs_styles,
+                            rows_processable=rows_processable,
+                            column_type_labels=column_type_labels,
+                            multisheet_flag=multisheet_flag,
+                            too_many_rows=too_many_rows,
+                            too_few_rows=too_few_rows,
+                                )
+    else:
+        return render_template('blank_file_alert.html')
 
 #####################################
 #####################################

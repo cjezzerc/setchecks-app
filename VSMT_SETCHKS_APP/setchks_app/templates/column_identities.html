@@ -53,7 +53,7 @@
             #}
 
             {% if setchks_session.columns_info.identification_sufficient==True %}
-                {% if setchks_session.column_content_assessment.fraction_valid_sctid_rows > 0.3 %}
+                {% if setchks_session.column_content_assessment.fraction_valid_sctid_rows and (setchks_session.column_content_assessment.fraction_valid_sctid_rows > 0.3) %}
                 <div class="card" style="height:fit-content; margin-top:1vh; overflow:auto">
                     <div class="card-header" style="padding: 0 1vh; background-color:lightgrey">
                     <i class="bi bi-hand-thumbs-up" style="-webkit-text-stroke: 1px; font-size:150%"></i>
