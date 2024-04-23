@@ -91,7 +91,7 @@ def make_one_supp_tab_sheet(
         else:
             supp_tab_row_numbers_map.append(None)
         
-    ws.freeze_panes="A2"
+    ws.freeze_panes="A3"
     
     for i_row, row in enumerate(ws.iter_rows()):
         for i_cell, cell in enumerate(row):
