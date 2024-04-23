@@ -135,6 +135,7 @@ def do_check(setchks_session=None, setchk_results=None):
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[
+        "Suggestions Group",
         "Group",
         "Concept Id",
         "Preferred Term",
@@ -143,9 +144,13 @@ def do_check(setchks_session=None, setchk_results=None):
         "Concept Id",
         "Preferred Term",
         ]
+    row=chk_specific_sheet.new_row()
+    chk_specific_sheet.filter_row=2
     #############################################
     # analyse and report on each include clause #
     #############################################
+
+    i_suggestions_group=0
 
     for sorting_flag in ["ONLY_NON_ZERO", "ONLY_ZERO"]: # sorting_flag float include clauses with something in earlier
                                                         # or later column to top as those are most interesting
@@ -195,6 +200,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 (n>0 and sorting_flag=="ONLY_NON_ZERO") 
                 )
             if do_output_this_loop:
+                i_suggestions_group+=1
                 include_cbc_id=str(include_clause.clause_base_concept_id)
                 include_cbc_pt=concepts_earlier[include_cbc_id].pt
                 # plain_english_formatted_clause=plain_english_operators_fmts[include_clause.clause_operator] % include_cbc_id
@@ -204,6 +210,7 @@ def do_check(setchks_session=None, setchk_results=None):
                     )
                 row=chk_specific_sheet.new_row()
                 row.cell_contents=[
+                f"Suggestions group {i_suggestions_group}",
                 plain_english_formatted_clause,
                 # include_cbc_pt,
                 f"{n_members_of_clause_in_vs_only_earlier}",
@@ -216,7 +223,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause_only_later:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "","","","","",
+                        "","","","","","",
                         str(member.concept_id),
                         member.pt,
                     ]
@@ -229,7 +236,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause_only_earlier:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "",
+                        "","",
                         str(member.concept_id),
                         member.pt,
                     ]
@@ -242,7 +249,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 for member in members_in_vs_from_this_clause_common:
                     row=chk_specific_sheet.new_row()
                     row.cell_contents=[
-                        "","","",
+                        "","","","",
                         str(member.concept_id),
                         member.pt,
                     ]
