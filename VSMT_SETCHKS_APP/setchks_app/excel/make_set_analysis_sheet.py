@@ -91,6 +91,24 @@ def make_set_analysis_sheet(
                     current_ws_row+=1
         # ws.append(["----"]) 
         end_of_block_rows.add(current_ws_row)
+    
+    if setchks_session.passes_gatekeeper is False:
+        ws.append(
+            [
+            "CHKGK", 
+            "Gatekeeper", 
+            "CHKGK-OUT-01",
+            "RED",
+            "It has been detected that some of the Identifiers in your value set "
+            "do not meet certain basic criteria. A set of basic checks have been run, "
+            "which provide information on the problematic entries. "
+            "No other checks were run. You should correct these entries "
+            "or remove them from your file, and then reload the file.",
+            "",
+            "" 
+            ]
+            )
+        current_ws_row+=1
     cell_widths=[8,32,15,8,65,65,10]
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
