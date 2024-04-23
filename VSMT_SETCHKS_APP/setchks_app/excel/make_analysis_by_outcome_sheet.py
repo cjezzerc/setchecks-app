@@ -15,6 +15,7 @@ def make_analysis_by_outcome_sheet(
 
     setchks=setchks_app.setchks.setchk_definitions.setchks
     setchks_results=setchks_session.setchks_results
+    ci=setchks_session.columns_info
 
     analysis_by_outcomes_row_numbers_map=[] # each entry in list corresponds 1:1 to a row in data file
                                 # each such entry is a dict
@@ -28,6 +29,13 @@ def make_analysis_by_outcome_sheet(
         header_row_cell_contents=[x.string for x in setchks_session.data_as_matrix[0]]
         # ws.append(["Row number", "Check", "Message"] + setchks_session.data_as_matrix[0]) # ** need to create better header row
         # ws.append(["","Row specific info","Link to Grp_by_Row Tab","Row number"] + header_row_cell_contents) # ** need to create better header row
+        identifier_term_separator_headers=[]
+        identifier_header=header_row_cell_contents[ci.mixed_column]
+        identifier_term_separator_headers.append(f'Identifier ("{identifier_header}")')
+        if ci.have_dterm_column:
+            dterm_header=header_row_cell_contents[ci.dterm_column]
+            identifier_term_separator_headers.append(f'Term ("{dterm_header}")')
+        identifier_term_separator_headers.append("Input file -->")
         ws.append(
             [
                 "Check Number", 
@@ -39,7 +47,7 @@ def make_analysis_by_outcome_sheet(
                 "Link to Grp by Row",
                 "Link to Suppl Tab",
                 "Input File Row Number", 
-                ] + header_row_cell_contents
+                ] + identifier_term_separator_headers + header_row_cell_contents
             ) 
         current_ws_row+=1
     ###################################################################################################
@@ -138,7 +146,13 @@ def make_analysis_by_outcome_sheet(
                 if row_specific_message=="None":
                     row_specific_message=""
 
-
+                identifier_term_separator_data=[]
+                identifier_data=data_row_cell_contents[ci.mixed_column]
+                identifier_term_separator_data.append(identifier_data)
+                if ci.have_dterm_column:
+                    dterm_data=data_row_cell_contents[ci.dterm_column]
+                    identifier_term_separator_data.append(dterm_data)
+                identifier_term_separator_data.append("Input file -->")
                 # ws.append([
                 #     f"Row {i_data_row+setchks_session.first_data_row+1}",
                 #     setchk_short_code, 
@@ -161,7 +175,7 @@ def make_analysis_by_outcome_sheet(
                     link_cell,
                     supp_tab_hyperlink_cell_contents,
                     f"Row {input_file_row_number}",
-                    ] + data_row_cell_contents
+                    ] + identifier_term_separator_data + data_row_cell_contents
                     ) 
                 # ws.append([
                 #     "",
@@ -187,7 +201,8 @@ def make_analysis_by_outcome_sheet(
         # current_ws_row+=1 
    
     # cell_widths=[50,30,10] + [20]*10
-    cell_widths=[8,30,18,8,50,30,7,7,8,25,50] + [20]*10
+    # cell_widths=[8,30,18,8,50,30,7,7,8,25,50] + [20]*10
+    cell_widths=[8,20,15,8,50,25,7,7,8,20] + [20]*10
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
@@ -220,7 +235,7 @@ def make_analysis_by_outcome_sheet(
     #             else:
     #                 cell.style=styling.vsmt_style_wrap_top
 
-        ws.freeze_panes="J2"
+        ws.freeze_panes="A2"
         
     for i_row, row in enumerate(ws.iter_rows()):
         if i_row==0:

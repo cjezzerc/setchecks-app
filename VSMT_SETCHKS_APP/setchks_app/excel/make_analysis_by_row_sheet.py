@@ -211,7 +211,7 @@ def make_analysis_by_row_sheet(
     print(f"top_dashed_cells={top_dashed_cells}")
     if creating_ws:    
         # cell_widths=[8,8,30,18,8,50,30,7,7,25,50] + [20]*10
-        cell_widths=[8,8,20,15,8,50,30,7,7,20]
+        cell_widths=[8,8,20,15,8,50,25,7,7,20]
         if ci.have_dterm_column:
             cell_widths.append(30)
         cell_widths.append(12)
