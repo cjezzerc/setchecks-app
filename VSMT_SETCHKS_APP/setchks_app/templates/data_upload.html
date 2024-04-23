@@ -61,8 +61,10 @@
                         
                         Thanks for trying out the VSMT!
                         
+                        <br>
                         <br><b>
-                        Technology and Information Standards (TIS), NHS England
+                        Technology and Information Standards (TIS)
+                        <br>NHS England
                         </b></p>
                 </div>
             </div>
@@ -72,6 +74,10 @@
                     Using the Set Checks Application 
                 </div>
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
+                    <p style="color:red; font-weight: bold;">
+                        This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
+                    </p>
+                    
                     <ul> 
                     <li>The input file must be in xlsx or tab-separated format with any number of columns, with a single header row, and a maximum of 5000 rows.</li>
                     <li>One column must contain SNOMED Identifiers; another column can optionally contain Terms; all other columns are disregarded by the set checks.</li>
@@ -181,9 +187,9 @@
                         <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
                             {% for a_type in [
                                 ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
-                                    <br><span style='font-size: 0.8em'>(typical when starting work on a different value set)</span>"),
+                                    <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
                                 ("RETAIN_SETTINGS","<b>Retain</b> metadata and settings
-                                    <br><span style='font-size: 0.8em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name etc
+                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name etc
                                     when loading a revised version 
                                     of a value set)</span>"),
                                 ] %}
@@ -216,10 +222,9 @@
                     </div>
                 </div>
             {% endif %}
-                <div class="card" style=" margin-top:1vh; overflow:auto">
+                <!-- <div class="card" style=" margin-top:1vh; overflow:auto">
                     <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
                        
-                    <!-- <i class="bi bi-exclamation-triangle" style="-webkit-text-stroke: 1px; font-size:150%"></i> -->
                     Important Reminder
                     </div>
                     <div class="card-body" style="padding: 1vh; font-size: 1em;">
@@ -227,7 +232,7 @@
                         <p style="color:red; font-weight: bold;">
                             This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
                         </p>
-                </div>
+                </div> -->
             </div>
         </div>
 
