@@ -66,7 +66,7 @@ class SuppTabRow():
         "replacement_option_counter",
         "replacement_concept_id",
         "replacement_concept_pt",
-        "replacement_concept_eff_time",
+        # "replacement_concept_eff_time",
         "ambiguity_status",
         "is_replacement_concept_in_set",
         "is_correct_representation_type_in_set",
@@ -87,9 +87,10 @@ class SuppTabRow():
         "Preferred Term",
         "Already in set",
         "Effective Time (Inactive Concept)",
-        "Effective Time (Suggested Active Concept)",
+        # "Effective Time (Suggested Active Concept)",
         ]
-    cell_widths=[10,20,20,20,30,5,24,20,30,10,20,20]
+    # cell_widths=[10,20,20,20,30,5,24,20,30,10,20,20]
+    cell_widths=[10,20,20,20,30,5,24,20,30,10,20]
 
     
     def __init__(self):
@@ -103,7 +104,7 @@ class SuppTabRow():
         self.eff_time=None
         self.replacement_concept_id=None
         self.replacement_concept_pt=None
-        self.replacement_concept_eff_time=None
+        # self.replacement_concept_eff_time=None
         self.ambiguity_status=None
         self.is_replacement_concept_in_set=None
         self.is_correct_representation_type_in_set=None
@@ -132,7 +133,7 @@ class SuppTabRow():
             self.replacement_concept_pt,
             self.YES_NO[self.is_replacement_concept_in_set],
             int(self.eff_time),
-            int(self.replacement_concept_eff_time),
+            # int(self.replacement_concept_eff_time),
             ]
 
         
@@ -257,7 +258,7 @@ def do_check(setchks_session=None, setchk_results=None):
                             supp_tab_row.replacement_option_counter=f"{i_option+1}/{len(hst_options)}"
                             supp_tab_row.replacement_concept_id=hst_option.new_concept_id
                             supp_tab_row.replacement_concept_pt=concepts[hst_option.new_concept_id].pt
-                            supp_tab_row.replacement_concept_eff_time=concepts[hst_option.new_concept_id].effective_time
+                            # supp_tab_row.replacement_concept_eff_time=concepts[hst_option.new_concept_id].effective_time
                             supp_tab_row.ambiguity_status=hst_option.is_ambiguous
                             supp_tab_row.is_replacement_concept_in_set=supp_tab_row.replacement_concept_id in valset_members
                             if supp_tab_row.is_replacement_concept_in_set is True:

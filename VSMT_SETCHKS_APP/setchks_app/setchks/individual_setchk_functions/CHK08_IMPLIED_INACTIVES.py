@@ -68,7 +68,7 @@ class SuppTabRow():
         "id_type",
         "implied_concept_id",
         "term",
-        "eff_time",
+        # "eff_time",
         "implied_inactive_option_counter",
         "implied_inactive_concept_id",
         "implied_inactive_concept_pt",
@@ -91,7 +91,7 @@ class SuppTabRow():
         "Suggested Inactive Predecessor",
         "Preferred Term",
         "Already in set?",
-        "Effective Time (Active Concept)",
+        # "Effective Time (Active Concept)",
         "Effective Time (Suggested Inactive Concept)"
         ]
     
@@ -111,7 +111,8 @@ class SuppTabRow():
     #     ]
     # cell_widths=[10,20,20,10,20,30,10,20,30,10,10,10]
     # cell_widths=[10,10,20,20,20,30,20,30,10]
-    cell_widths=[10,20,20,20,30,5,24,20,30,10,20,20]
+    # cell_widths=[10,20,20,20,30,5,24,20,30,10,20,20]
+    cell_widths=[10,20,20,20,30,5,24,20,30,10,20]
     YES_NO={True:"Yes", False:"No","-":"-"}
     CONCEPT_DESCRIPTION={"C_Id":"Concept Id", "D_Id":"Description Id"}
 
@@ -123,7 +124,7 @@ class SuppTabRow():
         self.id_type=None
         self.implied_concept_id="" # null string so that if not set it shows as a blank
         self.term=None
-        self.eff_time=None
+        # self.eff_time=None
         self.implied_inactive_option_counter=None
         self.implied_inactive_concept_id=None
         self.implied_inactive_concept_pt=None
@@ -169,7 +170,7 @@ class SuppTabRow():
             termbrowser_hyperlink(sctid=self.implied_inactive_concept_id),
             self.implied_inactive_concept_pt,
             self.YES_NO[self.is_implied_inactive_concept_in_set],
-            int(self.eff_time),
+            # int(self.eff_time),
             int(self.implied_inactive_concept_eff_time),
             ]
 
@@ -284,7 +285,7 @@ def do_check(setchks_session=None, setchk_results=None):
                         #     supp_tab_row.term=concepts[concept_id].pt
                         # but for familiarisation day 2 just do (as no time to test the above)
                         supp_tab_row.term=concepts[concept_id].pt
-                        supp_tab_row.eff_time=concepts[concept_id].effective_time
+                        # supp_tab_row.eff_time=concepts[concept_id].effective_time
 
                         supp_tab_row.implied_inactive_option_counter=f"{i_option+1}/{len(hst_options)}"
                         supp_tab_row.implied_inactive_concept_id=hst_option.old_concept_id
