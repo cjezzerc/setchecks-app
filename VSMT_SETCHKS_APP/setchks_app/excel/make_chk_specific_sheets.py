@@ -74,7 +74,7 @@ def make_one_chk_specific_sheet(
     for i, width in enumerate(chk_specific_sheet.col_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
-    ws.freeze_panes="A3"
+    ws.freeze_panes="A4" # this should not really be hardcoded in but should be in the ChkSpecificSheet definition 
     
     for i_row in range(0,2):
         row=ws[i_row+1]
@@ -101,3 +101,8 @@ def make_one_chk_specific_sheet(
     #                 cell.border=styling.dashed_top_border
     #             if (i_row) in divider_rows:
     #                 cell.border=styling.solid_top_border
+
+    if chk_specific_sheet.filter_row is not None:
+        filters = ws.auto_filter
+        rightmost_column=get_column_letter(len(chk_specific_sheet.col_widths))
+        filters.ref = f"A{chk_specific_sheet.filter_row+1}:{rightmost_column}{chk_specific_sheet.filter_row+100000}" 

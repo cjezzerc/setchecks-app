@@ -119,6 +119,9 @@ def do_check(setchks_session=None, setchk_results=None):
         "Preferred Term",
         "Common nature"
         ]
+    row=chk_specific_sheet.new_row()
+    chk_specific_sheet.filter_row=2
+    
     #############################################
     # analyse and report on each include clause #
     #############################################

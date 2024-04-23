@@ -3,11 +3,13 @@ class ChkSpecificSheet():
         "rows",
         "col_widths",
         "sheet_name",
+        "filter_row",
         ]
     def __init__(self, sheet_name=None):
         self.rows=[]
         self.col_widths=[]
         self.sheet_name=sheet_name
+        self.filter_row=None
 
     def new_row(self): # add a row and return that row to caller
         row=ChkSpecificSheetRow()

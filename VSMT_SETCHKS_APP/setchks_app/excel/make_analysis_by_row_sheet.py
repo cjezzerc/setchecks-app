@@ -50,7 +50,7 @@ def make_analysis_by_row_sheet(
         if ci.have_dterm_column:
             dterm_header=header_row_cell_contents[ci.dterm_column]
             identifier_term_separator_headers.append(f'Term ("{dterm_header}")')
-        identifier_term_separator_headers.append("")
+        identifier_term_separator_headers.append("Input file -->")
         ws.append(
             [
                 "Input File Row Number", 
@@ -224,7 +224,8 @@ def make_analysis_by_row_sheet(
         #     ncols_to_freeze+=1
         # # ws.freeze_panes="J3"
         # ws.freeze_panes=get_column_letter(ncols_to_freeze)+"2"
-        
+        ws.freeze_panes="A3"
+
         for i_row, row in enumerate(ws.iter_rows()):
             if i_row==0:
                 ws.row_dimensions[i_row+1].height = 50
