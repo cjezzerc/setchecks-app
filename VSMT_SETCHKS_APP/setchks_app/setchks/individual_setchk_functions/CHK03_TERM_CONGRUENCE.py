@@ -411,7 +411,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 )     
             #</set_level_message>
         else:
-            # <set_level_message>
+            #<set_level_message>
             setchk_results.set_level_table_rows.append(
                 SetLevelTableRow(
                     simple_message=(
