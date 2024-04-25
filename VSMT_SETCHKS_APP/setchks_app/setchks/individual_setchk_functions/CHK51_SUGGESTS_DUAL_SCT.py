@@ -118,7 +118,8 @@ def do_check(setchks_session=None, setchk_results=None):
     chk_specific_sheet=ChkSpecificSheet(sheet_name="CHK51_suppl")
     setchk_results.chk_specific_sheet=chk_specific_sheet
     # chk_specific_sheet.col_widths=[20,40,20,40,20,40,20,40]
-    chk_specific_sheet.col_widths=[60,20,40,20,40,20,40]
+    # chk_specific_sheet.col_widths=[60,20,40,20,40,20,40]
+    chk_specific_sheet.col_widths=[20,60,20,40,20,40,20,40]
 
     row=chk_specific_sheet.new_row()
     row.cell_contents=[

@@ -13,6 +13,10 @@ def make_set_info_sheet(
 
     ws.title='Set_Info'
 
+    ws.append([])
+    ws.append(["","This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data."])
+    ws.append([])
+
     ws.append([
         "Value Set Name",
         setchks_session.vs_name,
@@ -110,4 +114,6 @@ def make_set_info_sheet(
             cell.style=styling.vsmt_style_wrap_top
             if i_cell==0:
                 cell.font=styling.bold_font
+            if i_row==1 and i_cell==1:
+                cell.font=styling.bold_red_font
             

@@ -90,7 +90,7 @@ vsmt_style_Tlbg.border=border
 vsmt_style_Tlbg.number_format = numbers.FORMAT_TEXT
 
 bold_font=Font(bold=True)
-bold_font=Font(bold=True)
+bold_red_font=Font(bold=True, color="FFFF0000")
 
 style_name="asterisk_on_row_overview"
 named_style=NamedStyle(name=style_name)

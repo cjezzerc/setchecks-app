@@ -93,12 +93,13 @@ def make_set_analysis_sheet(
         end_of_block_rows.add(current_ws_row)
     
     if setchks_session.passes_gatekeeper is False:
+        ws.append([])
         ws.append(
             [
-            "CHKGK", 
-            "Gatekeeper", 
-            "CHKGK-OUT-01",
-            "RED",
+            "", 
+            "", 
+            "",
+            "",
             "It has been detected that some of the Identifiers in your value set "
             "do not meet certain basic criteria. A set of basic checks have been run, "
             "which provide information on the problematic entries. "
