@@ -202,7 +202,12 @@ def make_analysis_by_outcome_sheet(
    
     # cell_widths=[50,30,10] + [20]*10
     # cell_widths=[8,30,18,8,50,30,7,7,8,25,50] + [20]*10
-    cell_widths=[8,20,15,8,50,25,7,7,8,20] + [20]*10
+    # cell_widths=[8,20,15,8,50,25,7,7,8,20] + [20]*10
+    cell_widths=[8,20,15,8,50,25,7,7,8,20]
+    if ci.have_dterm_column:
+        cell_widths.append(30)
+    cell_widths.append(12)
+    cell_widths+=[20]*ci.ncols
     for i, width in enumerate(cell_widths):
         ws.column_dimensions[get_column_letter(i+1)].width=width     
 
