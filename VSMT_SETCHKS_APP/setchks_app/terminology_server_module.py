@@ -95,7 +95,7 @@ class TerminologyServer():
                 relative_url= "ValueSet/$expand?url=%s?fhir_vs=refset/%s" % (sct_version, refset_id)
             else:
                 relative_url= "ValueSet/$expand?url=http://snomed.info/sct?fhir_vs=refset/%s" % (refset_id)
-        else: # expand an implicit ValueSet
+        else: # expand an explicit ValueSet
             if sct_version:
                 relative_url= "ValueSet/%s/$expand?system-version=http://snomed.info/sct%%7C%s" % (value_set_server_id, sct_version)
             else:
