@@ -44,7 +44,7 @@ def repr_resource(resource=None, repr_strings=None, indent=0, object_representat
                 t=type(thing_value)
                 if (t is not str) and iterable(thing_value) and (not (type(thing_value)==list and type(thing_value[0])==str)):
                     if type(thing_value)==list:
-                        decorator="[0..%s]" % len(thing_value)
+                        decorator="[0..%s]" % (len(thing_value)-1)
                     else:
                         decorator="..."
                     repr_strings.append("%s %-50s %s:" % (indent_string, object_representation+"."+thing_name+decorator, padding_string))
