@@ -57,7 +57,7 @@ def create_graphical_timeline(
         visible=False,
         dtick=1,
         showgrid=False,
-        range=[0.0,27.0],
+        range=[0.0,35.0],
         tickfont={'size':5,},
         # domain=[0.0,1.0],
         )
@@ -123,8 +123,8 @@ def create_graphical_timeline(
     ann_x=[]
     ann_y=[]
     months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    years={2022:"'22", 2023:"'23", 2024:"'24"}
-    for x in range(0,25):
+    years={2022:"'22", 2023:"'23", 2024:"'24", 2025:"'25"}
+    for x in range(0,36):
         year=year0+int((month0+x)/12.0)
         month_label=months[(month0+x)%12]
         month_annotations.append("%s" % (month_label))
@@ -156,7 +156,7 @@ def create_graphical_timeline(
         )
     )
 
-    for  x in range(1,26):
+    for  x in range(1,36):
         fig.add_shape(type="rect",
             xref="x", yref="y",
             x0=x, y0=-1.2, x1=x+1, y1=-0.2,
