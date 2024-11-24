@@ -41,6 +41,8 @@ import setchks_app.mgmt_info.handle_setchks_session
 import setchks_app.mgmt_info.handle_excel_file
 import setchks_app.mgmt_info.get_excel_summaries
 
+from setchks_app.process_path_lab_test_report.process_fhir_bundle_report_to_text import process_fhir_bundle_report_to_text
+
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
     launch_sleep_job, 
@@ -896,51 +898,22 @@ def cognito_logout():
 
 @auth_required
 @bp.route('/', methods=['GET'])
-@bp.route('/path_validator', methods=['GET','POST'])
+@bp.route('/path_textifier', methods=['GET','POST'])
 def path_validator():
     print(request.form.keys())
     print("REQUEST:",request.args.keys())
     print(request.files)
-    import requests, pprint
     data_to_show="No data yet"
+    filename="No file loaded yet"
     if 'uploaded_file' in request.files:
-        # ofh=open("/tmp/path_validator.json","wb")
-        filename=getattr(request.files['uploaded_file'],'filename',None)
-        file_data=request.files['uploaded_file'].read()
-        if filename[-4:]==".xml":
-            file_type="xml"
-        else:
-            file_type="json"
-        # ofh.write(data)
-        # ofh.close()
-
-        profile="https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
-        url=f'https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/Conformance/FHIR/R4/$validate?profile={profile}'
-        # url=f'https://3cdzg7kbj4.execute-api.eu-west-2.amazonaws.com/poc/Conformance/FHIR/R4/$validate'
-
-        # json_data=open(filename).read()
+        text_report_strings=process_fhir_bundle_report_to_text(
+            flask_FileStorage=request.files['uploaded_file']
+            )
+        data_to_show="<pre>"+"<br>".join(text_report_strings)
+        filename=request.files['uploaded_file'].filename
         
-
-        headers={}
-        if file_type=="json":
-            dict_data=json.loads(file_data)
-            headers["accept"]="application/fhir+json"
-            headers["Content-Type"]="application/fhir+json"
-            r=requests.post(url=url, json=dict_data, headers=headers)
-        else:
-            # print(file_data.decode())
-            # dict_data=json.loads(file_data.decode())
-            headers["accept"]="application/fhir+xml"
-            headers["Content-Type"]="application/fhir+xml"
-            r=requests.post(url=url, json=file_data.decode(), headers=headers)
-
-        
-        
-        data_to_show="<pre>"+"<br>".join(pprint.pformat(r.json()).split('\n'))+"</pre>"
-        # data_to_show=r.json()
-
-
-    return render_template('path_validator.html',
-                            data_to_show=data_to_show
+    return render_template('path_textifier.html',
+                            data_to_show=data_to_show,
+                            filename=filename,
                             )
 

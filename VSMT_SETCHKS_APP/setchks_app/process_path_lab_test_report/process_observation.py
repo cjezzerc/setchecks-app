@@ -1,7 +1,7 @@
 # from process_path_lab_test_report.parse_value import parse_value_entity
 # from process_path_lab_test_report.utils import trim_id
-from parse_value import parse_value_entity
-from utils import trim_id
+from .parse_value import parse_value_entity
+from .utils import trim_id
 
 def process_observation(observation=None, output_strings=None, resources_by_id=None):
     if observation.meta.profile[0]=="https://fhir.hl7.org.uk/StructureDefinition/UKCore-Observation-LabGroup":

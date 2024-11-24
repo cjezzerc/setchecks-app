@@ -7,7 +7,15 @@ from fhir.resources.R4B.bundle import Bundle
 # parse_bundle_message #
 ########################
 
-def parse_bundle_message(filename=None):
+def parse_bundle_message(filename=None, flask_FileStorage=None):
+    # This routine can be called from a Flask app or a plain script
+    # It accepts either 
+    #     a filename (in which case the file is opened and read)
+    #     a flask FileStorage object in which case the filename is extracted and a plain read op used
+    print("->>",filename,flask_FileStorage)
+    if flask_FileStorage is not None:
+        filename=flask_FileStorage.filename
+    
     if len(filename)>=6 and filename[-5:]==".json":
         file_type="json"
     elif len(filename)>=5 and filename[-4:]==".xml":
@@ -16,7 +24,11 @@ def parse_bundle_message(filename=None):
         print("Unknown filetype: must be .json or .xml")
         sys.exit()
 
-    string_data=open(filename).read()
+    # different approaches needed to get string data depending whether from Flask or via filename
+    if flask_FileStorage is not None:
+        string_data=flask_FileStorage.read().decode()
+    else:
+        string_data=open(filename).read()
 
     if file_type=="xml": # clean out whole line comments which seem to cause fhir.resources parser a problem
                         # comment line before the id line yields error about disallowed field id__ext

@@ -2,9 +2,9 @@
 
 import sys
 
-from parse_bundle_message import parse_bundle_message
-from process_report_observations import process_report_observations
-from utils import format_address_item
+from .parse_bundle_message import parse_bundle_message
+from .process_report_observations import process_report_observations
+from .utils import format_address_item
 
 def process_patient(patient_resource=None):
     nhs_number=patient_resource.identifier[0].value # assumes NHS number is first identifier
@@ -38,8 +38,23 @@ def process_specimen(specimen=None):
     received_date=specimen.receivedTime
     return requester_specimen_id, laboratory_accession_id, specimen_type, collected_date, received_date
 
-def process_fhir_bundle_report_to_text(report_fhir_bundle_filename=None):
-    resources_by_id, resources_by_type=parse_bundle_message(filename=report_fhir_bundle_filename)
+def process_fhir_bundle_report_to_text(
+    filename=None, 
+    flask_FileStorage=None
+    ):
+    
+    # This routine can be called from a Flask app or a plain script
+    # It accepts either 
+    #     a filename 
+    #     a flask FileStorage object 
+    # These are passed on to parse_bundle_message which handle the distinction
+    # (depending on which one is not None)
+    
+    resources_by_id, resources_by_type=parse_bundle_message(
+        filename=filename,
+        flask_FileStorage=flask_FileStorage,
+        )
+    
     text_report_strings=[]
     
     nhs_number, name, address, dob, gender=process_patient(
@@ -89,6 +104,6 @@ def process_fhir_bundle_report_to_text(report_fhir_bundle_filename=None):
 if __name__=="__main__":
     report_fhir_bundle_filename=sys.argv[1]
     text_report_strings=process_fhir_bundle_report_to_text(
-        report_fhir_bundle_filename=report_fhir_bundle_filename)
+        filename=report_fhir_bundle_filename)
     print("\n".join(text_report_strings))
     
