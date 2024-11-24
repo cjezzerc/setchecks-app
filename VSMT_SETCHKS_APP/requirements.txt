@@ -1,7 +1,7 @@
 # these requirements fixed on version running in Texas 15 Jan 2024
 flask==3.0.0
 requests==2.31.0
-fhir.resources==7.0.2
+fhir.resources[xml]==7.0.2
 pymongo==3.12.3 # this is for avoiding issue in https://stackoverflow.com/questions/72025723/how-to-configure-mongodb-for-flask-session
 flask-session==0.5.0
 redis==5.0.1
