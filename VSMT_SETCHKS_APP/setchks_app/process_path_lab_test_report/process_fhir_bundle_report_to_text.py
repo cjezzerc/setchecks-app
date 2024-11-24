@@ -82,11 +82,12 @@ def process_fhir_bundle_report_to_text(
             specimen=specimen,
             )
         text_report_strings.append("")
-        text_report_strings.append(f'Requester Specimen Id:  {requester_specimen_id}')
+        text_report_strings.append(f'Requester Specimen Id:   {requester_specimen_id}')
         text_report_strings.append(f'Laboratory Accession Id: {laboratory_accession_id}')
-        text_report_strings.append(f'Specimen Type:         {specimen_type}')
-        text_report_strings.append(f'Collected Date:         {collected_date}')
-        text_report_strings.append(f'Received Date:          {received_date}')
+        text_report_strings.append(f'Specimen Type:           {specimen_type}')
+        text_report_strings.append(f'Collected Date:          {collected_date}')
+        text_report_strings.append(f'Received Date:           {received_date}')
+        text_report_strings.append("")
 
     output_strings=process_report_observations(
         resources_by_id=resources_by_id,
