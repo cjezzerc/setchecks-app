@@ -18,10 +18,10 @@ def process_observation(observation=None, output_strings=None, resources_by_id=N
         display=observation.code.coding[0].display
         code=observation.code.coding[0].code
         if reference_text=="No reference range information":
-            formatted_output=(f"{code:18} {display:55} {str(parsed_value):16}")
+            formatted_output=(f"{code:18} | {display:55} | {str(parsed_value):16}")
         else:
             formatted_output=(
-                f"{code:18} {display:55} {str(parsed_value):16} (reference: {str(reference_low):16} - {str(reference_high):16}) ({reference_text})" 
+                f"{code:18} | {display:55} | {str(parsed_value):16} (reference: {str(reference_low):16} - {str(reference_high):16}) ({reference_text})" 
                 )
         output_strings.append(formatted_output)
     return output_strings
