@@ -1,3 +1,6 @@
+
+import sys
+
 implemented_value_types=[
     "valueQuantity",
     "valueCodeableConcept", 
@@ -55,9 +58,15 @@ def parse_value_entity(value_entity):
             )
 
     elif value_entity.valueString is not None:
+        temp_value=value_entity.valueString.replace('\\n','\n')
+        if temp_value.count('\n') >1: # if its a multi line output, add a preceding linebreak 
+                                 # so that the code and display act like a header line
+            temp_value='\n'+temp_value
         parsed_value=ParsedValue(
-            value=value_entity.valueString.replace('\\n','\n')
+            value=temp_value
             )
+
+
     
     elif value_entity.valueCodeableConcept is not None:
         parsed_value=ParsedValue(
