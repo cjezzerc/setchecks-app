@@ -54,22 +54,27 @@ def parse_value_entity(value_entity):
             comparator=value_entity.valueQuantity.comparator
             )
 
-    if value_entity.valueString is not None:
+    elif value_entity.valueString is not None:
         parsed_value=ParsedValue(
             value=value_entity.valueString.replace('\\n','\n')
             )
     
-    if value_entity.valueCodeableConcept is not None:
+    elif value_entity.valueCodeableConcept is not None:
         parsed_value=ParsedValue(
             value=value_entity.valueCodeableConcept.coding[0].display
             )
 
-    if value_entity.valueRange is not None:
+    elif value_entity.valueRange is not None:
         parsed_value=ParsedValue(
             value="ValueRange not implemented yet"
             )
     # ValueRange still to do
     # check that not more than one type still to do? or take as read
+
+    else:
+        parsed_value=ParsedValue(
+            value="value type not recognised"
+            )
 
     if value_entity.referenceRange is not None:
         if value_entity.referenceRange[0].high is not None: # NB only taking element 0 from reference range
