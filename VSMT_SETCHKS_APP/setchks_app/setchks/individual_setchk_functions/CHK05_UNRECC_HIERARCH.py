@@ -91,6 +91,8 @@ def do_check(setchks_session=None, setchk_results=None):
     acceptability_dicts_by_full_domain_name["ENTRY_OTHER"]["Pharmaceutical / biologic product"]="ACCEPTABLE"
     acceptability_dicts_by_full_domain_name["ENTRY_OTHER"]["Qualifier value"]="ACCEPTABLE"
 
+    #print(">>>>>>>> acceptability_dicts_by_full_domain_name:",acceptability_dicts_by_full_domain_name) # JC DEBUG
+
     nicer_words={
         "ENTRY_PRIMARY":"data entry value set for Primary Care purposes",
         "ENTRY_OTHER":"data entry value set for non-Primary Care purposes",
@@ -100,12 +102,14 @@ def do_check(setchks_session=None, setchk_results=None):
     data_entry_extract_type=setchks_session.data_entry_extract_type
     data_entry_extract_words=nicer_words[data_entry_extract_type]
 
-    data_entry_extract_type
     acceptability_dicts_by_id={}
-    for data_entry_extract_type in ["ENTRY_PRIMARY", "ENTRY_OTHER"]:
-        acceptability_dicts_by_id[data_entry_extract_type]={}
-        for name, acceptability in acceptability_dicts_by_full_domain_name[data_entry_extract_type].items():
-            acceptability_dicts_by_id[data_entry_extract_type][full_domain_name_to_id_dict[name]]=acceptability
+    for data_entry_extract_type_temp in ["ENTRY_PRIMARY", "ENTRY_OTHER"]:
+        acceptability_dicts_by_id[data_entry_extract_type_temp]={}
+        for name, acceptability in acceptability_dicts_by_full_domain_name[data_entry_extract_type_temp].items():
+            acceptability_dicts_by_id[data_entry_extract_type_temp][full_domain_name_to_id_dict[name]]=acceptability
+
+    #print(">>>>>>>> acceptability_dicts_by_id:",acceptability_dicts_by_id)   # JC DEBUG
+
 
     valset_members_in_domain_dict={} # will be keyed by domain id
                                   # value will be the set of ids from the value set that are in the domain
@@ -152,7 +156,7 @@ def do_check(setchks_session=None, setchk_results=None):
                 n_FILE_PROCESSABLE_ROWS+=1
                 for domain_id in domain_ids:
                     domain_name=id_to_full_domain_name_dict[domain_id]
-                    # print(concept_id,type(concept_id), domain_id, domain_name, valset_members_in_domain_dict[domain_id])
+                    # print(">>>>>>>>>>>>>>>",concept_id,type(concept_id), domain_id, domain_name, concept_id in valset_members_in_domain_dict[domain_id],acceptability_dicts_by_id[data_entry_extract_type][domain_id])
                     if concept_id in valset_members_in_domain_dict[domain_id]:
                         acceptability=acceptability_dicts_by_id[data_entry_extract_type][domain_id]
                         n_CONCEPTS_IN_DOMAIN[domain_id]+=1
