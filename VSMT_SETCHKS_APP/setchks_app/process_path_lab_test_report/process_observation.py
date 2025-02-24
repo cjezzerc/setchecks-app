@@ -4,7 +4,9 @@ from .parse_value import parse_value_entity
 from .utils import trim_id
 
 def process_observation(observation=None, output_strings=None, resources_by_id=None):
-    if observation.meta.profile[0] == "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Observation-Group-Lab": # it's a "grouper"
+    
+    # if observation.meta.profile[0] == "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Observation-Group-Lab": # it's a "grouper"
+    if observation.hasMember is not None: # it's a "grouper"
         display=observation.code.coding[0].display
         code=observation.code.coding[0].code
         formatted_output=(f"{code:18} | {display:55} ")
