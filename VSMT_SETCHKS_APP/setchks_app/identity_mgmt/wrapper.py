@@ -39,12 +39,11 @@ def auth_required(f):
             ###############################################################################
             # optionally put up closed message in DEMO environment for non internal users #
             ###############################################################################
-            put_up_closed_message=True
+            put_up_closed_message=False
             if put_up_closed_message:
                 if os.environ['ENV'] == "demo":
                     if "vsmt_internal" not in cognito_group_memberships:
-                        # return "The Set Checks (Proof of Concept) application is no longer available"
-                        return "The Set Checks (Proof of Concept) application is down for brief maintenance; it will be back by 16:00 today 6th March 2025"
+                        return "The Set Checks (Proof of Concept) application is no longer available"
 
             if level_allowed:
                 return f(*args, **kwargs)
