@@ -8,8 +8,6 @@ Converted to use mongodb rather than working in memory
 import sys
 from collections import UserDict
 
-# sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_SETCHKS_APP")
-# sys.path.append("/cygdrive/c/Users/jeremy/GIT_NHSD/Value-Set/VSMT_UPROT_APP")
 from setchks_app.concepts_service.concepts_service import ConceptsService
 
 from pymongo import MongoClient
