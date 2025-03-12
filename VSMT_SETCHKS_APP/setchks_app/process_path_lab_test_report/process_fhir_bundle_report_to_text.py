@@ -21,6 +21,10 @@ def process_patient(patient_resource=None):
 
 def process_service_request(service_request=None):
     request_id=[service_request.identifier[0].value]
+    if service_request.requisition is not None:
+        requisition_id=service_request.requisition.value
+    else:
+        requisition_id=None
     requested_tests=[x.display for x in service_request.code.coding]
     requester=service_request.requester.display
     request_date=service_request.authoredOn
@@ -28,7 +32,7 @@ def process_service_request(service_request=None):
         request_note=[x.text for x in service_request.note]
     else:
         request_note=""
-    return request_id, requested_tests, requester, request_date, request_note
+    return request_id, requested_tests, requester, request_date, request_note, requisition_id
 
 def process_specimen(specimen=None):
     requester_specimen_id=specimen.identifier[0].value
@@ -67,15 +71,16 @@ def process_fhir_bundle_report_to_text(
     text_report_strings.append(f'DOB:        {dob}')
     text_report_strings.append(f'Gender:     {gender}')
 
-    request_id, requested_tests, requester, request_date, request_note=process_service_request(
+    request_id, requested_tests, requester, request_date, request_note, requisition_id=process_service_request(
         service_request=resources_by_type["ServiceRequest"][0],
         )
     text_report_strings.append("")
     text_report_strings.append(f'Request Id:        {request_id}')
+    text_report_strings.append(f'Requisition Id:    {requisition_id}')
     text_report_strings.append(f'Requested test(s): {requested_tests}')
     text_report_strings.append(f'Requester:         {requester}')
     text_report_strings.append(f'Request date:      {request_date}')
-    text_report_strings.append(f'Note(s):           {request_note}')
+    text_report_strings.append(f'Comments:          {request_note}')
 
     for specimen in resources_by_type["Specimen"]:
         requester_specimen_id, laboratory_accession_id, specimen_type, collected_date, received_date=process_specimen(
