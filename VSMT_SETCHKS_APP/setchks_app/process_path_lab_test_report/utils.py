@@ -12,3 +12,13 @@ def format_address_item(address_item=None):
             address+=address_part+", "
     address=address.strip()
     return address
+
+##############################
+# output None as null string #
+##############################
+
+def format_none_to_null_string(item):
+    if item is None:
+        return ""
+    else:
+        return item

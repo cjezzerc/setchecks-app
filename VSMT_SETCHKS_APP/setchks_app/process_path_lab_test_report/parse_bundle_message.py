@@ -12,7 +12,7 @@ def parse_bundle_message(filename=None, flask_FileStorage=None):
     # It accepts either 
     #     a filename (in which case the file is opened and read)
     #     a flask FileStorage object in which case the filename is extracted and a plain read op used
-    print("->>",filename,flask_FileStorage)
+
     if flask_FileStorage is not None:
         filename=flask_FileStorage.filename
     
@@ -31,7 +31,7 @@ def parse_bundle_message(filename=None, flask_FileStorage=None):
         string_data=open(filename).read()
 
     if file_type=="xml": # clean out whole line comments which seem to cause fhir.resources parser a problem
-                        # comment line before the id line yields error about disallowed field id__ext
+                         # comment line before the id line yields error about disallowed field id__ext
         cleaned_string_data_list=[]
         for line in string_data.split('\n'):
             if line.strip()[:4]!="<!--":

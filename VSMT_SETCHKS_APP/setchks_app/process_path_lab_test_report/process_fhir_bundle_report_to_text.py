@@ -4,7 +4,7 @@ import sys
 
 from .parse_bundle_message import parse_bundle_message
 from .process_report_observations import process_report_observations
-from .utils import format_address_item
+from .utils import format_address_item, format_none_to_null_string
 from .follow_references import follow_references
 
 def process_patient(patient_resource=None):
@@ -21,19 +21,26 @@ def process_patient(patient_resource=None):
     return nhs_number, name, address, dob, gender
 
 def process_service_request(service_request=None):
-    request_id=[service_request.identifier[0].value] # just take first identifier
+    request_id=service_request.identifier[0].value # just take first identifier
     if service_request.requisition is not None:
         requisition_id=service_request.requisition.value
     else:
-        requisition_id=None
-    requested_tests=[x.display for x in service_request.code.coding]
+        requisition_id=""
+    requested_coding=service_request.code.coding[0] # just take first coding
+    requested_test=f"{requested_coding.code}:{requested_coding.display}" 
     requester=service_request.requester.display
     request_date=service_request.authoredOn
+    
+    if service_request.reasonCode is not None:
+        clinical_details=service_request.reasonCode[0].text # just take first reasonCode 
+    else:
+        clinical_details=""
+    
     if service_request.note is not None:
         request_note=[x.text for x in service_request.note]
     else:
         request_note=""
-    return request_id, requested_tests, requester, request_date, request_note, requisition_id
+    return request_id, requested_test, requester, request_date, clinical_details, request_note, requisition_id
 
 def process_specimen(specimen=None):
     requester_specimen_id=specimen.identifier[0].value # just take first identifier
@@ -42,6 +49,13 @@ def process_specimen(specimen=None):
     collected_date=specimen.collection.collectedDateTime
     received_date=specimen.receivedTime
     return requester_specimen_id, laboratory_accession_id, specimen_type, collected_date, received_date
+
+def process_diagnostic_report(diagnostic_report=None, resources_by_fullUrl=None):
+    report_id=diagnostic_report.identifier[0].value # just take first identifier
+    issued_date=diagnostic_report.issued
+    provider_name=resources_by_fullUrl[diagnostic_report.performer[0].reference].name       # assumes only one performer, that reference exists,
+    provider_address=format_address_item(resources_by_fullUrl[diagnostic_report.performer[0].reference].address[0]) # and that it is an Organization with one address
+    return report_id, issued_date, provider_name, provider_address
 
 def process_fhir_bundle_report_to_text(
     filename=None, 
@@ -67,11 +81,11 @@ def process_fhir_bundle_report_to_text(
 
     text_report_strings=[]
 
-    text_report_strings.append(f"dr: {diagnostic_report.id}")
-    text_report_strings.append(f"p: {patient.id}")
-    text_report_strings.append(f"sr: {[x.id for x in service_requests]}")
-    text_report_strings.append(f"sp: {[x.id for x in specimens]}")
-    text_report_strings.append(f"po: {[x.id for x in primary_observations]}")
+    # text_report_strings.append(f"dr: {diagnostic_report.id}")
+    # text_report_strings.append(f"p: {patient.id}")
+    # text_report_strings.append(f"sr: {[x.id for x in service_requests]}")
+    # text_report_strings.append(f"sp: {[x.id for x in specimens]}")
+    # text_report_strings.append(f"po: {[x.id for x in primary_observations]}")
     
     nhs_number, name, address, dob, gender=process_patient(patient_resource=patient)
     
@@ -83,15 +97,16 @@ def process_fhir_bundle_report_to_text(
     text_report_strings.append(f'Gender:     {gender}')
 
     for service_request in service_requests:
-        request_id, requested_tests, requester, request_date, request_note, requisition_id=process_service_request(
+        request_id, requested_test, requester, request_date, clinical_details, request_note, requisition_id=process_service_request(
             service_request=service_request,
             )
         text_report_strings.append("")
         text_report_strings.append(f'Request Id:        {request_id}')
         text_report_strings.append(f'Requisition Id:    {requisition_id}')
-        text_report_strings.append(f'Requested test(s): {requested_tests}')
+        text_report_strings.append(f'Requested test:    {requested_test}')
         text_report_strings.append(f'Requester:         {requester}')
         text_report_strings.append(f'Request date:      {request_date}')
+        text_report_strings.append(f'Clinical details:  {clinical_details}')
         text_report_strings.append(f'Comments:          {request_note}')
 
     for specimen in specimens: 
@@ -104,17 +119,27 @@ def process_fhir_bundle_report_to_text(
         text_report_strings.append(f'Specimen Type:           {specimen_type}')
         text_report_strings.append(f'Collected Date:          {collected_date}')
         text_report_strings.append(f'Received Date:           {received_date}')
-        text_report_strings.append("")
+
+    report_id, issued_date, provider_name, provider_address=process_diagnostic_report(
+        diagnostic_report=diagnostic_report, 
+        resources_by_fullUrl=resources_by_fullUrl,
+        )
+    text_report_strings.append("")
+    text_report_strings.append(f'Report Id:        {report_id}')
+    text_report_strings.append(f'Issued Date:      {issued_date}')
+    text_report_strings.append(f'Provider Name:    {provider_name}')
+    text_report_strings.append(f'Provider Address: {provider_address}')
 
     output_strings=process_report_observations(
         primary_observations=primary_observations,
         resources_by_fullUrl=resources_by_fullUrl,
         )
     
+    text_report_strings.append("")
     for output_string in output_strings:
         text_report_strings.append(output_string)
 
-    comments=diagnostic_report.conclusion
+    comments=format_none_to_null_string(diagnostic_report.conclusion)
     text_report_strings.append("")
     text_report_strings.append(f"Comments: {comments}" )
 
