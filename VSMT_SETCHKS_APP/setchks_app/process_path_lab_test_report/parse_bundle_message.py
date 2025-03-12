@@ -48,7 +48,6 @@ def parse_bundle_message(filename=None, flask_FileStorage=None):
         if r_type not in resources_by_type:
             resources_by_type[r_type]=[]
         resources_by_type[r_type].append(r)
-        # resources_by_fullUrl[r.id]=r
         resources_by_fullUrl[be.fullUrl]=r
 
     return resources_by_fullUrl, resources_by_type

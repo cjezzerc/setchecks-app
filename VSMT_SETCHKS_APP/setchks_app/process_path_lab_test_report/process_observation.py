@@ -3,9 +3,11 @@ from .parse_value import parse_value_entity
 def process_observation(observation=None, output_strings=None, resources_by_fullUrl=None):
     
     # if observation.meta.profile[0] == "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Observation-Group-Lab": # it's a "grouper"
+    
+    display=observation.code.coding[0].display # just use first coding
+    code=observation.code.coding[0].code       # ditto
+    
     if observation.hasMember is not None: # it's a "grouper"
-        display=observation.code.coding[0].display
-        code=observation.code.coding[0].code
         formatted_output=(f"{code:18} | {display:55} ")
         output_strings.append(formatted_output)
         for member_id in observation.hasMember:
@@ -17,8 +19,6 @@ def process_observation(observation=None, output_strings=None, resources_by_full
                  )
     else: # it's an actual individual observation
         parsed_value, reference_low, reference_high, reference_text=parse_value_entity(observation)
-        display=observation.code.coding[0].display
-        code=observation.code.coding[0].code
         if reference_text=="No reference range information":
             formatted_output=(f"{code:18} | {display:55} | {str(parsed_value):16}")
         else:
