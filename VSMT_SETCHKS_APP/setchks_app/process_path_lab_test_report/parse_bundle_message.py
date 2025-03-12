@@ -41,13 +41,14 @@ def parse_bundle_message(filename=None, flask_FileStorage=None):
     bundle=Bundle.parse_raw(string_data, content_type=file_type)
 
     resources_by_type={}
-    resources_by_id={}
+    resources_by_fullUrl={}
     for be in bundle.entry:
         r=be.resource
         r_type=r.resource_type
         if r_type not in resources_by_type:
             resources_by_type[r_type]=[]
         resources_by_type[r_type].append(r)
-        resources_by_id[r.id]=r
+        # resources_by_fullUrl[r.id]=r
+        resources_by_fullUrl[be.fullUrl]=r
 
-    return resources_by_id, resources_by_type
+    return resources_by_fullUrl, resources_by_type

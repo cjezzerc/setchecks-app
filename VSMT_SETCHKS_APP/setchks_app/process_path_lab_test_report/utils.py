@@ -1,11 +1,3 @@
-###########
-# trim_id #
-###########
-
-def trim_id(id_string):
-    if id_string[:9]=="urn:uuid:":
-        id_string=id_string[9:]
-    return id_string
 
 #######################
 # format_address_item #

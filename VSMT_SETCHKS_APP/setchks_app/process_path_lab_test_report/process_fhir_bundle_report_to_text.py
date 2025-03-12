@@ -54,7 +54,7 @@ def process_fhir_bundle_report_to_text(
     # These are passed on to parse_bundle_message which handle the distinction
     # (depending on which one is not None)
     
-    resources_by_id, resources_by_type=parse_bundle_message(
+    resources_by_fullUrl, resources_by_type=parse_bundle_message(
         filename=filename,
         flask_FileStorage=flask_FileStorage,
         )
@@ -95,7 +95,7 @@ def process_fhir_bundle_report_to_text(
         text_report_strings.append("")
 
     output_strings=process_report_observations(
-        resources_by_id=resources_by_id,
+        resources_by_fullUrl=resources_by_fullUrl,
         resources_by_type=resources_by_type,
         )
     for output_string in output_strings:
