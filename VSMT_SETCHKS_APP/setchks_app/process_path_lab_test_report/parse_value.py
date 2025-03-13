@@ -79,7 +79,20 @@ def parse_value_entity(value_entity):
             )
     # ValueRange still to do
     # check that not more than one type still to do? or take as read
-
+        # <valueRange>
+        #   <low>
+        #     <value value="10" />
+        #     <unit value="x10*6/L" />
+        #     <system value="http://unitsofmeasure.org" />
+        #     <code value="10^6/L" />
+        #   </low>
+        #   <high>
+        #     <value value="35" />
+        #     <unit value="x10*6/L" />
+        #     <system value="http://unitsofmeasure.org" />
+        #     <code value="10^6/L" />
+        #   </high>
+        # </valueRange>
     else:
         parsed_value=ParsedValue(
             value="value type not recognised"
