@@ -41,8 +41,6 @@ import setchks_app.mgmt_info.handle_setchks_session
 import setchks_app.mgmt_info.handle_excel_file
 import setchks_app.mgmt_info.get_excel_summaries
 
-from setchks_app.process_path_lab_test_report.process_fhir_bundle_report_to_text import process_fhir_bundle_report_to_text
-
 from setchks_app.redis.rq_utils import (
     get_rq_info, 
     launch_sleep_job, 
@@ -890,30 +888,4 @@ def cognito_logout():
     logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
     return redirect(redirect_string)
 
-######################################
-######################################
-## path validator endpoint endpoint ##
-######################################
-######################################
-
-@auth_required
-@bp.route('/', methods=['GET'])
-@bp.route('/path_textifier', methods=['GET','POST'])
-def path_validator():
-    print(request.form.keys())
-    print("REQUEST:",request.args.keys())
-    print(request.files)
-    data_to_show="No data yet"
-    filename="No file loaded yet"
-    if 'uploaded_file' in request.files:
-        text_report_strings=process_fhir_bundle_report_to_text(
-            flask_FileStorage=request.files['uploaded_file']
-            )
-        data_to_show="<pre>"+"<br>".join(text_report_strings)
-        filename=request.files['uploaded_file'].filename
-        
-    return render_template('path_textifier.html',
-                            data_to_show=data_to_show,
-                            filename=filename,
-                            )
 

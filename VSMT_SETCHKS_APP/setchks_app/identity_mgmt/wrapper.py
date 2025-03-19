@@ -41,7 +41,7 @@ def auth_required(f):
             ###############################################################################
             put_up_closed_message=True # farewell!!
             if put_up_closed_message:
-                if os.environ['ENV'] == "demo":
+                if (os.environ["DEPLOYMENT_ENV"]!="LOCAL") and (os.environ['ENV'] == "demo"):
                     if "vsmt_internal" not in cognito_group_memberships:
                         return "The Set Checks (Proof of Concept) application is no longer available"
 
