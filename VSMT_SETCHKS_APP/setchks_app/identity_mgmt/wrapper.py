@@ -39,7 +39,7 @@ def auth_required(f):
             ###############################################################################
             # optionally put up closed message in DEMO environment for non internal users #
             ###############################################################################
-            put_up_closed_message=False
+            put_up_closed_message=True # farewell!!
             if put_up_closed_message:
                 if os.environ['ENV'] == "demo":
                     if "vsmt_internal" not in cognito_group_memberships:
