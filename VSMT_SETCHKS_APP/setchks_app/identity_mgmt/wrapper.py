@@ -14,6 +14,12 @@ from setchks_app.identity_mgmt.get_token import get_token_from_refresh_token
 def auth_required(f):
     @functools.wraps(f) # not quite sure why added this but now if remove it get overwriting existing endpoint error
     def wrap2(*args, **kwargs):
+        
+        if os.environ["DEPLOYMENT_ENV"]=="LOCAL": # skip authorisation if running locally
+            session['jwt_token']={}
+            session['jwt_token']['email']="local_user"
+            return f(*args, **kwargs)
+    
         authorized=False
         have_token='jwt_token' in session.keys()
         if have_token:
@@ -58,6 +64,12 @@ def auth_required(f):
 def auth_required_admin(f):
     @functools.wraps(f) # not quite sure why added this but now if remove it get overwriting existing endpoint error
     def wrap2(*args, **kwargs):
+        
+        if os.environ["DEPLOYMENT_ENV"]=="LOCAL": # skip authorisation if running locally
+            session['jwt_token']={}
+            session['jwt_token']['email']="local_user"
+            return f(*args, **kwargs)
+        
         # print(list(session.keys()))
         authorized=False
         have_token='jwt_token' in session.keys()
