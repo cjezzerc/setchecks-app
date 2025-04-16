@@ -55,5 +55,9 @@ def get_mongodb_client():
                 mongodb_client=MongoClient('host.docker.internal',27017)
             else:
                 logger.debug("Configuring mongodb to connect to localhost")
-                mongodb_client=MongoClient()   
+                if "MONGODB_USER" in os.environ:
+                    credentials=f"{os.environ['MONGODB_USER']}:{os.environ['MONGODB_PASSWORD']}@"
+                else:
+                    credentials=""
+                mongodb_client=MongoClient(f"{credentials}127.0.0.1:27017")
     return mongodb_client
