@@ -59,6 +59,5 @@ def get_mongodb_client():
                     credentials=f"{os.environ['MONGODB_USER']}:{os.environ['MONGODB_PASSWORD']}@"
                 else:
                     credentials=""
-                logger.debug(f"connect string: mongodb://{credentials}127.0.0.1:27017")
-                mongodb_client=MongoClient(f"")
+                mongodb_client=MongoClient(f"mongodb://{credentials}127.0.0.1:27017")
     return mongodb_client
