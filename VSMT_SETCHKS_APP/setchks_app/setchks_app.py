@@ -861,7 +861,8 @@ def cognito_test():
         redirect_string=(
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
+            # 'https://vsmt-jc-test1.auth.eu-west-2.amazon777cognito.com/'
+            'https://dev-hm18k7ew70yvh83i.uk.auth0.com/'
             f'login?client_id={os.environ["COGNITO_CLIENT_ID"]}'
             '&response_type=code&scope=email+openid+phone'
             f'&redirect_uri={urllib.parse.quote(redirect_uri)}'

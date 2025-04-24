@@ -5,7 +5,8 @@ from setchks_app.identity_mgmt.redirect_uri import redirect_uri
 def get_token_from_code(code=None):
     client_id=os.environ["COGNITO_CLIENT_ID"]
     client_secret=os.environ["COGNITO_CLIENT_SECRET"]
-    token_url="https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/token"
+    # token_url="https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/token"
+    token_url="https://dev-hm18k7ew70yvh83i.uk.auth0.com/oauth/token"
     message = bytes(f"{client_id}:{client_secret}",'utf-8')
     secret_hash = base64.b64encode(message).decode()
     payload = {

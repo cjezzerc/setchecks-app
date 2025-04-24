@@ -1,6 +1,8 @@
 from flask import flash, redirect, url_for, session, request
 import os, functools, time
 from setchks_app.identity_mgmt.get_token import get_token_from_refresh_token
+import logging
+logger=logging.getLogger(__name__)
 
 ########################################################
 #
@@ -14,8 +16,8 @@ from setchks_app.identity_mgmt.get_token import get_token_from_refresh_token
 def auth_required(f):
     @functools.wraps(f) # not quite sure why added this but now if remove it get overwriting existing endpoint error
     def wrap2(*args, **kwargs):
-        
-        if os.environ["DEPLOYMENT_ENV"]=="LOCAL": # skip authorisation if running locally
+        logger.debug(f"AUTHORISATION_LOCAL={os.environ['AUTHORISATION_LOCAL']}")
+        if os.environ["DEPLOYMENT_ENV"]=="LOCAL" and os.environ["AUTHORISATION_LOCAL"].lower()=="false": # possibly skip authorisation if running locally
             session['jwt_token']={}
             session['jwt_token']['email']="local_user"
             return f(*args, **kwargs)
@@ -65,7 +67,8 @@ def auth_required_admin(f):
     @functools.wraps(f) # not quite sure why added this but now if remove it get overwriting existing endpoint error
     def wrap2(*args, **kwargs):
         
-        if os.environ["DEPLOYMENT_ENV"]=="LOCAL": # skip authorisation if running locally
+        logger.debug(f"AUTHORISATION_LOCAL={os.environ['AUTHORISATION_LOCAL']}")
+        if os.environ["DEPLOYMENT_ENV"]=="LOCAL" and os.environ["AUTHORISATION_LOCAL"].lower()=="false" : # skip authorisation if running locally
             session['jwt_token']={}
             session['jwt_token']['email']="local_user"
             return f(*args, **kwargs)
