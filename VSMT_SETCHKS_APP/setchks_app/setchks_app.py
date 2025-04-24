@@ -8,7 +8,7 @@ import json
 import jsonpickle
 import time
 import re
-import urllib.parse
+from urllib.parse import quote_plus, urlencode
 
 from flask import jsonify
 
@@ -20,7 +20,7 @@ import setchks_app.setchks.setchk_definitions
 import setchks_app.setchks.run_queued_setchks
 
 from setchks_app.ts_and_cs.wrapper import accept_ts_and_cs_required
-from setchks_app.identity_mgmt.wrapper import auth_required, auth_required_admin
+from setchks_app.identity_mgmt.wrapper import auth_required, admin_users_only
 from setchks_app.identity_mgmt.get_token import get_token_from_code
 # from setchks_app.identity_mgmt.test_if_authorised import is_authorised
 from setchks_app.identity_mgmt.redirect_uri import redirect_uri
@@ -101,7 +101,8 @@ def health_check():
 #################################
 
 @bp.route("/redis_check")
-@auth_required_admin
+@auth_required
+@admin_users_only
 def redis_check():
     logger.debug("redis check called (with ssl=True)")
     
@@ -143,7 +144,8 @@ def redis_check():
 #################################
 
 @bp.route("/session_check")
-@auth_required_admin
+@auth_required
+@admin_users_only
 def session_check():
     logger.info("session check called")
     session['time']=str(datetime.datetime.now().strftime('%d_%b_%Y__%H_%M_%S'))
@@ -156,7 +158,8 @@ def session_check():
 #################################
 
 @bp.route("/mongodb_check")
-@auth_required_admin
+@auth_required
+@admin_users_only
 def mongodb_check():
     logger.info("mongodb check called")
 
@@ -190,7 +193,8 @@ def mongodb_check():
 #################################
 
 @bp.route("/descriptions_db")
-@auth_required_admin
+@auth_required
+@admin_users_only
 def descriptions_db():
     logger.info("descriptions_db called")
     logger.debug(list(request.args.items()))
@@ -256,7 +260,8 @@ def descriptions_db():
 #####################################
 
 @bp.route("/rq")
-@auth_required_admin
+@auth_required
+@admin_users_only
 def rq():
     logger.info("rq called")
     logger.debug(list(request.args.items()))
@@ -736,7 +741,8 @@ def setchks_session():
 #############################################
 
 @bp.route('/mgmt_info', methods=['GET'])
-@auth_required_admin
+@auth_required
+@admin_users_only
 def mgmt_info():
     object=request.args.get("object", None)
     run_id=request.args.get("run_id", None)
@@ -829,7 +835,8 @@ def feedback():
 #############################################
 
 @bp.route('/refactored_form', methods=['GET'])
-@auth_required_admin
+@auth_required
+@admin_users_only
 def refactored_form():
     from setchks_app.set_refactoring.concept_module import ConceptsDict
     setchks_session=gui_setchks_session.get_setchk_session(session)
@@ -849,26 +856,26 @@ def refactored_form():
 ######################################
 ######################################
 
-@bp.route('/cognito_test')
-def cognito_test():
-    print(request.args.keys())
-    if "code" in request.args.keys():
-        code=request.args['code']
-        session['jwt_token']=get_token_from_code(code=code)
-        # return redirect(session['function_provoking_auth_call'])
-        return redirect('/data_upload')
-    else:
-        redirect_string=(
-            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            # 'https://vsmt-jc-test1.auth.eu-west-2.amazon777cognito.com/'
-            'https://dev-hm18k7ew70yvh83i.uk.auth0.com/'
-            f'login?client_id={os.environ["COGNITO_CLIENT_ID"]}'
-            '&response_type=code&scope=email+openid+phone'
-            f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
-            )
-        logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
-        return redirect(redirect_string)
+# @bp.route('/cognito_test')
+# def cognito_test():
+#     print(request.args.keys())
+#     if "code" in request.args.keys():
+#         code=request.args['code']
+#         session['jwt_token']=get_token_from_code(code=code)
+#         # return redirect(session['function_provoking_auth_call'])
+#         return redirect('/data_upload')
+#     else:
+#         redirect_string=(
+#             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/oauth2/authorize?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+#             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/login?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+#             # 'https://vsmt-jc-test1.auth.eu-west-2.amazon777cognito.com/'
+#             'https://dev-hm18k7ew70yvh83i.uk.auth0.com/'
+#             f'login?client_id={os.environ["COGNITO_CLIENT_ID"]}'
+#             '&response_type=code&scope=email+openid+phone'
+#             f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
+#             )
+#         logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
+#         return redirect(redirect_string)
     
 ######################################
 ######################################
@@ -876,17 +883,63 @@ def cognito_test():
 ######################################
 ######################################
 
-@bp.route('/cognito_logout')
-def cognito_logout():
+# @bp.route('/cognito_logout')
+# def cognito_logout():
+#     del session['jwt_token']
+#     redirect_string=(
+#             # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
+#             'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
+#             f'logout?client_id={os.environ["COGNITO_CLIENT_ID"]}'
+#             '&response_type=code'
+#             f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
+#             )
+#     logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
+#     return redirect(redirect_string)
+
+######################################
+######################################
+## auth0 login                      ##
+######################################
+######################################
+
+@bp.route("/login")
+def login():
+    return current_app.config["oauth"].auth0.authorize_redirect(
+        redirect_uri=url_for("setchks_app.callback", _external=True)
+    )
+
+
+######################################
+######################################
+## auth0 callback                   ##
+######################################
+######################################
+
+@bp.route("/callback", methods=["GET", "POST"])
+def callback():
+    print("In callback")
+    token = current_app.config["oauth"].auth0.authorize_access_token()
+    session["jwt_token"] = token
+    print(token)
+    return redirect("/")
+
+######################################
+######################################
+## auth0 login                      ##
+######################################
+######################################
+
+@bp.route("/logout")
+def logout():
     del session['jwt_token']
-    redirect_string=(
-            # f'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/logout?client_id={os.environ["COGNITO_CLIENT_ID"]}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcognito_test'
-            'https://vsmt-jc-test1.auth.eu-west-2.amazoncognito.com/'
-            f'logout?client_id={os.environ["COGNITO_CLIENT_ID"]}'
-            '&response_type=code'
-            f'&redirect_uri={urllib.parse.quote(redirect_uri)}'
-            )
-    logger.debug(f"====>>>>>> {current_app.config['ENVIRONMENT']}:{redirect_string}")
-    return redirect(redirect_string)
-
-
+    return redirect(
+        "https://" + os.environ["AUTH0_DOMAIN"]
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("setchks_app.ts_and_cs", _external=True), 
+                "client_id": os.environ["AUTH0_CLIENT_ID"],
+            },
+            quote_via=quote_plus,
+        )
+    )

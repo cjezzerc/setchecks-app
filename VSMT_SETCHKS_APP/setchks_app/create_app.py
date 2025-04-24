@@ -6,12 +6,6 @@ import boto3
 import json
 
 import logging
-logging.basicConfig(
-    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%SZ",
-    level=logging.DEBUG,
-)
-logger=logging.getLogger(__name__)
 
 from redis import from_url
 
@@ -21,11 +15,32 @@ from setchks_app.redis.rq_utils import (
     kill_all_rq_workers,
     start_specific_rq_worker,
     )
-    
+
+from authlib.integrations.flask_client import OAuth
+
+logging.basicConfig(
+    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+    level=logging.DEBUG,
+)
+logger=logging.getLogger(__name__)
+
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     
+    oauth = OAuth(app)
+
+    oauth.register(
+        "auth0",
+        client_id=os.environ["AUTH0_CLIENT_ID"],
+        client_secret=os.environ["AUTH0_CLIENT_SECRET"],
+        client_kwargs={
+            "scope": "openid profile email offline_access",
+        },
+        server_metadata_url=f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/openid-configuration'
+)
+    app.config["oauth"]=oauth
 
     app.config["REDIS_STRING"]=get_redis_string()
 
@@ -40,8 +55,6 @@ def create_app():
         redis_connection=from_url(app.config["REDIS_STRING"])
         app.config['SESSION_REDIS'] = redis_connection
         
-
-
     # get secrets if necessary (but why not test DEPLYOMENT_ENV?)
     logger.debug("About to see if need to get secrets")
     if 'ONTOSERVER_USERNAME' not in os.environ:
