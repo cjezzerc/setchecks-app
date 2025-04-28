@@ -26,7 +26,6 @@ def auth_required(f):
         have_token='jwt_token' in session.keys()
         if have_token:
             jwt_token=session['jwt_token']
-            print(jwt_token)
             if time.time()<jwt_token['exp']:
                 authorized=True
             else:
@@ -78,8 +77,6 @@ def auth_required_admin(f):
         have_token='jwt_token' in session.keys()
         if have_token:
             jwt_token=session['jwt_token']
-            print(jwt_token)
-            # print(jwt_token)
             if time.time()<jwt_token['exp']:
                 authorized=True
             else:

@@ -2,15 +2,14 @@ import functools, time, os
 from flask import session, redirect, url_for, current_app
 
 def auth_required(f):
-    print("In auth required1")
+    # print("In auth required1")
     @functools.wraps(f) 
     def wrap(*args, **kwargs):
         oauth=current_app.config["oauth"]
         authorized=False
         if 'jwt_token' in session:
-            print(session['jwt_token'])
             # test if should try to refresh
-            print(f"Expiry time(1): {session['jwt_token']['expires_at']}")
+            # print(f"Expiry time(1): {session['jwt_token']['expires_at']}")
             if (time.time()+86400-15)>session['jwt_token']['expires_at']:
                 new_token = oauth.auth0.fetch_access_token( 
                     refresh_token=session['jwt_token']['refresh_token'],
@@ -21,11 +20,11 @@ def auth_required(f):
                     session['jwt_token'][k]=v
                 session.modified=True # need this because otherwise Flask does not detect the modification
                                       # because changing a mutable value (dict) in the session dict
-                print (f"Refreshing..")
-                print(f"New Expiry Time: {session['jwt_token']['expires_at']}")
+                # print (f"Refreshing..")
+                # print(f"New Expiry Time: {session['jwt_token']['expires_at']}")
             if (time.time()+86400-30)<session['jwt_token']['expires_at']:
                 authorized=True
-            print(f"Authorized: {authorized}")
+            # print(f"Authorized: {authorized}")
         if authorized:
             return f(*args, **kwargs)
         else:
