@@ -29,12 +29,12 @@
         <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
             
             <div class="card" style=" margin-top:1vh; overflow:auto">
-                <div class="card-header" style="color: red; background-color: lightgrey; font-weight: bold;">
+                <div class="card-header" style=" background-color: lightgrey; font-weight: bold;">
                     Welcome
                 </div>
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
                         <p>
-                        This is an implementation of the application that was originally provided as the 
+                        This is an implementation of the application that was previously available as the 
                         NHS Value Set Management Tool (VSMT) Set Checks (Proof of Concept). 
                         With the closure of the 
                         <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160" target="_blank">VSMT project</a>
@@ -71,7 +71,7 @@
                     Using the Set Checks Application 
                 </div>
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
-                    <p style="color:red; font-weight: bold;">
+                    <p style="color:#EE0000; font-weight: bold;">
                         All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
                     </p>
                     
@@ -80,13 +80,9 @@
                     <li>One column must contain SNOMED Identifiers; another column can optionally contain Terms; all other columns are disregarded by the set checks.</li>
                     <li>The selection of the Identifier and Term columns is made in the app after upload.</li>
                     <li>To upload your value set file, and start using the tool, click the big green "Browse for a file" button.</li>
-                    <li>Click for  
-                        <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=51269456" target="_blank">supporting materials including a user guide, 
-                        and detailed reference information on the setchecks</a> 
-                        </li>    
+                    <li> <a href="{{ url_for('static', filename='docs/VSMT Set Checks (PoC) - Guide to the User Interface and the Outcome Report (v1.1).pdf') }}" target="_blank">Guide to the User Interface and the Outcome Report</a></li>  
                     </ul>
                    
-
                     <p>
                     By using this tool, you are accepting of the T&Cs. You can re-read the T&Cs at any time using the link
                     provided on each page of the application. 
@@ -118,10 +114,11 @@
                     width: 100%; 
                     height: 14vh;
                     /* margin: 5 auto;  */
-                    border-style: none;
+                    border-style: solid;
                     border-width: 3px;
-                    /* border-color: #005e00; */
-                    background-color:#2bc240;
+                    border-color: #005e00;
+                    background-color:green;
+                    /* background-color:#2bc240; */
                     /* background-color: white;  */
                     border-radius: 20px; 
                     font-size: 2em; 

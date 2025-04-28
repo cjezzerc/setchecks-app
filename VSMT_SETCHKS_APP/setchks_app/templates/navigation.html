@@ -1,6 +1,6 @@
 
     <style>
-        .setchks-breadcrumb-strong {font-weight: bold; color:#005eb8}
+        .setchks-breadcrumb-strong {font-weight: bold; color:#black}
         .setchks-breadcrumb-weak {font-weight: normal; color:black}
     </style>
 
@@ -27,7 +27,8 @@
                         <i 
                             id="home_button" 
                             class="bi bi-house-fill"
-                            style="color:#005eb8"
+                            
+                            style="color:#0d6efd"
                             >
                         </i>
                     <!-- <a href="/data_upload"  class="btn setchks-btn " style="-webkit-text-stroke: 2px;"><i class="bi bi-arrow-left"></i> </a> -->
@@ -46,7 +47,7 @@
                 <style>
                     .setchks-btn {
                         background-color:white;
-                        color: black;
+                        color: #0d6efd;
                         border-style: none;
                         border-color:#005eb8;
                         border-width :2px; 
@@ -57,7 +58,9 @@
                         margin: 0 0;
                         }
                     .setchks-btn:hover {
-                        background-color:#f5e76a; 
+                        background-color:white;
+                        /* background-color:#f7e203;  */
+                        color:#0a58ca;
                         border-style: none; 
                         border-color:#005eb8; 
                         }
@@ -129,8 +132,9 @@
                         style="padding-right: 2vw; font-weight: bold;" mouseover="hello"> 
                         <!-- <a href="mailto:england.vsmtpoc@nhs.net?subject=(VSMT%20PoC) <your customised subject line here>&body=Use this email address for making feature suggestions, reporting bugs or asking for assistance.%0APlease leave (VSMT PoC) in the subject line.%0AScreenshots and example files are helpful for diagnosing issues.">Feedback</a>  -->
        
+                        
                         <a 
-                        href="https://nhsengland.kahootz.com/t_c_home/view?objectID=51269456" target="_blank"
+                        href="{{ url_for('static', filename='docs/VSMT Set Checks (PoC) - Guide to the User Interface and the Outcome Report (v1.1).pdf') }}" target="_blank"
                         style="-webkit-text-stroke: 1.3px; padding-right: 2vw;"
                         ><i class="bi bi-question-circle"></i></a>
 
