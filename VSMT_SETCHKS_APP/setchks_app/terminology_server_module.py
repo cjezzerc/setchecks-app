@@ -101,7 +101,7 @@ class TerminologyServer():
             else:
                 relative_url= "ValueSet/%s/$expand" % (value_set_server_id)
         # print(relative_url)
-        response=self.do_get(relative_url=relative_url, verbose=False) 
+        response=self.do_get(relative_url=relative_url, verbose=True) 
         print(response)
         # print(response.json())
         if response.json()["resourceType"]=="ValueSet": 
