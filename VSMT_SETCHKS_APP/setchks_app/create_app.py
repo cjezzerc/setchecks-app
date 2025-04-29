@@ -120,10 +120,11 @@ def create_app():
     from . import setchks_app
     app.register_blueprint(setchks_app.bp)
 
+    # Get Git commit and "cleanness" NB Hot code changes will require restart
     app.config["VERSION"]=os.popen('git log --format=%h --abbrev=8 -n 1').readlines()[0].strip()
-
     if os.popen('git status --short').readlines() != []:
         app.config["VERSION"]+="(modified)"
+    
 
     # if "VERSION" in os.environ:
     #     app.config["VERSION"]=os.environ["VERSION"]
