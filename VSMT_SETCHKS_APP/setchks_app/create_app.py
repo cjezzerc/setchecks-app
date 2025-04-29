@@ -121,6 +121,8 @@ def create_app():
     app.register_blueprint(setchks_app.bp)
 
     # Get Git commit and "cleanness" NB Hot code changes will require restart
+    # cleanness check not 100% reliable under WSL; sometimes seems sensitive to the line ending issue
+    # and reports many files as modified though they are not. But seems erratic.
     app.config["VERSION"]=os.popen('git log --format=%h --abbrev=8 -n 1').readlines()[0].strip()
     git_status_output=os.popen('git status --short').readlines()
     logger.debug(f"git_status_output={str(git_status_output)}")
