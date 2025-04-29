@@ -122,7 +122,9 @@ def create_app():
 
     # Get Git commit and "cleanness" NB Hot code changes will require restart
     app.config["VERSION"]=os.popen('git log --format=%h --abbrev=8 -n 1').readlines()[0].strip()
-    if os.popen('git status --short').readlines() != []:
+    git_status_output=os.popen('git status --short').readlines()
+    logger.debug(f"git_status_output={str(git_status_output)}")
+    if  git_status_output!= []:
         app.config["VERSION"]+="(modified)"
     
 
