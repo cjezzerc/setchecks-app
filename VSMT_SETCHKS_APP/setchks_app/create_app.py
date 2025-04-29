@@ -120,10 +120,15 @@ def create_app():
     from . import setchks_app
     app.register_blueprint(setchks_app.bp)
 
-    if "VERSION" in os.environ:
-        app.config["VERSION"]=os.environ["VERSION"]
-    else:
-        app.config["VERSION"]="local"
+    app.config["VERSION"]=os.popen('git log --format=%h --abbrev=8 -n 1').readlines()[0].strip()
+
+    if os.popen('git status --short').readlines() != []:
+        app.config["VERSION"]+="(modified)"
+
+    # if "VERSION" in os.environ:
+    #     app.config["VERSION"]=os.environ["VERSION"]
+    # else:
+    #     app.config["VERSION"]="local"
     
     if os.environ["DEPLOYMENT_ENV"]=="AWS": # This is currently just used in a jinja template
                                             # I could not get the rest of the app to access it without a context error
