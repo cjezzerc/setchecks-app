@@ -6,133 +6,135 @@
 
 {% block content %}
     
+    <style>
+        h1 {font-size: 1.4em; font-weight: bold;}
+        h2 {font-size: 1.0em; font-weight: bold; font-style: italic ;margin-bottom: 0.2em;}
+        p {font-size: 1.0em; margin-bottom: 0.2em;}
+    </style>
 
-<div class="container-fluid  mt-0 " >
-    
-    <div class="row" style="height: 75vh; margin-top: 1vh">    
+    <div class="container-fluid  mt-0" >
+        
+        <div class="row" style="height: 75vh; margin-top: 1vh">    
 
-        {#                  #}
-        {# LEFT HAND PANEL #}
-        {#                  #}
+            <div class="col-12 ">
+                
+                <div class="card" style=" overflow:auto; padding: 1vh; ">
 
-        <div class="col-12 ">
-            
-            <div class="card" style=" overflow:auto; padding: 1vh; ">
+                    <h1>Terms and Conditions for the VSMT Setchecks (Proof of Concept)</h1>
 
-                <div>
-<style>
-    h1 {font-size: 1.4em; font-weight: bold;}
-    h2 {font-size: 1.0em; font-weight: bold; font-style: italic ;margin-bottom: 0.2em;}
-    p {font-size: 1.0em; margin-bottom: 0.2em;}
-</style>
-<h1>Terms and Conditions for the VSMT Setchecks (Proof of Concept)</h1>
-
-<h2>
-Scope
-</h2>
-<p>
-This application is limited to allowing a user to upload a value set, 
-and providing an outcome report, based on a range of 13 pre-defined Set Checks. 
-</p>
-<p style="color:#EE0000; font-weight: bold;">
-    IMPORTANT: All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
-</p>
-<h2>
-Limitations
-</h2>
-<p>
-The application is developed for use in Health & Care settings within the UK, and therefore makes use of published releases of the SNOMED CT UK Edition only. The inclusion of any SNOMED Components that are not within a release of the SNOMED CT UK Edition in your value set may prevent the full suite of Set Checks being completed.
-</p>
-<p>
-The application is running on restricted cloud resources, 
-and as such the performance of the tool to handle multiple simultaneous users 
-is an important aspect of evaluating this implementation. 
-This PoC places a limit on the size of an uploaded file (currently 3000 concepts). 
-Files towards the upper end of this range may impact the performance of the tool.
-</p>
-<h2>
-Licencing
-</h2>
-<p>
-By using this PoC, you accept the licence agreement for the use of SNOMED CT, which is available on <a href="https://isd.digital.nhs.uk/trud/users/guest/filters/0/licence/10" target="_blank"> TRUD</a>.
-</p>
-<h2>
-Cookies
-</h2>
-<p>
-This PoC operates with only essential cookies. By using this PoC, you accept the use of these essential cookies. 
-</p>
-<h2>
-    Retention of Data
-    </h2>
-    <p style="color:#ee0000; font-weight: bold;">
-    In this PoC, all input and outcome data are retained for the purpose of further tool improvements, and for assisting in bug fixing. You should not enter any commercially sensitive data. We will not share your data without your permission. Data can be deleted on request. User account information is stored securely in Auth0(https://auth0.com/).</p>
-
-<h2>
-Use of this application
-</h2>
-<p>
-You recognise that this application is a service available to other users, 
-and that access or capacity may on occasion be limited. 
-You will comply with any fair use guidance that may be given from time to time. 
-You recognise we may suspend or limit usage that is in excess of fair usage at our discretion or 
-where it may impact other users.
-</p>
-<p>
-We ...
-<ul>
-<li>
-do not guarantee or warrant that the functions of this application will be uninterrupted or error free, that defects will be corrected, or represent the full functionality, accuracy, or reliability of the materials or data.
-</li>
-<li>
-offer no warranty for this application working in any browser or configuration. Please note that you may see inconsistencies in the presentation of pages if you are using an older or deprecated version of a browser.
-</li>
-<li>
-make no assumption that your access to this PoC will be from within the UK, and is not responsible or liable for your compliance with any local laws appropriate to the geographic area from which you seek to access this PoC. 
-</li>
-</ul>
-<p>
-By using this application, you accept and consent to the above, and you agree to comply with them.
-</p>
-
-                </div> 
+                    <h2>
+                    Scope
+                    </h2>
+                    <p>
+                    This application is limited to allowing a user to upload a value set, 
+                    and providing an outcome report, based on a range of 13 pre-defined Set Checks. 
+                    </p>
+                    <p style="color:#EE0000; font-weight: bold;">
+                        IMPORTANT: All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
+                    </p>
+                    <h2>
+                    Limitations
+                    </h2>
+                    <p>
+                    The application is developed for use in Health & Care settings within the UK, and therefore makes use of published releases of the SNOMED CT UK Edition only. The inclusion of any SNOMED Components that are not within a release of the SNOMED CT UK Edition in your value set may prevent the full suite of Set Checks being completed.
+                    </p>
+                    <p>
+                        The application is running on restricted cloud resources, 
+                        and as such the performance of the tool to handle multiple simultaneous users 
+                        is an important aspect of evaluating this implementation. 
+                        This application places a limit on the size of an uploaded file (currently 3000 concepts). 
+                        Files towards the upper end of this range may impact the performance of the tool.
+                    </p>
+                    <h2>
+                        Licencing
+                    </h2>
+                    <p>
+                        By using this application, you accept the licence agreement for the use of SNOMED CT, which is available on <a href="https://isd.digital.nhs.uk/trud/users/guest/filters/0/licence/10" target="_blank"> TRUD</a>.
+                    </p>
+                    <h2>
+                        Cookies
+                    </h2>
+                    <p>
+                        This application operates with only essential cookies. By using this application, you accept the use of these essential cookies. 
+                    </p>
+                    <h2>
+                        Retention of Data
+                    </h2>
+                    <p style="color:#ee0000; font-weight: bold;">
+                        In this application, all input and outcome data are retained for the purpose of further 
+                        tool improvements, and for assisting in bug fixing. You should not enter any commercially sensitive data. 
+                        We will not share your data without your permission. Data can be deleted on request. 
+                        User account information is stored securely in Auth0(https://auth0.com/).</p>
+                    <h2>
+                        Use of this application
+                    </h2>
+                    <p>
+                        You recognise that this application is a service available to other users, 
+                        and that access or capacity may on occasion be limited. 
+                        You will comply with any fair use guidance that may be given from time to time. 
+                        You recognise we may suspend or limit usage that is in excess of fair usage at our discretion or 
+                        where it may impact other users.
+                    </p>
+                    <p>
+                        We ...
+                    <ul>
+                    <li>
+                        do not guarantee or warrant that the functions of this application will be uninterrupted or error free, that defects will be corrected, or represent the full functionality, accuracy, or reliability of the materials or data.
+                    </li>
+                    <li>
+                        offer no warranty for this application working in any browser or configuration. Please note that you may see inconsistencies in the presentation of pages if you are using an older or deprecated version of a browser.
+                    </li>
+                    <li>
+                        make no assumption that your access to this application will be from within the UK, and is not responsible or liable for your compliance with any local laws appropriate to the geographic area from which you seek to access this application. 
+                    </li>
+                    </ul>
+                    <p>
+                        By using this application, you accept and consent to the above, and you agree to comply with them.
+                    </p>
+                
+                </div>
             </div>
-        </div>
 
-       
-    <div class="row" style="margin-top:0vh; ">
-        <style>
-            .setchks-btn {
-                background-color:white;
-                color: black;
-                border-style: solid;
-                border-color:#005eb8;
-                border-width :3px; 
-                }
-            .setchks-btn:hover {background-color:#ffeb3b; border-style: solid; border-color:#005eb8; border-width :3px;  }
-            .setchks-btn-inactive {
-                background-color: lightgray;
-                color: lightslategray;
-                border-style: solid;
-                }
-        </style>
-        {% if setchks_session["ts_and_cs_accepted"]==None %}
-        <div class="col-10"> 
-            <a href="/ts_and_cs?accept"  class="btn setchks-btn">Accept Terms and Conditions</a>
+        
+        <div class="row" style="margin-top:0vh; ">
+            <style>
+                .ts_and_cs-btn {
+                    background-color:white;
+                    color: black;
+                    border-style: solid;
+                    border-color:#005eb8;
+                    border-width :3px; 
+                    }
+                .ts_and_cs-btn:hover {
+                    background-color:#ffeb3b; 
+                    border-style: solid; 
+                    border-color:#005eb8; 
+                    border-width :3px;}
+                .ts_and_cs-btn-inactive {
+                    background-color: lightgray;
+                    color: lightslategray;
+                    border-style: solid;
+                    }
+            </style>
+            {% if setchks_session["ts_and_cs_accepted"]==None %}
+                <div class="col-10"> 
+                    <a href="/ts_and_cs?accept"  class="btn ts_and_cs-btn">Accept Terms and Conditions</a>
+                </div>
+            {% else %}
+                <div class="col-10" style="font-size: 1.4em;"> 
+                    <p>
+                        You last accepted these Terms and Conditions on {{setchks_session["ts_and_cs_accepted"]}} 
+                    </p> 
+                </div>
+                <div class="col-10" style="font-size: 1.0em;"> 
+                    <p>
+                        Use the back button in your browser to return to the application; 
+                        alternatively use <a href="/data_upload">this link</a> to go to the home page of the application
+                    </p> 
+                </div>
+            {% endif %}        
+        
         </div>
-        {% else %}
-        <div class="col-10" style="font-size: 1.4em;"> 
-            <p>You last accepted these Terms and Conditions on {{setchks_session["ts_and_cs_accepted"]}} </p> 
-
-        </div>
-        <div class="col-10" style="font-size: 1.0em;"> 
-            <p>Use the back button in your browser to return to the application; 
-                alternatively use <a href="/data_upload">this link</a> to go to the home page of the application</p> 
-        </div>
-        {% endif %}        
-    
     </div>
-</div>
 
-  
 {% endblock %}
