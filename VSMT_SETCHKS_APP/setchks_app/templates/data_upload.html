@@ -15,25 +15,26 @@
 {% set nav_next_page_location="/column_identities" %}
 
 {% include 'navigation.html' %}
-    
 
-<div class="container-fluid mt-0 " >
+
+
+
+<div class="container-fluid mt-0" >
     
     <div class="row" style="height: 78vh; overflow:auto">    
-
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh; ">
+        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh">
             
             <div class="card" style=" margin-top:1vh; overflow:auto">
-                <div class="card-header" style=" background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     Welcome
                 </div>
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
-                        <p>
+                    <p>
                         This is an implementation of the application that was previously available as the 
                         NHS Value Set Management Tool (VSMT) Set Checks (Proof of Concept). 
                         With the closure of the 
@@ -41,8 +42,8 @@
                         the Set Checks (Proof of Concept)
                         is no longer available. This implementation is provided freely to the community 
                         and has no connection with NHS England. 
-                        </p>
-                        <p>
+                    </p>
+                    <p>
                         The application includes 13 separate checks 
                         that run on user supplied SNOMED CT value sets to assess and provide feedback on 
                         set content. 
@@ -56,19 +57,21 @@
                         and how a set from an earlier UK SNOMED CT release 
                         should be changed due to new or changed content in a more 
                         recent UK SNOMED CT release.
-                        </p>
-                        <p>
+                    </p>
+                    <p>
                         There is a link on each page for feedback, which you can also use to  
                         make requests for help or demos, or to generally contact me.
-                        <br>
-                        <br><b>
-                        Jeremy Craven
-                        </b></p>
+                    </p>
+                    <p>
+                        <b>
+                            Jeremy Craven
+                        </b>
+                    </p>
                 </div>
             </div>
 
             <div class="card" style="margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     Using the Set Checks Application 
                 </div>
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
@@ -171,8 +174,8 @@
  
             {% if setchks_session.data_as_matrix != [] %}
                 <div class="card" style=" margin-top:1vh; overflow:auto">
-                    <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                        Options when Loading a New File
+                    <div class="card-header setchks-card-header">
+                    Options when Loading a New File
                     </div>
                     <div class="card-body" style="padding: 1vh; font-size: 1em;">
     
@@ -208,23 +211,9 @@
                             
                         </form>
                         <p>The settings can be further adjusted on the Settings page after loading</p>
-            
-    
-    
                     </div>
                 </div>
             {% endif %}
-                <!-- <div class="card" style=" margin-top:1vh; overflow:auto">
-                    <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
-                       
-                    Important Reminder
-                    </div>
-                    <div class="card-body" style="padding: 1vh; font-size: 1em;">
-                        
-                        <p style="color:red; font-weight: bold;">
-                            This tool is still under development. All outputs should be reviewed and approved by relevantly qualified clinical professionals before changes are made to any value set being used to record or assess care data.
-                        </p>
-                </div> -->
             </div>
         </div>
 
