@@ -12,7 +12,7 @@ class Breadcrumbs():
             self.breadcrumbs_styles[page_name]="weak"
                                
     def set_current_page(self, current_page_name=None):
-        logger.debug("called")
+        # logger.debug("called")
         if  current_page_name not in self.page_names:
             logger.error("page_name %s value is not valid" % current_page_name)
         else:
@@ -21,6 +21,6 @@ class Breadcrumbs():
                     self.breadcrumbs_styles[page_name]="strong"
                 else:
                     self.breadcrumbs_styles[page_name]="weak"
-        logger.debug(str(self.breadcrumbs_styles))
+        # logger.debug(str(self.breadcrumbs_styles))
         
     
