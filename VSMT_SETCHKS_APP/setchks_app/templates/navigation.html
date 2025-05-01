@@ -1,161 +1,82 @@
-
-    <style>
-        .setchks-breadcrumb-strong {font-weight: bold; color:black}
-        .setchks-breadcrumb-weak {font-weight: normal; color:black}
-    </style>
-
-        <nav 
-            class="
-            navbar 
-            navbar-expand-lg 
-            navbar-light  
-            " 
-            style="
-            min-height:6vh;
-            padding-left: 1em;
-            background-color:lightgray; 
-            font-size:1.33em; 
-            margin-left:0em; 
-            padding-top:1vh;
-            vertical-align: middle;
-            ">
-            <span style="width:100vw">
-                <span>
-                    <span 
-                        onclick="window.location.href='/data_upload'"
-                        class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> 
-                        <i 
-                            id="home_button" 
-                            class="bi bi-house-fill"
-                            
-                            style="color:#0d6efd"
-                            >
-                        </i>
-
-                        Home 
-                    </span> 
-                    <span><i class="bi bi-chevron-double-right"></i></span>
-                    <span class="setchks-breadcrumb-{{ breadcrumbs_styles["column_identities"] }}"> View</span>
-                    <span><i class="bi bi-chevron-double-right"></i></span>
-                    <span class="setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Settings </span>
-                    <span><i class="bi bi-chevron-double-right"></i></span>
-                    <span class="setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Checks</span>  
-                </span>
-            
-
-                <style>
-                    .forw-back-btn {
-                        background-color:white;
-                        color: #0d6efd;
-                        border-style: none;
-                        border-color:#005eb8;
-                        border-width :2px; 
-                        margin-top: 0vh;
-                        width: 4vw;
-                        font-size:1em;
-                        padding:0 0;
-                        margin: 0 0;
-                        }
-                    .forw-back-btn:hover {
-                        background-color:white;
-                        /* background-color:#f7e203;  */
-                        color:#0a58ca;
-                        border-style: none; 
-                        border-color:#005eb8; 
-                        }
-                    .forw-back-btn-inactive {
-                        background-color: lightgray;
-                        border-color: grey;
-                        color: grey;
-                        }
-                    .forw-back-btn-inactive:hover {
-                        background-color: lightgray;
-                        color: lightslategray;
-                        }
-                </style>
-                    
-                <span style="width:4.5vw; margin-left: 1vw;">
-                    {% if nav_prev_page_shown %}
-                        {% if nav_prev_page_live == True %}
-                            {% set inactivate_class="" %}
-                            {% set href=nav_prev_page_location %}
-                        {% else %}
-                            {% set inactivate_class="forw-back-btn-inactive" %}
-                            {% set href="#" %}
-                        {% endif %}
-                        <a 
-                            href="{{ href }}"  
-                            class="btn forw-back-btn {{inactivate_class}} " 
-                            style="-webkit-text-stroke: 2px;"
-                            >
-                            <i class="bi bi-arrow-left"></i> 
-                        </a>
-                    {% else %}
-                    <a 
-                    href="{{ href }}"  
-                    class="btn forw-back-btn forw-back-btn-inactive " 
-                    style="-webkit-text-stroke: 2px; color: lightgray; border-color: lightgray;"
-                    >
+<nav 
+    class="navbar navbar-expand-lg navbar-light  
+    " 
+    style="
+        min-height:6vh;
+        padding-top:1vh;
+        padding-left: 1em;
+        background-color:lightgray; 
+        font-size:1.33em; 
+        vertical-align: middle;
+        "
+    >
+    <span style="width:100vw">
+        <span 
+            onclick="window.location.href='/data_upload'"
+            class="breadcrumb-item setchks-breadcrumb-{{ breadcrumbs_styles["data_upload"] }}"> 
+            <i id="home_button" class="bi bi-house-fill setchks-home-icon" ></i> Home 
+        </span> 
+        <span><i class="bi bi-chevron-double-right"></i></span>
+        <span class="setchks-breadcrumb-{{ breadcrumbs_styles["column_identities"] }}"> View</span>
+        <span><i class="bi bi-chevron-double-right"></i></span>
+        <span class="setchks-breadcrumb-{{ breadcrumbs_styles["enter_metadata"] }}"> Settings </span>
+        <span><i class="bi bi-chevron-double-right"></i></span>
+        <span class="setchks-breadcrumb-{{ breadcrumbs_styles["select_and_run_checks"] }}"> Checks</span>  
+           
+        <span style="width:4.5vw; margin-left: 1vw;">
+            {% if nav_prev_page_shown %}
+                {% if nav_prev_page_live == True %}
+                    {% set inactivate_class="" %}
+                    {% set href=nav_prev_page_location %}
+                {% else %}
+                    {% set inactivate_class="setchks-forw-back-btn-inactive" %}
+                    {% set href="#" %}
+                {% endif %}
+                <a href="{{ href }}" class="btn setchks-forw-back-btn {{inactivate_class}}">
                     <i class="bi bi-arrow-left"></i> 
                 </a>
-                    {% endif %}
-                </span>
+            {% else %}
+                <a href="{{ href }}" class="btn setchks-forw-back-btn setchks-forw-back-btn-inactive ">
+                    <i class="bi bi-arrow-left"></i> 
+                </a>
+            {% endif %}
+        </span>
 
-                <span style="width:5vw">
-                    {% if nav_next_page_shown %}
-                        {% if nav_next_page_live == True %}
-                            {% set inactivate_class="" %}
-                            {% set href=nav_next_page_location %}
-                        {% else %}
-                            {% set inactivate_class="forw-back-btn-inactive" %}
-                            {% set href="#" %}
-                        {% endif %}
-                        <a 
-                            href="{{ href }}"  
-                            class="btn forw-back-btn {{inactivate_class}} " 
-                            style="-webkit-text-stroke: 2px;"
-                            >
-                            <i class="bi bi-arrow-right"></i> 
-                        </a>
-                    {% endif %}
-                </span>
+        <span style="width:5vw">
+            {% if nav_next_page_shown %}
+                {% if nav_next_page_live == True %}
+                    {% set inactivate_class="" %}
+                    {% set href=nav_next_page_location %}
+                {% else %}
+                    {% set inactivate_class="setchks-forw-back-btn-inactive" %}
+                    {% set href="#" %}
+                {% endif %}
+                <a href="{{ href }}" class="btn setchks-forw-back-btn {{inactivate_class}} ">
+                    <i class="bi bi-arrow-right"></i> 
+                </a>
+            {% endif %}
+        </span>
 
-                <!-- <span style="width:50vw"> -->
-                    <span class="float-end">
-                        <span style="padding-right: 2vw; font-weight: bold;"> {{config["ENVIRONMENT"]}} </span>
-                        <span style="padding-right: 2vw; font-weight: bold;"> {{setchks_session.email}} </span>
-                        <!-- <span 
-                        data-toggle="tooltip" data-placement="top" 
-                        title="Please include screenshots etc in your email"  -->
-                        <span
-                        style="padding-right: 2vw; font-weight: bold;" mouseover="hello"> 
-       
-                        
-                        <a 
-                        href="{{ url_for('static', filename='docs/VSMT Set Checks (PoC) - Guide to the User Interface and the Outcome Report (v1.1).pdf') }}" target="_blank"
-                        style="-webkit-text-stroke: 1.3px; padding-right: 2vw;"
-                        ><i class="bi bi-question-circle"></i></a>
-
-                        <a href="/feedback">Feedback</a>
-                        </span>
-                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="ts_and_cs" >T&Cs</a> </span>
-                        <span style="padding-right: 2vw; font-weight: bold;"> <a href="/logout" >Logout</a> </span>
-                    </span>
-                <!-- </span> -->
-
-                <script>
-                $(function () {
-                    $('[data-toggle="tooltip"]').tooltip()
-                  })
-                </script>
-
+        <span class="float-end">
+            <span style="padding-right: 2vw; font-weight: bold;"> {{config["ENVIRONMENT"]}} </span>
+            <span style="padding-right: 2vw; font-weight: bold;"> {{setchks_session.email}} </span>
+            <span style="padding-right: 2vw; font-weight: bold;" mouseover="hello"> 
+            <a 
+                href="{{ url_for('static', filename='docs/VSMT Set Checks (PoC) - Guide to the User Interface and the Outcome Report (v1.1).pdf') }}" target="_blank"
+                style="-webkit-text-stroke: 1.3px; padding-right: 2vw; text-decoration: none;"
+                >
+                <i class="bi bi-question-circle"></i>
+            </a>
+            <a href="/feedback">Feedback</a>
             </span>
-        </nav>  
-        
+                <span style="padding-right: 2vw; font-weight: bold;"> <a href="ts_and_cs" >T&Cs</a> </span>
+                <span style="padding-right: 2vw; font-weight: bold;"> <a href="/logout" >Logout</a> </span>
+            </span>
 
-      
-
-
-
-    {% block content %}
-    {% endblock %}
+        <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+                })
+        </script>
+    </span>
+</nav>  

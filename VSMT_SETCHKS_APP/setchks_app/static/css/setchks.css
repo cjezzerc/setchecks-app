@@ -1,4 +1,79 @@
+* { font-family:"Arial" ;} 
+
+body {
+    background-color: #f0f4f5;
+    font-size: 1.0em;
+    } 
+
 .setchks-card-header {
     background-color: lightgrey; 
     font-weight: bold;
-}
+    }
+
+.setchks-big-green-btn { 
+    display: inline-block;
+    cursor: pointer;
+    width: 100%; 
+    height: 14vh;
+    padding: 1vh 1vh; 
+    margin-top:1vh;
+    font-size: 2em; 
+    line-height: 2em; 
+    text-align: center; 
+    color: white;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #005e00;
+    background-color:green;
+    border-radius: 20px; 
+    }
+
+.setchks-big-green-btn:hover { background-color: darkgreen;} 
+
+.setchks-big-green-btn-inactive {
+    background-color: #e0e0e0; 
+    color: #A0A0A0; 
+    border-color: lightgrey;
+    }
+
+.setchks-big-green-btn-inactive:hover { background-color:#e0e0e0; }
+
+.setchks-forw-back-btn {
+    background-color:white;
+    color: #0d6efd;
+    border-style: none;
+    border-color:#005eb8;
+    border-width :2px; 
+    margin-top: 0vh;
+    width: 4vw;
+    font-size:1em;
+    padding:0 0;
+    margin: 0 0;
+    -webkit-text-stroke: 2px;
+    }
+.setchks-forw-back-btn:hover {
+    background-color:white;
+    /* background-color:#f7e203;  */
+    color:#0a58ca;
+    border-style: none; 
+    border-color:#005eb8; 
+    -webkit-text-stroke: 3px;
+    }
+.setchks-forw-back-btn-inactive {
+    background-color: lightgray;
+    border-color: grey;
+    color: grey;
+    }
+.setchks-forw-back-btn-inactive:hover {
+    background-color: lightgray;
+    color: lightslategray;
+    -webkit-text-stroke: 2px;
+    }
+
+.setchks-breadcrumb-strong {font-weight: bold; color:black}
+
+.setchks-breadcrumb-weak {font-weight: normal; color:black}
+
+.setchks-home-icon {color:#0d6efd}
+
+.setchks-home-icon:hover {color:#0a58ca}

@@ -17,49 +17,34 @@
 {% include 'navigation.html' %}
     
 <style>
-
-.run_status_blinking {
-animation: animate 1.5s linear infinite; 
-}  
-
-.run_status_static {
-animation: none; 
-}  
-
-@keyframes animate{ 
-  0%{ 
-    opacity: 0; 
-  } 
-  50%{ 
-    opacity: 0.7; 
-  } 
-  100%{ 
-    opacity: 0; 
-  } 
-} 
+    .run_status_blinking {
+        animation: animate 1.5s linear infinite; 
+    }  
+    .run_status_static {
+        animation: none; 
+    }  
+    @keyframes animate{ 
+        0% { opacity: 0; } 
+        50% { opacity: 0.7; } 
+        100% { opacity: 0; } 
+    } 
 </style> 
 
-<div class="container-fluid  mt-0 ">
-    
+<div class="container-fluid  mt-0 ">   
     <div class="row" style="height: 80vh;">
-
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-9" style="padding-left: 1.0vh; padding-right: 0.5vh;">
-            
+        <div class="col-9" style="padding-left: 1.0vh; padding-right: 0.5vh;">           
             <div class="card" style="height: 79vh; margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     Suite of Set Checks Corresponding to Settings
                 </div>
-                <div class="card-body">
-                
-                    <!-- <span style="height:4vh; margin-top:1vh; font-size: 1.0em;">Based on your settings for "Context" and "Mode", the following suite of checks will be run:</span> -->
+                <div class="card-body">              
                     <table class="table table-bordered" style="font-size:1.0em; ">
                         <thead>
-                            <!-- add the row of column titles -->
                             <tr>
                                 <th class="w-50" scope="col">Set Check</th>
                                 <th class="w-25" scope="col">Run Status</th>
@@ -68,7 +53,6 @@ animation: none;
                         </thead>
                         <tbody>
                             {% for setchk in ["PREPROCESSING"] + setchks_session.selected_setchks %}
-                               
                                 {% if setchk!="PREPROCESSING" %}
                                     {% set sc=setchk.setchk_code %}
                                     {% set name_to_show=setchk.setchk_short_name_plus_short_code %}
@@ -80,7 +64,6 @@ animation: none;
                                 <tr style="margin-top: 0em;">
                                     <td> {{ name_to_show }}</td>
                                     <td> 
-                                        <!-- {{ setchk_run_status }}  -->
                                         {% if setchk_run_status=="started" %}
                                             <span class="run_status_blinking"> 
                                             <b>Running..</b> 
@@ -138,50 +121,41 @@ animation: none;
                         "5_REPORT_AVAILABLE",
                         "6_REPORT_CREATION_FAILED", 
                         ] %}
-                        <!-- NB 6_REPORT_CREATION_FAILED does not exist yet -->
 
-                    <table class="table table-bordered" style="font-size:1.0em">
-                        <thead>
-                            <!-- add the row of column titles -->
-                            <tr>
-                                <th scope="col">Task</th>
-                                <th scope="col">Run Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td> Create Excel Output</td>
-                                <td>
-                                {% set generate_run_status = setchks_session.setchks_run_status["GENERATE_EXCEL"] %}
-                                {% if generate_run_status=="started" %}
-                                    <span class="run_status_blinking"> 
-                                    <b>Creating..</b> 
-                                    </span>
-                                {% else %}
-                                    <span class="run_status_static"> 
-                                    {% if generate_run_status=="queued" %}
-                                        In queue 
-                                    {% elif generate_run_status=="finished" %}
-                                        <b>Ready</b>
-                                    {% elif generate_run_status=="failed" %}
-                                        <i><a href="rq?action=failed_jobs">Job failed</a></i>
-                                    {% endif %}
-                                    </span>
-                            {% endif %}
-                                </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
+                        <table class="table table-bordered" style="font-size:1.0em">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Task</th>
+                                    <th scope="col">Run Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> Create Excel Output</td>
+                                    <td>
+                                        {% set generate_run_status = setchks_session.setchks_run_status["GENERATE_EXCEL"] %}
+                                        {% if generate_run_status=="started" %}
+                                            <span class="run_status_blinking"> 
+                                                <b>Creating..</b> 
+                                            </span>
+                                        {% else %}
+                                            <span class="run_status_static"> 
+                                                {% if generate_run_status=="queued" %}
+                                                    In queue 
+                                                {% elif generate_run_status=="finished" %}
+                                                    <b>Ready</b>
+                                                {% elif generate_run_status=="failed" %}
+                                                    <i><a href="rq?action=failed_jobs">Job failed</a></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     {% endif %}
                 </div>
-
-
-
-                       
-                <!-- </div> -->
             </div>
-
         </div>
         
         {#                  #}
@@ -189,50 +163,17 @@ animation: none;
         {#                  #}
 
         <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
-
-            <style>
-                .custom_run_checks_button {
-                    display: inline-block;
-                    cursor: pointer;
-                    width: 100%; 
-                    height: 14vh;
-                    /* margin: 5 auto;  */
-                    border-style: solid;
-                    border-width: 3px;
-                    /* background-color:#2bc240;  */
-                    background-color:green; 
-                    color: white;
-                    border-color: #005e00;
-                    border-radius: 20px; 
-                    font-size: 2em; 
-                    line-height: 2em; 
-                    padding: 1vh 1vh; 
-                    text-align: center; 
-                }
-                .custom_run_checks_button:hover { background-color: darkgreen;} 
-                .custom_run_checks_button:active { background-color: darkgreen; }
-
-                .custom_run_checks_button_inactive {
-                    background-color: #e0e0e0; 
-                    color: #A0A0A0; 
-                    border-color: lightgrey;
-                    }
-
-                .custom_run_checks_button_inactive:hover { background-color:#f0f4f5; }
-                .custom_run_checks_button_inactive:active { background-color:#f0f4f5; }
-            </style>
  
             <div style="height:1vh;"></div>
             <div 
                 {% if setchks_session.processing_status=="1_CHECKS_READY_TO_RUN" %}
-                    class="custom_run_checks_button"
+                    class="setchks-big-green-btn"
                     onclick="window.location.href='/select_and_run_checks?do_preprocessing=True'"
                 {% else %}
-                    class="custom_run_checks_button custom_run_checks_button_inactive"
+                    class="setchks-big-green-btn setchks-big-green-btn-inactive"
                 {% endif %}
                 >
-                <i class="bi bi-play-btn-fill"></i>
-                Run checks
+                <i class="bi bi-play-btn-fill"></i> Run checks
                 <div style="font-size: .6em; line-height: 1.3em;"> 
                     (and create report)
                 </div>
@@ -246,18 +187,14 @@ animation: none;
                        
             <div style="height:1vh;"></div>
             <div 
-                class="custom_run_checks_button"
                 {% if setchks_session.processing_status=="5_REPORT_AVAILABLE" %}
-                    style="background-color: green; color: white"   
+                    class="setchks-big-green-btn"
                     onclick="window.location.href='/select_and_run_checks?download_report=True'"
                 {% else %}
-                    style="background-color:#f0f4f5; color: #A0A0A0; border-color: lightgrey;"                                           
+                    class="setchks-big-green-btn setchks-big-green-btn-inactive"
                 {% endif %}>
-                <i class="bi bi-cloud-download-fill"></i>
-                Download report
+                <i class="bi bi-cloud-download-fill"></i> Download report
             </div>
-
-            <!-- <div style="height:1vh;"></div> -->
             <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-body" style="font-size: 1em;">
                     <div style="font-size:1.33em;"> 
@@ -284,7 +221,6 @@ animation: none;
                             <li class="{{ blinking_style }}" style="font-size:1.4em" >{{ list_item|safe }}</li>
                         {% endfor %}
                     </ul>
-               
                     <ul>
                         {% if setchks_session.passes_gatekeeper==False %}
                             <div style="font-weight: bold; color: red">
@@ -297,10 +233,6 @@ animation: none;
                         {% endif %}
 
                         {% if setchks_session.setchks_jobs_manager.jobs_running %}
-                            <!-- <a href="/select_and_run_checks" id="jobs_running_button" class="btn setchks-btn">Job(s) running - click to refresh run statuses</a>
-                            <script>
-                                setTimeout(function() { window.location=$('#jobs_running_button').attr("href"); }, 3000);
-                            </script> -->
                             <div>
                                 <p>
                                     Please do not navigate to another page in the tool while jobs are queued or running.
@@ -313,17 +245,12 @@ animation: none;
                                 </p>
 
                             </div>
-                                {% endif %}
-                        
+                        {% endif %}        
                     </ul>
                 </div>
             </div>
         </div>
-
     </div>
- 
-    
 </div>
 
-  
 {% endblock %}

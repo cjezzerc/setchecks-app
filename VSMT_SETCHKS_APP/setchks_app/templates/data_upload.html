@@ -16,19 +16,14 @@
 
 {% include 'navigation.html' %}
 
-
-
-
-<div class="container-fluid mt-0" >
-    
+<div class="container-fluid mt-0" >   
     <div class="row" style="height: 78vh; overflow:auto">    
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-        <div class="col-9" style="padding-left: 1vh; padding-right: .5vh">
-            
+        <div class="col-9" style="padding-left: 1vh; padding-right:.5vh">          
             <div class="card" style=" margin-top:1vh; overflow:auto">
                 <div class="card-header setchks-card-header">
                     Welcome
@@ -57,6 +52,7 @@
                         and how a set from an earlier UK SNOMED CT release 
                         should be changed due to new or changed content in a more 
                         recent UK SNOMED CT release.
+
                     </p>
                     <p>
                         There is a link on each page for feedback, which you can also use to  
@@ -69,7 +65,6 @@
                     </p>
                 </div>
             </div>
-
             <div class="card" style="margin-top:1vh; overflow:auto">
                 <div class="card-header setchks-card-header">
                     Using the Set Checks Application 
@@ -86,77 +81,33 @@
                     <li>To upload your value set file, and start using the tool, click the big green "Browse for a file" button.</li>
                     <li> <a href="{{ url_for('static', filename='docs/VSMT Set Checks (PoC) - Guide to the User Interface and the Outcome Report (v1.1).pdf') }}" target="_blank">Guide to the User Interface and the Outcome Report</a></li>  
                     </ul>
-                   
                     <p>
                     By using this tool, you are accepting of the T&Cs. You can re-read the T&Cs at any time using the link
                     provided on each page of the application. 
                     </p>   
-                    
-                   
-                    <!-- <span><a href="release_notes/known_issues.html">Known issues</a></span> -->
                 </div>
             </div>
-
         </div>
+
         {#                  #}
         {# RIGHT HAND PANEL #}
         {#                  #}
 
         <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
-
             <div>
-              
                 <style>
-                input[type="file"] {
-                    display: none;
-                }
-                .custom-file-upload {
-                   
-                    display: inline-block;
-                    cursor: pointer;
-                    /* width: 30vw;  */
-                    width: 100%; 
-                    height: 14vh;
-                    /* margin: 5 auto;  */
-                    border-style: solid;
-                    border-width: 3px;
-                    border-color: #005e00;
-                    background-color:green;
-                    /* background-color:#2bc240; */
-                    /* background-color: white;  */
-                    border-radius: 20px; 
-                    font-size: 2em; 
-                    line-height: 2em; 
-                    padding: 1vh 1vh; 
-                    /* padding: 20px 20px;  */
-                    text-align: center; 
-                    color: white;
-                    margin-top:1vh;
-                }
-                .custom-file-upload:hover { background-color: darkgreen;} 
-                .custom-file-upload:active { background-color: darkgreen; }
-
-                </style>
-
-
-                <style>
-                    .upload-methods > div {
-                        display: block;
-                        vertical-align: top;
-                        margin-right: 1em;
-                        padding-bottom: 1em ;
-                        }
-                </style>
-                
-                <div  class="upload-methods">   
-                    <!-- <div style="height:0vh;"></div> -->
+                    input[type="file"] {
+                        display: none;
+                    }
+                </style>           
+                <div>   
                     <form 
                         action="/column_identities" 
                         class="data-browse-form" 
                         method="post" 
                         enctype="multipart/form-data"
                         >
-                        <label for="data-browse-input" class="custom-file-upload">
+                        <label for="data-browse-input" class="setchks-big-green-btn">
                             <i class="bi bi-cloud-upload-fill"></i> 
                             Browse for a file 
                         </label>
@@ -167,60 +118,52 @@
                             onchange="$('.data-browse-form').submit();" 
                             />
                     </form>
-
-                    <!-- <div style="height:1vh;"></div> -->
-
                 </div> 
- 
-            {% if setchks_session.data_as_matrix != [] %}
-                <div class="card" style=" margin-top:1vh; overflow:auto">
-                    <div class="card-header setchks-card-header">
-                    Options when Loading a New File
+                {% if setchks_session.data_as_matrix != [] %}
+                    <div class="card" style=" margin-top:1vh; overflow:auto">
+                        <div class="card-header setchks-card-header">
+                        Options when Loading a New File
+                        </div>
+                        <div class="card-body" style="padding: 1vh; font-size: 1em;">
+        
+                            <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
+                                {% for a_type in [
+                                    ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
+                                        <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
+                                    ("RETAIN_SETTINGS","<b>Retain</b> metadata and settings
+                                        <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name, etc
+                                        when loading a revised version 
+                                        of a value set)</span>"),
+                                    ] %}
+                                    {% if a_type[0] == setchks_session.load_file_behaviour %}
+                                        {% set checked_var="checked" %}
+                                    {% else %}
+                                        {% set checked_var="" %}
+                                    {% endif %}
+                
+                                    <div class="form-check">
+                                        <input  class="form-check-input" 
+                                                type="radio" 
+                                                name="load_file_behaviour" 
+                                                {{ checked_var}} 
+                                                value="{{ a_type[0] }}" 
+                                                id="{{ a_type[0] }}"
+                                                onchange="$('.load_file_behaviour_buttons').submit();"
+                                                >
+                                        <label class="form-check-label" for="{{ a_type[0] }}">
+                                        {{ a_type[1]|safe}}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                                
+                            </form>
+                            <p>The settings can be further adjusted on the Settings page after loading</p>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 1vh; font-size: 1em;">
-    
-                        <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
-                            {% for a_type in [
-                                ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
-                                    <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),
-                                ("RETAIN_SETTINGS","<b>Retain</b> metadata and settings
-                                    <br><span style='font-size: 1em'>(e.g. to run the same checks, use the same SNOMED CT release, and keep the same name, etc
-                                    when loading a revised version 
-                                    of a value set)</span>"),
-                                ] %}
-                                {% if a_type[0] == setchks_session.load_file_behaviour %}
-                                    {% set checked_var="checked" %}
-                                {% else %}
-                                    {% set checked_var="" %}
-                                {% endif %}
-            
-                                <div class="form-check">
-                                    <input  class="form-check-input" 
-                                            type="radio" 
-                                            name="load_file_behaviour" 
-                                            {{ checked_var}} 
-                                            value="{{ a_type[0] }}" 
-                                            id={{ a_type[0] }} 
-                                            onchange="$('.load_file_behaviour_buttons').submit();"
-                                            >
-                                    <label class="form-check-label" for={{ a_type[0] }}>
-                                    {{ a_type[1]|safe}}
-                                    </label>
-                                </div>
-                            {% endfor %}
-                            
-                        </form>
-                        <p>The settings can be further adjusted on the Settings page after loading</p>
-                    </div>
-                </div>
-            {% endif %}
+                {% endif %}
             </div>
         </div>
-
     </div>
-
 </div>
 
-
-  
 {% endblock %}

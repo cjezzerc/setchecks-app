@@ -20,34 +20,47 @@
     {% set nav_next_page_location="/select_and_run_checks" %}
 
 {% include 'navigation.html' %}
-    
 
-<div class="container-fluid  mt-0 ">
+<script> 
+    $("#name_and_purpose_form").dirty({preventLeaving: true}); // this should rarely trigger but might if the response from autosubmit is slow
     
+    function check_length_and_CR(thing, e, max_length, CR_not_allowed) {
+        if (thing.value.length>=max_length) {
+            event.preventDefault();
+            return false;
+        }
+        if (e.which == 13 && CR_not_allowed) {
+            event.preventDefault();
+            return false;
+        }
+    }
+
+    function autosubmit(thing, max_length, name_to_show) {
+        let dirtiness=$("#name_and_purpose_form").dirty("isDirty")
+        if (dirtiness===true) {
+            if (thing.value.length>max_length){ // truncate if necessary before save
+                                                // this should only trigger if name or purpose pasted in
+                thing.value=thing.value.slice(0,max_length)
+                alert(`"${name_to_show}" is too long. It will be truncated to ${max_length} characters`)
+            }
+            $('#name_and_purpose_form').submit()
+        }
+    } 
+</script>
+
+<div class="container-fluid  mt-0">
     <div class="row" style="height: 76vh;">
 
         {#                  #}
         {# LEFT HAND PANEL #}
         {#                  #}
 
-            <div class="col-3" style="padding-left: 1vh; padding-right: 0.5vh;">
-            
-            <!-- <div class="card" style="height: 10vh; overflow:auto">
-                <div class="card-body" style="font-size: 1em;">
-                    On this screen please
-                    <ul> 
-                        <li> Select the SNOMED CT release that you wish to run the checks against</li>
-                        <li> Enter descriptive metadata ...</li>
-                    </ul>             
-                </div>
-            </div> -->
-
+        <div class="col-3" style="padding-left: 1vh; padding-right: 0.5vh;">
             <div class="card" style="height: 76vh; margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     Value Set Metadata
                 </div>
                 <div class="card-body" style="font-size: 1em;">
-
                         <form action="/enter_metadata" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_name"><b>Name of value set (Optional):</b></label>
@@ -69,19 +82,12 @@
                                     onmouseleave="autosubmit(this, 500, 'Purpose of value set')"
                                     onkeypress="check_length_and_CR(this,event,500,false)"
                                     rows="8">{{setchks_session.vs_purpose}}</textarea>
-                               
                             </div>
-                            <!-- <div style="margin-top:1vh;">
-                                <input type="submit" value="Save name and purpose">
-                            </div> -->
                         </form>
-
-
                     <div> 
                         <p style="margin-top:1vh; margin-bottom: 0"><b>Context:</b></p> 
                         <p style="margin-top:0; margin-bottom: 0; font-size: 0.8em;">(Affects which issues the Set Checks assess): </p> 
                     </div>
-
                     <form action="/enter_metadata" class="data_entry_extract_type_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("ENTRY_PRIMARY","Data entry (Primary Care)"),
@@ -93,57 +99,23 @@
                             {% else %}
                                 {% set checked_var="" %}
                             {% endif %}
-        
                             <div class="form-check">
                                 <input  class="form-check-input" 
                                         type="radio" 
                                         name="data_entry_extract_type" 
                                         {{ checked_var}} 
                                         value="{{ a_type[0] }}" 
-                                        id={{ a_type[0] }} 
+                                        id="{{ a_type[0] }}"
                                         onchange="$('.data_entry_extract_type_buttons').submit();"
                                         >
-                                <label class="form-check-label" for={{ a_type[0] }}>
+                                <label class="form-check-label" for="{{ a_type[0] }}">
                                 {{ a_type[1]}}
                                 </label>
                             </div>
                         {% endfor %}
-                        
                     </form>
-        
-
-
                 </div>
             </div>
-            <script> 
-
-            $("#name_and_purpose_form").dirty({preventLeaving: true}); // this should rarely trigger but might if the respose from autosubmit is slow
-            
-            function check_length_and_CR(thing, e, max_length, CR_not_allowed) {
-                if (thing.value.length>=max_length) {
-                    event.preventDefault();
-                    return false;
-                }
-                if (e.which == 13 && CR_not_allowed) {
-                    event.preventDefault();
-                    return false;
-                }
-            }
-           
-            function autosubmit(thing, max_length, name_to_show) {
-                let dirtiness=$("#name_and_purpose_form").dirty("isDirty")
-                if (dirtiness===true) {
-                    if (thing.value.length>max_length){ // truncate if necessary before save
-                                                        // this should only trigger if name or purpose pasted in
-                        thing.value=thing.value.slice(0,max_length)
-                        alert(`"${name_to_show}" is too long. It will be truncated to ${max_length} characters`)
-                    }
-                    $('#name_and_purpose_form').submit()
-                }
-            } 
-            </script>
-
-        
         </div>
 
         {#                  #}
@@ -153,7 +125,7 @@
         <div class="col-9" style="padding-left: 0.5vh; padding-right: 1vh;">
 
             <div class="card" style="height: 57vh; margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     SNOMED Release(s) (Currently restricted to Monolith releases on the NHS Terminology Server corresponding to a Clinical Extension release)
                 </div>
                 <div class="card-body" style="font-size: 1em;">
@@ -183,13 +155,8 @@
                                 </label>
                             </div>
                         {% endfor %}
-                        
                     </form>
  
-                    
-                <!-- </div> -->
-            <!-- </div>
-
             <!-- ############################################################## -->
             <!-- #    Start of block for first sct_version - "sct_version"    # -->
             <!-- ############################################################## -->
@@ -203,24 +170,24 @@
                     <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
                         <div style="margin-top:0">
                             <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
-                                    <select name="select_sct_version" class="form-select" 
-                                        onchange="$('.sct_version_selection_form').submit();" 
-                                        style="margin-top: 0; margin-bottom: 0.5vh; width:fit-content"
-                                        >
-                                        {% for available_sct_version in setchks_session.available_sct_versions %} 
-                                            {% if available_sct_version == setchks_session.sct_version %}
-                                            <option selected
-                                            {% else %}
-                                            <option
-                                            {% endif %} 
-            
-                                            value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
-            
-                                            {% if loop.index==1 %} (current) {% endif %}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                </form>
+                                <select name="select_sct_version" class="form-select" 
+                                    onchange="$('.sct_version_selection_form').submit();" 
+                                    style="margin-top: 0; margin-bottom: 0.5vh; width:fit-content"
+                                    >
+                                    {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                        {% if available_sct_version == setchks_session.sct_version %}
+                                        <option selected
+                                        {% else %}
+                                        <option
+                                        {% endif %} 
+        
+                                        value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
+        
+                                        {% if loop.index==1 %} (current) {% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
                         </div>                        
                         <!-- div for the plotly figure ; getting width and height right reduces flicker (?)-->
                         <div id="timeline_fig" width="945" height="90" ></div>  
@@ -268,112 +235,113 @@
                     });
             </script>
 
-            <!-- ############################################################
+       <!-- ############################################################
             #    End of block for first sct_version - "sct_version"    #
             ############################################################ -->
 
             {% if setchks_session.sct_version_mode=="DUAL_SCT_VERSIONS" %}
 
-            <!-- ###################################################################
-            #    Start of block for second sct_version - "sct_version_b"      #
-            #   This is a like for like copy with _b tagged on as appropriate #
-            ################################################################### -->
-            
-            <div style="height: 1vh"> </div>
-            <span>
-                <b>More recent release ("Later release"):</b>
-                {% if setchks_session.sct_version_b.date_string <= setchks_session.sct_version.date_string %}
-                <span style="color:red">
-                    <b><i class="bi bi-x-lg" style="-webkit-text-stroke: 1px; font-size:100%"></i>
-                    This release is not later than the "Earlier release" above</b>
+           <!-- ##########################################################################
+                #    Start of block for second sct_version - "sct_version_b"             #
+                #   This is mostly a like for like copy with _b tagged on as appropriate #
+                #   (Not pretty but it worked in the circumstances)                      #
+                ########################################################################## -->
+                
+                <div style="height: 1vh"> </div>
+                <span>
+                    <b>More recent release ("Later release"):</b>
+                    {% if setchks_session.sct_version_b.date_string <= setchks_session.sct_version.date_string %}
+                    <span style="color:red">
+                        <b><i class="bi bi-x-lg" style="-webkit-text-stroke: 1px; font-size:100%"></i>
+                        This release is not later than the "Earlier release" above</b>
+                    </span>
+                    {% endif %}
                 </span>
-                {% endif %}
-            </span>
-                    <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
-                    
-            <div class="card" style="width:fit-content; margin-top: 0vh">
-                <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
-                    <div style="margin-top:0">    
-                        <form action="/enter_metadata" class="sct_version_selection_form_b" method="post" enctype="multipart/form-data">
-                            <select name="select_sct_version_b" class="form-select" 
-                                onchange="$('.sct_version_selection_form_b').submit();" 
-                                style="margin-top: 0; margin-bottom: 0.5vh; width: fit-content;"
-                                >
-                                {% for available_sct_version in setchks_session.available_sct_versions %} 
-                                    {% if available_sct_version == setchks_session.sct_version_b %}
-                                    <option selected
-                                    {% else %}
-                                    <option
-                                    {% endif %} 
-    
-                                    value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
-    
-                                    {% if loop.index==1 %} (current) {% endif %}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </form>
+                        <!-- <div id="timeline_fig"  style="width:800px;height:200px;"></div>  div for the plotly figure -->
+                        
+                <div class="card" style="width:fit-content; margin-top: 0vh">
+                    <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
+                        <div style="margin-top:0">    
+                            <form action="/enter_metadata" class="sct_version_selection_form_b" method="post" enctype="multipart/form-data">
+                                <select name="select_sct_version_b" class="form-select" 
+                                    onchange="$('.sct_version_selection_form_b').submit();" 
+                                    style="margin-top: 0; margin-bottom: 0.5vh; width: fit-content;"
+                                    >
+                                    {% for available_sct_version in setchks_session.available_sct_versions %} 
+                                        {% if available_sct_version == setchks_session.sct_version_b %}
+                                        <option selected
+                                        {% else %}
+                                        <option
+                                        {% endif %} 
+        
+                                        value="{{ loop.index }}"> {{ available_sct_version.name_for_dropdown }}
+        
+                                        {% if loop.index==1 %} (current) {% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        <!-- div for the plotly figure ; getting width and height right reduces flicker (?)-->
+                        <div id="timeline_fig_b" width="945" height="90" ></div>  
+                        <div> <p style="margin:0 0;" id="timeline_hover_info_b"> <br> </p> </div>  <!-- div for the hover info -->
                     </div>
-                            <!-- div for the plotly figure ; getting width and height right reduces flicker (?)-->
-                            <div id="timeline_fig_b" width="945" height="90" ></div>  
-                    <div> <p style="margin:0 0;" id="timeline_hover_info_b"> <br> </p> </div>  <!-- div for the hover info -->
                 </div>
-            </div>
-                        <!-- </div>
-            </div> -->
-      
-            <script> // draw plotly figure
-                var timeline_fig_div_b = document.getElementById('timeline_fig_b'); 
-                var plotlyConfiguration = { displayModeBar: false };
-                Plotly.newPlot( timeline_fig_div_b, {{ timeline_data_json_b | safe }}, {{ timeline_layout_json_b | safe }}, plotlyConfiguration );
-            </script>
+                            <!-- </div>
+                </div> -->
+        
+                <script> // draw plotly figure
+                    var timeline_fig_div_b = document.getElementById('timeline_fig_b'); 
+                    var plotlyConfiguration = { displayModeBar: false };
+                    Plotly.newPlot( timeline_fig_div_b, {{ timeline_data_json_b | safe }}, {{ timeline_layout_json_b | safe }}, plotlyConfiguration );
+                </script>
 
-            <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
-            <form id="timeline_form_b" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
-                <input id="timeline_input_b" name="pointNumber_b" type="hidden" > 
-            </form>
+                <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
+                <form id="timeline_form_b" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
+                    <input id="timeline_input_b" name="pointNumber_b" type="hidden" > 
+                </form>
 
-            <script> // declare listener: when plotly is clicked on, insert pointNumber into hidden input and submit the form 
-                timeline_fig_div_b.on('plotly_click', function(event_data_b){
-                    if (event_data_b.points[0].curveNumber in [0,1]) {
-                        var timeline_input=document.getElementById("timeline_input_b");
-                        timeline_input.value=event_data_b.points[0].pointNumber;
-                        var timeline_form=document.getElementById("timeline_form_b")
-                        timeline_form.submit()
-                    }
-                });
-            </script>
-
-            <script> // declare listener: when plotly is hovered on .. 
-                var timeline_data_info_b= {{ timeline_info_json_b | safe }}
-                timeline_fig_div_b.on('plotly_hover', function(event_data_b){         
-                    console.log("hover")
-                    if (event_data_b.points[0].curveNumber in [0,1]) {
-                        var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
-                        timeline_hover_info_b.innerHTML="Click here to select release: UK Monolith edition:" + timeline_data_info_b[event_data_b.points[0].pointNumber];
-                    }
-                });
-            </script>
-
-            <script> // declare listener: when plotly is un-hovered  .. 
-                timeline_fig_div_b.on('plotly_unhover', function(event_data_b){
-                    console.log("unhover")
-                    var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
-                    timeline_hover_info_b.innerHTML='<br>';
+                <script> // declare listener: when plotly is clicked on, insert pointNumber into hidden input and submit the form 
+                    timeline_fig_div_b.on('plotly_click', function(event_data_b){
+                        if (event_data_b.points[0].curveNumber in [0,1]) {
+                            var timeline_input=document.getElementById("timeline_input_b");
+                            timeline_input.value=event_data_b.points[0].pointNumber;
+                            var timeline_form=document.getElementById("timeline_form_b")
+                            timeline_form.submit()
+                        }
                     });
-            </script>
+                </script>
 
-            <!-- ############################################################
-            #    End of Block for second sct_version - "sct_version_b" #
-            ############################################################ -->
+                <script> // declare listener: when plotly is hovered on .. 
+                    var timeline_data_info_b= {{ timeline_info_json_b | safe }}
+                    timeline_fig_div_b.on('plotly_hover', function(event_data_b){         
+                        console.log("hover")
+                        if (event_data_b.points[0].curveNumber in [0,1]) {
+                            var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
+                            timeline_hover_info_b.innerHTML="Click here to select release: UK Monolith edition:" + timeline_data_info_b[event_data_b.points[0].pointNumber];
+                        }
+                    });
+                </script>
+
+                <script> // declare listener: when plotly is un-hovered  .. 
+                    timeline_fig_div_b.on('plotly_unhover', function(event_data_b){
+                        console.log("unhover")
+                        var timeline_hover_info_b=document.getElementById("timeline_hover_info_b");
+                        timeline_hover_info_b.innerHTML='<br>';
+                        });
+                </script>
+
+           <!-- ############################################################
+                #    End of Block for second sct_version - "sct_version_b" #
+                ############################################################ -->
             {% else %}
-            <div style="height:24vh"></div>
+                <div style="height:24vh"></div>
             {% endif %}
 
-        </div>
-    </div>
+                </div>
+            </div>
             <div class="card" style="height: 18vh; margin-top:1vh; overflow:auto">
-                <div class="card-header" style="background-color: lightgrey; font-weight: bold;">
+                <div class="card-header setchks-card-header">
                     Output Report Size
                 </div>
                 <div class="card-body" style="font-size: 1em;">
@@ -395,21 +363,19 @@
                                         name="output_full_or_compact" 
                                         {{ checked_var}} 
                                         value="{{ a_type[0] }}" 
-                                        id={{ a_type[0] }} 
+                                        id="{{ a_type[0] }}"
                                         onchange="$('.output_full_or_compact_buttons').submit();"
                                         >
-                                <label class="form-check-label" for={{ a_type[0] }}>
+                                <label class="form-check-label" for="{{ a_type[0] }}">
                                 {{ a_type[1]}}
                                 </label>
                             </div>
                         {% endfor %}
-                        
                     </form>
-
+               </div>
+            </div>
         </div>
     </div>
-
-   
 </div>
 
   
