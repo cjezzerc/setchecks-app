@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: ddc-vsmt-setchks-app
-  namespace: NAMESPACE_TO_BE_REPLACED
-  annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::ACCT_NUMBER_TO_BE_REPLACED:role/SA_ROLE
