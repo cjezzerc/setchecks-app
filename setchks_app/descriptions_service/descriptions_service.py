@@ -59,7 +59,7 @@ class DescriptionsService():
         return self.db[collection_name].count_documents({})
     
     def get_list_of_releases_on_ontoserver(self):
-        return [x.date_string for x in get_sct_versions.get_sct_versions()]
+        return [x.date_string for x in get_sct_versions.get_sct_versions_on_ontoserver()]
     
     def make_collection_name(self, date_string=None):
         if self.data_type=="descriptions":

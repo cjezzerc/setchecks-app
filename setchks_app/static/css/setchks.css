@@ -51,6 +51,7 @@ body {
     margin: 0 0;
     -webkit-text-stroke: 2px;
     }
+
 .setchks-forw-back-btn:hover {
     background-color:white;
     /* background-color:#f7e203;  */
@@ -59,15 +60,29 @@ body {
     border-color:#005eb8; 
     -webkit-text-stroke: 3px;
     }
+
 .setchks-forw-back-btn-inactive {
     background-color: lightgray;
     border-color: grey;
     color: grey;
     }
+
 .setchks-forw-back-btn-inactive:hover {
     background-color: lightgray;
     color: lightslategray;
     -webkit-text-stroke: 2px;
+    }
+
+.setchks-forw-back-btn-hidden {
+    background-color: lightgray;
+    border-color: grey;
+    color: lightgray;
+    }
+    
+.setchks-forw-back-btn-hidden:hover {
+    background-color: lightgray;
+    border-color: grey;
+    color: lightgray;
     }
 
 .setchks-breadcrumb-strong {font-weight: bold; color:black}

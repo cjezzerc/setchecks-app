@@ -12,6 +12,8 @@ from setchks_app.redis.rq_utils import (
     kill_all_rq_workers,
     start_specific_rq_worker,
     )
+from setchks_app.sct_versions import get_sct_versions
+
 
 logging.basicConfig(
     format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
@@ -64,4 +66,6 @@ def create_app():
     else:
         app.config["ENVIRONMENT"]="LOCAL"
 
+    app.config["sct_versions_available_in_app"]=get_sct_versions.get_sct_versions_available_in_app()
+    
     return app

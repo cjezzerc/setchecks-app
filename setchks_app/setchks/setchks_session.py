@@ -2,6 +2,8 @@
 
 import uuid
 
+from flask import current_app
+
 from ..excel import generate_excel_output
 from setchks_app.data_as_matrix import load_data_into_matrix
 from setchks_app.data_as_matrix import column_content_assessment
@@ -124,7 +126,7 @@ class SetchksSession():
         self.timings={} # arbitrary entries can be put in this dict for debug purposes
         self.app_version="NOT SET" # will stay as "NOT SET" if not running from app (i.e. via script)
         self.environment="NOT SET" # ditto
-        self.initialise_sct_versions()
+        self.set_sct_versions()
         
     def __repr__(self):
         repr_strings=[]
@@ -175,15 +177,15 @@ class SetchksSession():
         self.all_CHKXX_finished=False
         self.processing_status="1_CHECKS_READY_TO_RUN" # strictly only the case if data loaded, sct_releases chosen etc
 
-    def initialise_sct_versions(self):
-        all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions()}
-        self.available_sct_versions=[]
-        ds=DescriptionsService(data_type="hst")
-        hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
-        for sct_version, hst_exists in hst_dict.items():
-            if hst_exists: # only make sct_version available if has an HST 
-                self.available_sct_versions.append(all_available_sct_versions[sct_version])
-
+    def set_sct_versions(self):
+        # all_available_sct_versions={x.date_string: x for x in get_sct_versions.get_sct_versions_on_ontoserver()}
+        # self.available_sct_versions=[]
+        # ds=DescriptionsService(data_type="hst")
+        # hst_dict=ds.check_whether_releases_on_ontoserver_have_collections()
+        # for sct_version, hst_exists in hst_dict.items():
+        #     if hst_exists: # only make sct_version available if has an HST 
+        #         self.available_sct_versions.append(all_available_sct_versions[sct_version])
+        self.available_sct_versions=current_app.config["sct_versions_available_in_app"]
         self.sct_version=self.available_sct_versions[0]
         self.sct_version_b=self.available_sct_versions[0]
 

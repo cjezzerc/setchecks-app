@@ -15,7 +15,9 @@ from setchks_app.sct_versions import graphical_timeline
 @auth_required
 def enter_metadata():
     setchks_session=gui_setchks_session.get_setchk_session(session)
- 
+    setchks_session.set_sct_versions() # this is belt and braces for case where extra sct
+                                       # versions loaded suring a session
+    
     current_sct_version=setchks_session.sct_version # remember this in case changes in next sections
     current_sct_version_b=setchks_session.sct_version_b # remember this in case changes in next sections
 

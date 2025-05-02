@@ -27,7 +27,7 @@ class ConceptsService():
         # self.db=MongoClient()["VSMT_uprot_app"]
     
     def get_list_of_releases_on_ontoserver(self):
-        return [x.date_string for x in get_sct_versions.get_sct_versions()]
+        return [x.date_string for x in get_sct_versions.get_sct_versions_on_ontoserver()]
     
     def check_have_sct_version_collection_in_db(self, sct_version=None):
         collection_name=self.make_collection_name(date_string=sct_version)
