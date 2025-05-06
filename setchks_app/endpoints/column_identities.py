@@ -38,7 +38,7 @@ def column_identities():
             session['setchks_session']=None
             setchks_session=gui_setchks_session.get_setchk_session(session)
         multisheet_flag=setchks_session.load_data_into_matrix(data=request.files['uploaded_file'], upload_method='from_file', table_has_header=True)
-        too_many_rows= len(setchks_session.data_as_matrix)>3001
+        too_many_rows= len(setchks_session.data_as_matrix)>5001
         setchks_session.reset_analysis() # throw away all old results
         setchks_session.marshalled_rows=[]
 
@@ -66,11 +66,15 @@ def column_identities():
             setchks_session.reset_analysis() # throw away all old results
             setchks_session.marshalled_rows=[] # force recalc of marshalled rows
 
-    if setchks_session.marshalled_rows==[]:
-        for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]: # The marshalled_rows list does NOTinclude the header row
-            mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
-            setchks_session.marshalled_rows.append(mr)
-        setchks_session.column_content_assessment.assess(marshalled_rows=setchks_session.marshalled_rows)
+    if not too_many_rows:
+        if setchks_session.marshalled_rows==[]:
+            for row in setchks_session.data_as_matrix[setchks_session.first_data_row:]: # The marshalled_rows list does NOTinclude the header row
+                mr=MarshalledRow(row_data=row, columns_info=setchks_session.columns_info)
+                setchks_session.marshalled_rows.append(mr)
+            setchks_session.column_content_assessment.assess(marshalled_rows=setchks_session.marshalled_rows)
+    else:
+        setchks_session.data_as_matrix=[]
+        setchks_session.filename=""
 
     type_labels={"CID":"Concept Id", "DID":"Description Id", "MIXED":"Mixed Id", "DTERM":"Term","OTHER":"Other"}
     if setchks_session.columns_info is not None:
