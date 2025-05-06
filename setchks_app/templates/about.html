@@ -1,0 +1,100 @@
+{% set hide_variables_in_header=True %}
+
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Set Checks{% endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+    
+
+<div class="container-fluid  mt-0" >
+    
+    <div class="row" style="margin-top: 1vh">    
+
+        <div class="col-9 ">
+            
+            <div class="card" style=" overflow:auto; padding: 1vh;">
+
+                <div class="card-header setchks-card-header">
+                    About Value Set Checks (SNOMED CT)
+                </div>
+                <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
+                    <div>
+                        <p>
+                            This is an implementation of the Set Checks (Proof of Concept) application that was previously available 
+                            to a restricted user base 
+                             as part of the <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160">NHS Value Set Management Tool (VSMT) project</a>.
+                        </p>
+                        <p>
+                            <ul>
+                                <li>
+                                    The application includes twelve separate checks 
+                                    that run on user supplied SNOMED CT value sets to assess and provide feedback on 
+                                    set content.
+                                </li>
+                                <li>
+                                    The focus of these checks is for value sets that are used for data entry to, 
+                                    or data extraction from, electronic patient records. 
+                                </li>
+                                <li>
+                                    Different Set Checks run depending on whether the value set is being used for 
+                                    data entry or data extraction purposes, and whether the user wishes to check 
+                                    the value set against a single SNOMED CT release or between two SNOMED CT releases. 
+                                </li>
+    
+                                <li>
+                                    The checks indicate possible errors, content that might be missing, 
+                                    and how a set from an earlier UK SNOMED CT release 
+                                    should be changed due to new or changed content in a more 
+                                    recent UK SNOMED CT release.
+                                </li>
+                            </ul>
+    
+                        </p>
+                        <p>
+                            With the  
+                            <a href="https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160" target="_blank">closure of the VSMT project</a>
+                            the Set Checks (Proof of Concept)
+                            is no longer available. 
+                        </p>
+                        <p>
+                            This implementation is provided freely to the community 
+                            and has no connection with NHS England.
+                        </p>
+                        <p>
+                            The source code is available on <a href="https://github.com/cjezzerc/setchecks-app">GitHub</a>.
+                        </p>
+                        <p>
+                            To proceed to the application click the big green "Access the application" button.
+                        </p>
+                        <p>
+                            <b>
+                                Jeremy Craven
+                            </b>
+                            <br>
+                            <a href='mailto:setchecks@jeremycraven.org.uk'>setchecks@jeremycraven.org.uk</a>
+    
+                        </p>
+    
+                    </div> 
+                </div>
+
+            </div>
+        </div>
+        <div class="col-3" style="padding-left: 0.5vh; padding-right: 1.0vh;">
+ 
+            <div style="height:1vh;"></div>
+            <div class="setchks-big-green-btn" style="height: fit-content" onclick="window.location.href='/data_upload'">
+                
+                <i class="bi bi-arrow-right"></i> Access the application
+                <div style="font-size: .6em; line-height: 1.3em;"> 
+                    (there is a very simple and quick registration step)
+                </div>
+            </div>   
+        </div>
+    </div>
+</div>
+
+{% endblock %}

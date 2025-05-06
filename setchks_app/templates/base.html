@@ -34,82 +34,84 @@
                     <img src="../static/images/new_banner.png" style="height:100%; width:100%; object-fit:contain" width="1208" height="169">
                 </span>
 
-                <div style="width: 6vw"></div>
-                <div style="overflow:auto; width: 27vw; padding:0; font-size: 0.9em; color: white">
-                    
-                    {% set name_to_show=setchks_session.vs_name %}
-                    {% if (name_to_show|length)>37 %}
-                        {% set name_to_show=name_to_show[:16]+" (...) "+name_to_show[-16:]%}
-                    {% endif %}
-
-                    {% set filename_to_show=setchks_session.filename %}
-                    {% if filename_to_show == None %}
-                        {% set filename_to_show="No file loaded" %}
-                    {% endif %}
-                    {% if filename_to_show != None and (filename_to_show|length)>36 %}
-                        {% set filename_to_show=filename_to_show[:16]+" (...) "+filename_to_show[-16:]%}
-                    {% endif %}
-
-                    {% set context_nicer_words={
-                        "ENTRY_PRIMARY":"Data entry (Primary Care)",
-                        "ENTRY_OTHER":"Data entry (Non-primary Care)",
-                        "EXTRACT":"Data extraction",
-                        } %}
-
-                    {% set mode_nicer_words={
-                        "SINGLE_SCT_VERSION":"Single SNOMED Release",
-                        "DUAL_SCT_VERSIONS":"Dual SNOMED Releases",
-                        } %}
-
-                    <table>
-                        <tr>
-                            <td>Set Name:</td>
-                            <td></td>
-                            <td><b>{{name_to_show}}</b></td>
-                        </tr>
-                        <tr>
-                            <td >Input File:</td>
-                            <td></td>
-                            <td><b>{{ filename_to_show }}</b></td>
-                        </tr>
-                        <tr>
-                            <td >Context:</td>
-                            <td></td>
-                            <td><b>{{context_nicer_words[setchks_session.data_entry_extract_type]}}</b></td>
-                        </tr>                        
-                    </table>
-                </div>
-
-                <div style="overflow:auto; width: 27vw; padding:0; font-size: 0.9em; color: white">
-                    <table>
-                        <tr>
-                            
-                            <td >Mode:</td>
-                            <td></td>
-                            <td><b>{{mode_nicer_words[setchks_session.sct_version_mode]}}</b></td>
-                        </tr>                 
-                        {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
-                            <tr>
-                                <td>SNOMED Release:</td>
-                                <td></td>
-                                <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</td>
-                            </tr>
-                            <tr>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td>Earlier Release:</td>
-                                <td></td>
-                                <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Later Release:</b></td>
-                                <td></td>
-                                <td><b>{{ setchks_session.sct_version_b.name_for_dropdown}}</b></td>
-                            </tr>
+                {% if hide_variables_in_header is not defined %}
+                    <div style="width: 6vw"></div>
+                    <div style="overflow:auto; width: 27vw; padding:0; font-size: 0.9em; color: white">
+                        
+                        {% set name_to_show=setchks_session.vs_name %}
+                        {% if (name_to_show|length)>37 %}
+                            {% set name_to_show=name_to_show[:16]+" (...) "+name_to_show[-16:]%}
                         {% endif %}
-                    </table>
-                </div>
+
+                        {% set filename_to_show=setchks_session.filename %}
+                        {% if filename_to_show == None %}
+                            {% set filename_to_show="No file loaded" %}
+                        {% endif %}
+                        {% if filename_to_show != None and (filename_to_show|length)>36 %}
+                            {% set filename_to_show=filename_to_show[:16]+" (...) "+filename_to_show[-16:]%}
+                        {% endif %}
+
+                        {% set context_nicer_words={
+                            "ENTRY_PRIMARY":"Data entry (Primary Care)",
+                            "ENTRY_OTHER":"Data entry (Non-primary Care)",
+                            "EXTRACT":"Data extraction",
+                            } %}
+
+                        {% set mode_nicer_words={
+                            "SINGLE_SCT_VERSION":"Single SNOMED Release",
+                            "DUAL_SCT_VERSIONS":"Dual SNOMED Releases",
+                            } %}
+
+                        <table>
+                            <tr>
+                                <td>Set Name:</td>
+                                <td></td>
+                                <td><b>{{name_to_show}}</b></td>
+                            </tr>
+                            <tr>
+                                <td >Input File:</td>
+                                <td></td>
+                                <td><b>{{ filename_to_show }}</b></td>
+                            </tr>
+                            <tr>
+                                <td >Context:</td>
+                                <td></td>
+                                <td><b>{{context_nicer_words[setchks_session.data_entry_extract_type]}}</b></td>
+                            </tr>                        
+                        </table>
+                    </div>
+
+                    <div style="overflow:auto; width: 27vw; padding:0; font-size: 0.9em; color: white">
+                        <table>
+                            <tr>
+                                
+                                <td >Mode:</td>
+                                <td></td>
+                                <td><b>{{mode_nicer_words[setchks_session.sct_version_mode]}}</b></td>
+                            </tr>                 
+                            {% if setchks_session.sct_version_mode=="SINGLE_SCT_VERSION" %}
+                                <tr>
+                                    <td>SNOMED Release:</td>
+                                    <td></td>
+                                    <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</td>
+                                </tr>
+                                <tr>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>Earlier Release:</td>
+                                    <td></td>
+                                    <td><b>{{ setchks_session.sct_version.name_for_dropdown}}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Later Release:</b></td>
+                                    <td></td>
+                                    <td><b>{{ setchks_session.sct_version_b.name_for_dropdown}}</b></td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                {% endif %}
             
                 <div style="overflow:auto; width: 8vw; font-size: 0.9em; color: white">
                     <table>

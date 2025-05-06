@@ -1,5 +1,7 @@
 from flask import Blueprint
 
+from setchks_app.endpoints.home_page import home_page
+from setchks_app.endpoints.about import about
 from setchks_app.endpoints.data_upload import data_upload
 from setchks_app.endpoints.column_identities import column_identities
 from setchks_app.endpoints.enter_metadata import enter_metadata
@@ -20,7 +22,8 @@ bp = Blueprint('setchks_app', __name__)
 
 # main app pages
 
-bp.add_url_rule("/", view_func=data_upload)
+bp.add_url_rule("/", view_func=home_page)
+bp.add_url_rule("/about", view_func=about)
 bp.add_url_rule("/data_upload", view_func=data_upload, methods=['GET','POST'])
 bp.add_url_rule("/column_identities", view_func=column_identities, methods=['GET','POST'])
 bp.add_url_rule("/enter_metadata", view_func=enter_metadata, methods=['GET','POST'])
