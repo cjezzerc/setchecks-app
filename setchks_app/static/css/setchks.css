@@ -85,6 +85,12 @@ body {
     color: lightgray;
     }
 
+    .setchks-forw-back-btn-hidden:active {
+        background-color: lightgray;
+        border-color: grey;
+        color: lightgray !important; # need important to override bootstrap, otherwise get black arrow when click even though hidden
+        }
+
 .setchks-breadcrumb-strong {font-weight: bold; color:black}
 
 .setchks-breadcrumb-weak {font-weight: normal; color:black}
