@@ -186,8 +186,9 @@ class SetchksSession():
         #     if hst_exists: # only make sct_version available if has an HST 
         #         self.available_sct_versions.append(all_available_sct_versions[sct_version])
         self.available_sct_versions=current_app.config["sct_versions_available_in_app"]
-        self.sct_version=self.available_sct_versions[0]
-        self.sct_version_b=self.available_sct_versions[0]
+        if self.sct_version is None:
+            self.sct_version=self.available_sct_versions[0]
+            self.sct_version_b=self.available_sct_versions[0]
 
     def do_SCT_release_dependent_preprocessing(self):
         self.passes_gatekeeper=True
