@@ -1,1 +1,1 @@
-This is a hard fork of the code that was made available as the Set Checks (Proof of Concept) as part of the VSMT (Value Set Management Tool) project (https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160)
+This is a hard fork of the code that was previously made available as the Set Checks (Proof of Concept) as part of the VSMT (Value Set Management Tool) project (https://nhsengland.kahootz.com/t_c_home/view?objectID=41086160)
