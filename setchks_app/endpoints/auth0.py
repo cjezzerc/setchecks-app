@@ -9,6 +9,7 @@ from flask import session, current_app, redirect, url_for
 ######################################
 ######################################
 
+
 # @bp.route("/login")
 def login():
     return current_app.config["oauth"].auth0.authorize_redirect(
@@ -22,6 +23,7 @@ def login():
 ######################################
 ######################################
 
+
 # @bp.route("/callback", methods=["GET", "POST"])
 def callback():
     print("In callback")
@@ -30,21 +32,24 @@ def callback():
     print(token)
     return redirect("/data_upload")
 
+
 ######################################
 ######################################
 ## auth0 login                      ##
 ######################################
 ######################################
 
+
 # @bp.route("/logout")
 def logout():
-    del session['jwt_token']
+    del session["jwt_token"]
     return redirect(
-        "https://" + os.environ["AUTH0_DOMAIN"]
+        "https://"
+        + os.environ["AUTH0_DOMAIN"]
         + "/v2/logout?"
         + urlencode(
             {
-                "returnTo": url_for("setchks_app.ts_and_cs", _external=True), 
+                "returnTo": url_for("setchks_app.ts_and_cs", _external=True),
                 "client_id": os.environ["AUTH0_CLIENT_ID"],
             },
             quote_via=quote_plus,

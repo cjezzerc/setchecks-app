@@ -6,5 +6,6 @@
 
 from flask import redirect
 
+
 def home_page():
-    return redirect('/about')
+    return redirect("/about")

@@ -12,9 +12,10 @@ from setchks_app.concepts_service.concepts_service import ConceptsService
 
 from pymongo import MongoClient
 
-class Concept():
 
-    __slots__={
+class Concept:
+
+    __slots__ = {
         "concept_id",
         "concepts",
         "active",
@@ -25,28 +26,30 @@ class Concept():
         "descendants",
         "pt",
         "semantic_tag",
-        }
-    
+    }
+
     # This is a minimal version using data from concepts stroed as dicts on mongodb
     # many parameters not set (including fsn)
     def __init__(self, mongo_db_concept=None, concepts=None):
 
         # ca=fhir_snomed_utils.parse_parameters_resource_from_snomed_concept_lookup(parameters=concept_fhir_parameters)
-        self.concept_id=int(mongo_db_concept['code']) # try to avoid using bare "id" as is a built in function
-        self.concepts=concepts
+        self.concept_id = int(
+            mongo_db_concept["code"]
+        )  # try to avoid using bare "id" as is a built in function
+        self.concepts = concepts
         # self.system=None
         # self.version=None
         # self.module_name=None
         # self.module_id=None
-        self.active=not(mongo_db_concept['inactive'])
-        self.effective_time=mongo_db_concept['effectiveTime']
-        self.children=mongo_db_concept['child']
-        self.parents=mongo_db_concept['parent']
+        self.active = not (mongo_db_concept["inactive"])
+        self.effective_time = mongo_db_concept["effectiveTime"]
+        self.children = mongo_db_concept["child"]
+        self.parents = mongo_db_concept["parent"]
         # self.role_groups=None
-        
+
         # self.normal_form=None
         # self.normal_form_terse=None
-        # self.ancestors="fetched_on_demand" 
+        # self.ancestors="fetched_on_demand"
         # ecl_evaluation=terminology_server.do_expand(ecl=">"+str(self.concept_id), sct_version=self.version)
         # if ecl_evaluation is not None:
         #     self.ancestors=set(ecl_evaluation)
@@ -54,21 +57,21 @@ class Concept():
         #     print("WARNING: ecl_evaluation yielded None for ancestors of %s  - possible too costly error" % self.concept_id)
         #     self.ancestors=set()
 
-        # # self.descendants="fetched on demand" 
+        # # self.descendants="fetched on demand"
         # ecl_evaluation=terminology_server.do_expand(ecl="<"+str(self.concept_id), sct_version=self.version)
         # if ecl_evaluation is not None:
         #     self.descendants=set(ecl_evaluation)
         # else:
         #     print("WARNING: ecl_evaluation yielded None for descendants of %s  - possible too costly error" % self.concept_id)
         #     self.descendants=set()
-        self.ancestors=set(mongo_db_concept['ancestors'])
-        self.descendants=set(mongo_db_concept['descendants'])
+        self.ancestors = set(mongo_db_concept["ancestors"])
+        self.descendants = set(mongo_db_concept["descendants"])
 
         # still need to decide best way to handle the non is-a relationships; two lines below refer back to how did it with the "all in memory" solution
         # self.modelled_relns_as_source={} # key=destination_id; value=list of type_ids
         # self.modelled_relns_as_destination={} # key=source_id; value=list of type_ids
 
-        self.pt=mongo_db_concept['display']
+        self.pt = mongo_db_concept["display"]
         # for d in ca['designation']:
         #     if d['use']=='Fully specified name':
         #         self.fsn=d['value']
@@ -78,12 +81,12 @@ class Concept():
         #     self.semantic_tag=mObj.groups()[0]
         # else:
         #     self.semantic_tag="NO_SEMANTIC_TAG_FOUND"
-        self.semantic_tag="NO_SEMANTIC_TAGS_IN_CURRENT_MONGODB_VERSION"
-    
+        self.semantic_tag = "NO_SEMANTIC_TAGS_IN_CURRENT_MONGODB_VERSION"
+
     def __getattribute__(self, name):
-        value=object.__getattribute__(self, name)
+        value = object.__getattribute__(self, name)
         # if value!="fetched_on_demand":  # coming back to this in June 2023 - the fetched_on_demand thing is commented out above
-                                        # so value is always just returned here
+        # so value is always just returned here
         return value
         # else:
         #     print("Fetching on demand")
@@ -95,11 +98,11 @@ class Concept():
         #         return self.descendants
         #     else:
         #         print("Unexpected name to fetch")
-        #         sys.exit()    
+        #         sys.exit()
         # print(name)
 
     def __repr__(self):
-        repr_strings=[]
+        repr_strings = []
         # for k in self.__slots__:
         #     v=getattr(self,k)
         #     if k not in ["concepts", "normal_form","normal_form_terse"]:
@@ -109,33 +112,34 @@ class Concept():
         #             repr_strings.append("%20s : %s (%s)" % (k,v,type(v)))
         # return "\n".join(repr_strings)
         return f"Concept object with id {self.concept_id}"
-    
+
+
 class ConceptsDict(UserDict):
-    
+
     # def __init__(self, concepts_db_document=None, sct_version=None):
     def __init__(self, sct_version=None):
-        cs=ConceptsService()
-        self.concepts_db_document=cs.db["concepts_"+sct_version]
-        self.sct_version=sct_version 
+        cs = ConceptsService()
+        self.concepts_db_document = cs.db["concepts_" + sct_version]
+        self.sct_version = sct_version
         super().__init__()
 
     def __getitem__(self, key):
-        if type(key)==str:
-            key=int(key)
-        verbose=False
-        
+        if type(key) == str:
+            key = int(key)
+        verbose = False
+
         # print("Current_keys_in_ConceptsDict:", self.data.keys())
 
         if verbose:
             print("=======================")
-            print("Requested key: %s (%s)" % (key,type(key)))
+            print("Requested key: %s (%s)" % (key, type(key)))
             print("Current keys:", self.data.keys())
 
-        if key in self.data: # if have already fetched this concept
+        if key in self.data:  # if have already fetched this concept
             if verbose:
                 print("Already have this key")
             return self.data[key]
-        else: # otherwise need to fetch it
+        else:  # otherwise need to fetch it
             if verbose:
                 print("Need to fetch this key")
                 print("=======================")
@@ -146,14 +150,14 @@ class ConceptsDict(UserDict):
             # r=self.terminology_server.do_get(relative_url=concept_lookup_url)
             # concept_fhir_parameters=Parameters.parse_obj(r.json())
             # concept=Concept(concept_fhir_parameters=concept_fhir_parameters, concepts=self, terminology_server=self.terminology_server)
-        
+
             # print("mongo db call for concept code = %s" % key)
-            mongo_db_concept=self.concepts_db_document.find_one({'code':key})
+            mongo_db_concept = self.concepts_db_document.find_one({"code": key})
             if mongo_db_concept is not None:
-                concept=Concept(mongo_db_concept=mongo_db_concept, concepts=self)
+                concept = Concept(mongo_db_concept=mongo_db_concept, concepts=self)
             else:
-                concept=None
-            self.data[key]=concept
+                concept = None
+            self.data[key] = concept
             return self.data[key]
 
         # # no caching in first mongodb version
@@ -166,18 +170,16 @@ class ConceptsDict(UserDict):
         return concept
 
 
+if __name__ == "__main__":
 
+    concepts = ConceptsDict(sct_version="20230510")
 
-if __name__=="__main__":
-
-    concepts=ConceptsDict(sct_version="20230510")
-   
     print(concepts[91487003])
     print(concepts[91487003].ancestors)
     print(concepts[91487003])
 
     for parent_id in concepts[91487003].parents:
-        print("PARENT: %20s : %s" % ( parent_id, concepts[parent_id].pt))
+        print("PARENT: %20s : %s" % (parent_id, concepts[parent_id].pt))
 
     # for role_group in concepts[91487003].role_groups:
     #     print("ROLE GROUP: ----------------")

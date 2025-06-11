@@ -18,30 +18,34 @@ from setchks_app.endpoints.session_check import session_check
 from setchks_app.endpoints.check_coverage import check_coverage
 from setchks_app.endpoints.mgmt_info import mgmt_info
 
-bp = Blueprint('setchks_app', __name__)
+bp = Blueprint("setchks_app", __name__)
 
 # main app pages
 
 bp.add_url_rule("/", view_func=home_page)
 bp.add_url_rule("/about", view_func=about)
-bp.add_url_rule("/data_upload", view_func=data_upload, methods=['GET','POST'])
-bp.add_url_rule("/column_identities", view_func=column_identities, methods=['GET','POST'])
-bp.add_url_rule("/enter_metadata", view_func=enter_metadata, methods=['GET','POST'])
-bp.add_url_rule("/select_and_run_checks", view_func=select_and_run_checks, methods=['GET','POST'])
+bp.add_url_rule("/data_upload", view_func=data_upload, methods=["GET", "POST"])
+bp.add_url_rule(
+    "/column_identities", view_func=column_identities, methods=["GET", "POST"]
+)
+bp.add_url_rule("/enter_metadata", view_func=enter_metadata, methods=["GET", "POST"])
+bp.add_url_rule(
+    "/select_and_run_checks", view_func=select_and_run_checks, methods=["GET", "POST"]
+)
 bp.add_url_rule("/feedback", view_func=feedback)
-bp.add_url_rule("/ts_and_cs", view_func=ts_and_cs)   
+bp.add_url_rule("/ts_and_cs", view_func=ts_and_cs)
 
 # user utilities #
 
-bp.add_url_rule("/setchks_session", view_func=setchks_session) 
+bp.add_url_rule("/setchks_session", view_func=setchks_session)
 
-# auth0 endpoints 
+# auth0 endpoints
 
 bp.add_url_rule("/login", view_func=login)
 bp.add_url_rule("/callback", view_func=callback, methods=["GET", "POST"])
 bp.add_url_rule("/logout", view_func=logout)
 
-# diagnostic endpoints 
+# diagnostic endpoints
 
 bp.add_url_rule("/healthy", view_func=healthy)
 bp.add_url_rule("/mgmt_info", view_func=mgmt_info)
