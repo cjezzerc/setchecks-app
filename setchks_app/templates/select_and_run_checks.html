@@ -170,7 +170,7 @@
             <div 
                 {% if setchks_session.processing_status=="1_CHECKS_READY_TO_RUN" %}
                     class="setchks-big-green-btn"
-                    onclick="window.location.href='/select_and_run_checks?do_preprocessing=True'"
+                    onclick="window.location.href={{"'" +url_for("setchks_app.select_and_run_checks") +"?do_preprocessing=True'"}}"
                 {% else %}
                     class="setchks-big-green-btn setchks-big-green-btn-inactive"
                 {% endif %}
@@ -183,7 +183,7 @@
 
             {% if setchks_session.setchks_jobs_manager.jobs_running %}
                 <script>
-                    setTimeout(function() { window.location='/select_and_run_checks'; }, 1000);
+                    setTimeout(function() { window.location={{"'"|safe +url_for("setchks_app.select_and_run_checks") +"'"|safe}}; }, 1000);
                 </script>
             {% endif %}
                        
@@ -191,7 +191,7 @@
             <div 
                 {% if setchks_session.processing_status=="5_REPORT_AVAILABLE" %}
                     class="setchks-big-green-btn"
-                    onclick="window.location.href='/select_and_run_checks?download_report=True'"
+                    onclick="window.location.href={{"'" +url_for("setchks_app.select_and_run_checks") +"?download_report=True'"}}"
                 {% else %}
                     class="setchks-big-green-btn setchks-big-green-btn-inactive"
                 {% endif %}>

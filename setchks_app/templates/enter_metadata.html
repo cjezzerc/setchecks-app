@@ -62,7 +62,7 @@
                     Value Set Metadata
                 </div>
                 <div class="card-body" style="font-size: 1em;">
-                        <form action="/enter_metadata" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
+                        <form action="{{url_for("setchks_app.enter_metadata")}}" method="post" enctype="multipart/form-data" id="name_and_purpose_form">
                             <div class="form-group" style="margin-top:1vh;">
                                 <label for="vs_name"><b>Name of value set (Optional):</b></label>
                                 <textarea 
@@ -89,7 +89,7 @@
                         <p style="margin-top:1vh; margin-bottom: 0"><b>Context:</b></p> 
                         <p style="margin-top:0; margin-bottom: 0; font-size: 0.8em;">(Affects which issues the Set Checks assess): </p> 
                     </div>
-                    <form action="/enter_metadata" class="data_entry_extract_type_buttons" method="post" enctype="multipart/form-data">
+                    <form action="{{url_for("setchks_app.enter_metadata")}}" class="data_entry_extract_type_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("ENTRY_PRIMARY","Data entry (Primary Care)"),
                             ("ENTRY_OTHER","Data entry (Non-primary Care)"),
@@ -131,7 +131,7 @@
                 </div>
                 <div class="card-body" style="font-size: 1em;">
                     <span> <b>Mode:</b> </span>
-                    <form action="/enter_metadata" class="sct_version_mode_buttons" method="post" enctype="multipart/form-data">
+                    <form action="{{url_for("setchks_app.enter_metadata")}}" class="sct_version_mode_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("SINGLE_SCT_VERSION","Assess alignment of value set to a selected SNOMED release (Single Release)"),
                             ("DUAL_SCT_VERSIONS","Assess changes needed to a value set due to new or changed content in a more recent release (Dual Release)"),
@@ -170,7 +170,7 @@
             <div class="card" style="width:fit-content;">
                     <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
                         <div style="margin-top:0">
-                            <form action="/enter_metadata" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
+                            <form action="{{url_for("setchks_app.enter_metadata")}}" class="sct_version_selection_form" method="post" enctype="multipart/form-data">
                                 <select name="select_sct_version" class="form-select" 
                                     onchange="$('.sct_version_selection_form').submit();" 
                                     style="margin-top: 0; margin-bottom: 0.5vh; width:fit-content"
@@ -202,7 +202,7 @@
             </script>
 
             <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
-            <form id="timeline_form" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
+            <form id="timeline_form" action="{{url_for("setchks_app.enter_metadata")}}" method="post" enctype="multipart/form-data"> 
                 <input id="timeline_input" name="pointNumber" type="hidden" > 
             </form>
 
@@ -263,7 +263,7 @@
                 <div class="card" style="width:fit-content; margin-top: 0vh">
                     <div class="card-body overflow-auto" style="padding: 1vh 1vh;">
                         <div style="margin-top:0">    
-                            <form action="/enter_metadata" class="sct_version_selection_form_b" method="post" enctype="multipart/form-data">
+                            <form action="{{url_for("setchks_app.enter_metadata")}}" class="sct_version_selection_form_b" method="post" enctype="multipart/form-data">
                                 <select name="select_sct_version_b" class="form-select" 
                                     onchange="$('.sct_version_selection_form_b').submit();" 
                                     style="margin-top: 0; margin-bottom: 0.5vh; width: fit-content;"
@@ -298,7 +298,7 @@
                 </script>
 
                 <!-- create form with one hidden input to provide holder for value of pointNumber to be inserted -->
-                <form id="timeline_form_b" action="/enter_metadata" method="post" enctype="multipart/form-data"> 
+                <form id="timeline_form_b" action="{{url_for("setchks_app.enter_metadata")}}" method="post" enctype="multipart/form-data"> 
                     <input id="timeline_input_b" name="pointNumber_b" type="hidden" > 
                 </form>
 
@@ -347,7 +347,7 @@
                 </div>
                 <div class="card-body" style="font-size: 1em;">
                     <span> <b>Size of Report:</b></span>
-                    <form action="/enter_metadata" class="output_full_or_compact_buttons" method="post" enctype="multipart/form-data">
+                    <form action="{{url_for("setchks_app.enter_metadata")}}" class="output_full_or_compact_buttons" method="post" enctype="multipart/form-data">
                         {% for a_type in [
                             ("COMPACT_OUTPUT","Standard"),
                             ("FULL_OUTPUT","Extended (more complete information; less easy to read and may lead to large file sizes)"),

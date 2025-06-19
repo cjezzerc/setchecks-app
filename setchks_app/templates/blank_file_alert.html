@@ -1,4 +1,4 @@
 <script>
     alert("Your input file is blank. Please upload a valid input file")
-    window.location.href = "/data_upload";
+    window.location.href = {{"'"|safe +url_for("setchks_app.data_upload") +"'"|safe}};
 </script>

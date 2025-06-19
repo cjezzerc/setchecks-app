@@ -3,6 +3,9 @@ import os, logging
 from flask import Flask
 import flask_session
 
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.wrappers import Response
+
 from redis import from_url
 from authlib.integrations.flask_client import OAuth
 
@@ -29,11 +32,10 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.register_blueprint(setchecks_app.bp)
 
-    from werkzeug.middleware.dispatcher import DispatcherMiddleware
-    from werkzeug.wrappers import Response
 
-    app.wsgi_app = DispatcherMiddleware(
-        Response("Not Found", status=404), {"/TEST123": app.wsgi_app}
+
+    app.wsgi_app = DispatcherMiddleware( # WSGI magic to make the orls be /setchecks/..
+        Response("Not Found", status=404), {"/setchecks": app.wsgi_app}
     )
 
     oauth = OAuth(app)
