@@ -30,7 +30,7 @@ def callback():
     token = current_app.config["oauth"].auth0.authorize_access_token()
     session["jwt_token"] = token
     print(token)
-    return redirect("/data_upload")
+    return redirect(url_for("setchks_app.data_upload"))
 
 
 ######################################

@@ -12,7 +12,8 @@
 
 {% set nav_next_page_shown=setchks_session.data_as_matrix != [] %}
 {% set nav_next_page_live=True %}
-{% set nav_next_page_location="/column_identities" %}
+<!-- {% set nav_next_page_location="/column_identities" %} -->
+{% set nav_next_page_location=url_for("setchks_app.column_identities") %}
 
 {% include 'navigation.html' %}
 
@@ -31,9 +32,8 @@
                 <div class="card-body" style="padding: 1vh; font-size: 1.0em; overflow:auto">
                     <p>
                         For background information see  
-                        <a href='/about'>about this application</a>
+                        <a href={{url_for('setchks_app.about')}}>about this application</a>
                     </p>
-                    
                     <p>
                         There is a link on each page for feedback, which you can also use to  
                         make requests for help or demos, or to generally contact me.
@@ -90,7 +90,7 @@
                 </style>           
                 <div>   
                     <form 
-                        action="/column_identities" 
+                        action={{url_for("setchks_app.column_identities")}}
                         class="data-browse-form" 
                         method="post" 
                         enctype="multipart/form-data"
@@ -114,7 +114,7 @@
                         </div>
                         <div class="card-body" style="padding: 1vh; font-size: 1em;">
         
-                            <form action="/data_upload" class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
+                            <form action={{url_for("setchks_app.data_upload")}} class="load_file_behaviour_buttons" method="post" enctype="multipart/form-data">
                                 {% for a_type in [
                                     ("DEFAULT_SETTINGS","<b>Revert</b> to default settings 
                                         <br><span style='font-size: 1em'>(typical when starting work on a different value set)</span>"),

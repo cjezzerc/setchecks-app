@@ -7,6 +7,15 @@ sys.path.append("../..")
 
 from setchks_app.descriptions_service.descriptions_service import DescriptionsService
 
+import logging
+
+logging.basicConfig(
+    format="%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s >>> %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+    level=logging.DEBUG,
+)
+
+
 print("About to see if need to get secrets")
 if "ONTOSERVER_USERNAME" not in os.environ:
     print("getting secrets")

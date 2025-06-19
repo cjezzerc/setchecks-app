@@ -8,7 +8,9 @@
 
 {% set nav_prev_page_shown=True %}
 {% set nav_prev_page_live=True %}
-{% set nav_prev_page_location="/enter_metadata" %}
+<!-- {% set nav_prev_page_location="/enter_metadata" %} -->
+{% set nav_prev_page_location=url_for("setchks_app.enter_metadata") %}
+
 
 {% set nav_next_page_shown=False %}
 {% set nav_next_page_live=True %}

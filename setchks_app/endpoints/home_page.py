@@ -4,8 +4,8 @@
 #######################################
 #######################################
 
-from flask import redirect
+from flask import redirect, url_for
 
 
 def home_page():
-    return redirect("/about")
+    return redirect(url_for("setchks_app.about"))

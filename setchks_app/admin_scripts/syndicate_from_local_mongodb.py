@@ -40,12 +40,15 @@ def do_indexing(mongo_client=None):
 
 
 datestring = sys.argv[1]
-password = sys.argv[2]
+remote_url = sys.argv[2]
+password = sys.argv[3]
 
 encoded_password = urllib.parse.quote(password)
 # connection_string=f'mongodb://myUserAdmin:{encoded_password}@217.154.61.147:27017/'
 connection_string = (
-    f"mongodb://myUserAdmin:{encoded_password}@app.setchecks.co.uk:27018/?tls=true"
+    # f"mongodb://myUserAdmin:{encoded_password}@app.setchecks.co.uk:27018/?tls=true"
+    # f"mongodb://myUserAdmin:{encoded_password}@{remote_url}:27018/?tls=true"
+    f"mongodb://myUserAdmin:{encoded_password}@{remote_url}"
 )
 mongo_client = pymongo.MongoClient(connection_string)
 

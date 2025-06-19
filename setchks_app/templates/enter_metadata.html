@@ -8,7 +8,8 @@
 
 {% set nav_prev_page_shown=True %}
 {% set nav_prev_page_live=True %}
-{% set nav_prev_page_location="/column_identities" %}
+<!-- {% set nav_prev_page_location="/column_identities" %} -->
+{% set nav_prev_page_location=url_for("setchks_app.column_identities") %}
 
 {% set nav_next_page_shown=True %}
 {% if (setchks_session.sct_version_mode=="SINGLE_SCT_VERSION")  
@@ -17,7 +18,7 @@
 {% else %}
     {% set nav_next_page_live=False %}
 {% endif %}
-    {% set nav_next_page_location="/select_and_run_checks" %}
+    {% set nav_next_page_location=url_for("setchks_app.select_and_run_checks") %}
 
 {% include 'navigation.html' %}
 

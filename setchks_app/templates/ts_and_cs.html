@@ -118,7 +118,7 @@
             </style>
             {% if setchks_session["ts_and_cs_accepted"]==None %}
                 <div class="col-10"> 
-                    <a href="/ts_and_cs?accept"  class="btn ts_and_cs-btn">Accept Terms and Conditions</a>
+                    <a href={{url_for("setchks_app.ts_and_cs")+"?accept"}}  class="btn ts_and_cs-btn">Accept Terms and Conditions</a>
                 </div>
             {% else %}
                 <div class="col-10" style="font-size: 1.4em;"> 

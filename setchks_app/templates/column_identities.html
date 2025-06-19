@@ -8,18 +8,20 @@
 
 {% set nav_prev_page_shown=True %}
 {% set nav_prev_page_live=True %}
-{% set nav_prev_page_location="/data_upload" %}
+<!-- {% set nav_prev_page_location="/data_upload" %} -->
+{% set nav_prev_page_location=url_for("setchks_app.data_upload") %}
 
 {% set nav_next_page_shown=True %}
 {% set nav_next_page_live=setchks_session.columns_info.identification_sufficient ==True %}
-{% set nav_next_page_location="/enter_metadata" %}
+<!-- {% set nav_next_page_location="/enter_metadata" %} -->
+{% set nav_next_page_location=url_for("setchks_app.enter_metadata") %}
 
 {% include 'navigation.html' %}
 
 {% if too_many_rows==True %}
 <script>
     alert("The current limit for input files in this web tool is 3000 rows. Your file exceeds this. We are working to increase this size limit. In the meantime please contact us if you would like to analyse such large files as we can run them for you. Please load another file")
-    window.location.href = "/data_upload";
+    window.location.href = "{{url_for("setchks_app.data_upload")}}";
 </script>
 {% endif %}
 {% if multisheet_flag==True %}
