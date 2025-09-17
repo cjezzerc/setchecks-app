@@ -18,7 +18,7 @@ def create_graphical_timeline(
     selected_flags = [(x == selected_sct_date) for x in available_sct_dates]
 
     year0 = 2022
-    month0 = 3
+    month0 = 6
     day0 = 1
 
     x_list = []
@@ -53,7 +53,7 @@ def create_graphical_timeline(
         visible=False,
         dtick=1,
         showgrid=False,
-        range=[0.0, 40.0],
+        range=[0.0, 43.0],
         tickfont={
             "size": 5,
         },
@@ -131,8 +131,8 @@ def create_graphical_timeline(
         "Nov",
         "Dec",
     ]
-    years = {2022: "'22", 2023: "'23", 2024: "'24", 2025: "'25"}
-    for x in range(0, 41):
+    years = {2022: "'22", 2023: "'23", 2024: "'24", 2025: "'25", 2026:"'26"}
+    for x in range(0, 44):
         year = year0 + int((month0 + x) / 12.0)
         month_label = months[(month0 + x) % 12]
         month_annotations.append("%s" % (month_label))
@@ -149,6 +149,7 @@ def create_graphical_timeline(
             marker=marker,
             showlegend=False,
             hoverinfo="none",
+            textfont=dict(size=11),
         )
     )
 
@@ -164,7 +165,7 @@ def create_graphical_timeline(
         )
     )
 
-    for x in range(1, 41):
+    for x in range(1, 44):
         fig.add_shape(
             type="rect",
             xref="x",
