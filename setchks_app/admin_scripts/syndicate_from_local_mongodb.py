@@ -52,5 +52,12 @@ connection_string = (
 )
 mongo_client = pymongo.MongoClient(connection_string)
 
+try:
+    mongo_client.admin.command('ping')
+    print("MongoDB connection successful.")
+except Exception as e:
+    print(f"MongoDB connection failed: {e}")
+    sys.exit(1)
+
 do_transfers(connection_string=connection_string)
 do_indexing(mongo_client=mongo_client)
